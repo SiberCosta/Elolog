@@ -1,0 +1,55 @@
+/* =====================================================================
+   Elolog v35 — camada «profissional» (carrega por último no site, no
+   simulador e na Área de Cliente).
+
+   Sistema
+   - Tinta    #0E2433  texto e superfícies escuras
+   - Azul     #236186  ação principal em TODA a plataforma (um só azul)
+   - Verde    #237E5F  confirmações, estados positivos, pequenos rótulos
+   - Névoa    #F1F5F8  fundo das áreas de trabalho
+   - Linha    #D7E1E8  contornos e divisórias
+   - Uma só família (Work Sans). Rótulos em minúsculas normais, sem
+     maiúsculas espaçadas; títulos numa só cor.
+   - Elemento distintivo: a «linha de percurso» — origem ligada ao destino,
+     como o símbolo do logótipo — usada no «Como funciona».
+   ===================================================================== */
+:root{--pf-tinta:#0E2433;--pf-texto:#3D5566;--pf-suave:#5F7483;--pf-azul:#236186;--pf-azul-esc:#1A4D6C;--pf-verde:#237E5F;--pf-verde-esc:#1B664C;--pf-nevoa:#F1F5F8;--pf-linha:#D7E1E8;--pf-raio:10px;--pf-raio-painel:14px;
+--pf-sombra:0 1px 2px rgba(14,36,51,.06),0 6px 18px rgba(14,36,51,.06)}
+.section-eyebrow,.eyebrow,.section-kicker,.footer-kicker,.dropdown-kicker,.process-label,.service-tag,.process-time,.tracking-label,.result-label,.reg-lema,.footer-online,.pa-titulo h4,.pa-grav,.painel-admin .section-eyebrow,.provider-page .section-eyebrow,.client-sim-section>h3,.client-sim-section>h4,.client-sim-results .sim-result-header h4,.provider-hero-summary small,.provider-panel-grid small,.provider-status-card span,.provider-report-kpi small,.provider-payment-summary small,.provider-history-summary small,.provider-order-info-grid small,.provider-doc-overview small,.provider-complaint-summary small,.provider-employee-summary span,.provider-price-label,.proposal-analysis-summary small,.proposal-party-badge,.manifest-kpi small,.maritime-summary small,.finance-payment-summary small,.automation-kpis small,.field-dashboard-kpis small,.field-kpi small,.field-payment-kpis small,.field-service-card small,.field-service-kpis small,.field-support-kpis small,.client-payment-kpi small,.contact-card small,.perfil-grelha small,.admin-module-grid small,.admin-provider-document-status small,.admin-provider-dossier-grid small,.admin-provider-total small,.au-bloco h5,.provider-document-declaration-metrics small,.sim-result-grid small,.provider-tariff-picker-formula small,.password-recovery-dialog header small{text-transform:none!important;
+letter-spacing:0!important}.section-eyebrow,.eyebrow,.section-kicker,.dropdown-kicker,.process-label,.service-tag{font-size:.8125rem!important;font-weight:600!important;color:var(--pf-verde)!important}.footer-kicker{font-size:.8125rem!important;
+font-weight:600!important}
+.client-volume-table-head,.client-history-table-head,.cargo-editor-table-head,.provider-employee-list-head,.provider-history-list-head,.provider-login-table-head,.provider-recent-head,.finance-table th,.provider-order-history th,.sim-goods-table th,.provider-history-filters label{text-transform:none!important;
+letter-spacing:0!important;font-size:12px!important;font-weight:600!important;color:var(--pf-suave)!important}.hero-title strong,.hero h1 em,.hero h1 strong,.process-heading h2 span,.section-header h2 span,.centered-header h2 span{color:inherit!important;
+background:none!important;-webkit-text-fill-color:currentColor!important;font-style:normal!important}
+.hero-btn.hero-btn-primary,.btn-simulate,.contact-form-actions button[type=submit],.footer-support-card a,.cta-actions .hero-btn-primary,.btn-client{background:var(--pf-azul)!important;border-color:var(--pf-azul-esc)!important;color:#fff!important;
+box-shadow:0 1px 2px rgba(14,36,51,.18)!important}.hero-btn.hero-btn-primary:hover,.btn-simulate:hover,.contact-form-actions button[type=submit]:hover,.footer-support-card a:hover,.btn-client:hover{background:var(--pf-azul-esc)!important}
+.hero-btn.hero-btn-primary::before,.hero-btn.hero-btn-primary::after{display:none!important}.hero-btn.hero-btn-primary.fx-brilho{-webkit-text-fill-color:#fff!important;animation:none!important}
+.hero-btn span,.btn-client span,.contact-form-actions button span,.footer-support-card a b{display:none!important}:focus-visible{outline:3px solid rgba(35,97,134,.45)!important;outline-offset:2px!important}.elo-assistant{right:18px!important;
+bottom:18px!important}.elo-assistant-launcher{width:48px!important;height:48px!important;border-radius:12px!important;box-shadow:0 4px 12px rgba(14,36,51,.22)!important}.elo-assistant-launcher svg,.elo-assistant-launcher img{transform:scale(.86)}
+.hero .badge{display:none!important}.hero .eyebrow{color:#9fd8c0!important}@media(min-width:1101px){.process-section .process-controls{display:none!important}.process-section .process-card,.process-section .process-card:not(.is-active){opacity:1!important}
+.process-section .process-grid::before{background:linear-gradient(90deg,var(--pf-azul),var(--pf-verde))!important;height:2px!important}.process-section .process-grid::after{display:none!important}
+.process-section .process-card::before,.process-section .process-card.is-active::before{border-color:var(--pf-azul)!important;background:#fff!important;box-shadow:none!important}
+.process-section .process-card:last-child::before{border-color:var(--pf-verde)!important;background:var(--pf-verde)!important}.process-section .process-card .step-number,.process-section .process-card.is-active .step-number{color:var(--pf-azul)!important;
+-webkit-text-stroke:0!important;font-size:2.4rem!important;letter-spacing:-.02em!important}}.service-visual-card{border-radius:var(--pf-raio-painel)!important;border:1px solid var(--pf-linha)!important;box-shadow:none!important}
+.service-visual-card:hover{border-color:#b8cad6!important;box-shadow:var(--pf-sombra)!important}body.app-focus .main,body.app-focus .content{background:var(--pf-nevoa)}
+#clientSimulation .client-volume-table-head:has(+#clientSimVolumes:empty){display:none!important}.provider-panel-grid small,.provider-hero-summary small,.provider-status-card span{font-size:12px!important}
+.pa-cartao,.client-sim-card,.client-sim-results{border-radius:var(--pf-raio-painel)!important}@media(min-width:1101px){.process-section .process-card.is-active{box-shadow:none!important;transform:none!important}
+.process-section .process-card.is-active .process-icon{background:#e3eef5!important;color:var(--pf-azul)!important}.process-section .process-card.is-active::before{border-color:var(--pf-azul)!important;background:#fff!important}
+.process-section .process-card:last-child::before{border-color:var(--pf-verde)!important;background:var(--pf-verde)!important}}.client-next-step span{letter-spacing:0!important;text-transform:none!important}#userRole{text-transform:none!important;
+letter-spacing:0!important}.simulator-hero h1 em,.simulator-hero h1 strong{color:inherit!important;font-style:normal!important;-webkit-text-fill-color:currentColor!important}
+.simulator-kicker,.field-board-title small,.field-dashboard-hero small{text-transform:none!important;letter-spacing:0!important}@media(max-width:700px){.pw-grelha{grid-template-columns:minmax(0,1fr)!important}.pw-grelha>*{grid-column:1/-1!important;
+min-width:0!important;max-width:100%!important}}.quote-policy span,.form-step-tag,.sim-step-tag,[class*=etapa-tag]{text-transform:none!important;letter-spacing:0!important}.field-dashboard-actions button.primary{background:#FFFFFF!important;
+border-color:var(--pf-linha)!important;color:var(--pf-tinta)!important}.field-dashboard-actions button.primary *{color:inherit!important}.field-dashboard-actions button.primary small{color:var(--pf-suave)!important}
+.field-dashboard-actions button.primary>span{background:#E3EEF5!important;color:var(--pf-azul)!important}.field-dashboard-actions button:hover,.field-dashboard-actions button:focus-visible{background:var(--pf-azul)!important;
+border-color:var(--pf-azul)!important;color:#fff!important}.field-dashboard-actions button:hover *,.field-dashboard-actions button:focus-visible *{color:#fff!important}
+.field-dashboard-actions button:hover>span,.field-dashboard-actions button:focus-visible>span{background:rgba(255,255,255,.18)!important;color:#fff!important}
+.provider-desktop-nav>button.active,.provider-desktop-nav>.provider-desktop-more>.provider-more-trigger.active{background:transparent!important;color:var(--pf-azul)!important;box-shadow:inset 0 -3px 0 var(--pf-azul)!important;animation:none!important;
+border-radius:6px 6px 0 0!important}.provider-desktop-nav>button.active:after,.provider-desktop-nav>.provider-desktop-more>.provider-more-trigger.active:after{display:none!important}
+@media(hover:hover){.provider-desktop-nav>button:hover,.provider-desktop-nav>.provider-desktop-more>.provider-more-trigger:hover{background:var(--pf-azul)!important;color:#fff!important;box-shadow:none!important;border-radius:8px!important}}
+.provider-desktop-nav>button:focus-visible{background:var(--pf-azul)!important;color:#fff!important}.elo-lang span.on{background:transparent!important;color:var(--pf-azul)!important;font-weight:800!important;box-shadow:inset 0 -2px 0 var(--pf-azul)!important;
+border-radius:0!important}@media(hover:hover){.elo-lang span:hover{background:#E3EEF5!important;color:var(--pf-azul)!important;border-radius:99px!important;box-shadow:none!important}}
+#sidebar .menu>button.active,#sidebar .menu>button.client-menu-active,#sidebar .provider-menu-main.active,#sidebar .provider-submenu>button.active{background:transparent!important;box-shadow:inset 3px 0 0 #6FCCA5!important;font-weight:700!important}
+.navbar .btn-client,.hero .sim-rapida .hero-btn-primary,.hero .hero-btn-primary,#form-rastreio button[type=submit],.contact-form-actions button[type=submit]{background:#FFFFFF!important;color:var(--pf-azul)!important;border:2px solid var(--pf-azul)!important;
+box-shadow:none!important;transition:background .2s ease,color .2s ease!important}
+.navbar .btn-client:hover,.navbar .btn-client:focus-visible,.hero .hero-btn-primary:hover,.hero .hero-btn-primary:focus-visible,#form-rastreio button[type=submit]:hover,#form-rastreio button[type=submit]:focus-visible,.contact-form-actions button[type=submit]:hover,.contact-form-actions button[type=submit]:focus-visible{background:var(--pf-azul)!important;
+color:#FFFFFF!important}.navbar .btn-client *,.hero .hero-btn-primary *,#form-rastreio button *,.contact-form-actions button *{color:inherit!important}.bt-onda{display:none!important}

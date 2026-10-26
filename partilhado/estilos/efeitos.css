@@ -1,0 +1,19 @@
+/* Elolog · efeitos de interface (ver elolog-efeitos.js). Tudo local; sem movimento para quem o desativa. */
+.service-card,.pa-kpi,.pw-kpi2,.pa-etapa,.elo-foco,[data-fx~=spotlight]{--mx:50%;--my:50%}
+@media(hover:hover)and (pointer:fine){.pa-kpi:hover,.pw-kpi2:hover{background-image:radial-gradient(260px circle at var(--mx) var(--my),rgba(35,97,134,.11),transparent 70%)}
+.pa-etapa:hover{background-image:radial-gradient(160px circle at var(--mx) var(--my),rgba(35,126,95,.12),transparent 70%)}.service-card{position:relative;transform-style:preserve-3d}.service-card::after{content:"";position:absolute;inset:0;
+border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .25s;
+background:radial-gradient(320px circle at var(--mx) var(--my),rgba(35,126,95,.16),transparent 65%),radial-gradient(180px circle at var(--mx) var(--my),rgba(35,97,134,.12),transparent 70%)}.service-card:hover::after{opacity:1}
+.services-grid .service-card{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .2s ease-out,box-shadow .3s}
+.services-grid .service-card:hover{transform:perspective(900px) translateY(-3px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}}[data-fx~=magnet]{transform:translate(var(--tx,0),var(--ty,0));transition:transform .18s ease-out}
+.fx-parte .fx-pal{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(.35em);transition:opacity .55s ease,filter .55s ease,transform .55s ease;transition-delay:calc(var(--i) * 70ms)}.fx-parte.fx-visivel .fx-pal{opacity:1;filter:none;
+transform:none}.fx-brilho{background:linear-gradient(105deg,var(--fx-c) 40%,#fff 50%,var(--fx-c) 60%) 130% 0/250% 100% no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:fx-brilho 4.5s ease-in-out 1.2s infinite}
+@keyframes fx-brilho{0%{background-position:130% 0}60%,100%{background-position:-30% 0}}@property --fx-ang{syntax:"<angle>";inherits:false;initial-value:0deg}[data-fx~=border]{position:relative;isolation:isolate}[data-fx~=border]::before{content:"";
+position:absolute;inset:-3px;z-index:-1;border-radius:calc(var(--r,.55rem) + 3px);background:conic-gradient(from var(--fx-ang),rgba(127,224,185,.15) 0 45%,#7fe0b9 78%,#bfe6fa 92%,rgba(127,224,185,.15));animation:fx-gira 3.6s linear infinite}
+@keyframes fx-gira{to{--fx-ang:360deg}}.hero{--mx:70%;--my:30%}.hero::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(420px circle at var(--mx) var(--my),rgba(127,224,185,.13),transparent 70%)}
+.hero .hero-container{position:relative;z-index:1}@media(prefers-reduced-motion:reduce){.fx-brilho{animation:none;background:none;-webkit-background-clip:border-box;background-clip:border-box;color:inherit!important}[data-fx~=border]::before{animation:none}
+[data-fx~=magnet],.service-card{transition:none;transform:none}}.nav-links>a,.nav-links>.nav-dropdown>.nav-dropdown-toggle,.nav-links>button{transform:scale(calc(1 + var(--dk,0) * .14)) translateY(calc(var(--dk,0) * -2px));transform-origin:50% 100%;
+transition:transform .12s ease-out}.fx-rev{opacity:0;translate:0 22px;transition:opacity .6s cubic-bezier(.2,.7,.2,1) var(--rd,0ms),translate .6s cubic-bezier(.2,.7,.2,1) var(--rd,0ms)}.fx-rev.fx-rev-ok{opacity:1;translate:0 0}
+.fx-acende span{animation:fx-acende .5s ease both;animation-delay:calc(var(--i) * .25s)}@keyframes fx-acende{from{opacity:.35}to{opacity:1}}.fx-acende span::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#237E5F;
+margin-right:7px;transform:scale(0);animation:fx-ponto .4s ease both;animation-delay:calc(var(--i) * .25s + .2s)}@keyframes fx-ponto{to{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.nav-links>a,.nav-links>button,.nav-links>.nav-dropdown>.nav-dropdown-toggle{transform:none}.fx-rev{opacity:1;translate:none;transition:none}}
