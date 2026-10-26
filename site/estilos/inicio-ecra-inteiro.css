@@ -1,0 +1,7 @@
+/* v34 — Página inicial em ecrã inteiro.
+   Antes, o conteúdo ficava numa coluna de ~1250 px ao centro e, em monitores largos (1920 px ou mais),
+   sobrava uma faixa vazia de cada lado. Agora o menu, o topo e todas as secções ocupam a largura do ecrã,
+   com uma margem lateral que cresce com o ecrã. Carrega por último. */
+:root{--ecra-margem:clamp(1rem,4.2vw,6rem)}@media(min-width:901px){.nav-container,.hero-container,.section-shell,.tracking-shell,.cta-shell,.footer-container{max-width:none!important;width:100%;padding-left:var(--ecra-margem)!important;
+padding-right:var(--ecra-margem)!important;box-sizing:border-box}.hero{min-height:calc(100vh - 4.75rem);min-height:calc(100svh - 4.75rem);padding-left:0!important;padding-right:0!important}.hero-copy{max-width:min(58vw,66rem)}
+.hero-title{font-size:clamp(2.6rem,4.6vw,6.4rem)}.hero-subtitle{max-width:min(46vw,48rem);font-size:clamp(1rem,1.05vw,1.3rem)}}

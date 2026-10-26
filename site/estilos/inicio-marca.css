@@ -1,0 +1,8 @@
+/* v34 — Cores da marca na página inicial (paleta do logótipo).
+   v35: ação principal = azul #236186 em toda a plataforma; verde #237E5F = confirmações e rótulos.
+   Os tons claros só servem para texto sobre fundo escuro, onde o verde e o azul do logótipo ficam pouco legíveis.
+   Carrega por último. */
+:root{--marca-azul:#236186;--marca-azul-esc:#1a4d6c;--marca-azul-claro:#7fb6d8;--marca-verde:#237E5F;--marca-verde-esc:#1b664c;--marca-verde-claro:#6fcca5}.hero .section-eyebrow,.hero .eyebrow,.hero-kicker{color:var(--marca-verde-claro)!important}
+.hero .badge{border-color:rgba(111,204,165,.35)!important;color:#e6f3ee!important}.hero .logistics-animation{display:none!important}
+#como-funciona .section-kicker,#como-funciona .section-eyebrow,#servicos .section-kicker,#servicos .section-eyebrow,#rastrear .section-kicker,#rastrear .section-eyebrow,#contacto .section-kicker,#contacto .section-eyebrow{display:none!important}
+#como-funciona .process-icon{display:none!important}#servicos .section-header>p{display:none!important}.footer-online{display:none!important}.contact-form-head span{display:none!important}

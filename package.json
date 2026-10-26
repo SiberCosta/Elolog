@@ -1,0 +1,12 @@
+{
+  "name": "elolog",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "compactar": "node ferramentas/compactar.cjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "acorn": "^8.12.0"
+  }
+}
