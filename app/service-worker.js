@@ -1,0 +1,21 @@
+const CACHE="elolog-operator-pwa-v110";const APP="area-cliente.html";const OFFLINE="offline.html";const SHELL=[APP,OFFLINE,"manifest.webmanifest","../partilhado/estilos/layout.css","../partilhado/scripts/dados-demo.js","comum/base-2.css","comum/base-3.css","comum/base-4.css","comum/pagina-1.js","comum/pagina-2.js","comum/pagina-3.js","comum/pagina-4.js","comum/pagina-5.js","../partilhado/fontes/WorkSans-Regular.woff","../partilhado/fontes/WorkSans-Bold.woff",
+"../partilhado/estilos/profissional.css","../partilhado/estilos/acabamento.css","../partilhado/estilos/identidade.css","cliente/painel.css","comum/paineis.css","comum/avisos.js","comum/base-1.css",
+"administracao/painel.css","cliente/fluxo.css","prestador/fila.css","comum/painel.css","prestador/estilos.css",
+"comum/estado.js","comum/login.js","prestador/encomendas.js",
+"administracao/paginas.js","prestador/propostas.js","prestador/manifestos.js","prestador/simulacao-direta.js","comum/permissoes.js","cliente/apoio-acompanhamento.js",
+"prestador/equipa-terreno-1.js","prestador/equipa-terreno-2.js","comum/acesso-por-funcao.js","prestador/interface.js","prestador/mapa-maritimo.js","prestador/menu-lateral.js","comum/producao-1.js","comum/producao-2.js","comum/producao-3.js","prestador/tarifas-servidor.js","comum/producao.css","comum/notificacoes.js","cliente/simulacao.js",
+"comum/navegacao.js","comum/operacoes-1.js","comum/operacoes-2.js","comum/operacoes-3.js","cliente/documentos-pagamentos.js","comum/registo.js",
+"comum/registo.css","comum/painel-vazio.js","administracao/auditoria.js","administracao/centro.css","administracao/centro.js",
+"comum/painel-transicao.js","cliente/simulacao.css","cliente/servidor.js","prestador/servidor.js","administracao/servidor.js","comum/painel-motor.js","administracao/painel.js","administracao/simulacoes.js","comum/simulacao-site.js","administracao/equipa.js","administracao/pedido-contacto.js",
+"cliente/menu.js","prestador/fila.js","cliente/painel.js","prestador/painel.js","comum/servidor-config.js","comum/servidor-adaptador.js","comum/operacional.js",
+"comum/plataforma.js","prestador/financeiro.js","prestador/calendario-maritimo.js","prestador/automacao.js","comum/pwa.js","../partilhado/imagens/icon-192.png","../partilhado/imagens/icon-512.png","../partilhado/imagens/icon-maskable-512.png",
+"../partilhado/estilos/sistema.css","../partilhado/estilos/icones.css","../partilhado/estilos/assistente.css","../partilhado/estilos/efeitos.css","../partilhado/estilos/unificado.css","../partilhado/estilos/botoes.css","../partilhado/scripts/idioma-en.js",
+"../partilhado/scripts/idioma.js",
+"../partilhado/scripts/efeitos.js","../partilhado/estilos/botoes-base.css","../partilhado/scripts/assistente.js","../partilhado/scripts/assistente-fluxos.js","../partilhado/scripts/componentes.js","../partilhado/imagens/elolog-logo-nav.png"];self.addEventListener("install",
+event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));self.addEventListener("activate",
+event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));self.addEventListener("fetch",event=>{if(event.request.method!=="GET")return;
+const url=new URL(event.request.url);if(url.pathname.startsWith("/api/"))return;if(url.pathname.endsWith("/servidor/config.js")){event.respondWith(fetch(event.request).then(response=>{if(response.ok){const copy=response.clone();
+caches.open(CACHE).then(cache=>cache.put(event.request,copy))}return response}).catch(()=>caches.match(event.request)));return}if(event.request.mode==="navigate"){event.respondWith((async()=>{const cachedApp=await caches.match(APP,{ignoreSearch:true});try{
+const response=await fetch(event.request);if(!response.ok)throw new Error("Falha ao carregar a aplicação");const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(APP,copy));return response}catch(error){
+return cachedApp||await caches.match(OFFLINE)}})());return}event.respondWith(fetch(event.request).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy))}return response}
+).catch(()=>caches.match(event.request,{ignoreSearch:true})))});

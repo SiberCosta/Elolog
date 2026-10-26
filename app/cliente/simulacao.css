@@ -1,0 +1,57 @@
+/* Simulação / nova encomenda: secções com filete, campos de 44px, resumo em folha fixa. Carrega no fim. */
+.client-sim-card{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}.client-sim-card>.card-title h3{font-size:32px;letter-spacing:-.01em;color:#0E2433}.client-sim-intro{color:#4b6070;font-size:15px;max-width:46rem}
+.client-sim-card .client-sim-section,.client-sim-section{background:none!important;border:0!important;border-top:2px solid #0E2433!important;border-radius:0!important;box-shadow:none!important;padding:16px 0 4px!important}
+.client-sim-section .section-kicker{display:none}.client-sim-section>h3,.client-sim-section>h4{display:flex;align-items:center;gap:8px;margin:0 0 14px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0E2433}
+.client-sim-section .ic{color:#237E5F}.client-sim-section .destinatario-help{font-size:14px;color:#4b6070;margin:-6px 0 14px}.client-sim-section label,.client-sim-section .form-group>label{font-size:13px;font-weight:700;color:#0E2433}
+.client-sim-section input,.client-sim-section select,.client-sim-section textarea{min-height:44px;border:1px solid #9fb2c0!important;border-radius:4px!important;background:#fff;font-size:15px;color:#0E2433;box-shadow:none}
+.client-sim-section input:focus,.client-sim-section select:focus,.client-sim-section textarea:focus{outline:3px solid rgba(35,97,134,.3);border-color:#236186!important}.client-sim-results{background:#fff!important;border:1px solid #cfdbe4!important;
+border-top:3px solid #0E2433!important;border-radius:0 0 4px 4px!important;box-shadow:none!important;padding:18px!important}.client-sim-results .sim-result-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.client-sim-results .sim-result-header h4{font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin:0}.client-sim-results .sim-result-header span{font-size:13px;color:#237E5F;font-weight:700;background:none;padding:0}.sim-result-grid{display:grid;
+grid-template-columns:1fr 1fr;gap:0 18px}.sim-result-grid>div{background:none!important;border:0!important;border-bottom:1px solid #e3ebf1!important;border-radius:0!important;padding:10px 0!important}.sim-result-grid small{font-size:13px;letter-spacing:0;
+text-transform:none;color:#566a78}.sim-result-grid strong{display:block;font-size:22px;color:#0E2433;letter-spacing:-.01em}.client-sim-results .btn-primary,.client-sim-card .btn-primary{border-radius:4px;min-height:46px}
+.client-sim-results .btn-secondary,.client-sim-card .btn-secondary{border-radius:4px}.provider-more-menu{border-radius:4px!important;border:1px solid #9fb2c0!important;box-shadow:0 18px 40px rgba(14,36,51,.22)!important;padding:8px!important;
+gap:0 8px!important}.provider-more-menu>button{border-radius:4px!important;padding:11px 12px!important;border:0!important;background:none!important;gap:12px}.provider-more-menu>button:hover{background:#F2F6F9!important}
+.provider-more-menu>button>span{display:grid;place-items:center;width:34px!important;height:34px!important;border-radius:4px!important;background:#eaf1f6!important;color:#236186!important;font-size:0}.provider-more-menu>button>span .ic{width:18px;height:18px}
+.provider-more-menu strong{font-size:14px;color:#0E2433}.provider-more-menu small{font-size:13px;color:#566a78}.client-sim-card .client-sim-section{border:0!important;border-top:2px solid #0E2433!important;border-radius:0!important;margin-top:18px}
+.client-sim-card>.card-title,.client-sim-card .card-title{background:none!important;border:0!important;padding:0 0 6px!important}.provider-page.active{padding-top:30px}
+.client-sim-card .sim-goods-list-section,.client-sim-card .sim-goods-table-wrap{border-radius:4px!important;box-shadow:none!important}.page>.card.client-sim-card,.provider-page>.card.client-sim-card,.page .card.client-sim-card{background:transparent!important;
+border:0!important;box-shadow:none!important}
+/* v60 — Simulação da área de cliente com o mesmo desenho do simulador do site: cartões por etapa com ícone, resumo lateral em linhas. */
+#clientSimulation#clientSimulation .client-sim-card{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+#clientSimulation#clientSimulation .client-sim-card>.card-title{grid-column:1;margin:0!important;padding:0!important;background:none!important;border:0!important}
+#clientSimulation#clientSimulation .client-sim-intro{grid-column:1;margin:4px 0 16px!important;padding:0!important;background:none!important;border:0!important}
+#clientSimulation#clientSimulation .client-sim-card>.card-title h3{font-size:20px!important;margin:0!important}
+#clientSimulation#clientSimulation .client-sim-section{background:#fff!important;border:1px solid #dfe8ee!important;border-top:1px solid #dfe8ee!important;border-radius:14px!important;padding:18px 20px 20px!important;box-shadow:0 8px 22px rgba(14,36,51,.05)!important;margin:0!important}
+#clientSimulation#clientSimulation .client-sim-section>h4,#clientSimulation#clientSimulation .sim-section-head>h4,#clientSimulation#clientSimulation #destinatario-titulo{display:flex!important;align-items:center;gap:12px;font-size:15px!important;font-weight:700!important;color:#0e2433!important;margin:0 0 14px!important;padding:0 0 14px!important;border-bottom:1px solid #e6edf2!important;text-transform:none!important;letter-spacing:0!important}
+#clientSimulation#clientSimulation :is(.client-sim-section>h4,.sim-section-head>h4,#destinatario-titulo)>.ic{color:#236186!important;opacity:1!important;width:20px;height:20px}
+#clientSimulation#clientSimulation .sim-recipient-section>.section-kicker,#clientSimulation#clientSimulation .destinatario-help{display:none!important}
+#clientSimulation#clientSimulation .client-cargo-information,#clientSimulation#clientSimulation .client-volume-head+*,#clientSimulation#clientSimulation .client-cargo-observations{background:#f7fafc;border:1px solid #e3ebf1!important;border-radius:12px!important;padding:14px!important;margin:10px 0!important}
+#clientSimulation#clientSimulation .client-volume-head{margin-top:14px!important;padding:0!important;border:0!important}
+/* Resumo lateral como no site: linhas rótulo → valor. */
+#clientSimulation#clientSimulation .client-sim-results{background:#fff!important;border:1px solid #dfe8ee!important;border-top:1px solid #dfe8ee!important;border-radius:14px!important;padding:18px!important;box-shadow:0 14px 32px rgba(14,36,51,.08)!important}
+#clientSimulation#clientSimulation .sim-result-grid{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+#clientSimulation#clientSimulation .sim-result-grid>div:not([hidden]){display:flex!important;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px!important;min-height:0!important;height:auto!important;border:1px solid #e3ebf1!important;border-radius:10px;background:#fbfdfe;margin:0!important}
+#clientSimulation#clientSimulation .sim-result-grid>div small{margin:0!important;font-size:12px!important;color:#607486}
+#clientSimulation#clientSimulation .sim-result-grid>div strong{font-size:15px!important;text-align:right;margin:0!important}
+#clientSimulation#clientSimulation .sim-result-grid>.sim-total{background:#eef6f2;border-color:#cfe6da!important}
+#clientSimulation#clientSimulation .sim-result-grid>.sim-total strong{font-size:16px!important;color:#1d6b4a!important}
+/* v60 — A simulação da área de cliente segue o desenho do simulador do site: cada bloco é um cartão branco
+   (borda suave, cantos 16px), título com ícone em quadrado, resumo lateral com linhas «rótulo · valor». */
+#clientSimulation .client-sim-card{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+#clientSimulation .client-sim-section{background:#fff!important;border:1px solid #d9e2e8!important;border-radius:16px!important;box-shadow:0 10px 25px rgba(17,39,54,.045)!important;padding:18px!important;margin:0!important;border-top-width:1px!important}
+#clientSimulation .client-sim-section>h4,#clientSimulation .client-sim-section>.sim-section-head h4,#clientSimulation .destinatario-envio>h3{display:flex;align-items:center;gap:10px;font-size:14px!important;color:#0e2433;margin:0 0 14px!important;padding:0 0 12px!important;border-bottom:1px solid #e6ebef!important}
+#clientSimulation .client-sim-section h4>svg,#clientSimulation .client-sim-section h4>.ic,#clientSimulation .client-sim-section h4>i{box-sizing:content-box;width:16px;height:16px;padding:8px;border-radius:10px;background:#e9f1f7;border:1px solid #cbdce8;color:#236186;flex:none}
+#clientSimulation .destinatario-envio>.section-kicker{display:none!important}
+#clientSimulation .client-cargo-information,#clientSimulation .sim-volumes-section .client-volume-head~.sim-volumes,#clientSimulation .client-cargo-observations{border:1px solid #e3e9ed!important;border-radius:12px!important;background:#f8fafb!important;padding:12px!important}
+#clientSimulation .client-sim-results{background:#fff!important;border:1px solid #d9e2e8!important;border-top:1px solid #d9e2e8!important;border-radius:16px!important;box-shadow:0 10px 25px rgba(17,39,54,.06)!important;padding:18px!important}
+#clientSimulation .client-sim-results .sim-result-header{padding-bottom:12px;border-bottom:1px solid #e6ebef}
+#clientSimulation .client-sim-results .sim-result-header h4{text-transform:none!important;letter-spacing:0!important;font-size:15px!important;color:#0e2433}
+#clientSimulation .client-sim-results .sim-result-header span{padding:4px 10px;border-radius:999px;background:#eef4f8;color:#236186!important;font-weight:700}
+#clientSimulation .sim-result-grid{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin-top:12px}
+#clientSimulation .sim-result-grid>div{display:flex!important;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px!important;border:1px solid #e3e9ed!important;border-radius:10px;background:#f8fafb;margin:0!important}
+#clientSimulation .sim-result-grid>div[hidden],#clientSimulation .sim-result-grid>div.sim-distance-hidden{display:none!important}
+#clientSimulation .sim-result-grid small{font-size:12px!important;color:#607486!important;margin:0!important}
+#clientSimulation .sim-result-grid strong{font-size:14px!important;text-align:right;margin:0!important}
+#clientSimulation .sim-result-grid>.sim-total{background:#0e2433;border-color:#0e2433!important}
+#clientSimulation .sim-result-grid>.sim-total :is(small,strong){color:#fff!important}
+#clientSimulation .sim-result-grid>.sim-total strong{font-size:16px!important}

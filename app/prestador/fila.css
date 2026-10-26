@@ -1,0 +1,9 @@
+/* Prestador: fila de trabalho e quadro de encomendas (paleta do tema). */
+.pf-cartao{background:#fff;border:1px solid #d8e2e9;border-radius:16px;padding:20px 24px;margin:0 0 16px}.pf-cartao header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}.pf-cartao h3{margin:0;font-size:18px;
+color:#0e2433}.pf-cartao small{color:#566f7e;font-size:13px}.pf-tabela{overflow-x:auto}.pf-tabela table{width:100%;border-collapse:collapse}.pf-tabela th{text-align:left;padding:10px 14px;font-size:13px;font-weight:700;color:#566f7e;
+border-bottom:1px solid #d8e2e9;white-space:nowrap}.pf-tabela td{padding:12px 14px;border-bottom:1px solid #eef2f5;font-size:15px;color:#34505f;vertical-align:middle}.pf-tabela td b{color:#0e2433}.pf-pill{display:inline-block;padding:3px 10px;
+border-radius:999px;background:#e4eef5;color:#17435f;font-size:13px;font-weight:700;white-space:nowrap}.pf-acao{min-height:40px;padding:0 16px;border:1px solid #236186;border-radius:10px;background:#fff;color:#236186;font-weight:700;font-size:14px;
+font-family:inherit;cursor:pointer}.pf-acao:hover{background:#e4eef5}.pf-acao:focus-visible,.pf-etapa:focus-visible{outline:3px solid #7fb0cf;outline-offset:2px}.pf-vazio{margin:8px 0 0;color:#566f7e}.pf-etapas{display:grid;
+grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:0 0 16px}.pf-etapa{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:62px;padding:10px 14px;border:1px solid #d8e2e9;border-radius:12px;background:#fff;
+color:#34505f;font-weight:600;font-size:13px;font-family:inherit;cursor:pointer;text-align:left}.pf-etapa b{font-size:24px;line-height:1.1;color:#0e2433}.pf-etapa.vazia b{color:#566f7e}.pf-etapa.ativa{background:#236186;border-color:#236186;color:#e4eef5}
+.pf-etapa.ativa b{color:#fff}

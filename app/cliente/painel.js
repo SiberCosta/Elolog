@@ -1,0 +1,48 @@
+/* Dashboard do cliente: próximo passo (com ilustração de rotas), indicadores com ícones de cor, encomendas ativas com
+   percurso por etapas, ações rápidas em mosaico, pagamentos, pesquisa e histórico. Só mostra dados reais da conta. */
+(function(){const FINAIS=["Disponível","Levantado","Concluída","Concluído","Entregue","Cancelada","Cancelado"],$=id=>document.getElementById(id);const quando=o=>String(o.created||o.createdAt||o.date||"");
+const minhas=()=>operations.filter(o=>!o.client||o.client===currentUser.name||o.client==="João Silva").sort((a,b)=>quando(b).localeCompare(quando(a)));const ativas=()=>minhas().filter(o=>!FINAIS.includes(String(o.status||"Recebido")));
+const meusPag=()=>payments.filter(p=>minhas().some(o=>o.id===p.operationId));const porPagar=()=>meusPag().filter(p=>p.status!=="Pago");const eur=v=>Number(v||0).toLocaleString("pt-PT",{style:"currency",currency:"EUR"});
+const rota=o=>`${escapeHtml(o.origin||"—")} → ${escapeHtml(o.destination||"—")}`;const SVG=(d,
+c="")=>`<svg class="${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;const IC={
+box:'<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',truck:'<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
+check:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9.5"/>',card:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18M7 15h4"/>',plus:'<path d="M12 5v14M5 12h14"/>',
+doc:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h4"/>',apoio:'<path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/>',
+navio:'<path d="M3 15h18l-2.5 4.5h-13z"/><path d="M6 15V9h12v6M10 9V5h4v4"/>',aviao:'<path d="M10.5 21 12 15l7.5 3V16l-7.5-6V4.5a1.5 1.5 0 0 0-3 0V10L1.5 16v2L9 15l1.5 6z"/>'};
+const MAPA=`<svg class="cn-mapa" viewBox="0 0 460 220" aria-hidden="true"><defs><pattern id="cnp" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3"/></pattern><radialGradient id="cng" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#3FAE84" stop-opacity=".45"/><stop offset="1" stop-color="#3FAE84" stop-opacity="0"/></radialGradient></defs>
+<rect class="cn-pontos" width="460" height="220" fill="url(#cnp)"/><ellipse cx="300" cy="120" rx="150" ry="80" fill="url(#cng)"/>
+<path id="cnr1" class="cn-rota" d="M70 70 C 170 10, 280 20, 370 90"/><path id="cnr2" class="cn-rota" d="M70 70 C 140 150, 230 180, 300 160"/><path id="cnr3" class="cn-rota" d="M300 160 C 340 120, 380 110, 420 60"/>
+${[[70,
+70],[370,90],[300,160],[420,60]].map(([x,y],i)=>`<circle class="cn-no" cx="${x}" cy="${y}" r="5"/><circle class="cn-onda" cx="${x}" cy="${y}" r="5" style="animation-delay:${i*.7}s"/>`).join("")}
+${["cnr1","cnr2","cnr3"].map((r,
+i)=>`<circle class="cn-carga" r="3.5"><animateMotion dur="${5+i}s" begin="${i*.8}s" repeatCount="indefinite"><mpath href="#${r}"/></animateMotion></circle>`).join("")}</svg>`;function proximo(){const o=ativas()[0],
+paga=o&&(/pagamento/i.test(o.status||"")||porPagar().some(p2=>p2.operationId===o.id));const p=!o?{t:"Pronto para o seu próximo envio?",d:"Calcule o preço e compare os prestadores em poucos passos.",cta:"Nova simulação",ir:"showPage('clientSimulation')"}:{
+t:paga?`Falta pagar a encomenda ${o.id}`:`Encomenda ${o.id}: ${o.status||"Recebido"}`,d:`${o.origin||"—"} → ${o.destination||"—"}${o.date?" · previsão "+o.date:""}`,cta:paga?"Pagar":"Ver encomenda",
+ir:paga?"showPage('payments')":"openClientOrderSection('status')"};
+return`<section id="clientNextStep" class="client-next-step cn-v2"><div class="cn-texto"><span>Próximo passo</span><h2>${escapeHtml(p.t)}</h2><p>${escapeHtml(p.d)}</p><button type="button" class="btn-primary" onclick="${p.ir}">${p.cta}</button></div>${MAPA}</section>`}
+function serie(){const h=new Date,m=[];for(let i=5;i>=0;i--){const d=new Date(h.getFullYear(),h.getMonth()-i,1);m.push(d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"))}const c=m.map(k=>minhas().filter(o=>quando(o).slice(0,7)===k).length),
+max=Math.max(1,...c);return`<span class="ck-barras" title="Encomendas nos últimos 6 meses">${c.map(v=>`<i style="height:${Math.max(8,Math.round(v/max*100))}%"></i>`).join("")}</span>`}const kpi=(cor,i,t,v,s,ir,
+extra="")=>`<button type="button" class="pw-kpi ck ck-${cor}" onclick="${ir}"><span class="ck-ic">${SVG(IC[i])}</span><span class="ck-txt"><small>${t}</small><strong>${v}</strong><em>${s}</em></span>${extra}</button>`;function kpis(){const m=minhas(),
+tr=m.filter(o=>/trânsito|transito/i.test(o.status||"")).length,fim=m.filter(o=>FINAIS.includes(String(o.status||""))).length,pp=porPagar().length,tot=meusPag().length,pago=tot?Math.round((tot-pp)/tot*100):100;return`<div class="pw-kpis ck-grelha">${kpi("azul",
+"box","Encomendas ativas",ativas().length,"Em curso","openClientOrderSection('status')",serie())}${kpi("ambar","truck","Em trânsito",tr,"A caminho","openClientOrderSection('status')",tr?`<b class="ck-selo">+${tr}</b>`:"")}${kpi("verde","check","Concluídas",
+fim,"Entregues","openClientOrderSection('history')")}${kpi("vermelho","card","Por pagar",pp,"Pagamentos pendentes","showPage('payments')",`<span class="ck-progresso" title="${pago}% pago"><i style="width:${pago}%"></i></span>`)}</div>`}const ETAPAS=["Recolha",
+"Armazém","Trânsito","Destino"];function linha(o){const pct=clientDashboardProgress(o.status),aereo=/a[ée]re|air/i.test(String(o.mode||o.transport||o.type||"")),n=Math.round(pct/25);
+return`<div class="ca-linha"><div class="ca-id"><span class="ca-modo">${SVG(aereo?IC.aviao:IC.navio)}</span><div><b>${escapeHtml(o.id||"—")}</b><small>${rota(o)}</small></div></div>
+<ol class="ca-etapas" aria-label="Progresso ${pct}%">${ETAPAS.map((e,
+i)=>`<li class="${i<n?"feito":""}${i===n?" atual":""}"><i></i><span>${e}</span></li>`).join("")}</ol>
+<div class="ca-estado"><span class="pf-pill">${escapeHtml(o.status||"Recebido")}</span><small>${escapeHtml(o.date?"Previsão "+o.date:"")}</small></div></div>`}
+const vazio=`<div class="ca-vazio"><span>${SVG(IC.box)}</span><div><b>Sem encomendas ativas</b><p>Quando aceitar uma proposta, acompanha aqui cada etapa até ao destino.</p></div><button type="button" class="btn-secondary" onclick="showPage('clientSimulation')">Fazer uma simulação</button></div>`;
+const tile=(i,t,s,ir)=>`<button type="button" class="cr-tile" onclick="${ir}"><span class="cr-ic">${SVG(IC[i])}</span><span class="cr-txt"><b>${t}</b><small>${s}</small></span>${SVG('<path d="m9 6 6 6-6 6"/>',"cr-seta")}</button>`;
+const tabela=l=>l.length?`<div class="pf-tabela"><table><thead><tr><th scope="col">Encomenda</th><th scope="col">Rota</th><th scope="col">Previsão</th><th scope="col">Estado</th></tr></thead><tbody>${l.map(o=>`<tr><td><b>${escapeHtml(o.id||"—")}</b></td><td>${rota(o)}</td><td>${escapeHtml(o.date||o.created||"—")}</td><td><span class="pf-pill">${escapeHtml(o.status||"Recebido")}</span></td></tr>`).join("")}</tbody></table></div>`:'<p class="pf-vazio">Ainda não existem encomendas registadas.</p>';
+const widgets=()=>[{id:"proximo",titulo:"Próximo passo",span:12,cru:true,render:proximo},{id:"kpis",titulo:"Indicadores",span:12,cru:true,render:kpis},{id:"ativas",titulo:"Encomendas ativas",sub:"o percurso de cada uma",span:8,
+render:()=>ativas().length?`<div class="ca-lista">${ativas().slice(0,4).map(linha).join("")}</div>`:vazio},{id:"atalhos",titulo:"Ações rápidas",span:4,render:()=>`<div class="cr-lista">${tile("plus","Nova simulação","Calcular um novo envio",
+"showPage('clientSimulation')")}${tile("card","Pagamentos","Ver pagamentos pendentes","showPage('payments')")}${tile("doc","Documentos","Faturas e comprovativos","showPage('documents')")}${tile("apoio","Apoio ao cliente","Falar com a equipa",
+"showPage('clientSupport')")}</div>`},...porPagar().length?[{id:"pagamentos",titulo:"Pagamentos pendentes",span:12,render:()=>porPagar().slice(0,
+5).map(p=>`<div class="pw-linha"><div><b>${escapeHtml(p.operationId)}</b><small>${eur(p.amount||0)}</small></div><button type="button" class="pf-acao" onclick="showPage('payments')">Pagar</button></div>`).join("")}]:[],{id:"historico",
+titulo:"Histórico recente",sub:"pesquise pelo código",span:12,
+render:()=>`<div class="pw-pesquisa ch-pesquisa"><label class="pw-oculto" for="clientHomeTrackingSearch">Código da encomenda</label><input id="clientHomeTrackingSearch" type="search" placeholder="Pesquisar encomenda, ex.: TR-2026-000184" onkeydown="if(event.key==='Enter')searchClientHomeOrder()"><button type="button" class="btn-secondary" onclick="searchClientHomeOrder()">Pesquisar</button></div><div id="clientHomeSearchResult"></div>${tabela(minhas().slice(0,
+7))}`}];function desenhar(){const a=$("cdash");if(!a||currentUser?.role!=="cliente")return;
+a.innerHTML=`<section class="painel-admin pa-centro"><header class="pa-cabecalho"><div><span class="section-eyebrow">O seu painel</span><h3>Olá, ${escapeHtml(currentUser.name||"")}</h3><p>${new Date().toLocaleDateString("pt-PT",{weekday:"long",day:"numeric",
+month:"long",year:"numeric"})}</p></div><div class="pa-acoes">${Painel.botao("cliente")}</div></header>${Painel.corpo("cliente")}</section>`}const casa=$("clientDashboardHome");if(casa){casa.classList.add("pnovo");const d=document.createElement("div");
+d.id="cdash";casa.prepend(d)}Painel.registar("cliente",{alvo:()=>$("cdash"),widgets,padrao:()=>widgets().map(w=>w.id),desenhar});const original=renderClientDashboard;renderClientDashboard=function(){const r=original.apply(this,arguments);desenhar();return r};
+Painel.vigiar("cliente",3e4)})();

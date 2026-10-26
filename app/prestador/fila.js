@@ -1,0 +1,21 @@
+/* Prestador: «Fila de trabalho» no dashboard (o que precisa de ação) e quadro de encomendas por etapa. Reutiliza os dados e as regras do dashboard. */
+(function(){const norm=v=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();const ETAPAS=[["aprova","Aprovação"],["agend","Agendamento"],["recol","Recolha"],["armaz","Armazém"],["exped","Expedição"],["transito","Em trânsito"],
+["destino","No destino"],["dispon","Disponível"],["levant","Levantada"],["entreg","Entregue"]];const etapa=o=>{const s=norm(o.status||o.stage),e=ETAPAS.find(([k])=>s.includes(k));return e?e[1]:"Outras"};const idade=d=>{
+const n=Math.floor((Date.now()-new Date(d))/864e5);return isNaN(n)?"":n<=0?"hoje":`há ${n} ${n===1?"dia":"dias"}`};
+const abrir=id=>`showProviderPage('providerOrder');setTimeout(()=>{const i=operations.findIndex(x=>x.id==='${id}');if(i>=0)openProviderOrderDetail(i)},80)`;const rota=o=>`${o.origin||o.origem||"—"} → ${o.destination||o.destino||"—"}`;const linhas=(cab,
+corpo)=>`<div class="pf-tabela"><table><thead><tr>${cab.map(c=>`<th scope="col">${c}</th>`).join("")}</tr></thead><tbody>${corpo}</tbody></table></div>`;const botao=(t,ir)=>`<button type="button" class="pf-acao" onclick="${ir}">${t}</button>`;
+function pendentes(){const ops=providerCompanyOperations(),q=[];providerDirectedSimulations({onlyNew:true}).forEach(s=>q.push({tipo:"Novo pedido",ref:s.registro||s.id||"—",rota:rota(s),cli:s.client||s.clientName||s.cliente||"—",
+data:s.createdAt||s.created||s.date,btn:botao("Responder","showProviderProposalTab('new')")}));ops.forEach(o=>{const e=etapa(o);if(e==="Aprovação"||e==="Recolha")q.push({tipo:e==="Recolha"?"Recolha":"Aprovação",ref:o.id,rota:rota(o),cli:o.client||"—",
+data:o.createdAt||o.created||o.date,btn:botao(e==="Recolha"?"Ver recolha":"Aprovar",e==="Recolha"?"showProviderPage('providerRecolha')":"showProviderPage('providerAprovacao')")})});
+payments.filter(p=>p.status!=="Pago"&&ops.some(o=>o.id===p.operationId)).forEach(p=>q.push({tipo:"Pagamento",ref:p.operationId,rota:"Por receber",cli:(ops.find(o=>o.id===p.operationId)||{}).client||"—",data:p.date||p.createdAt,btn:botao("Confirmar",
+"showProviderFinanceTab('receipts')")}));return q.sort((a,b)=>new Date(a.data||0)-new Date(b.data||0))}let filtro="Todas";function desenharQuadro(){const s=document.getElementById("providerBoard");if(!s)return;const ops=providerCompanyOperations(),cont={};
+ops.forEach(o=>{const e=etapa(o);cont[e]=(cont[e]||0)+1});const nomes=["Todas",...ETAPAS.map(e=>e[1]),...cont.Outras?["Outras"]:[]],n=nome=>nome==="Todas"?ops.length:cont[nome]||0;const lista=ops.filter(o=>filtro==="Todas"||etapa(o)===filtro);
+s.innerHTML=`<div class="card"><div class="card-title"><div><small class="section-eyebrow">Encomendas</small><h3>Todas as etapas num só quadro</h3></div></div>
+      <div class="pf-etapas" role="group" aria-label="Filtrar por etapa">${nomes.map(nome=>`<button type="button" class="pf-etapa${nome===filtro?" ativa":""}${n(nome)?"":" vazia"}" aria-pressed="${nome===filtro}" data-etapa="${nome}"><b>${n(nome)}</b>${nome}</button>`).join("")}</div>
+      ${lista.length?linhas(["Referência",
+"Rota","Cliente","Etapa","Previsão",""],
+lista.map(o=>`<tr><td><b>${escapeHtml(o.id||"—")}</b></td><td>${escapeHtml(rota(o))}</td><td>${escapeHtml(o.client||"—")}</td><td><span class="pf-pill">${etapa(o)}</span></td><td>${escapeHtml(o.date||"—")}</td><td>${botao("Abrir",
+abrir(escapeHtml(o.id||"")))}</td></tr>`).join("")):`<p class="pf-vazio">Sem encomendas ${filtro==="Todas"?"registadas":"nesta etapa"}.</p>`}</div>`;s.querySelectorAll(".pf-etapa").forEach(b=>b.onclick=()=>{filtro=b.dataset.etapa;desenharQuadro()})}
+window.EtapasPrestador={ETAPAS,etapa};window.FilaPrestador={pendentes,idade,abrir,botao,linhas,rota};window.abrirQuadro=nome=>{filtro=nome||"Todas";showProviderPage("providerBoard")};const ancora=document.getElementById("providerAprovacao");if(ancora){
+const s=document.createElement("section");s.id="providerBoard";s.className="page provider-page";ancora.after(s)}const pagina=showProviderPage;showProviderPage=function(p){if(p==="providerBoard"&&!requireProviderPermission("view_loads"))return;
+const r=pagina.apply(this,arguments);if(p==="providerBoard"){desenharQuadro();document.getElementById("pageTitle").textContent="Encomendas"}return r}})();

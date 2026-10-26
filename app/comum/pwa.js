@@ -1,0 +1,6 @@
+(function(){let installPrompt=null;const button=()=>document.getElementById("installPwaButton");function isStandalone(){return window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true}function updateButton(){
+const el=button();if(!el)return;el.hidden=isStandalone()||!installPrompt;el.classList.toggle("is-ready",!!installPrompt)}window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();installPrompt=event;updateButton()});
+window.addEventListener("appinstalled",()=>{installPrompt=null;updateButton();if(typeof showPlatformNotice==="function")showPlatformNotice("Aplicação Elolog instalada com sucesso.","success")});document.addEventListener("DOMContentLoaded",()=>{
+const el=button();if(el)el.addEventListener("click",async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;updateButton()});updateButton()});
+if("serviceWorker"in navigator&&location.protocol.startsWith("http"))window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js",{scope:"./"}).then(registration=>{registration.update();
+if(registration.waiting)registration.waiting.postMessage({type:"SKIP_WAITING"})}).catch(()=>{}))})();

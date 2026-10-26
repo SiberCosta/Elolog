@@ -1,0 +1,9 @@
+/* Administração: ativa o tema do «Centro de operações» (classe no body), logótipo no menu e pesquisa na barra superior. */
+(function(){function aplicar(){var admin=typeof currentUser!=="undefined"&&currentUser&&currentUser.role==="admin";document.body.classList.toggle("modo-admin",!!admin);var cli=typeof currentUser!=="undefined"&&currentUser&&currentUser.role==="cliente";
+var prov=typeof currentUser!=="undefined"&&currentUser&&currentUser.role==="prestador";document.body.classList.toggle("modo-lat",!!admin||!!cli||!!prov);var sb=document.getElementById("sidebar");if(sb&&!sb.querySelector(".ct-logo")){var a=document.createElement("a");a.className="ct-logo";a.href="../site/inicio.html";a.setAttribute("aria-label",
+"Elolog");a.innerHTML='<img src="../partilhado/imagens/elolog-logo-nav.png" alt="Elolog">';sb.insertBefore(a,sb.firstChild)}if(!admin)return;var tb=document.querySelector(".topbar");if(tb&&!tb.querySelector(".ct-pesquisa")){
+var f=document.createElement("form");f.className="ct-pesquisa";f.setAttribute("role","search");
+f.innerHTML='<label><i class="ic ic-search" aria-hidden="true"></i><input type="search" placeholder="Pesquisar encomenda, cliente, destino, referência…" aria-label="Pesquisar"></label><button type="submit" aria-label="Pesquisar"><i class="ic ic-search" aria-hidden="true"></i></button>';
+f.addEventListener("submit",function(e){e.preventDefault();var q=f.querySelector("input").value;showAdminPage("adminOperations");setTimeout(function(){var i=document.getElementById("adminOperationSearch");if(i){i.value=q;i.dispatchEvent(new Event("input",{
+bubbles:true}))}},60)});var m=tb.querySelector("#pageTitle");tb.insertBefore(f,m?m.nextSibling:tb.firstChild)}}var s=window.startApp;if(typeof s==="function")window.startApp=async function(){var r=await s.apply(this,arguments);aplicar();return r};
+document.addEventListener("DOMContentLoaded",aplicar)})();

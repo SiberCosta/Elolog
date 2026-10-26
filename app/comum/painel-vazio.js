@@ -1,0 +1,9 @@
+/* Estados vazios com percurso animado e faixa de etapa nas páginas de processo. Sem dependências. */
+(function(){var TXT={"Sem encomendas nesta etapa.":["Nada por tratar nesta etapa","As encomendas aparecem aqui quando chegarem a este ponto do percurso."],"Não existem pedidos de apoio.":["Sem pedidos em aberto",
+"Quando alguém pedir ajuda, o pedido fica aqui."],"Sem registos nesta área.":["Ainda sem registos","Os novos registos aparecem aqui assim que forem criados."]};
+var SVG='<svg viewBox="0 0 220 46" aria-hidden="true"><path class="vz-l" d="M10 30H210"/><circle class="vz-p" cx="10" cy="30" r="6"/><circle class="vz-p" cx="210" cy="30" r="6"/><rect class="vz-v" x="6" y="12" width="20" height="12" rx="2"/></svg>';
+function vazio(el){if(el.dataset.vz)return;var t=(el.textContent||"").trim(),m=TXT[t];if(!m||el.children.length)return;el.dataset.vz=1;el.className+=" vz";el.innerHTML=SVG+"<strong>"+m[0]+"</strong><span>"+m[1]+"</span>"}function trilho(){
+document.querySelectorAll(".provider-status-card").forEach(function(c){if(c.querySelector(".vz-trilho"))return;var s=c.querySelector("span"),n=s&&/(\d+)/.exec(s.textContent);if(!n)return;n=+n[1];
+var h='<div class="vz-trilho" aria-label="Etapa '+n+' de 11"><i></i>';for(var i=1;i<=11;i++)h+='<i class="'+(i<n?"feito":i===n?"atual feito":"")+'"></i>';c.insertAdjacentHTML("beforeend",h+"</div>")})}function varrer(r){
+(r||document).querySelectorAll(".provider-order-empty,.finance-empty,.empty-state").forEach(vazio)}document.addEventListener("DOMContentLoaded",function(){trilho();varrer();new MutationObserver(function(ms){ms.forEach(function(m){
+m.addedNodes.forEach(function(n){if(n.nodeType===1)varrer(n.matches&&n.matches(".provider-order-empty,.finance-empty")?n.parentNode:n)})})}).observe(document.body,{childList:true,subtree:true})})})();

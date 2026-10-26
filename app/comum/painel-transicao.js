@@ -1,0 +1,7 @@
+/* Transições entre páginas (API de View Transitions do navegador; sem ela, muda de imediato) e ícones de estado animados. */
+(function(){var calmo=matchMedia("(prefers-reduced-motion: reduce)").matches;["showPage","showProviderPage","showAdminPage"].forEach(function(n){var f=window[n];if(typeof f!=="function"||!document.startViewTransition||calmo)return;window[n]=function(){
+var a=arguments,t=this;if(window.__vt)return f.apply(t,a);window.__vt=1;try{var v=document.startViewTransition(function(){f.apply(t,a)});v.finished.finally(function(){window.__vt=0})}catch(e){window.__vt=0;f.apply(t,a)}}});
+var MAPA=[[/pago|conclu|entregue|levant|aprovad/i,"check","ok"],[/tr[âa]nsito|expedi/i,"truck","mov"],[/recolha|agend/i,"box","pul"],[/armaz/i,"warehouse","pul"],[/aprova|pendente|aguard|análise/i,"clock","pul"],[/atras|anula|recus|falha|vencid/i,"warning",
+"al"]];function icone(el){if(el.dataset.est)return;var t=el.textContent.trim();if(!t)return;el.dataset.est=1;for(var i=0;i<MAPA.length;i++)if(MAPA[i][0].test(t)){el.insertAdjacentHTML("afterbegin",
+'<i class="ic ic-'+MAPA[i][1]+" est-i est-"+MAPA[i][2]+'" aria-hidden="true"></i>');return}}function varrer(r){(r||document).querySelectorAll(".work-status,.status-badge,.pa-etapa-estado").forEach(icone)}document.addEventListener("DOMContentLoaded",function(){
+varrer();new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)varrer(n)})})}).observe(document.body,{childList:true,subtree:true})})})();
