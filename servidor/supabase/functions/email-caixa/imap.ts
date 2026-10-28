@@ -108,6 +108,12 @@ export class Imap {
       return o;
     });
   }
+  /** Número de mensagens por ler numa pasta (STATUS ... (UNSEEN)). */
+  async naoLidas(p = 'INBOX'): Promise<number> {
+    const x = (await this.comando(`STATUS ${aspas(p)} (UNSEEN)`)).find((l) => String(l[0]).toUpperCase() === 'STATUS');
+    const l = (x?.[2] ?? []) as No[], i = l.findIndex((v) => String(v).toUpperCase() === 'UNSEEN');
+    return i >= 0 ? Number(l[i + 1]) || 0 : 0;
+  }
   marcar(uid: number, flag: string, por: boolean) { return this.comando(`UID STORE ${uid} ${por ? '+' : '-'}FLAGS.SILENT (${flag})`); }
   async mover(uid: number, para: string) {
     try { await this.comando(`UID MOVE ${uid} ${aspas(para)}`); }

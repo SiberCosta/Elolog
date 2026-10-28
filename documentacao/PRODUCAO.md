@@ -44,11 +44,12 @@ O ELO responde: menu, estado da encomenda (só ao número de telemóvel associad
 ## Painel de email (v67)
 
 1. Supabase › SQL Editor › colar `servidor/supabase/migrations/00137_caixas_email.sql` › **Run** (uma vez).
-2. Entrar na administração (com o código do 2.º fator) › menu **Email** › **⚙** › preencher e **Testar e guardar**:
+2. Entrar na administração (com o código do 2.º fator) › menu **Email** › **⚙** › preencher e **Testar e guardar** (chega um código de confirmação a essa caixa; escreva-o e carregue em **Confirmar e guardar**):
    - Email `contacto@elolog.pt` · Servidor IMAP `imap.correio.pt` · Servidor SMTP `smtp.correio.pt` · Utilizador `contacto@elolog.pt` · a palavra-passe da caixa (a do webmail).
    - Se o teste disser que não liga ao servidor, confirme os nomes em www.pt › Email › configurar programa de email (IMAP SSL 993, SMTP SSL 465) e corrija.
 3. Repita para `denivaldo@elolog.pt` e `elolog@elolog.pt` se quiser (máx. 5 caixas por empresa). Os aliases (notificacoes@, privacidade@) chegam à caixa `contacto@`.
 4. Cada prestador liga as suas caixas da mesma forma (só o administrador da empresa).
+5. Para um funcionário usar uma caixa: **⚙ › Acessos › Dar acesso**. Para lhe passar só um email: abrir o email › **Encaminhar a funcionário**.
 
 Só aceita ligações seguras (IMAP 993 e SMTP 465). Contas Gmail/Outlook com 2 passos pedem uma «palavra-passe de aplicação». Limites: 40 envios por utilizador a cada 10 minutos; mensagens com mais de 12 MB abrem-se no webmail.
 

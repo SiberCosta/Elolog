@@ -26,7 +26,8 @@
       ["Movimentos e reconciliação","showProviderFinanceTab('history',this)","providerFinanceiro","manage_payments"],["Registar fatura certificada","elologFaturas.abrir(this)","","manage_payments"]]],
     ["doc","Documentos","file",[["Documentos","showProviderPage('providerDocumentos',this)","providerDocumentos","download_manifest"]]],
     ["rel","Relatórios","clipboard",[["Relatórios","showProviderPage('providerReports',this)","providerReports","view_loads"]]],
-    ["apoio","Apoio ao cliente","headset",[["Pedidos de apoio","showProviderPage('providerSupport',this)","providerSupport","view_clients"],["Reclamações","showProviderPage('providerComplaints',this)","providerComplaints","view_clients"],["Email","elologEmail.abrir(this)","","",1]]],
+    ["apoio","Apoio ao cliente","headset",[["Pedidos de apoio","showProviderPage('providerSupport',this)","providerSupport","view_clients"],["Reclamações","showProviderPage('providerComplaints',this)","providerComplaints","view_clients"],["Email","elologEmail.abrir(this)","",""]]],
+    ["chat","Chat da equipa","users",[["Chat da equipa","elologChat.abrir(this)","",""]]],
     ["func","Funcionários e acessos","shield",[["Funcionários e funções","showProviderPage('providerEmployees',this)","providerEmployees","manage_employees",1],["Segurança e histórico","showProviderPage('providerSecurity',this)","providerSecurity",""]]],
     ["emp","Empresa e configurações","settings",[["Dados da empresa","showProviderPage('providerSettings',this)","providerSettings","settings",1],["Subscrição","showProviderPage('providerSubscription',this)","providerSubscription","",1],
       ["Pagamentos online","elologPagamentos.config(this)","","settings",1],
@@ -39,7 +40,7 @@
     document.querySelectorAll("#providerMenuStructure .provider-menu-main").forEach(x=>x.setAttribute("aria-expanded",String(x===b&&abre)))};
   function construir(){const box=document.getElementById("providerMenuStructure");if(!box||typeof currentUser==="undefined"||currentUser?.role!=="prestador")return;
     let html="";const campo=(()=>{try{return providerFunction()==="field_operator"}catch(e){return false}})();
-    if(campo)html=CAMPO.map(([t,k,ic])=>`<button type="button" data-pagina="providerFieldTeam" onclick="showProviderFieldPage('${k}',this)"><span class="mi-l">${I(ic)}${t}</span></button>`).join("");
+    if(campo)html=CAMPO.map(([t,k,ic])=>`<button type="button" data-pagina="providerFieldTeam" onclick="showProviderFieldPage('${k}',this)"><span class="mi-l">${I(ic)}${t}</span></button>`).join("")+`<button type="button" onclick="elologChat.abrir(this)"><span class="mi-l">${I("users")}Chat da equipa</span></button>`;
     else html=AREAS.map(([id,nome,ic,its])=>{const ok=its.filter(x=>pode(x[3],x[4]));if(!ok.length)return"";
       if(ok.length===1)return`<button type="button" data-pagina="${ok[0][2]}" onclick="${ok[0][1]}"><span class="mi-l">${I(ic)}${ok[0][0]}</span></button>`;
       return`<div class="provider-menu-group"><button type="button" class="provider-menu-main" aria-expanded="false" onclick="elologGrupoPrestador('pm-${id}',this)"><span class="mi-l">${I(ic)}${nome}</span><span>⌄</span></button><div id="pm-${id}" class="provider-submenu">${ok.map(item).join("")}</div></div>`}).join("");

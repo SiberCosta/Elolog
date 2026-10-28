@@ -1,6 +1,6 @@
 # Elolog
 
-**Versão de 28/10/2026 (v69).** Se esta pasta tem este ficheiro, é a versão nova.
+**Versão de 28/10/2026 (v71).** Se esta pasta tem este ficheiro, é a versão nova.
 
 Plataforma de intermediação logística: clientes simulam e comparam propostas; transitárias gerem encomendas, equipa e cobranças; a administração Elolog valida e acompanha a rede.
 
@@ -50,6 +50,28 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Demonstração local**: acrescente `?demo=1` à morada (ex.: `app/area-cliente.html?demo=1`). Fica ativa nesse separador até o fechar (`?demo=0` desliga) e usa as contas de demonstração no navegador, sem tocar no servidor.
 - **Voltar ao modo só local**: esvazie `supabaseUrl` e `supabaseAnonKey` em `servidor-config.js`.
 - A biblioteca do Supabase é carregada do jsDelivr (versão fixa 2.45.4, `usarCdn: true`). Para não depender de outro site, coloque o ficheiro `supabase.js` em `app/comum/` e mude para `usarCdn: false`.
+
+## v70 (tudo a atualizar sozinho)
+
+- **Email:** com o painel aberto, a lista atualiza-se sozinha a cada 30 s e avisa «Novo email de …»; com o painel fechado, o menu «Email» mostra um contador vermelho de emails por ler (atualiza a cada 2 min). Ação nova `contar` na função `email-caixa`.
+- **Código de confirmação ao ligar uma caixa:** ao ligar uma caixa nova (ou mudar o endereço), a plataforma envia um código de 6 dígitos para essa caixa e só guarda depois de o escrever (válido 10 minutos, máx. 8 tentativas por 10 min).
+- **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
+- **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
+
+## v71 (chat sem hierarquia e grupos)
+
+- **Chat da equipa:** dentro da mesma organização todos falam com todos (sem hierarquia). A equipa Elolog continua separada de cada prestador: a administração da plataforma não vê nem contacta os funcionários dos prestadores, e empresas diferentes nunca se veem.
+- **Grupos:** «+ Novo grupo» (nome + colegas). Qualquer membro escreve, adiciona colegas («+ Pessoas») ou sai do grupo. As mensagens dos grupos contam no contador vermelho do menu.
+- Servidor: migração `00141_chat_grupos.sql` (já aplicada no projeto «Elolog»). Testes: `servidor/supabase/testes/08_chat_grupos.sql` (9/9) e `07_acessos_chat.sql` (26/26).
+
+## v70 (email por equipa, chat e tudo a atualizar sozinho)
+
+- **Email da equipa:** o administrador liga as caixas e, em **⚙ › Acessos**, escolhe que funcionários as podem usar (ler, responder, apagar). Só o administrador liga, altera ou remove caixas.
+- **Encaminhar a funcionário:** ao ler um email, «👤 Encaminhar a funcionário» escolhe o colega adequado (com nota). O colega recebe-o na pasta **Atribuídos** e um aviso no chat, e pode responder mesmo sem acesso ao resto da caixa; fica marcado «Respondido».
+- **Código de confirmação ao ligar uma caixa:** é enviado um código de 6 dígitos para essa caixa; só fica ligada depois de o escrever (válido 10 min).
+- **Chat da equipa** (menu «Chat da equipa», também para o terreno): conversas entre funcionários da mesma organização, segundo a hierarquia — a equipa Elolog só fala entre si e não vê o chat dos prestadores; no prestador, administrador e operadores falam com todos, cada função com a mesma função e armazém ↔ terreno; o financeiro não fala diretamente com terreno/armazém; empresas diferentes nunca. Contador de mensagens por ler no menu.
+- **Atualização automática:** email (lista a cada 30 s, contador no menu a cada 2 min, aviso «Novo email de …»), chat (4 s com a conversa aberta), encomendas do cliente vindas do servidor a cada 30 s com aviso quando o estado muda (`app/cliente/sincronizar.js`), e a aplicação recarrega sozinha quando há uma versão nova publicada.
+- Servidor: migrações `00138_acessos_email_chat.sql`, `00139_email_atribuicoes.sql` e `00140_chat_so_equipa.sql` (já aplicadas no projeto «Elolog»); função `email-caixa` atualizada (já publicada). Testes: `servidor/supabase/testes/07_acessos_chat.sql` (26/26).
 
 ## v69 (entrada direta e simulador)
 

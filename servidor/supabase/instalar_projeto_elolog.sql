@@ -2615,4 +2615,461 @@ grant execute on function public.servico_email_acesso(uuid), public.servico_emai
   public.servico_email_credenciais(uuid, uuid), public.servico_email_remover(uuid, uuid) to service_role;
 grant select, insert, update, delete on caixas_email to service_role;
 
+-- ===== 00138_acessos_email_chat.sql =====
+-- v70 — (1) Acessos às caixas de email dados pelo administrador a funcionários; (2) chat interno da equipa com hierarquia.
+
+-- ===== 1. Acessos às caixas de email =====
+create table if not exists caixas_email_acesso (
+  caixa_id      uuid not null references caixas_email(id) on delete cascade,
+  user_id       uuid not null references auth.users(id) on delete cascade,
+  concedido_por uuid references auth.users(id) on delete set null,
+  created_at    timestamptz not null default now(),
+  primary key (caixa_id, user_id)
+);
+alter table caixas_email_acesso enable row level security;
+revoke all on caixas_email_acesso from anon, authenticated;
+
+-- Pode usar (ler, responder) a caixa: o administrador do âmbito ou um funcionário ativo desse âmbito com acesso concedido.
+create or replace function private.email_usar(p_user uuid, p_caixa uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from caixas_email c where c.id = p_caixa and (private.email_pode(p_user, c.empresa_id)
+    or (exists (select 1 from caixas_email_acesso a where a.caixa_id = c.id and a.user_id = p_user)
+        and case when c.empresa_id is null then exists (select 1 from administradores_plataforma where user_id = p_user and ativo)
+                 else exists (select 1 from funcionarios where id = p_user and ativo and empresa_id = c.empresa_id) end)))
+$$;
+
+create or replace function public.servico_email_acesso(p_user uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object('plataforma', private.email_pode(p_user, null),
+    'empresa', (select empresa_id from funcionarios where id = p_user and ativo and papel = 'admin_empresa'),
+    'delegado', exists (select 1 from caixas_email_acesso a where a.user_id = p_user and private.email_usar(p_user, a.caixa_id)))
+$$;
+
+create or replace function public.servico_email_caixas(p_user uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select coalesce(jsonb_agg(jsonb_build_object('id', id, 'email', email, 'nome', nome, 'imap_host', imap_host, 'imap_porta', imap_porta,
+    'smtp_host', smtp_host, 'smtp_porta', smtp_porta, 'utilizador', utilizador, 'elolog', empresa_id is null, 'tem_senha', segredo_id is not null,
+    'gerir', private.email_pode(p_user, c.empresa_id)) order by empresa_id nulls first, email), '[]'::jsonb)
+  from caixas_email c where private.email_usar(p_user, c.id)
+$$;
+
+create or replace function public.servico_email_credenciais(p_user uuid, p_caixa uuid) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare r caixas_email; v_senha text;
+begin
+  select * into r from caixas_email where id = p_caixa;
+  if not found or not private.email_usar(p_user, p_caixa) then raise exception 'Caixa de email inexistente.'; end if;
+  select decrypted_secret into v_senha from vault.decrypted_secrets where id = r.segredo_id;
+  return jsonb_build_object('elolog', r.empresa_id is null, 'gerir', private.email_pode(p_user, r.empresa_id), 'email', r.email, 'nome', r.nome,
+    'imap_host', r.imap_host, 'imap_porta', r.imap_porta, 'smtp_host', r.smtp_host, 'smtp_porta', r.smtp_porta, 'utilizador', r.utilizador, 'senha', v_senha);
+end $$;
+
+-- Funcionários do âmbito da caixa e se já têm acesso (só para quem gere a caixa).
+create or replace function public.servico_email_acessos(p_user uuid, p_caixa uuid) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_emp uuid;
+begin
+  select empresa_id into v_emp from caixas_email where id = p_caixa;
+  if not found or not private.email_pode(p_user, v_emp) then raise exception 'Só o administrador pode dar acessos a esta caixa.'; end if;
+  return coalesce((select jsonb_agg(x order by x->>'nome') from (
+      select jsonb_build_object('user_id', a.user_id, 'nome', a.nome, 'email', a.email, 'papel', a.papel,
+        'acesso', exists (select 1 from caixas_email_acesso g where g.caixa_id = p_caixa and g.user_id = a.user_id)) x
+        from administradores_plataforma a where v_emp is null and a.ativo and a.user_id <> p_user
+      union all
+      select jsonb_build_object('user_id', f.id, 'nome', f.nome, 'email', f.email, 'papel', f.papel::text,
+        'acesso', exists (select 1 from caixas_email_acesso g where g.caixa_id = p_caixa and g.user_id = f.id))
+        from funcionarios f where v_emp is not null and f.empresa_id = v_emp and f.ativo and f.id <> p_user) t), '[]'::jsonb);
+end $$;
+
+create or replace function public.servico_email_conceder(p_user uuid, p_caixa uuid, p_alvo uuid, p_sim boolean) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_emp uuid;
+begin
+  select empresa_id into v_emp from caixas_email where id = p_caixa;
+  if not found or not private.email_pode(p_user, v_emp) then raise exception 'Só o administrador pode dar acessos a esta caixa.'; end if;
+  if p_sim then
+    if not (case when v_emp is null then exists (select 1 from administradores_plataforma where user_id = p_alvo and ativo)
+                 else exists (select 1 from funcionarios where id = p_alvo and ativo and empresa_id = v_emp) end) then
+      raise exception 'Esse funcionário não pertence a esta equipa.'; end if;
+    insert into caixas_email_acesso (caixa_id, user_id, concedido_por) values (p_caixa, p_alvo, p_user) on conflict do nothing;
+  else
+    delete from caixas_email_acesso where caixa_id = p_caixa and user_id = p_alvo;
+  end if;
+end $$;
+
+revoke all on function private.email_usar(uuid, uuid), public.servico_email_acessos(uuid, uuid), public.servico_email_conceder(uuid, uuid, uuid, boolean)
+  from public, anon, authenticated;
+grant execute on function public.servico_email_acessos(uuid, uuid), public.servico_email_conceder(uuid, uuid, uuid, boolean) to service_role;
+grant select, insert, update, delete on caixas_email_acesso to service_role;
+
+-- ===== 2. Chat interno da equipa =====
+create table if not exists chat_mensagens (
+  id         uuid primary key default gen_random_uuid(),
+  de         uuid not null references auth.users(id) on delete cascade,
+  para       uuid not null references auth.users(id) on delete cascade,
+  texto      text not null check (length(texto) between 1 and 2000),
+  lida_em    timestamptz,
+  created_at timestamptz not null default now()
+);
+create index if not exists chat_conversa on chat_mensagens (least(de, para), greatest(de, para), created_at desc);
+create index if not exists chat_por_ler on chat_mensagens (para) where lida_em is null;
+alter table chat_mensagens enable row level security;
+revoke all on chat_mensagens from anon, authenticated;
+
+-- Organização ('elolog' ou id da empresa), papel e nome de um funcionário ativo.
+create or replace function private.chat_perfil(p_user uuid, out org text, out papel text, out nome text)
+language sql stable security definer set search_path = public as $$
+  select * from (select 'elolog'::text, a.papel, a.nome from administradores_plataforma a where a.user_id = p_user and a.ativo
+    union all select f.empresa_id::text, f.papel::text, f.nome from funcionarios f where f.id = p_user and f.ativo) t limit 1
+$$;
+
+-- Hierarquia: na Elolog todos falam entre si; a equipa Elolog fala com o administrador de cada prestador;
+-- no prestador, o administrador e os operadores falam com todos, cada função fala com a mesma função,
+-- e armazém ↔ terreno (fluxo físico da carga). Financeiro não fala diretamente com terreno/armazém. Empresas diferentes nunca.
+create or replace function private.chat_pode(a uuid, b uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select a <> b and coalesce((select
+      (x.org = 'elolog' and y.org = 'elolog')
+      or (x.org = 'elolog' and y.papel = 'admin_empresa') or (y.org = 'elolog' and x.papel = 'admin_empresa')
+      or (x.org = y.org and x.org <> 'elolog' and (x.papel = y.papel or 'admin_empresa' in (x.papel, y.papel) or 'operador' in (x.papel, y.papel)
+          or (least(x.papel, y.papel) = 'armazem' and greatest(x.papel, y.papel) = 'operador_terreno')))
+    from private.chat_perfil(a) x, private.chat_perfil(b) y where x.org is not null and y.org is not null), false)
+$$;
+
+create or replace function public.chat_contactos()
+returns table (user_id uuid, nome text, papel text, organizacao text, por_ler int, ultima text, ultima_em timestamptz)
+language plpgsql stable security definer set search_path = public as $$
+declare eu uuid := auth.uid(); p record;
+begin
+  select * into p from private.chat_perfil(eu);
+  if p.org is null then return; end if;
+  return query
+  with cand as (
+    select a.user_id as id, a.nome, a.papel, 'Elolog'::text as org from administradores_plataforma a
+      where a.ativo and (p.org = 'elolog' or p.papel = 'admin_empresa')
+    union all
+    select f.id, f.nome, f.papel::text, coalesce(e.nome_comercial, e.nome) from funcionarios f join empresas e on e.id = f.empresa_id
+      where f.ativo and ((p.org <> 'elolog' and f.empresa_id::text = p.org) or (p.org = 'elolog' and f.papel = 'admin_empresa'))
+  )
+  select c.id, c.nome, c.papel, c.org,
+    (select count(*)::int from chat_mensagens m where m.de = c.id and m.para = eu and m.lida_em is null),
+    (select left(m.texto, 80) from chat_mensagens m where (m.de = c.id and m.para = eu) or (m.de = eu and m.para = c.id) order by m.created_at desc limit 1),
+    (select max(m.created_at) from chat_mensagens m where (m.de = c.id and m.para = eu) or (m.de = eu and m.para = c.id))
+  from cand c where private.chat_pode(eu, c.id)
+  order by 7 desc nulls last, 2 limit 300;
+end $$;
+
+-- Últimas 60 mensagens com um contacto (marca como lidas as recebidas).
+create or replace function public.chat_conversa(p_com uuid)
+returns setof chat_mensagens language plpgsql security definer set search_path = public as $$
+declare eu uuid := auth.uid();
+begin
+  if not private.chat_pode(eu, p_com) and not exists (select 1 from chat_mensagens where (de = eu and para = p_com) or (de = p_com and para = eu)) then
+    raise exception 'Sem permissão para falar com este funcionário.'; end if;
+  update chat_mensagens set lida_em = now() where de = p_com and para = eu and lida_em is null;
+  return query select * from (select * from chat_mensagens m where (m.de = eu and m.para = p_com) or (m.de = p_com and m.para = eu)
+    order by m.created_at desc limit 60) t order by t.created_at;
+end $$;
+
+create or replace function public.chat_enviar(p_para uuid, p_texto text)
+returns chat_mensagens language plpgsql security definer set search_path = public as $$
+declare eu uuid := auth.uid(); r chat_mensagens;
+begin
+  if not private.chat_pode(eu, p_para) then raise exception 'A hierarquia da equipa não permite esta conversa.'; end if;
+  if length(trim(coalesce(p_texto, ''))) = 0 then raise exception 'Escreva a mensagem.'; end if;
+  if (select count(*) from chat_mensagens where de = eu and created_at > now() - interval '1 minute') >= 30 then
+    raise exception 'Demasiadas mensagens seguidas. Aguarde um minuto.'; end if;
+  insert into chat_mensagens (de, para, texto) values (eu, p_para, left(trim(p_texto), 2000)) returning * into r;
+  return r;
+end $$;
+
+create or replace function public.chat_por_ler() returns int
+language sql stable security definer set search_path = public as $$
+  select count(*)::int from chat_mensagens where para = auth.uid() and lida_em is null
+$$;
+
+revoke all on function private.chat_perfil(uuid), private.chat_pode(uuid, uuid), public.chat_contactos(), public.chat_conversa(uuid),
+  public.chat_enviar(uuid, text), public.chat_por_ler() from public, anon;
+grant execute on function public.chat_contactos(), public.chat_conversa(uuid), public.chat_enviar(uuid, text), public.chat_por_ler() to authenticated;
+
+-- ===== 00139_email_atribuicoes.sql =====
+-- v70 — Encaminhar um email a um funcionário para responder (atribuição). Quem tem acesso à caixa escolhe o colega
+-- adequado; esse colega vê o email em «Atribuídos», pode lê-lo e responder-lhe, mesmo sem acesso ao resto da caixa.
+
+create table if not exists email_atribuicoes (
+  id            uuid primary key default gen_random_uuid(),
+  caixa_id      uuid not null references caixas_email(id) on delete cascade,
+  uid           bigint not null check (uid > 0),
+  de            text not null default '',
+  assunto       text not null default '',
+  atribuido_a   uuid not null references auth.users(id) on delete cascade,
+  atribuido_por uuid references auth.users(id) on delete set null,
+  nota          text check (length(nota) <= 500),
+  estado        text not null default 'aberto' check (estado in ('aberto', 'respondido')),
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
+  unique (caixa_id, uid, atribuido_a)
+);
+alter table email_atribuicoes enable row level security;
+revoke all on email_atribuicoes from anon, authenticated;
+
+-- Funcionário ativo do âmbito da caixa (Elolog ou a empresa da caixa).
+create or replace function private.email_da_equipa(p_user uuid, p_caixa uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from caixas_email c where c.id = p_caixa and case when c.empresa_id is null
+    then exists (select 1 from administradores_plataforma where user_id = p_user and ativo)
+    else exists (select 1 from funcionarios where id = p_user and ativo and empresa_id = c.empresa_id) end)
+$$;
+
+-- Acesso: inclui quem só tem emails atribuídos.
+create or replace function public.servico_email_acesso(p_user uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object('plataforma', private.email_pode(p_user, null),
+    'empresa', (select empresa_id from funcionarios where id = p_user and ativo and papel = 'admin_empresa'),
+    'delegado', exists (select 1 from caixas_email_acesso a where a.user_id = p_user and private.email_usar(p_user, a.caixa_id))
+             or exists (select 1 from email_atribuicoes t where t.atribuido_a = p_user and private.email_da_equipa(p_user, t.caixa_id)))
+$$;
+
+-- Credenciais (nova versão; a antiga de 2 argumentos fica sem uso): caixa inteira (email_usar) ou só a mensagem atribuída (restrito = true).
+create or replace function public.servico_email_credenciais2(p_user uuid, p_caixa uuid, p_uid bigint default null) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare r caixas_email; v_senha text; v_restrito boolean := false;
+begin
+  select * into r from caixas_email where id = p_caixa;
+  if not found then raise exception 'Caixa de email inexistente.'; end if;
+  if not private.email_usar(p_user, p_caixa) then
+    if p_uid is null or not private.email_da_equipa(p_user, p_caixa)
+       or not exists (select 1 from email_atribuicoes where caixa_id = p_caixa and uid = p_uid and atribuido_a = p_user) then
+      raise exception 'Caixa de email inexistente.'; end if;
+    v_restrito := true;
+  end if;
+  select decrypted_secret into v_senha from vault.decrypted_secrets where id = r.segredo_id;
+  return jsonb_build_object('elolog', r.empresa_id is null, 'gerir', private.email_pode(p_user, r.empresa_id), 'restrito', v_restrito,
+    'email', r.email, 'nome', r.nome, 'imap_host', r.imap_host, 'imap_porta', r.imap_porta, 'smtp_host', r.smtp_host, 'smtp_porta', r.smtp_porta,
+    'utilizador', r.utilizador, 'senha', v_senha);
+end $$;
+
+-- Colegas a quem se pode encaminhar (equipa da caixa, sem o próprio).
+create or replace function public.servico_email_equipa(p_user uuid, p_caixa uuid) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_emp uuid;
+begin
+  if not private.email_usar(p_user, p_caixa) then raise exception 'Sem acesso a esta caixa.'; end if;
+  select empresa_id into v_emp from caixas_email where id = p_caixa;
+  return coalesce((select jsonb_agg(x order by x->>'nome') from (
+      select jsonb_build_object('user_id', a.user_id, 'nome', a.nome, 'papel', a.papel) x from administradores_plataforma a
+        where v_emp is null and a.ativo and a.user_id <> p_user
+      union all
+      select jsonb_build_object('user_id', f.id, 'nome', f.nome, 'papel', f.papel::text) from funcionarios f
+        where v_emp is not null and f.empresa_id = v_emp and f.ativo and f.id <> p_user) t), '[]'::jsonb);
+end $$;
+
+-- Encaminhar: regista a atribuição e avisa o colega no chat da equipa.
+create or replace function public.servico_email_atribuir(p_user uuid, p_caixa uuid, p_uid bigint, p_alvo uuid, p_de text, p_assunto text, p_nota text)
+returns void language plpgsql security definer set search_path = public as $$
+declare v_email text;
+begin
+  if not private.email_usar(p_user, p_caixa) then raise exception 'Sem acesso a esta caixa.'; end if;
+  if p_alvo = p_user or not private.email_da_equipa(p_alvo, p_caixa) then raise exception 'Escolha um colega desta equipa.'; end if;
+  insert into email_atribuicoes (caixa_id, uid, de, assunto, atribuido_a, atribuido_por, nota)
+  values (p_caixa, p_uid, left(coalesce(p_de, ''), 300), left(coalesce(p_assunto, ''), 300), p_alvo, p_user, nullif(left(trim(coalesce(p_nota, '')), 500), ''))
+  on conflict (caixa_id, uid, atribuido_a) do update set estado = 'aberto', nota = excluded.nota, atribuido_por = excluded.atribuido_por, updated_at = now();
+  select email into v_email from caixas_email where id = p_caixa;
+  insert into chat_mensagens (de, para, texto) values (p_user, p_alvo, left(
+    '📧 Encaminhei-lhe um email para responder (' || v_email || '): «' || coalesce(nullif(p_assunto, ''), 'sem assunto') || '» de ' || coalesce(p_de, '') ||
+    coalesce(E'\nNota: ' || nullif(trim(p_nota), ''), '') || E'\nAbra Email › Atribuídos.', 2000));
+end $$;
+
+-- Emails atribuídos ao utilizador (abertos primeiro).
+create or replace function public.servico_email_atribuidos(p_user uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select coalesce(jsonb_agg(jsonb_build_object('id', t.id, 'caixa', t.caixa_id, 'caixa_email', c.email, 'uid', t.uid, 'de', t.de, 'assunto', t.assunto,
+      'nota', t.nota, 'estado', t.estado, 'data', t.created_at, 'por', coalesce((select nome from administradores_plataforma where user_id = t.atribuido_por),
+      (select nome from funcionarios where id = t.atribuido_por), '')) order by t.estado, t.created_at desc), '[]'::jsonb)
+  from email_atribuicoes t join caixas_email c on c.id = t.caixa_id
+  where t.atribuido_a = p_user and private.email_da_equipa(p_user, t.caixa_id)
+$$;
+
+create or replace function public.servico_email_respondido(p_user uuid, p_caixa uuid, p_uid bigint) returns void
+language sql security definer set search_path = public as $$
+  update email_atribuicoes set estado = 'respondido', updated_at = now() where caixa_id = p_caixa and uid = p_uid and atribuido_a = p_user
+$$;
+
+revoke all on function private.email_da_equipa(uuid, uuid), public.servico_email_credenciais2(uuid, uuid, bigint), public.servico_email_equipa(uuid, uuid),
+  public.servico_email_atribuir(uuid, uuid, bigint, uuid, text, text, text), public.servico_email_atribuidos(uuid), public.servico_email_respondido(uuid, uuid, bigint)
+  from public, anon, authenticated;
+grant execute on function public.servico_email_credenciais2(uuid, uuid, bigint), public.servico_email_equipa(uuid, uuid),
+  public.servico_email_atribuir(uuid, uuid, bigint, uuid, text, text, text), public.servico_email_atribuidos(uuid), public.servico_email_respondido(uuid, uuid, bigint) to service_role;
+grant select, insert, update, delete on email_atribuicoes to service_role;
+-- ===== 00140_chat_so_equipa.sql =====
+-- v70 — Chat separado por organização: a equipa Elolog só fala entre si; cada prestador só dentro da sua empresa.
+-- A administração da plataforma não vê nem contacta os funcionários dos prestadores pelo chat.
+
+create or replace function private.chat_pode(a uuid, b uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select a <> b and coalesce((select
+      (x.org = 'elolog' and y.org = 'elolog')
+      or (x.org = y.org and x.org <> 'elolog' and (x.papel = y.papel or 'admin_empresa' in (x.papel, y.papel) or 'operador' in (x.papel, y.papel)
+          or (least(x.papel, y.papel) = 'armazem' and greatest(x.papel, y.papel) = 'operador_terreno')))
+    from private.chat_perfil(a) x, private.chat_perfil(b) y where x.org is not null and y.org is not null), false)
+$$;
+
+create or replace function public.chat_contactos()
+returns table (user_id uuid, nome text, papel text, organizacao text, por_ler int, ultima text, ultima_em timestamptz)
+language plpgsql stable security definer set search_path = public as $$
+declare eu uuid := auth.uid(); p record;
+begin
+  select * into p from private.chat_perfil(eu);
+  if p.org is null then return; end if;
+  return query
+  with cand as (
+    select a.user_id as id, a.nome, a.papel, 'Elolog'::text as org from administradores_plataforma a where a.ativo and p.org = 'elolog'
+    union all
+    select f.id, f.nome, f.papel::text, coalesce(e.nome_comercial, e.nome) from funcionarios f join empresas e on e.id = f.empresa_id
+      where f.ativo and p.org <> 'elolog' and f.empresa_id::text = p.org
+  )
+  select c.id, c.nome, c.papel, c.org,
+    (select count(*)::int from chat_mensagens m where m.de = c.id and m.para = eu and m.lida_em is null),
+    (select left(m.texto, 80) from chat_mensagens m where (m.de = c.id and m.para = eu) or (m.de = eu and m.para = c.id) order by m.created_at desc limit 1),
+    (select max(m.created_at) from chat_mensagens m where (m.de = c.id and m.para = eu) or (m.de = eu and m.para = c.id))
+  from cand c where private.chat_pode(eu, c.id)
+  order by 7 desc nulls last, 2 limit 300;
+end $$;
+
+-- Conversa só entre quem a hierarquia permite (já não basta ter mensagens antigas).
+create or replace function public.chat_conversa(p_com uuid)
+returns setof chat_mensagens language plpgsql security definer set search_path = public as $$
+declare eu uuid := auth.uid();
+begin
+  if not private.chat_pode(eu, p_com) then raise exception 'Sem permissão para falar com este funcionário.'; end if;
+  update chat_mensagens set lida_em = now() where de = p_com and para = eu and lida_em is null;
+  return query select * from (select * from chat_mensagens m where (m.de = eu and m.para = p_com) or (m.de = p_com and m.para = eu)
+    order by m.created_at desc limit 60) t order by t.created_at;
+end $$;
+
+-- O contador também só conta mensagens de colegas da mesma organização.
+create or replace function public.chat_por_ler() returns int
+language sql stable security definer set search_path = public as $$
+  select count(*)::int from chat_mensagens where para = auth.uid() and lida_em is null and private.chat_pode(auth.uid(), de)
+$$;
+
+-- ===== 00141_chat_grupos.sql =====
+-- v71 — Chat: dentro da mesma organização todos falam com todos (sem hierarquia) e podem criar grupos.
+-- A equipa Elolog continua separada de cada prestador; empresas diferentes nunca se veem.
+
+create or replace function private.chat_pode(a uuid, b uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select a <> b and coalesce((select x.org = y.org from private.chat_perfil(a) x, private.chat_perfil(b) y
+    where x.org is not null and y.org is not null), false)
+$$;
+
+create table if not exists chat_grupos (
+  id         uuid primary key default gen_random_uuid(),
+  org        text not null,                         -- 'elolog' ou id da empresa
+  nome       text not null check (length(nome) between 1 and 80),
+  criado_por uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+create table if not exists chat_grupo_membros (
+  grupo_id uuid not null references chat_grupos(id) on delete cascade,
+  user_id  uuid not null references auth.users(id) on delete cascade,
+  lido_ate timestamptz not null default now(),
+  primary key (grupo_id, user_id)
+);
+create table if not exists chat_grupo_mensagens (
+  id         uuid primary key default gen_random_uuid(),
+  grupo_id   uuid not null references chat_grupos(id) on delete cascade,
+  de         uuid not null references auth.users(id) on delete cascade,
+  texto      text not null check (length(texto) between 1 and 2000),
+  created_at timestamptz not null default now()
+);
+create index if not exists chat_grupo_msgs on chat_grupo_mensagens (grupo_id, created_at desc);
+alter table chat_grupos enable row level security; alter table chat_grupo_membros enable row level security; alter table chat_grupo_mensagens enable row level security;
+revoke all on chat_grupos, chat_grupo_membros, chat_grupo_mensagens from anon, authenticated;
+
+-- Membro ativo do grupo (e ainda funcionário ativo da organização do grupo).
+create or replace function private.chat_membro(p_user uuid, p_grupo uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from chat_grupo_membros m join chat_grupos g on g.id = m.grupo_id
+    where m.grupo_id = p_grupo and m.user_id = p_user and g.org = (select org from private.chat_perfil(p_user)))
+$$;
+
+create or replace function public.chat_grupo_criar(p_nome text, p_membros uuid[]) returns uuid
+language plpgsql security definer set search_path = public as $$
+declare eu uuid := auth.uid(); v_org text := (select org from private.chat_perfil(auth.uid())); g uuid; m uuid;
+begin
+  if v_org is null then raise exception 'Sem permissão para criar grupos.'; end if;
+  if length(trim(coalesce(p_nome, ''))) = 0 then raise exception 'Dê um nome ao grupo.'; end if;
+  if coalesce(array_length(p_membros, 1), 0) = 0 then raise exception 'Escolha pelo menos um colega.'; end if;
+  if (select count(*) from chat_grupos where criado_por = eu and created_at > now() - interval '1 hour') >= 20 then raise exception 'Demasiados grupos criados. Aguarde.'; end if;
+  insert into chat_grupos (org, nome, criado_por) values (v_org, left(trim(p_nome), 80), eu) returning id into g;
+  insert into chat_grupo_membros (grupo_id, user_id) values (g, eu);
+  foreach m in array p_membros loop
+    if private.chat_pode(eu, m) then insert into chat_grupo_membros (grupo_id, user_id) values (g, m) on conflict do nothing; end if;
+  end loop;
+  return g;
+end $$;
+
+create or replace function public.chat_grupo_adicionar(p_grupo uuid, p_membros uuid[]) returns void
+language plpgsql security definer set search_path = public as $$
+declare eu uuid := auth.uid(); m uuid;
+begin
+  if not private.chat_membro(eu, p_grupo) then raise exception 'Não pertence a este grupo.'; end if;
+  foreach m in array coalesce(p_membros, '{}') loop
+    if private.chat_pode(eu, m) then insert into chat_grupo_membros (grupo_id, user_id) values (p_grupo, m) on conflict do nothing; end if;
+  end loop;
+end $$;
+
+create or replace function public.chat_grupo_sair(p_grupo uuid) returns void
+language sql security definer set search_path = public as $$
+  delete from chat_grupo_membros where grupo_id = p_grupo and user_id = auth.uid()
+$$;
+
+create or replace function public.chat_grupos()
+returns table (id uuid, nome text, membros int, por_ler int, ultima text, ultima_em timestamptz, nomes text)
+language sql stable security definer set search_path = public as $$
+  select g.id, g.nome, (select count(*)::int from chat_grupo_membros x where x.grupo_id = g.id),
+    (select count(*)::int from chat_grupo_mensagens t where t.grupo_id = g.id and t.de <> auth.uid() and t.created_at > m.lido_ate),
+    (select left(t.texto, 80) from chat_grupo_mensagens t where t.grupo_id = g.id order by t.created_at desc limit 1),
+    (select max(t.created_at) from chat_grupo_mensagens t where t.grupo_id = g.id),
+    (select string_agg(p.nome, ', ' order by p.nome) from chat_grupo_membros x, private.chat_perfil(x.user_id) p where x.grupo_id = g.id and p.nome is not null)
+  from chat_grupos g join chat_grupo_membros m on m.grupo_id = g.id and m.user_id = auth.uid()
+  where private.chat_membro(auth.uid(), g.id) order by 6 desc nulls last, 2
+$$;
+
+create or replace function public.chat_grupo_conversa(p_grupo uuid)
+returns table (id uuid, de uuid, nome_de text, texto text, created_at timestamptz)
+language plpgsql security definer set search_path = public as $$
+begin
+  if not private.chat_membro(auth.uid(), p_grupo) then raise exception 'Não pertence a este grupo.'; end if;
+  update chat_grupo_membros set lido_ate = now() where grupo_id = p_grupo and user_id = auth.uid();
+  return query select t.id, t.de, (select nome from private.chat_perfil(t.de)), t.texto, t.created_at from (
+    select * from chat_grupo_mensagens x where x.grupo_id = p_grupo order by x.created_at desc limit 80) t order by t.created_at;
+end $$;
+
+create or replace function public.chat_grupo_enviar(p_grupo uuid, p_texto text)
+returns chat_grupo_mensagens language plpgsql security definer set search_path = public as $$
+declare eu uuid := auth.uid(); r chat_grupo_mensagens;
+begin
+  if not private.chat_membro(eu, p_grupo) then raise exception 'Não pertence a este grupo.'; end if;
+  if length(trim(coalesce(p_texto, ''))) = 0 then raise exception 'Escreva a mensagem.'; end if;
+  if (select count(*) from chat_grupo_mensagens where de = eu and created_at > now() - interval '1 minute') >= 30 then raise exception 'Demasiadas mensagens seguidas. Aguarde um minuto.'; end if;
+  insert into chat_grupo_mensagens (grupo_id, de, texto) values (p_grupo, eu, left(trim(p_texto), 2000)) returning * into r;
+  update chat_grupo_membros set lido_ate = now() where grupo_id = p_grupo and user_id = eu;
+  return r;
+end $$;
+
+-- Contador: mensagens diretas + mensagens de grupo por ler.
+create or replace function public.chat_por_ler() returns int
+language sql stable security definer set search_path = public as $$
+  select (select count(*)::int from chat_mensagens where para = auth.uid() and lida_em is null and private.chat_pode(auth.uid(), de))
+       + (select count(*)::int from chat_grupo_mensagens t join chat_grupo_membros m on m.grupo_id = t.grupo_id and m.user_id = auth.uid()
+           where t.de <> auth.uid() and t.created_at > m.lido_ate and private.chat_membro(auth.uid(), t.grupo_id))
+$$;
+
+revoke all on function private.chat_membro(uuid, uuid), public.chat_grupo_criar(text, uuid[]), public.chat_grupo_adicionar(uuid, uuid[]), public.chat_grupo_sair(uuid),
+  public.chat_grupos(), public.chat_grupo_conversa(uuid), public.chat_grupo_enviar(uuid, text) from public, anon;
+grant execute on function public.chat_grupo_criar(text, uuid[]), public.chat_grupo_adicionar(uuid, uuid[]), public.chat_grupo_sair(uuid),
+  public.chat_grupos(), public.chat_grupo_conversa(uuid), public.chat_grupo_enviar(uuid, text) to authenticated;
+
 commit;

@@ -1,19 +1,19 @@
 // Edge Function «email-caixa»: painel de email da plataforma (ler e responder) por IMAP (993) e SMTP (465), ambos com TLS.
-// Ações: caixas · gravar · remover · listar · ler · anexo · enviar · marcar · apagar.
-// Acesso: administrador da plataforma (caixas da Elolog, com 2.º fator) e administrador do prestador (caixas da empresa).
+// Ações: caixas · contar · acessos · conceder · equipa · atribuir · atribuidos · gravar · remover · listar · ler · anexo · enviar · marcar · apagar.
+// Acesso: o administrador (Elolog, com 2.º fator, ou do prestador) liga as caixas e dá acesso a funcionários da sua equipa.
 // A palavra-passe da caixa fica no cofre da base de dados (servico_email_*) e nunca é devolvida ao navegador.
 // Deploy: supabase functions deploy email-caixa --no-verify-jwt (o token é validado no código).
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { erro, lerJson, preflight, resposta } from '../_shared/http.ts';
-import { ErroImap, Imap, type Ligacao } from './imap.ts';
+import { ErroImap } from './imap.ts';
 import { enviarSmtp, ErroSmtp } from './smtp.ts';
-import { analisar, construir, enderecos, palavras, separar } from './mime.ts';
+import { construir, enderecos, palavras, separar } from './mime.ts';
+import { abrir, comImap, comPrazo, type Cred, HOST, mensagem, pasta, smtp } from './ligacao.ts';
+import { codigoValido, novoCodigo } from './codigo.ts';
 
 const admin = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '', { auth: { persistSession: false, autoRefreshToken: false } });
-type Cred = { elolog: boolean; email: string; nome: string; imap_host: string; imap_porta: number; smtp_host: string; smtp_porta: number; utilizador: string; senha: string };
 const txt = (v: unknown, max = 300) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const ehUuid = (v: unknown): v is string => typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
-const HOST = /^(?=.{4,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/;
 const EMAIL = /^[^\s@<>"]{1,64}@[a-z0-9.-]+\.[a-z]{2,}$/i;
 const ID_MSG = /^<[^<>\s]{3,250}>$/;
 const PASTAS = ['entrada', 'enviados', 'lixo'];
@@ -21,43 +21,6 @@ const b64 = (b: Uint8Array) => { let s = ''; for (let i = 0; i < b.length; i += 
 const quando = (d?: string) => { const t = d ? Date.parse(d.replace(/\s*\([^)]*\)\s*$/, '')) : NaN; return Number.isNaN(t) ? null : new Date(t).toISOString(); };
 function nivel(jwt: string): string { try { return JSON.parse(atob(jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).aal ?? ''; } catch { return ''; } }
 
-async function abrir(host: string, porta: number): Promise<Ligacao> {
-  if (!HOST.test(host) || ![993, 465].includes(porta)) throw new ErroImap('Servidor de email inválido.', 'servidor');
-  let c: Deno.TlsConn;
-  try { c = await Deno.connectTls({ hostname: host, port: porta }); } catch { throw new ErroImap(`Não foi possível ligar a ${host}:${porta}. Confirme o nome do servidor.`, 'servidor'); }
-  const b = new Uint8Array(65536);
-  return { ler: async () => { const n = await c.read(b); return n === null ? null : b.slice(0, n); },
-    escrever: async (d) => { let o = 0; while (o < d.length) o += await c.write(d.subarray(o)); },
-    fechar: () => { try { c.close(); } catch { /* já fechada */ } } };
-}
-async function comPrazo<T>(l: Ligacao, p: Promise<T>, ms = 25_000): Promise<T> {
-  let t = 0;
-  try { return await Promise.race([p, new Promise<never>((_, r) => { t = setTimeout(() => { l.fechar(); r(new ErroImap('O servidor de email não respondeu a tempo.', 'tempo')); }, ms); })]); }
-  finally { clearTimeout(t); l.fechar(); }
-}
-async function comImap<T>(c: Cred, fn: (i: Imap) => Promise<T>): Promise<T> {
-  const l = await abrir(c.imap_host, c.imap_porta), i = new Imap(l);
-  return comPrazo(l, (async () => { await i.saudacao(); await i.entrar(c.utilizador, c.senha); const r = await fn(i); await i.sair(); return r; })());
-}
-async function smtp(c: Cred, para: string[], mensagem: string) {
-  const l = await abrir(c.smtp_host, c.smtp_porta);
-  await comPrazo(l, enviarSmtp(l, { utilizador: c.utilizador, senha: c.senha, de: c.email, para, mensagem, ehlo: c.email.split('@')[1] }));
-}
-async function pasta(i: Imap, qual: string): Promise<string> {
-  if (qual === 'entrada') return 'INBOX';
-  const ps = await i.pastas(), flag = qual === 'enviados' ? '\\SENT' : '\\TRASH';
-  const re = qual === 'enviados' ? /(^|[./])(sent|enviad|itens enviados)/i : /(^|[./])(trash|lixo|deleted|eliminad|reciclagem)/i;
-  const p = ps.find((x) => x.flags.some((f) => f.toUpperCase() === flag)) ?? ps.find((x) => re.test(x.nome));
-  if (!p) throw new ErroImap(qual === 'enviados' ? 'Não encontrei a pasta de enviados.' : 'Não encontrei a pasta do lixo.', 'pasta');
-  return p.nome;
-}
-async function mensagem(i: Imap, uid: number) {
-  const [m] = await i.buscar([uid], 'UID RFC822.SIZE');
-  if (!m) throw new ErroImap('A mensagem já não existe.', 'pasta');
-  if (Number(m['RFC822.SIZE'] ?? 0) > 12 * 1024 * 1024) throw new ErroImap('Mensagem demasiado grande para abrir aqui (mais de 12 MB). Abra-a no webmail.', 'pasta');
-  const [c] = await i.buscar([uid], 'UID BODY.PEEK[]');
-  return analisar(c?.CORPO instanceof Uint8Array ? c.CORPO : new Uint8Array(0));
-}
 function falha(e: unknown): Response {
   if (e instanceof ErroImap || e instanceof ErroSmtp) {
     if (e.codigo === 'login') return erro(400, 'login', 'O servidor de email recusou o utilizador ou a palavra-passe. ' + e.message);
@@ -77,9 +40,9 @@ Deno.serve(async (req: Request) => {
   if (eu || !u?.user) return erro(401, 'sessao', 'Sessão inválida. Entre de novo.');
   const user = u.user.id, mfa = nivel(jwt) === 'aal2';
   const { data: ac } = await admin.rpc('servico_email_acesso', { p_user: user });
-  const acesso = (ac ?? {}) as { plataforma?: boolean; empresa?: string | null };
-  if (!acesso.empresa && !acesso.plataforma) return erro(403, 'permissao', 'O email só está disponível para administradores.');
-  if (!acesso.empresa && !mfa) return erro(403, 'mfa', 'Confirme o segundo fator de autenticação para abrir o email da Elolog.');
+  const acesso = (ac ?? {}) as { plataforma?: boolean; empresa?: string | null; delegado?: boolean };
+  if (!acesso.empresa && !acesso.plataforma && !acesso.delegado) return erro(403, 'permissao', 'Ainda não tem caixas de email atribuídas. Peça acesso ao administrador.');
+  if (acesso.plataforma && !acesso.empresa && !acesso.delegado && !mfa) return erro(403, 'mfa', 'Confirme o segundo fator de autenticação para abrir o email da Elolog.');
   const { data: dentro } = await admin.rpc('servico_limite', { p_chave: 'email:' + user, p_max: 300, p_janela_min: 10 });
   if (dentro === false) return erro(429, 'limite', 'Demasiados pedidos. Aguarde alguns minutos.');
   const lido = await lerJson(req, 200_000);
@@ -91,9 +54,34 @@ Deno.serve(async (req: Request) => {
       const { data, error } = await admin.rpc('servico_email_caixas', { p_user: user }); if (error) throw error;
       return resposta(200, { ok: true, caixas: ((data ?? []) as { elolog: boolean }[]).filter((x) => mfa || !x.elolog), elolog: !!acesso.plataforma && mfa, empresa: !!acesso.empresa });
     }
+    if (acao === 'acessos' || acao === 'conceder') {   // quem pode usar a caixa (só o administrador que a gere)
+      if (!ehUuid(c.caixa) || (acao === 'conceder' && !ehUuid(c.alvo))) return erro(400, 'caixa', 'Pedido inválido.');
+      const { data, error } = acao === 'acessos' ? await admin.rpc('servico_email_acessos', { p_user: user, p_caixa: c.caixa })
+        : await admin.rpc('servico_email_conceder', { p_user: user, p_caixa: c.caixa, p_alvo: c.alvo, p_sim: c.sim === true });
+      if (error) throw error; return resposta(200, { ok: true, funcionarios: data ?? null });
+    }
+    if (acao === 'atribuidos') {   // emails encaminhados a este funcionário para responder
+      const { data, error } = await admin.rpc('servico_email_atribuidos', { p_user: user }); if (error) throw error;
+      return resposta(200, { ok: true, atribuidos: data ?? [] });
+    }
+    if (acao === 'equipa' || acao === 'atribuir') {   // encaminhar um email a um colega da equipa da caixa
+      if (!ehUuid(c.caixa) || (acao === 'atribuir' && (!ehUuid(c.alvo) || !(Number(c.uid) > 0)))) return erro(400, 'caixa', 'Pedido inválido.');
+      const { data, error } = acao === 'equipa' ? await admin.rpc('servico_email_equipa', { p_user: user, p_caixa: c.caixa })
+        : await admin.rpc('servico_email_atribuir', { p_user: user, p_caixa: c.caixa, p_uid: Number(c.uid), p_alvo: c.alvo, p_de: txt(c.de), p_assunto: txt(c.assunto), p_nota: txt(c.nota, 500) });
+      if (error) throw error; return resposta(200, { ok: true, equipa: data ?? null });
+    }
+    if (acao === 'contar') {   // emails por ler na Entrada de cada caixa (contador do menu)
+      const { data, error } = await admin.rpc('servico_email_caixas', { p_user: user }); if (error) throw error;
+      const lista = ((data ?? []) as { id: string; email: string; elolog: boolean }[]).filter((x) => mfa || !x.elolog).slice(0, 5);
+      const r = await Promise.allSettled(lista.map(async (x) => {
+        const { data: cr, error: ec } = await admin.rpc('servico_email_credenciais', { p_user: user, p_caixa: x.id }); if (ec) throw ec;
+        return { id: x.id, email: x.email, novas: await comImap(cr as Cred, (i) => i.naoLidas()) };
+      }));
+      const caixas = r.map((v, k) => (v.status === 'fulfilled' ? v.value : { id: lista[k].id, email: lista[k].email, novas: null })); return resposta(200, { ok: true, caixas, total: caixas.reduce((t, x) => t + (x.novas ?? 0), 0) });
+    }
     if (c.caixa != null && !ehUuid(c.caixa)) return erro(400, 'caixa', 'Caixa de email inválida.');
-    const credenciais = async (id: unknown): Promise<Cred> => {
-      const { data, error } = await admin.rpc('servico_email_credenciais', { p_user: user, p_caixa: id }); if (error) throw error;
+    const credenciais = async (id: unknown, uid: number | null = null): Promise<Cred> => {
+      const { data, error } = await admin.rpc('servico_email_credenciais2', { p_user: user, p_caixa: id, p_uid: uid }); if (error) throw error;
       const cr = data as Cred; if (cr.elolog && !mfa) throw new ErroImap('Confirme o segundo fator de autenticação.', 'mfa'); return cr;
     };
     if (acao === 'gravar') {
@@ -106,18 +94,28 @@ Deno.serve(async (req: Request) => {
       if (!senha && !antiga) return erro(400, 'senha', 'Indique a palavra-passe da caixa.');
       const teste: Cred = { elolog: false, ...d, imap_porta: 993, smtp_porta: 465, utilizador: d.utilizador || d.email, senha: senha ?? antiga!.senha };
       await comImap(teste, async (i) => { await i.selecionar('INBOX', true); });
-      const l = await abrir(teste.smtp_host, 465); await comPrazo(l, enviarSmtp(l, { utilizador: teste.utilizador, senha: teste.senha, de: d.email, para: [], mensagem: '', ehlo: d.email.split('@')[1] }));
+      const chave = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '', codigo = txt(c.codigo, 10);
+      if (!antiga || antiga.email !== d.email) {   // caixa nova (ou outro endereço): confirmar com o código enviado para essa caixa
+        if (!codigo) {
+          const n = await novoCodigo(chave, user, d.email);
+          await smtp(teste, [d.email], construir({ de: d.email, nome: 'Elolog', para: [d.email], assunto: `Código de confirmação Elolog: ${n}`, dominio: d.email.split('@')[1],
+            texto: `O seu código para ligar esta caixa de email à plataforma Elolog é:\n\n${n}\n\nÉ válido durante 10 minutos. Se não foi você, ignore esta mensagem.` }));
+          return resposta(200, { ok: true, confirmar: true, email: d.email });
+        }
+        const { data: pode } = await admin.rpc('servico_limite', { p_chave: 'email-codigo:' + user, p_max: 8, p_janela_min: 10 }); if (pode === false) return erro(429, 'limite', 'Demasiadas tentativas. Peça um código novo daqui a 10 minutos.');
+        if (!(await codigoValido(chave, user, d.email, codigo))) return erro(400, 'codigo', 'Código errado ou expirado. Confirme o email recebido ou peça outro.');
+      } else { const l = await abrir(teste.smtp_host, 465); await comPrazo(l, enviarSmtp(l, { utilizador: teste.utilizador, senha: teste.senha, de: d.email, para: [], mensagem: '', ehlo: d.email.split('@')[1] })); }
       const { data, error } = await admin.rpc('servico_email_gravar', { p_user: user, p_id: c.caixa ?? null, p_dados: { ...d, utilizador: teste.utilizador }, p_senha: senha });
-      if (error) throw error;
-      return resposta(200, { ok: true, caixa: data });
+      if (error) throw error; return resposta(200, { ok: true, caixa: data });
     }
     if (acao === 'remover') {
       await credenciais(c.caixa);
       const { error } = await admin.rpc('servico_email_remover', { p_user: user, p_caixa: c.caixa }); if (error) throw error;
       return resposta(200, { ok: true });
     }
-    const cr = await credenciais(c.caixa), qual = PASTAS.includes(String(c.pasta)) ? String(c.pasta) : 'entrada';
-    const uid = Number(c.uid);
+    const uid = Number(c.uid), qual = PASTAS.includes(String(c.pasta)) ? String(c.pasta) : 'entrada';
+    const cr = await credenciais(c.caixa, Number.isInteger(uid) && uid > 0 ? uid : null);
+    if (cr.restrito && (!['ler', 'anexo', 'enviar'].includes(acao) || qual !== 'entrada')) return erro(403, 'permissao', 'Só pode abrir e responder ao email que lhe foi encaminhado.');
     if (['ler', 'anexo', 'marcar', 'apagar'].includes(acao) && !(Number.isInteger(uid) && uid > 0)) return erro(400, 'uid', 'Mensagem inválida.');
     if (acao === 'listar') {
       const pagina = Math.max(0, Math.min(400, Number(c.pagina) || 0)), procura = txt(c.pesquisa, 100);
@@ -171,8 +169,9 @@ Deno.serve(async (req: Request) => {
       let guardada = true;
       try { await comImap(cr, async (i) => {
         await i.acrescentar(await pasta(i, 'enviados'), Uint8Array.from(msg, (x) => x.charCodeAt(0)));
-        if (emResposta && Number(c.uid) > 0) { await i.selecionar(await pasta(i, qual)); await i.marcar(Number(c.uid), '\\Answered', true); }
+        if (emResposta && uid > 0) { await i.selecionar(await pasta(i, qual)); await i.marcar(uid, '\\Answered', true); }
       }); } catch { guardada = false; }
+      if (emResposta && uid > 0) await admin.rpc('servico_email_respondido', { p_user: user, p_caixa: c.caixa, p_uid: uid });
       return resposta(200, { ok: true, guardada });
     }
     return erro(400, 'acao', 'Ação desconhecida.');

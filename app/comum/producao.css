@@ -84,3 +84,31 @@
 @media(max-width:760px){.pm-caixa.em-janela{height:94dvh}.em{grid-template-columns:1fr}.em-lado{border-right:0}.em.em-a-ler .em-lado,.em:not(.em-a-ler) .em-ler{display:none}
   .em-ler .em-voltar{display:inline-flex}.em-ler{padding:14px 16px}.em-acoes .btn-danger{margin-left:0}.em-janela .em-novo{padding:8px 12px}}
 .em .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.em-confirmar{padding:12px;border:1px solid #cfe3d9;border-radius:10px;background:#f1faf5}.em-confirmar input{max-width:200px;font:700 20px/1.2 ui-monospace,monospace!important;letter-spacing:.3em}
+.em-contador{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:8px;padding:0 6px;border-radius:10px;background:#e0464f;color:#fff;font:700 11px/1 var(--e-letra,system-ui)}
+/* v70 — chat da equipa (chat.js); reutiliza a janela larga do email */
+.ch-org{margin:6px 4px 2px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--e-suave,#6b7d89)}
+.ch-lista{list-style:none;margin:0;padding:0;display:grid;gap:4px}.ch .em-lado{overflow:auto}
+.ch-contacto{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:1px solid transparent;border-radius:10px;background:#fff;text-align:left;cursor:pointer;font:inherit;color:var(--e-texto,#4b5d6b)}
+.ch-contacto.ch-atual{border-color:var(--e-azul,#236186);background:#eef5fa}@media(hover:hover){.ch-contacto:hover{border-color:#cfdbe4}}
+.ch-av{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:linear-gradient(145deg,#2f8f8a,#236186);color:#fff;font-weight:800;font-size:12px}
+.ch-txt{flex:1;min-width:0;display:grid}.ch-txt b{color:var(--e-tinta,#0E2433);font-size:14px}.ch-txt small{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:12px}
+.ch-ler{display:flex;flex-direction:column;padding:0!important}.ch-topo{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--e-fio,#e1e9ef)}
+.ch-topo div{display:grid}.ch-topo b{color:var(--e-tinta,#0E2433)}.ch-topo small{font-size:12px;color:var(--e-suave,#6b7d89)}
+.ch-msgs{flex:1;overflow:auto;padding:16px 20px;display:flex;flex-direction:column;gap:8px;background:#f7fafc}
+.ch-msg{max-width:72%;align-self:flex-start;padding:8px 12px;border-radius:14px 14px 14px 4px;background:#fff;border:1px solid var(--e-fio,#e1e9ef)}
+.ch-msg p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--e-tinta,#0E2433);font-size:14px}.ch-msg time{display:block;margin-top:2px;font-size:11px;color:var(--e-suave,#6b7d89)}
+.ch-msg.ch-minha{align-self:flex-end;border-radius:14px 14px 4px 14px;background:#236186;border-color:#236186}.ch-msg.ch-minha p{color:#fff}.ch-msg.ch-minha time{color:#cfe1ee}
+.ch-form{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--e-fio,#e1e9ef)}.ch-form textarea{flex:1;min-height:44px;max-height:140px;padding:10px 12px;border:1px solid var(--e-fio,#e1e9ef);border-radius:10px;font:inherit;resize:vertical}
+.ch-janela .em-boas{flex:1}
+.em-form .em-voltar-cfg{justify-self:start}
+.em-nota{background:#eef5fa}.em-atrib{grid-column:1/-1;font-size:11px;color:var(--e-suave,#6b7d89)}
+.em-pastas button{min-width:0;padding:0 4px;font-size:13px;white-space:nowrap}
+.em-aviso.em-nota{display:block}
+/* v71 — grupos no chat */
+.ch-grupos-topo{display:flex;align-items:center;justify-content:space-between;gap:8px}.ch-novo{padding:5px 10px!important;font-size:12px!important;min-height:0!important}
+.ch-av-grupo{background:linear-gradient(145deg,#237E5F,#2f8f8a);font-size:16px}.ch-pouco{padding:4px 6px;font-size:12px}
+.ch-autor{display:block;font-size:12px;color:var(--e-verde,#237E5F);margin-bottom:2px}.ch-topo-acoes{margin-left:auto;display:flex;gap:6px}.ch-topo-acoes button{padding:6px 10px!important;font-size:13px!important;min-height:0!important}
+.ch-membros{display:grid;gap:8px;margin:0;padding:12px;border:1px solid var(--e-fio,#e1e9ef);border-radius:10px;max-height:300px;overflow:auto}.ch-membros legend{font-weight:700;font-size:13px;color:var(--e-tinta,#0E2433)}
+.ch-membros small{color:var(--e-suave,#6b7d89);font-weight:500}.ch-form-grupo{padding:18px 24px;overflow:auto}
+@media(max-width:760px){.ch-topo{flex-wrap:wrap}.ch-topo-acoes{margin-left:0}}
