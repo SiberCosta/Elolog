@@ -1,6 +1,6 @@
 # Elolog
 
-**Versão de 26/10/2026 (v63).** Se esta pasta tem este ficheiro, é a versão nova.
+**Versão de 26/10/2026 (v65).** Se esta pasta tem este ficheiro, é a versão nova.
 
 Plataforma de intermediação logística: clientes simulam e comparam propostas; transitárias gerem encomendas, equipa e cobranças; a administração Elolog valida e acompanha a rede.
 
@@ -41,15 +41,25 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - Partes seguidas do mesmo assunto ficam no mesmo ficheiro; só quando passam das 200 linhas há partes numeradas (`base-1.css`, `base-2.css`…), carregadas pela ordem dos números.
 - O corpo das páginas maiores está em partes que se escrevem no próprio sítio (`app/comum/pagina-1…5.js`, `site/scripts/inicio-pagina-1.js`, `site/scripts/simulador-pagina-1.js`). Para mudar um texto ou um botão da página, procure-o nesses ficheiros.
 - Os scripts da aplicação são **clássicos** (âmbito global, `onclick="…"` no HTML): a ordem conta. Não acrescentar `defer`, `async` nem `type="module"`.
-- Os endereços de CSS e JS levam `?v=63`: mudar o número a cada versão publicada para os navegadores carregarem os ficheiros novos.
+- Os endereços de CSS e JS levam `?v=65`: mudar o número a cada versão publicada para os navegadores carregarem os ficheiros novos.
 
 ## Servidor (Supabase)
 
-**Esta versão já está ligada ao projeto de teste «Elolog T»** (`https://elkykihzgxxcdqhskoyx.supabase.co`, região da organização «Denivaldo da Costa»). O endereço e a chave pública estão em `app/comum/servidor-config.js`; a chave secreta (`service_role`) nunca vai para os ficheiros da aplicação.
+**Esta versão está ligada ao projeto «Elolog»** (`https://wcggcpdiswbzrdpwgdpb.supabase.co`, Frankfurt). O endereço e a chave pública estão em `app/comum/servidor-config.js`; a chave secreta (`service_role`) nunca vai para os ficheiros da aplicação. Instalação da base de dados: `servidor/supabase/instalar_projeto_elolog.sql` (ver «Pôr a funcionar» em `documentacao/PRODUCAO.md`).
 
 - **Demonstração local**: acrescente `?demo=1` à morada (ex.: `app/area-cliente.html?demo=1`). Fica ativa nesse separador até o fechar (`?demo=0` desliga) e usa as contas de demonstração no navegador, sem tocar no servidor.
 - **Voltar ao modo só local**: esvazie `supabaseUrl` e `supabaseAnonKey` em `servidor-config.js`.
 - A biblioteca do Supabase é carregada do jsDelivr (versão fixa 2.45.4, `usarCdn: true`). Para não depender de outro site, coloque o ficheiro `supabase.js` em `app/comum/` e mude para `usarCdn: false`.
+
+## v65 (auditoria e projeto «Elolog»)
+
+- A aplicação liga-se ao novo projeto Supabase **«Elolog»** (`wcggcpdiswbzrdpwgdpb`, Frankfurt). As 7 Edge Functions já estão publicadas. A base de dados instala-se de uma vez com `servidor/supabase/instalar_projeto_elolog.sql` (SQL Editor › Run); passos completos em `documentacao/PRODUCAO.md` › «Pôr a funcionar».
+- Nome da aplicação corrigido («Elolog — Área de Cliente» em vez de «Elolog Operador»), página 404 própria, `robots.txt`, `sitemap.xml` e etiquetas de partilha no simulador e na página legal.
+
+## v64 (página de informação legal)
+
+- Nova página `site/legal.html` (corpo em `site/scripts/legal-pagina-1.js`, estilos no fim de `site/estilos/simulador-2.css`): identificação da empresa (DL 7/2004), termos de utilização, política de privacidade (RGPD), cookies, Livro de Reclamações Eletrónico e resolução alternativa de litígios (CNIACC). Os rodapés do site e da aplicação apontam para ela em vez dos ficheiros .md.
+- **Antes de abrir ao público:** preencher NIPC, sede e registo comercial (procure «[a indicar]» em `legal-pagina-1.js`), criar o endereço `privacidade@elolog.pt` (reencaminhamento) e pedir revisão a um advogado.
 
 ## v63 (domínio elolog.pt)
 

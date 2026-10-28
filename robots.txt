@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /site/
+Allow: /partilhado/
+Disallow: /app/
+Disallow: /servidor/
+Disallow: /documentacao/
+Disallow: /ferramentas/
+Sitemap: https://www.elolog.pt/sitemap.xml
