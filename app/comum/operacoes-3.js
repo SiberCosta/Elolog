@@ -1,4 +1,4 @@
-function renderProposals(){const container=document.getElementById("proposalsList");let list=proposals;if(currentUser.role==="cliente"){list=proposals.filter(p=>p.operationId==="TR-2026-000184")}if(list.length===0){
+function renderProposals(){const container=document.getElementById("proposalsList");let list=proposals;if(currentUser.role==="cliente"){list=proposals.filter(p=>p.operationId==="ELO_TRAN-000184")}if(list.length===0){
 container.innerHTML="<p>Nenhuma proposta disponível.</p>";return}
 container.innerHTML=list.map(p=>`
 

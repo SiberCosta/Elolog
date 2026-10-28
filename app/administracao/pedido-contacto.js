@@ -57,7 +57,7 @@
         [{texto:"Voltar",acao:passo3},{texto:"Criar pedido e enviar ao prestador",principal:true,acao:enviar}])}
     async function enviar(){const c=d.carga,dados={...c,cliente_id:d.cliente?.id||"",remetente:d.cliente?{nome:d.cliente.nome,email:d.cliente.email,telefone:d.cliente.telefone,nif:d.cliente.nif,morada:d.cliente.morada}:d.contacto,canal:d.canal,volumes:[]};
       try{let cod;if(P().online()){const s=await P().sb(),{data,error}=await s.rpc("admin_registar_pedido",{p_dados:dados,p_empresa:d.prestador.prestador_id,p_preco:d.preco});if(error)throw error;cod=(Array.isArray(data)?data[0]:data)?.codigo}
-        else cod="SIM-DEMO-"+String(Date.now()).slice(-4);
+        else cod=elologCodigoSimulacao();
         j.mostrar(`<div class="pm-valor"><span>Pedido registado</span><strong>${esc(cod||"")}</strong></div><p>${esc(d.prestador.prestador_nome)} foi notificado${d.cliente?" e o cliente vê o pedido na sua área":""}. Acompanhe em «Simulações dos clientes».</p>`,
           [{texto:"Novo pedido",acao:()=>{j.fechar();abrir()}},{texto:"Concluir",principal:true,acao:j.fechar}]);window.elologSimulacoesAdmin?.carregar()}
       catch(e){P().aviso(window.ELOLogServidor?.mensagem?.(e)||e.message,"error")}}

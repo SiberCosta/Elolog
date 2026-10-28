@@ -1,6 +1,6 @@
 # Elolog
 
-**Versão de 28/10/2026 (v71).** Se esta pasta tem este ficheiro, é a versão nova.
+**Versão de 28/10/2026 (v73).** Se esta pasta tem este ficheiro, é a versão nova.
 
 Plataforma de intermediação logística: clientes simulam e comparam propostas; transitárias gerem encomendas, equipa e cobranças; a administração Elolog valida e acompanha a rede.
 
@@ -57,6 +57,18 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Código de confirmação ao ligar uma caixa:** ao ligar uma caixa nova (ou mudar o endereço), a plataforma envia um código de 6 dígitos para essa caixa e só guarda depois de o escrever (válido 10 minutos, máx. 8 tentativas por 10 min).
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
+
+## v73 (aparecer melhor nas pesquisas)
+
+- Ícone do site (logótipo) para o Google e os separadores: `favicon.ico` na raiz e `partilhado/imagens/favicon-48/96/192.png`, `apple-touch-icon.png`.
+- Títulos e descrições novos (página inicial, simulador, página legal) e dados estruturados (Organization com logótipo, contactos e telefone; WebSite com o nome «Elolog»; Service).
+- Imagem de partilha 1200×630 com o logótipo (`partilhado/imagens/elolog-partilha.jpg`) para WhatsApp, LinkedIn, Facebook, etc.; `sitemap.xml` atualizado. Passos para o Google em `documentacao/PRODUCAO.md` › «Aparecer no Google».
+
+## v72 (novas referências ELO)
+
+- **Encomendas:** `ELO_<REF>-000123`, em que REF é a referência do prestador (criada sozinha a partir do nome, sem acentos: «Transatlântico Demo, Lda.» → `TRAN`; se repetir, ganha um número: `TRAN2`). A numeração é contínua por prestador.
+- **Simulações:** `ELO_SM-000045`.
+- Dadas pela base de dados (migração `00142_codigos_elo.sql`, já aplicada); as antigas `TR-…`/`SIM-…` passam para o formato novo. O ELO no WhatsApp reconhece `ELO_TRAN-000123` (e ainda os códigos antigos). Testes: `servidor/supabase/testes/09_codigos_elo.sql` (7/7).
 
 ## v71 (chat sem hierarquia e grupos)
 

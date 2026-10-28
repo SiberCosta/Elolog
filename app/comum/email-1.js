@@ -12,7 +12,7 @@
     entrada:[{uid:3,de:"Importadora Atlântico <compras@atlantico.ao>",para:"contacto@elolog.pt",assunto:"Pedido de cotação Leixões → Luanda",data:h(1),lida:false,anexos:true,
         texto:"Bom dia,\n\nPrecisamos de enviar 2 paletes (1,8 m³) de Leixões para Luanda até ao fim do mês.\nPodem indicar prazo e preço?\n\nObrigado,\nMarta Silva",anexos_l:[{indice:0,nome:"lista-de-carga.pdf",tipo:"application/pdf",tamanho:48213}]},
       {uid:2,de:"Luso Freight <ops@lusofreight.pt>",para:"contacto@elolog.pt",assunto:"Documentação do navio MSC Lisboa",data:h(20),lida:true,texto:"Olá equipa Elolog,\n\nO manifesto já foi enviado pela plataforma.\n\nCumprimentos,\nLuso Freight"},
-      {uid:1,de:"Cliente de demonstração <cliente@exemplo.pt>",para:"contacto@elolog.pt",assunto:"Obrigado pela entrega",data:h(60),lida:true,html:"<p>A encomenda <b>TR-2026-000123</b> chegou em perfeitas condições.</p><p>Obrigado!</p>"}],enviados:[],lixo:[]};
+      {uid:1,de:"Cliente de demonstração <cliente@exemplo.pt>",para:"contacto@elolog.pt",assunto:"Obrigado pela entrega",data:h(60),lida:true,html:"<p>A encomenda <b>ELO_TRAN-000123</b> chegou em perfeitas condições.</p><p>Obrigado!</p>"}],enviados:[],lixo:[]};
   const online=()=>P()?.online();
   E.chamar=async(acao,dados={})=>window.ELOLogServidor.chamarFuncao("email-caixa",{acao,...dados});
   E.demo=DEMO;E.online=online;

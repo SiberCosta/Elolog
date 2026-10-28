@@ -1,6 +1,6 @@
 /* Elolog — módulo 13/15: Operações, detalhe, propostas, aceitação e avanço de estado
    Script clássico: partilha o âmbito global com os restantes módulos. Carregar pela ordem numérica. */
-function generateOperationCode(){const year=new Date().getFullYear();let number=Math.floor(1e5+Math.random()*9e5);let code=`TR-${year}-${number}`;while(operations.some(operation=>operation.id===code)){number=Math.floor(1e5+Math.random()*9e5);
+function generateOperationCode(){if(currentUser?.role==="prestador")return elologCodigoEncomenda();return elologCodigoSimulacao();const year=new Date().getFullYear();let number=Math.floor(1e5+Math.random()*9e5);let code=`TR-${year}-${number}`;while(operations.some(operation=>operation.id===code)){number=Math.floor(1e5+Math.random()*9e5);
 code=`TR-${year}-${number}`}return code}document.getElementById("operationForm").addEventListener("submit",function(e){e.preventDefault();const operation={id:generateOperationCode(),client:document.getElementById("operationClient").value,
 origin:document.getElementById("operationOrigin").value,destination:document.getElementById("operationDestination").value,cargo:document.getElementById("operationCargo").value,weight:document.getElementById("operationWeight").value,
 date:document.getElementById("operationDate").value,notes:document.getElementById("operationNotes").value,status:"Recebido",created:new Date().toLocaleDateString("pt-PT"),provider:null,

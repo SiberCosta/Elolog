@@ -6,9 +6,9 @@
   const ESTADO={rascunho:["Simulada","neutro"],enviada:["Enviada ao prestador","info"],respondida:["Respondida","info"],convertida:["Encomenda criada","ok"],cancelada:["Cancelada","mau"]};
   const eur=v=>v==null?"—":Number(v).toLocaleString("pt-PT",{style:"currency",currency:"EUR"});
   const quando=d=>{const m=Math.round((Date.now()-new Date(d))/6e4);return m<1?"agora":m<60?`há ${m} min`:m<1440?`há ${Math.round(m/60)} h`:new Date(d).toLocaleDateString("pt-PT")};
-  const DEMO=[{codigo:"SIM-DEMO-0003",estado:"rascunho",origem:"Lisboa",destino:"São Tomé",volume_m3:.196,cliente:"Cliente de demonstração",created_at:new Date(Date.now()-9e5)},
-    {codigo:"SIM-DEMO-0002",estado:"enviada",origem:"Leixões",destino:"Luanda",volume_m3:2.4,cliente:"Importadora Atlântico",prestador:"Luso Freight (demo)",created_at:new Date(Date.now()-72e5)},
-    {codigo:"SIM-DEMO-0001",estado:"convertida",origem:"Lisboa",destino:"Praia",volume_m3:1.1,preco_estimado:640,cliente:"Casa Verde Lda",prestador:"Tejo Transitários (demo)",created_at:new Date(Date.now()-9e7)}];
+  const DEMO=[{codigo:"ELO_SM-000003",estado:"rascunho",origem:"Lisboa",destino:"São Tomé",volume_m3:.196,cliente:"Cliente de demonstração",created_at:new Date(Date.now()-9e5)},
+    {codigo:"ELO_SM-000002",estado:"enviada",origem:"Leixões",destino:"Luanda",volume_m3:2.4,cliente:"Importadora Atlântico",prestador:"Luso Freight (demo)",created_at:new Date(Date.now()-72e5)},
+    {codigo:"ELO_SM-000001",estado:"convertida",origem:"Lisboa",destino:"Praia",volume_m3:1.1,preco_estimado:640,cliente:"Casa Verde Lda",prestador:"Tejo Transitários (demo)",created_at:new Date(Date.now()-9e7)}];
   let linhas=null,erro="",filtro="todas";
 
   function html(){const l=(linhas||[]).filter(r=>filtro==="todas"||(filtro==="cotacao"?r.estado==="enviada"&&r.preco_estimado==null:r.estado===filtro));

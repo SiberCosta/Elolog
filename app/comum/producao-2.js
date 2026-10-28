@@ -40,7 +40,7 @@
     let ficheiro=null,qr="",nifEmpresa="",enc="";
     if(p.online()){try{const e=await p.minhaEmpresa();if(e){const c=await p.sb();const{data}=await c.from("empresas").select("nif").eq("id",e.empresa_id).maybeSingle();nifEmpresa=data?.nif||""}}catch(_){}}
     const passo1=(msg)=>{j.passo(0);j.mostrar(`<p class="pm-nota">Carregue o PDF (ou uma fotografia nítida) da fatura emitida pelo seu programa certificado. A plataforma lê o código QR e confirma o NIF, o ATCUD e o total.</p>
-      <div class="pm-grelha"><label>Encomenda (código)<input id="pmFatEnc" maxlength="40" placeholder="Ex.: TR-2026-000185" value="${esc(enc)}"></label><label>Ficheiro da fatura<input id="pmFatFich" type="file" accept="application/pdf,image/png,image/jpeg" required></label></div>
+      <div class="pm-grelha"><label>Encomenda (código)<input id="pmFatEnc" maxlength="40" placeholder="Ex.: ELO_TRAN-000185" value="${esc(enc)}"></label><label>Ficheiro da fatura<input id="pmFatFich" type="file" accept="application/pdf,image/png,image/jpeg" required></label></div>
       ${msg?`<div class="pm-alerta">${esc(msg)}</div><label class="pm-largo">Texto do código QR (copie do seu programa de faturação)<textarea id="pmFatQr" rows="3" placeholder="A:123456789*B:…">${esc(qr)}</textarea></label>`:""}`,
       [{texto:"Cancelar",acao:j.fechar},{texto:"Ler fatura",principal:true,acao:async()=>{enc=document.getElementById("pmFatEnc").value.trim();
         const f=document.getElementById("pmFatFich").files[0]||ficheiro;if(!f&&!window.eloValidar(["pmFatFich"]))return;ficheiro=f;

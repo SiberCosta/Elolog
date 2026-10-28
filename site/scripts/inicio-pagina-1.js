@@ -55,7 +55,7 @@ document.write(["    <!-- NAVEGAÇÃO PRINCIPAL -->",'    <nav class="navbar" ar
 "            </div>","        </div>","    </section>","","    <!-- RASTREIO -->",'    <section id="rastrear" class="tracking-section">','        <div class="tracking-shell">','            <div class="tracking-copy">',
 '                <span class="section-kicker">Rastreabilidade</span>',"                <h2>Saiba onde está a sua carga.</h2>","                <p>Consulte rapidamente o estado da operação através do código de rastreio.</p>","                ",
 "            </div>",'            <div class="tracking-panel">','                <form id="form-rastreio" class="search-form">','                    <label for="codigo-rastreio">Código da operação</label>',
-'                    <div class="tracking-input-row">','                        <div class="input-wrapper"><span class="search-icon">⌕</span><input type="text" id="codigo-rastreio" placeholder="Ex.: EL-8842-INT" required></div>',
+'                    <div class="tracking-input-row">','                        <div class="input-wrapper"><span class="search-icon">⌕</span><input type="text" id="codigo-rastreio" placeholder="Ex.: ELO_TRAN-000123" required></div>',
 '                        <button type="submit" class="btn-search">Rastrear <span>→</span></button>',"                    </div>","                    <small>Exemplo de código: EL-8842-INT</small>","                </form>",
 '                <div id="resultado-rastreio" class="tracking-result hidden">',
 '                    <div class="result-header"><div><span class="result-label">Código da Operação</span><h3 id="res-codigo" class="result-code">---</h3></div><span id="res-status-badge" class="status-badge">Em Trânsito</span></div>',

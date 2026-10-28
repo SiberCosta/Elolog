@@ -53,6 +53,16 @@ O ELO responde: menu, estado da encomenda (só ao número de telemóvel associad
 
 Só aceita ligações seguras (IMAP 993 e SMTP 465). Contas Gmail/Outlook com 2 passos pedem uma «palavra-passe de aplicação». Limites: 40 envios por utilizador a cada 10 minutos; mensagens com mais de 12 MB abrem-se no webmail.
 
+## Aparecer no Google (com o logótipo)
+
+1. https://search.google.com/search-console › **Adicionar propriedade** › **Domínio** › `elolog.pt`.
+2. O Google mostra um registo **TXT** (`google-site-verification=…`). No ptdns, crie um registo TXT no nome `@` com esse valor e carregue em **Verificar** (pode demorar até 1 hora).
+3. **Sitemaps** › escreva `https://www.elolog.pt/sitemap.xml` › Enviar.
+4. **Inspeção de URL** › `https://www.elolog.pt/site/inicio.html` › **Pedir indexação** (repita para o simulador).
+5. Opcional: https://www.bing.com/webmasters › importar do Google Search Console.
+
+O Google decide quando atualiza: o título e a descrição costumam aparecer em dias; o logótipo (ícone) e o nome «Elolog» podem levar algumas semanas. Para testar os dados estruturados: https://search.google.com/test/rich-results com `https://www.elolog.pt/site/inicio.html`.
+
 ## Domínio elolog.pt
 
 O endereço principal é **https://www.elolog.pt** (o ficheiro `CNAME` na raiz do projeto já o indica ao GitHub Pages). A aplicação fica em `https://www.elolog.pt/app/area-cliente.html`.

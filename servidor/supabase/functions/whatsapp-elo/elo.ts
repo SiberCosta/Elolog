@@ -24,13 +24,19 @@ export const MENU = [
 ].join('\n');
 
 export const normalizar = (t: string) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
-export const codigoEm = (t: string) => (t.toUpperCase().match(/\bTR-?\s?(\d{4})-?\s?(\d{6})\b/) ?? null);
+/** Código de encomenda na mensagem: ELO_<REF>-000123 (atual) ou TR-AAAA-NNNNNN (antigo). Devolve-o normalizado ou null. */
+export function codigoEm(t: string): string | null {
+  const u = t.toUpperCase(), n = u.match(/\bELO[_\s-]?([A-Z][A-Z0-9]{1,7})[\s-]?(\d{6})\b/);
+  if (n && n[1] !== 'SM') return `ELO_${n[1]}-${n[2]}`;
+  const v = u.match(/\bTR-?\s?(\d{4})-?\s?(\d{6})\b/);
+  return v ? `TR-${v[1]}-${v[2]}` : null;
+}
 
 /** Decide o que fazer com uma mensagem de texto. */
 export function interpretar(texto: string, c: Conversa, agora = Date.now()): Acao {
   const q = normalizar(texto);
   const cod = codigoEm(texto);
-  if (cod) return { tipo: 'estado', codigo: `TR-${cod[1]}-${cod[2]}` };
+  if (cod) return { tipo: 'estado', codigo: cod };
   const voltar = /^(menu|inicio|0|ola|oi|bom dia|boa tarde|boa noite)\b/.test(q);
   if (c.humano_desde && agora - Date.parse(c.humano_desde) < 12 * 3600e3 && !voltar) {
     if (c.dados?.avisado) return { tipo: 'silencio' };
@@ -38,8 +44,8 @@ export function interpretar(texto: string, c: Conversa, agora = Date.now()): Aca
   }
   if (voltar || !q) return { tipo: 'responder', texto: MENU, passo: null };
   if (q === '1' || /\b(estado|encomenda|rastre|seguir|onde esta|tracking)/.test(q))
-    return { tipo: 'responder', passo: 'codigo', texto: 'Indique o código da encomenda (por exemplo *TR-2026-000123*). Por segurança, só mostro o estado se escrever a partir do número de telemóvel associado à encomenda.' };
-  if (c.passo === 'codigo') return { tipo: 'responder', passo: 'codigo', texto: 'Não reconheci o código. Tem o formato *TR-AAAA-NNNNNN* e aparece no email de confirmação. Ou escreva *MENU*.' };
+    return { tipo: 'responder', passo: 'codigo', texto: 'Indique o código da encomenda (por exemplo *ELO_TRAN-000123*). Por segurança, só mostro o estado se escrever a partir do número de telemóvel associado à encomenda.' };
+  if (c.passo === 'codigo') return { tipo: 'responder', passo: 'codigo', texto: 'Não reconheci o código. Tem o formato *ELO_XXXX-000000* e aparece no email de confirmação. Ou escreva *MENU*.' };
   if (q === '2' || /\b(simul|preco|cotac|orcament|quanto custa|enviar)/.test(q))
     return { tipo: 'responder', passo: null, texto: `Pode simular o envio e comparar propostas de prestadores verificados aqui:\n${SITE}/site/simulador.html\n\nDemora 2 minutos e é sem compromisso.` };
   if (q === '3' || /\b(pessoa|humano|atendente|equipa|falar com|reclama|problema|ajuda)/.test(q))

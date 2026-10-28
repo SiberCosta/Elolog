@@ -1,7 +1,7 @@
 /* Elolog — módulo 11/15: Simulação do cliente: mercadorias, volumes, distância e propostas
    Script clássico: partilha o âmbito global com os restantes módulos. Carregar pela ordem numérica. */
 function gerarRegistroSimulacaoCliente(){const agora=new Date;const data=agora.getFullYear()+String(agora.getMonth()+1).padStart(2,"0")+String(agora.getDate()).padStart(2,"0");const aleatorio=String(Math.floor(Math.random()*1e4)).padStart(4,"0");
-return`SIM-${data}-${aleatorio}`}function formatarDataHoraCliente(data){return new Intl.DateTimeFormat("pt-PT",{dateStyle:"short",timeStyle:"short"}).format(data)}function obterRemetenteDoPerfilCliente(){const perfil=currentUser?.profile||{};return{
+return elologCodigoSimulacao()}function formatarDataHoraCliente(data){return new Intl.DateTimeFormat("pt-PT",{dateStyle:"short",timeStyle:"short"}).format(data)}function obterRemetenteDoPerfilCliente(){const perfil=currentUser?.profile||{};return{
 name:currentUser?.name||document.getElementById("clientProfileName")?.textContent.trim()||"Cliente Elolog",nif:perfil.nif||document.getElementById("clientProfileNif")?.textContent.trim()||"",
 phone:perfil.phone||document.getElementById("clientProfilePhone")?.textContent.trim()||"",email:currentUser?.email||document.getElementById("clientProfileEmail")?.textContent.trim()||"",
 address:perfil.address||document.getElementById("clientProfileAddress")?.textContent.trim()||""}}function selecionarOrigemDestinatario(origem){const ids={name:"destinatario-nome",nif:"destinatario-nif",phone:"destinatario-telefone",email:"destinatario-email",
