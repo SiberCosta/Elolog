@@ -1,8 +1,8 @@
-# Elolog — pôr em produção (v59)
+# Elolog — pôr em produção (v65)
 
 Tudo o que falta ativar já está construído e testado. Esta página diz o que fazer, por esta ordem.
 
-| Ponto | Estado no projeto «Elolog T» | Falta fazer (por si) | Custo |
+| Ponto | Estado no projeto «Elolog» | Falta fazer (por si) | Custo |
 |---|---|---|---|
 | Emails | Fila, modelos e envio a cada 5 minutos ativos | Criar conta Brevo e definir 3 segredos | Grátis até 300 emails/dia |
 | Documentos | Armazenamento privado por empresa e por cliente, 20 MB por ficheiro | Nada | Grátis até 1 GB |
@@ -10,6 +10,22 @@ Tudo o que falta ativar já está construído e testado. Esta página diz o que 
 | Pagamentos | Multibanco e MB WAY pela ifthenpay, aviso automático e verificação a cada 10 min | Cada empresa pede chaves à ifthenpay e grava-as na Elolog | Comissão da ifthenpay por pagamento |
 | Navios (AIS) | Leitura a cada 30 minutos dos navios seguidos | Criar chave gratuita no aisstream.io | Grátis |
 | Cópias de segurança | Cópia diária cifrada no GitHub Actions | Definir 2 a 4 segredos no GitHub | Grátis |
+
+## Pôr a funcionar no projeto «Elolog» (wcggcpdiswbzrdpwgdpb)
+
+Já feito: tabelas base (00011–00013), as 7 Edge Functions publicadas e a aplicação ligada ao projeto. Falta, por esta ordem:
+
+1. **Base de dados** — Supabase › SQL Editor › New query › colar todo o `servidor/supabase/instalar_projeto_elolog.sql` › Run. No fim aparece «Tarefas agendadas: …». (Uma só transação: ou fica tudo instalado, ou nada muda.)
+2. **Primeiro administrador** — Authentication › Users › Add user › Create new user (o seu email, uma palavra-passe forte, «Auto Confirm User» ligado). Depois, no SQL Editor:
+   ```sql
+   insert into administradores_plataforma (user_id, nome, email, papel)
+   select id, 'Administração Elolog', email, 'admin' from auth.users where email = 'O_SEU_EMAIL';
+   ```
+   Entre em `https://www.elolog.pt/app/area-cliente.html?acesso=administracao`. Para criar a equipa Elolog ative o código de autenticação (2.º fator) no seu perfil.
+3. **Endereços** — Authentication › URL Configuration: Site URL `https://www.elolog.pt/app/area-cliente.html`; Redirect URLs `https://www.elolog.pt/**`.
+4. **Segredos** — Edge Functions › Secrets: `BREVO_API_KEY`, `EMAIL_REMETENTE` (`notificacoes@elolog.pt`), `APP_URL` e `SITE_URL` (`https://www.elolog.pt/app/area-cliente.html`); opcional `AISSTREAM_API_KEY`.
+5. **Cópias de segurança** — no GitHub, atualizar `SUPABASE_DB_URL` (e `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`) para o projeto novo (ver `COPIAS_DE_SEGURANCA.md`).
+6. **Prestadores e pagamentos** — cada empresa regista-se em «Tornar-se prestador»; a administração aprova; a empresa cria tarifas e, se quiser pagamentos online, grava as chaves ifthenpay.
 
 ## Domínio elolog.pt
 

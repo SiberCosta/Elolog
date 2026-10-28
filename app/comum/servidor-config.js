@@ -10,9 +10,9 @@
 
    usarCdn: por omissão false = a aplicação NÃO pede nada a outros sites: a biblioteca do Supabase tem de estar em
    app/comum/supabase.js (ver app/LEIA-ME.md). Com true, se esse ficheiro faltar, tenta o jsDelivr (versão fixa). */
-// Projeto de TESTE «Elolog T» (ligado a 25/10/2026). Para voltar ao modo local, esvazie os dois valores.
+// Projeto «Elolog» (wcggcpdiswbzrdpwgdpb, Frankfurt), ligado a 28/10/2026. Para voltar ao modo local, esvazie os dois valores.
 window.ELOLOG_SERVIDOR = {
-  supabaseUrl: 'https://elkykihzgxxcdqhskoyx.supabase.co',
-  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsa3lraWh6Z3h4Y2RxaHNrb3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4NTgyODIsImV4cCI6MjEwODQzNDI4Mn0.nu70lyD978OrNzPNg7EAgyzAkvxU1Bkl9CaKp9Aq0d0',
+  supabaseUrl: 'https://wcggcpdiswbzrdpwgdpb.supabase.co',
+  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjZ2djcGRpc3dienJkcHdnZHBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMxMjMxODIsImV4cCI6MjEwODY5OTE4Mn0.lUFXIez4q9Mt4yTJjgl7tdPbA7EGWEyKCDQ6zNHZG4M',
   usarCdn: true   // a biblioteca ainda não está em app/comum/supabase.js: usa o jsDelivr (versão fixa 2.45.4)
 };

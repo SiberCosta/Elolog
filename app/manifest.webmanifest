@@ -1,8 +1,8 @@
 {
   "id": "./operador-terreno",
-  "name": "Elolog — Operador no Terreno",
-  "short_name": "Elolog Operador",
-  "description": "Centro de operações para recolhas, entregas e rotas atribuídas ao operador Elolog.",
+  "name": "Elolog — Área de Cliente",
+  "short_name": "Elolog",
+  "description": "Simule envios, compare prestadores, acompanhe encomendas e pague — clientes, prestadores e administração Elolog.",
   "lang": "pt-PT",
   "dir": "ltr",
   "start_url": "area-cliente.html",
