@@ -1,6 +1,6 @@
 # Elolog
 
-**Versão de 26/10/2026 (v65).** Se esta pasta tem este ficheiro, é a versão nova.
+**Versão de 28/10/2026 (v67).** Se esta pasta tem este ficheiro, é a versão nova.
 
 Plataforma de intermediação logística: clientes simulam e comparam propostas; transitárias gerem encomendas, equipa e cobranças; a administração Elolog valida e acompanha a rede.
 
@@ -41,7 +41,7 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - Partes seguidas do mesmo assunto ficam no mesmo ficheiro; só quando passam das 200 linhas há partes numeradas (`base-1.css`, `base-2.css`…), carregadas pela ordem dos números.
 - O corpo das páginas maiores está em partes que se escrevem no próprio sítio (`app/comum/pagina-1…5.js`, `site/scripts/inicio-pagina-1.js`, `site/scripts/simulador-pagina-1.js`). Para mudar um texto ou um botão da página, procure-o nesses ficheiros.
 - Os scripts da aplicação são **clássicos** (âmbito global, `onclick="…"` no HTML): a ordem conta. Não acrescentar `defer`, `async` nem `type="module"`.
-- Os endereços de CSS e JS levam `?v=65`: mudar o número a cada versão publicada para os navegadores carregarem os ficheiros novos.
+- Os endereços de CSS e JS levam `?v=66`: mudar o número a cada versão publicada para os navegadores carregarem os ficheiros novos.
 
 ## Servidor (Supabase)
 
@@ -51,9 +51,21 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Voltar ao modo só local**: esvazie `supabaseUrl` e `supabaseAnonKey` em `servidor-config.js`.
 - A biblioteca do Supabase é carregada do jsDelivr (versão fixa 2.45.4, `usarCdn: true`). Para não depender de outro site, coloque o ficheiro `supabase.js` em `app/comum/` e mude para `usarCdn: false`.
 
+## v67 (painel de email)
+
+- **Email dentro da plataforma** (menu «Email» da administração e, no prestador, em «Apoio ao cliente» › «Email»): ler, procurar, responder, responder a todos, reencaminhar, descarregar anexos, marcar como não lida e apagar (vai para o Lixo). Pastas Entrada, Enviados e Lixo; o que se envia fica também nos Enviados da caixa.
+- **Só administradores:** o administrador da plataforma (caixas da Elolog, com 2.º fator) e o administrador de cada prestador (caixas da sua empresa). Operadores e outras funções não veem a opção.
+- Liga a qualquer caixa com IMAP (porta 993) e SMTP (porta 465): www.pt/correio.pt, Gmail, Sapo, etc. A palavra-passe fica cifrada no cofre do Supabase e nunca chega ao navegador; cada caixa é testada antes de ser guardada.
+- Servidor: migração `00137_caixas_email.sql` e Edge Function `email-caixa` (já publicada). O HTML dos emails abre isolado (sem scripts) e as imagens externas ficam bloqueadas até carregar em «Mostrar imagens».
+
+## v66 (WhatsApp e assistente ELO)
+
+- Contactos oficiais num só ficheiro (`partilhado/scripts/contactos.js`): número de WhatsApp e email. Sem número, o botão do ELO abre um email para `contacto@elolog.pt` com o resumo da conversa; com número, abre o WhatsApp da Elolog.
+- **ELO no WhatsApp:** Edge Function `whatsapp-elo` (WhatsApp Business Cloud API da Meta) e migração `00136_whatsapp.sql`: menu, estado da encomenda só para o número associado, simulação, contactos, registo de prestadores e pedido de atendimento humano (notificação + email à administração). Ativação em `documentacao/PRODUCAO.md` › «WhatsApp».
+
 ## v65 (auditoria e projeto «Elolog»)
 
-- A aplicação liga-se ao novo projeto Supabase **«Elolog»** (`wcggcpdiswbzrdpwgdpb`, Frankfurt). As 7 Edge Functions já estão publicadas. A base de dados instala-se de uma vez com `servidor/supabase/instalar_projeto_elolog.sql` (SQL Editor › Run); passos completos em `documentacao/PRODUCAO.md` › «Pôr a funcionar».
+- A aplicação liga-se ao novo projeto Supabase **«Elolog»** (`wcggcpdiswbzrdpwgdpb`, Frankfurt). As 7 Edge Functions já estão publicadas. A base de dados instala-se com `servidor/supabase/instalar_projeto_elolog.sql` ou `instalar_em_partes/parte_1…4.sql` (SQL Editor › Run; já inclui as permissões da API que os projetos Supabase novos deixaram de dar — `permissoes_api.sql`); passos completos em `documentacao/PRODUCAO.md` › «Pôr a funcionar».
 - Nome da aplicação corrigido («Elolog — Área de Cliente» em vez de «Elolog Operador»), página 404 própria, `robots.txt`, `sitemap.xml` e etiquetas de partilha no simulador e na página legal.
 
 ## v64 (página de informação legal)
