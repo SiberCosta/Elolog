@@ -64,3 +64,7 @@ Se o passo 1 falhar, **pare aí** e envie o erro: o resto depende dele.
 - Cada teste corre com o papel e o utilizador reais (SET ROLE + JWT), por isso testa as permissões e o RLS a sério.
 - NÃO FOI EXECUTADO por quem o escreveu: uma falha pode ser do teste e não do esquema. Envie o relatório completo.
 - Não corra em produção.
+
+## Teste 6 — `06_email.sql` (v67)
+
+- Permissões e cofre das caixas de email: 20 verificações (quem vê, quem grava, a palavra-passe só pela chave de serviço, apagar a caixa apaga o segredo). Correu 20/20 numa base PostgreSQL 16 local com todas as migrações. Só em base de testes.
