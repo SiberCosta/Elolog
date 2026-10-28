@@ -74,3 +74,23 @@ html body .volume-item.volume-item>div.x,html body .volume-subsection .volume-it
 .legal-cartao:hover{background:#e9f1f7}.legal-cartao strong{color:#0e2433}.legal-cartao span{font-size:13px;font-weight:600;color:#236186}
 @media(max-width:900px){.legal-shell{grid-template-columns:1fr;margin-top:-50px}.legal-indice{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}.legal-indice strong,.legal-indice small{grid-column:1/-1}}
 @media(max-width:600px){.legal-dados,.legal-acoes{grid-template-columns:1fr}.legal-bloco{padding:16px!important}.legal-indice{grid-template-columns:1fr}}
+/* v69 — barra de navegação igual à da página inicial: transparente sobre a fotografia, letra monoespaçada; fica branca ao rolar. Ativada por simulador.js (classe sim-capa). */
+:root{--cp-mono:ui-monospace,"SFMono-Regular","SF Mono",Menlo,Consolas,"Liberation Mono",monospace;--cp-fio:rgba(255,255,255,.2)}
+html.sim-capa .navbar{position:fixed!important;left:0;right:0;top:0;
+background:transparent!important;border-bottom:1px solid transparent!important;box-shadow:none!important;backdrop-filter:none!important;transition:background-color .35s ease,border-color .35s ease,box-shadow .35s ease!important}
+html.sim-capa .navbar:not(.nav-solida) .logo-image{filter:brightness(0) invert(1)}
+html.sim-capa .navbar:not(.nav-solida) .nav-links>a,html.sim-capa .navbar:not(.nav-solida) .nav-dropdown-toggle{color:#fff!important}
+html.sim-capa .navbar .nav-links>a,html.sim-capa .navbar .nav-dropdown-toggle{font-family:var(--cp-mono)!important;font-size:.74rem!important;font-weight:500!important;letter-spacing:.08em!important;text-transform:uppercase}
+html.sim-capa .navbar:not(.nav-solida) .nav-toggle span{background:#fff!important}
+html.sim-capa .navbar:not(.nav-solida) .btn-client{background:transparent!important;border-color:rgba(255,255,255,.85)!important;color:#fff!important}
+html.sim-capa .navbar .btn-client{border-radius:4px!important;font-family:var(--cp-mono)!important;font-size:.76rem!important;font-weight:600!important;letter-spacing:.08em!important;text-transform:uppercase}
+html.sim-capa .navbar:not(.nav-solida) .elo-idioma-botao{background:transparent!important;border-color:var(--cp-fio)!important;color:#fff!important}
+html.sim-capa .navbar:not(.nav-solida) .elo-idioma-globo{color:#9fe3c6!important}
+html.sim-capa .navbar .elo-idioma-botao{border-radius:4px!important;font-family:var(--cp-mono)!important;font-size:.76rem!important}
+html.sim-capa .navbar.nav-solida{background:rgba(255,255,255,.97)!important;border-bottom-color:#e3eaef!important;
+box-shadow:0 6px 24px rgba(14,36,51,.08)!important;backdrop-filter:blur(10px)!important}
+@media(hover:hover){html.sim-capa .navbar:not(.nav-solida) .nav-links>a:hover,html.sim-capa .navbar:not(.nav-solida) .nav-dropdown-toggle:hover{color:#9fe3c6!important}html.sim-capa .navbar:not(.nav-solida) .btn-client:hover{background:#fff!important;color:#0E2433!important;border-color:#fff!important}html.sim-capa .navbar:not(.nav-solida) .elo-idioma-botao:hover{border-color:#fff!important;color:#fff!important}}
+@media(max-width:900px){html.sim-capa .navbar .nav-menu{background:#fff!important}html.sim-capa .navbar .nav-menu .nav-links>a,html.sim-capa .navbar .nav-menu .nav-dropdown-toggle{color:#0E2433!important}}
+@media(prefers-reduced-motion:reduce){html.sim-capa .navbar{transition:none!important}}
+html.sim-capa .simulator-hero{padding-top:9.5rem!important}@media(max-width:900px){html.sim-capa .simulator-hero{padding-top:7.5rem!important}}
+html.sim-capa .navbar .nav-links>a,html.sim-capa .navbar .nav-dropdown-toggle{white-space:nowrap}

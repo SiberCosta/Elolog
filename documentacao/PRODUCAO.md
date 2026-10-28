@@ -27,6 +27,31 @@ Já feito: tabelas base (00011–00013), as 7 Edge Functions publicadas e a apli
 5. **Cópias de segurança** — no GitHub, atualizar `SUPABASE_DB_URL` (e `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`) para o projeto novo (ver `COPIAS_DE_SEGURANCA.md`).
 6. **Prestadores e pagamentos** — cada empresa regista-se em «Tornar-se prestador»; a administração aprova; a empresa cria tarifas e, se quiser pagamentos online, grava as chaves ifthenpay.
 
+## WhatsApp (assistente ELO e botão de contacto)
+
+**Botão de contacto (ativo):** número `351934876092` em `partilhado/scripts/contactos.js` (só dígitos, com indicativo). Para mudar o número, altere só esse ficheiro (e o rodapé, se quiser).
+
+**ELO a responder sozinho no WhatsApp** (função `whatsapp-elo`, já publicada):
+1. Um número só para isto (não pode estar ao mesmo tempo na app WhatsApp normal). Um telemóvel novo ou fixo serve.
+2. developers.facebook.com › My Apps › Create app › tipo **Business** › adicionar **WhatsApp**. A Meta cria uma conta WhatsApp Business e um número de teste gratuito para experimentar.
+3. Em WhatsApp › API Setup: copiar o **Phone number ID**. Em Business Settings › System users: criar um utilizador de sistema e gerar um **token permanente** com `whatsapp_business_messaging`. Em App settings › Basic: copiar o **App Secret**.
+4. Supabase › Edge Functions › Secrets: `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID`, `WHATSAPP_APP_SECRET` e `WHATSAPP_VERIFY_TOKEN` (uma palavra inventada por si).
+5. WhatsApp › Configuration › Webhook: Callback URL `https://wcggcpdiswbzrdpwgdpb.supabase.co/functions/v1/whatsapp-elo`, Verify token = o mesmo `WHATSAPP_VERIFY_TOKEN` › Verify and save › subscrever o campo **messages**.
+6. Adicionar o número real (WhatsApp › Phone numbers), verificar por SMS e pôr o mesmo número em `contactos.js`.
+
+O ELO responde: menu, estado da encomenda (só ao número de telemóvel associado à encomenda), simulação, contactos, registo de prestadores e «falar com a equipa» (avisa a administração por notificação e email). Custos: as respostas a mensagens enviadas pelo cliente, dentro de 24 h, são gratuitas na tabela atual da Meta; mensagens iniciadas pela Elolog (modelos) são pagas — a função não as usa.
+
+## Painel de email (v67)
+
+1. Supabase › SQL Editor › colar `servidor/supabase/migrations/00137_caixas_email.sql` › **Run** (uma vez).
+2. Entrar na administração (com o código do 2.º fator) › menu **Email** › **⚙** › preencher e **Testar e guardar**:
+   - Email `contacto@elolog.pt` · Servidor IMAP `imap.correio.pt` · Servidor SMTP `smtp.correio.pt` · Utilizador `contacto@elolog.pt` · a palavra-passe da caixa (a do webmail).
+   - Se o teste disser que não liga ao servidor, confirme os nomes em www.pt › Email › configurar programa de email (IMAP SSL 993, SMTP SSL 465) e corrija.
+3. Repita para `denivaldo@elolog.pt` e `elolog@elolog.pt` se quiser (máx. 5 caixas por empresa). Os aliases (notificacoes@, privacidade@) chegam à caixa `contacto@`.
+4. Cada prestador liga as suas caixas da mesma forma (só o administrador da empresa).
+
+Só aceita ligações seguras (IMAP 993 e SMTP 465). Contas Gmail/Outlook com 2 passos pedem uma «palavra-passe de aplicação». Limites: 40 envios por utilizador a cada 10 minutos; mensagens com mais de 12 MB abrem-se no webmail.
+
 ## Domínio elolog.pt
 
 O endereço principal é **https://www.elolog.pt** (o ficheiro `CNAME` na raiz do projeto já o indica ao GitHub Pages). A aplicação fica em `https://www.elolog.pt/app/area-cliente.html`.

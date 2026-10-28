@@ -162,3 +162,7 @@ const btn=document.getElementById("btn-criar-proposta");if(btn){btn.disabled=tru
 simulacaoAtual.propostaPrestador=prestador.nome;simulacaoAtual.estado="Proposta enviada"}}document.addEventListener("DOMContentLoaded",()=>{const btn=document.getElementById("btn-criar-proposta");if(btn)btn.addEventListener("click",criarPropostaAoPrestador)});
 document.addEventListener("DOMContentLoaded",()=>{const candidates=["btn-criar-simulacao","btn-realizar-simulacao"];candidates.forEach(id=>{const el=document.getElementById(id);if(el&&!el.dataset.propostasHook){el.dataset.propostasHook="1";
 el.addEventListener("click",()=>{setTimeout(()=>{const simulacao=obterSimulacaoParaProposta();apresentarPropostasPrestadores(simulacao)},50)})}})});
+/* v69 — barra de navegação como na página inicial: transparente sobre a fotografia e branca depois de rolar. */
+(function(){const m=document.querySelector(".navbar");if(!m)return;document.documentElement.classList.add("sim-capa");
+  const f=()=>m.classList.toggle("nav-solida",scrollY>40||!!m.querySelector(".nav-menu.active,.nav-menu.open"));
+  addEventListener("scroll",f,{passive:true});m.addEventListener("click",()=>setTimeout(f,0));f()})();

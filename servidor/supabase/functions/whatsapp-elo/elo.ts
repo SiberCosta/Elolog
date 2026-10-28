@@ -45,7 +45,7 @@ export function interpretar(texto: string, c: Conversa, agora = Date.now()): Aca
   if (q === '3' || /\b(pessoa|humano|atendente|equipa|falar com|reclama|problema|ajuda)/.test(q))
     return { tipo: 'humano', texto: 'Combinado: avisei a equipa Elolog, que lhe responde em breve (dias úteis, 9h–18h). Se quiser, descreva já aqui o assunto.' };
   if (q === '4' || /\b(contact|horario|email|telefone|morada)/.test(q))
-    return { tipo: 'responder', passo: null, texto: `📧 contacto@elolog.pt\n🌐 ${SITE}\n🕘 Dias úteis, 9h–18h (hora de Lisboa)\n\nEscreva *3* para falar com a equipa.` };
+    return { tipo: 'responder', passo: null, texto: `📧 contacto@elolog.pt\n📞 +351 934 876 092\n🌐 ${SITE}\n🕘 Dias úteis, 9h–18h (hora de Lisboa)\n\nEscreva *3* para falar com a equipa.` };
   if (q === '5' || /\b(prestador|transitari|parceir|empresa de transport|registar empresa)/.test(q))
     return { tipo: 'responder', passo: null, texto: `Registe a sua empresa em ${SITE}/app/prestador.html — depois da aprovação recebe pedidos de clientes e gere encomendas, tarifas e pagamentos na plataforma.` };
   return { tipo: 'responder', passo: null, texto: `Não percebi bem. 🙂\n\n${MENU}` };

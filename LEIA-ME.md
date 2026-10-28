@@ -1,6 +1,6 @@
 # Elolog
 
-**Versão de 28/10/2026 (v67).** Se esta pasta tem este ficheiro, é a versão nova.
+**Versão de 28/10/2026 (v69).** Se esta pasta tem este ficheiro, é a versão nova.
 
 Plataforma de intermediação logística: clientes simulam e comparam propostas; transitárias gerem encomendas, equipa e cobranças; a administração Elolog valida e acompanha a rede.
 
@@ -50,6 +50,16 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Demonstração local**: acrescente `?demo=1` à morada (ex.: `app/area-cliente.html?demo=1`). Fica ativa nesse separador até o fechar (`?demo=0` desliga) e usa as contas de demonstração no navegador, sem tocar no servidor.
 - **Voltar ao modo só local**: esvazie `supabaseUrl` e `supabaseAnonKey` em `servidor-config.js`.
 - A biblioteca do Supabase é carregada do jsDelivr (versão fixa 2.45.4, `usarCdn: true`). Para não depender de outro site, coloque o ficheiro `supabase.js` em `app/comum/` e mude para `usarCdn: false`.
+
+## v69 (entrada direta e simulador)
+
+- `index.html` abre logo a página inicial, sem o ecrã intermédio «A abrir a plataforma Elolog… / Entrar na plataforma».
+- Simulador: barra de navegação igual à da página inicial (transparente sobre a fotografia, mesma letra, fica branca ao rolar) e mesmas ligações (sem «Sobre Nós», que não existe na página inicial; também retirado da página legal).
+
+## v68 (contacto WhatsApp e equipa)
+
+- Número oficial **+351 934 876 092** em `partilhado/scripts/contactos.js`: o botão do ELO passa a abrir o WhatsApp da Elolog; o número aparece no rodapé (site e aplicação), na secção de contacto da página inicial, na página legal e nas respostas do ELO no WhatsApp.
+- Lista «Equipa Elolog» corrigida: as colunas (nome, função, ações) ficam alinhadas em todas as linhas.
 
 ## v67 (painel de email)
 

@@ -26,7 +26,7 @@
       ["Movimentos e reconciliação","showProviderFinanceTab('history',this)","providerFinanceiro","manage_payments"],["Registar fatura certificada","elologFaturas.abrir(this)","","manage_payments"]]],
     ["doc","Documentos","file",[["Documentos","showProviderPage('providerDocumentos',this)","providerDocumentos","download_manifest"]]],
     ["rel","Relatórios","clipboard",[["Relatórios","showProviderPage('providerReports',this)","providerReports","view_loads"]]],
-    ["apoio","Apoio ao cliente","headset",[["Pedidos de apoio","showProviderPage('providerSupport',this)","providerSupport","view_clients"],["Reclamações","showProviderPage('providerComplaints',this)","providerComplaints","view_clients"]]],
+    ["apoio","Apoio ao cliente","headset",[["Pedidos de apoio","showProviderPage('providerSupport',this)","providerSupport","view_clients"],["Reclamações","showProviderPage('providerComplaints',this)","providerComplaints","view_clients"],["Email","elologEmail.abrir(this)","","",1]]],
     ["func","Funcionários e acessos","shield",[["Funcionários e funções","showProviderPage('providerEmployees',this)","providerEmployees","manage_employees",1],["Segurança e histórico","showProviderPage('providerSecurity',this)","providerSecurity",""]]],
     ["emp","Empresa e configurações","settings",[["Dados da empresa","showProviderPage('providerSettings',this)","providerSettings","settings",1],["Subscrição","showProviderPage('providerSubscription',this)","providerSubscription","",1],
       ["Pagamentos online","elologPagamentos.config(this)","","settings",1],
