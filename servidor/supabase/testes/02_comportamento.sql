@@ -21,7 +21,7 @@ do $teste$ declare -- utilizadores
   --   'nada'        o SQL tem de falhar OU devolver 0 linhas (acesso bloqueado)
   --   'linhas=N'    o SQL tem de devolver exatamente N linhas
   --   'verdadeiro'  o SQL é uma expressão que tem de dar true
-  execute $f$ create function pg_temp.t(p_nome text, p_user uuid, p_sql text, p_esperado text, p_papel text default 'authenticated', p_aal text default 'aal1')
+  execute $f$ create function pg_temp.t(p_nome text, p_user uuid, p_sql text, p_esperado text, p_papel text default 'authenticated', p_aal text default 'aal2')
   returns void language plpgsql as $b$ declare v_n bigint; v_ok boolean := false; v_det text := ''; begin perform set_config('request.jwt.claims',
       case when p_user is null then '{}' else json_build_object('sub', p_user, 'role', p_papel, 'aal', p_aal)::text end, true);
     execute format('set local role %I', p_papel); begin if p_esperado = 'erro' then execute p_sql; v_ok := false; v_det := 'devia ter falhado, mas passou';
@@ -147,9 +147,9 @@ do $teste$ declare -- utilizadores
   -- ------------------------------------------------------------------ 4c. verificação em dois passos da administração (0011)
   perform pg_temp.t('4c.1 por omissão a regra está desligada: a administração entra só com a palavra-passe (aal1)', pa, 'select * from public.sou_admin_plataforma()', 'linhas=1');
   update private.plataforma_config set valor = 'true' where chave = 'exigir_mfa_admin';
-  perform pg_temp.t('4c.2 regra LIGADA: sem o 2.º passo (aal1) já não é administradora', pa, 'select * from public.sou_admin_plataforma()', 'nada');
-  perform pg_temp.t('4c.3 regra LIGADA: sem o 2.º passo as funções de administração recusam', pa, 'select public.painel_administracao(30)', 'erro');
-  perform pg_temp.t('4c.4 regra LIGADA: sem o 2.º passo não lê as tabelas de administração', pa, 'select * from empresas', 'nada');
+  perform pg_temp.t('4c.2 regra LIGADA: sem o 2.º passo (aal1) já não é administradora', pa, 'select * from public.sou_admin_plataforma()', 'nada', 'authenticated', 'aal1');
+  perform pg_temp.t('4c.3 regra LIGADA: sem o 2.º passo as funções de administração recusam', pa, 'select public.painel_administracao(30)', 'erro', 'authenticated', 'aal1');
+  perform pg_temp.t('4c.4 regra LIGADA: sem o 2.º passo não lê as tabelas de administração', pa, 'select * from empresas', 'nada', 'authenticated', 'aal1');
   perform pg_temp.t('4c.5 regra LIGADA: com o 2.º passo (aal2) é administradora', pa, 'select * from public.sou_admin_plataforma()', 'linhas=1', 'authenticated', 'aal2');
   perform pg_temp.t('4c.6 regra LIGADA: com o 2.º passo as funções de administração funcionam', pa, 'select public.painel_administracao(30)', 'ok', 'authenticated', 'aal2');
   perform pg_temp.t('4c.7 regra LIGADA: com o 2.º passo lê as empresas', pa, 'select * from empresas', 'linhas=3', 'authenticated', 'aal2');

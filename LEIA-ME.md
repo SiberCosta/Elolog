@@ -1,6 +1,6 @@
 # Elolog
 
-**Versão de 28/10/2026 (v73).** Se esta pasta tem este ficheiro, é a versão nova.
+**Versão de 29/10/2026 (v81).** Se esta pasta tem este ficheiro, é a versão nova.
 
 Plataforma de intermediação logística: clientes simulam e comparam propostas; transitárias gerem encomendas, equipa e cobranças; a administração Elolog valida e acompanha a rede.
 
@@ -57,6 +57,63 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Código de confirmação ao ligar uma caixa:** ao ligar uma caixa nova (ou mudar o endereço), a plataforma envia um código de 6 dígitos para essa caixa e só guarda depois de o escrever (válido 10 minutos, máx. 8 tentativas por 10 min).
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
+
+## v81 (dois passos para o administrador da empresa)
+
+- O **administrador da empresa** confirma cada entrada com o **código de 6 dígitos** de uma aplicação de autenticação (Google Authenticator, Microsoft Authenticator, Authy). Na primeira vez a plataforma mostra o **código QR** (e a chave para escrever à mão) para registar a aplicação. Passos: 1 · Empresa → 2 · A sua conta → **3 · Verificação**.
+- Garantido no servidor: sem o 2.º passo a base de dados **não abre a sessão da empresa** e não mostra nem altera dados (mesmo com as duas palavras-passe certas ou com uma sessão de empresa ainda aberta). As funções `gerir-funcionarios` e `email-caixa` também o exigem ao administrador da empresa.
+- Os outros funcionários (NIF + n.º + palavra-passe) não são afetados.
+- Servidor: migração `00150_mfa_admin_empresa.sql` (aplicada); `gerir-funcionarios` e `email-caixa` republicadas. Front: `app/comum/mfa-empresa.js`. Testes: `testes/16_mfa_admin_empresa.sql` (8/8); testes antigos atualizados (02: 78/78).
+- No modo de demonstração o 2.º passo não é pedido.
+
+## v80 (funcionário entra só com NIF, n.º e palavra-passe)
+
+- **Funcionário do prestador** (operador, terreno, armazém, financeiro): entra com **NIF da empresa + n.º de funcionário + a sua palavra-passe**. Já **não** precisa da palavra-passe da empresa. Opção «Lembrar o NIF e o número neste aparelho».
+- **Administrador da empresa**: botão **«Sou administrador da empresa»** → nome + NIF + **palavra-passe da empresa** e depois a sua conta (como antes). Se o administrador tentar entrar como funcionário, a plataforma encaminha-o para este acesso.
+- **N.º de funcionário automático** (0001, 0002, … por empresa), único dentro da empresa; pode continuar a ser definido à mão (ex.: OP-014). «0002» e «2» são o mesmo número.
+- Servidor: migração `00149_login_funcionario.sql` (aplicada) e Edge Function **`entrar-funcionario`** (publicada): procura a conta pelo NIF + n.º, confirma a palavra-passe e abre a sessão da empresa; o email do funcionário não é exposto e há limite de tentativas. Front: `app/comum/login-funcionario.js`. Testes: `testes/15_login_funcionario.sql` (8/8).
+
+## v79 (entrar mais facilmente: prestador e administração)
+
+- **Separadores «Cliente | Prestador»** no topo do login (computador e telemóvel); ligação discreta **«Equipa Elolog»** por baixo para a administração.
+- **Endereços curtos:** `www.elolog.pt/prestador` e `www.elolog.pt/admin` (pastas `prestador/` e `admin/` na raiz).
+- O aparelho **lembra-se do último acesso**: quem entra como prestador ou administração volta direto a esse login ao abrir a Área de Cliente (o separador «Cliente» desfaz).
+- Prestador: **«Lembrar a empresa neste aparelho»** guarda o nome, o NIF e o email do funcionário (nunca as palavras-passe); da próxima vez só escreve as senhas. Passos renumerados: 1 · Empresa, 2 · Funcionário. Ficheiro: `app/comum/portas.js`.
+
+## v78 (Área de Cliente só para clientes)
+
+- Uma conta da equipa Elolog ou de um funcionário de prestador já não entra pela Área de Cliente: aparece a indicação do acesso certo (administração ou prestador). Antes, a plataforma criava por engano um perfil de cliente para essa conta.
+- Servidor: migração `00148_cliente_so_clientes.sql` (aplicada) — função `tipo_conta()` e regra na base de dados que impede criar perfis de cliente para contas da equipa/prestadores. O perfil de cliente criado por engano é apagado pelo último bloco da migração (correr no SQL Editor).
+
+## v77 (ocorrências e suspensão; manifesto opcional)
+
+- Botão **«⚠ Ocorrências»** em cada encomenda (cliente: Ver detalhes; prestador: detalhe da encomenda, detalhe da operação e cartões de encomendas do servidor).
+- **Prestador** (administrador, operador, armazém, terreno; o financeiro só consulta): regista a ocorrência com **tipo** (atraso, dano, perda, documentação, alfândega, pagamento, morada, outro) e **gravidade**, atribui **responsável**, muda o estado (aberta → em resolução → resolvida → encerrada; resolver exige descrever a resolução), **comunica ao cliente** e tem o histórico de cada passo (quem, quando, o quê).
+- **Suspender / retomar a encomenda**: o estado logístico mantém-se e fica bloqueado até «Retomar» (só se pode cancelar). Fica no histórico da encomenda e o cliente é avisado. Uma ocorrência pode suspender logo ao ser registada.
+- **Cliente**: «Comunicar um problema» e vê as ocorrências que lhe foram comunicadas (sem notas internas). A encomenda suspensa aparece como «Suspensa».
+- **Manifesto opcional**: deixou de ser obrigatório para passar a «em trânsito». O prestador pode **juntar o despacho/manifesto feito pelo despachante** (documento «despacho», visível ao cliente).
+- Servidor: migração `00147_ocorrencias.sql` (**aplicada**), códigos `ELO_OC-000001`. Front: `app/comum/ocorrencias.js`. Testes: `testes/14_ocorrencias.sql` (10/10).
+
+## v76 (criar perfil Pessoal e prestador criado pela Elolog)
+
+- **Criar perfil:** «Particular» passa a **«Pessoal»**. O botão «Criar administrador da empresa» só aparece no registo de uma empresa prestadora (estava visível por erro: os botões com `hidden` eram mostrados por uma regra `!important` de `acabamento.css` — corrigido para todos os botões). «Criar perfil» só fica ativo depois de **abrir e ler a política de privacidade** (janela com o texto; o botão «Li a política» só ativa ao chegar ao fim) e aceitar.
+- **Conta Pessoal:** nome + **telemóvel ou email**, à escolha, confirmados — email por ligação de confirmação; telemóvel por **código SMS** (precisa de um fornecedor de SMS no Supabase, ver PRODUCAO.md). NIF opcional. Pode-se **entrar com o telemóvel** (912 345 678 ou +351…). Na **Empresa** continuam obrigatórios NIF e email. Ficheiro: `app/comum/registo-pessoal.js`.
+- **Administração › Gestão de prestadores › + Criar prestador:** já não se escreve palavra-passe. A Elolog gera um **código de acesso temporário** (`ELO-XXXX-XXXX`, 72 h) e envia-o por email ao administrador da empresa (se o email falhar, o código aparece uma vez no ecrã). O código serve nos dois passos do login; no **primeiro acesso é obrigatório** criar a palavra-passe da empresa e a pessoal (janela que não se fecha). Enquanto não trocar, a conta não vê nem altera nada da empresa (garantido na base de dados). Lista «Primeiros acessos por concluir» com **Reenviar código**. Ficheiros: `app/comum/primeiro-acesso.js`, Edge Function `criar-prestador` (publicada), migração `00146_acesso_temporario.sql` (**aplicar no SQL Editor** — ver PRODUCAO.md), testes `testes/13_acesso_temporario.sql` (12/12).
+
+## v75 (declarações da encomenda: 6 modelos)
+
+- Botão **«📄 Declarações (6 modelos)»** no detalhe da encomenda (cliente: «Encomendas» › Ver detalhes; prestador: pesquisa de encomenda e detalhe da operação).
+- Os dados preenchem-se **uma vez**, em 5 passos: Pessoas (proprietário, destinatário, finalidade) · Viatura (opcional) · Bens (linhas com quantidade, estado e valor) · Embarque · Documentos. O cliente preenche pessoas, viatura e bens; o **embarque é do prestador** (o cliente vê-o bloqueado e o servidor ignora alterações do cliente).
+- Modelos: 1 Identificação da viatura (só se houver viatura) · 2 Bens no interior da viatura (ou «bens transportados») · 3 Conteúdo e valor · 4 Propriedade e finalidade · 5 Responsabilidade · 6 Folha de processo de exportação e transporte.
+- **PDF** gerado no navegador, sem custos nem bibliotecas (`app/comum/declaracoes-pdf.js`), com local, data e linhas de assinatura; «Descarregar PDF» para imprimir e assinar, «Guardar na encomenda» junta-o aos documentos (visível ao cliente). Rodapé: documento interno de apoio, não substitui documentos aduaneiros.
+- Servidor: migração `00145_declaracoes.sql` (aplicada) — `declaracoes_ler` / `declaracoes_gravar`; só o cliente da encomenda e a empresa prestadora acedem. Testes: `testes/12_declaracoes.sql` (8/8).
+
+## v74 (recuperar a palavra-passe e espaço de ficheiros)
+
+- **Esqueceu-se da palavra-passe (clientes, funcionários, equipa Elolog):** indica o email → recebe um email da Elolog com o botão «Criar nova palavra-passe» (abre `app/area-cliente.html?repor=…`) e um código de 6 dígitos para usar noutro aparelho. Válido 1 hora, uma só vez. Quem tem verificação em dois passos (administração) também escreve o código da aplicação. Depois da mudança: todas as sessões terminam e chega o email «A sua palavra-passe foi alterada». A resposta é sempre igual, exista ou não a conta.
+- **Palavra-passe da empresa (1.º passo do prestador):** nome + NIF → código e ligação (`?repor-empresa=…`) para o **email oficial da empresa**; válido 30 minutos e deixa de valer assim que a palavra-passe muda. A empresa recebe uma notificação.
+- Servidor: Edge Function `recuperar-acesso` (já publicada; usa os segredos Brevo que já existem) e migração `00143_repor_senha_empresa.sql` (aplicada). Front: `app/comum/recuperar.js`. Testes: `testes/10_repor_empresa.sql` (6/6).
+- **Espaço de ficheiros garantido por plano:** o servidor mede o que cada empresa guarda (Básico 2 GB, Profissional 20 GB, Empresarial = valor acordado, 50 GB se não houver; clientes 1 GB) e **bloqueia novos documentos no limite**. Avisos à empresa aos 80 % e 100 % (e à Elolog aos 100 %). O quadro «Plano contratado» mostra o espaço real; em «Planos e subscrições» a equipa Elolog vê o espaço de cada empresa e define o valor acordado. Migração `00144_espaco_ficheiros.sql` (aplicada), `app/comum/espaco.js`, testes `testes/11_espaco_ficheiros.sql` (12/12).
 
 ## v73 (aparecer melhor nas pesquisas)
 

@@ -11,13 +11,13 @@
 
   function juntar(sims,encs){const porSim={};encs.forEach(e=>{if(e.simulacao_id)porSim[e.simulacao_id]=e});
     const linhas=[...encs.map(e=>({codigo:e.codigo,antigo:sims.find(x=>x.id===e.simulacao_id)?.codigo,origem:e.origem,destino:e.destino,carga:e.tipo_carga,peso:e.peso_kg,volume:e.volume_m3,data:e.data_prevista,
-        total:eur(e.preco_total),etapa:ETAPA[e.estado]||e.estado,status:e.estado==="cancelada"?"Cancelada":ETAPA[e.estado]||e.estado,criado:e.created_at,estado:e.estado})),
+        total:eur(e.preco_total),etapa:ETAPA[e.estado]||e.estado,status:e.estado==="cancelada"?"Cancelada":e.suspensa?"Suspensa":ETAPA[e.estado]||e.estado,criado:e.created_at,estado:e.estado,suspensa:!!e.suspensa})),
       ...sims.filter(x=>!porSim[x.id]&&x.estado!=="rascunho").map(x=>({codigo:x.codigo,origem:x.origem,destino:x.destino,carga:x.tipo_carga,peso:x.peso_kg,volume:x.volume_m3,data:x.data_prevista,
         total:x.preco_estimado==null?"Por cotação":eur(x.preco_estimado),etapa:"Cotação",status:x.estado==="cancelada"?"Cancelada":"Cotação",criado:x.created_at,estado:"sim_"+x.estado}))];
     linhas.forEach(l=>{let o=operations.find(x=>x.id===l.codigo)||(l.antigo&&operations.find(x=>x.id===l.antigo));
       if(!o){o={id:l.codigo,client:currentUser.name,createdAt:l.criado};operations.unshift(o)}
       Object.assign(o,{id:l.codigo,client:o.client||currentUser.name,origin:l.origem,destination:l.destino,cargo:o.cargo||l.carga||"",weight:l.peso!=null?`${Number(l.peso)} kg`:o.weight,
-        volume:l.volume!=null?Number(l.volume):o.volume,date:l.data||o.date,total:l.total,stage:l.etapa,status:l.status,servidor:true})});
+        volume:l.volume!=null?Number(l.volume):o.volume,date:l.data||o.date,total:l.total,stage:l.etapa,status:l.status,suspended:!!l.suspensa,servidor:true})});
     return linhas}
 
   function avisar(linhas){const agora={};linhas.forEach(l=>agora[l.codigo]=l.estado);
@@ -30,7 +30,7 @@
   async function atualizar(forcar){if(ocupado||!ativo())return;ocupado=true;
     try{const c=await S().cliente(),{data:u}=await c.auth.getUser();if(!u?.user)return;
       const [s,e]=await Promise.all([c.from("simulacoes").select("id,codigo,origem,destino,tipo_carga,peso_kg,volume_m3,estado,preco_estimado,data_prevista,created_at,updated_at").eq("cliente_id",u.user.id).order("created_at",{ascending:false}).limit(100),
-        c.from("encomendas").select("id,codigo,simulacao_id,origem,destino,tipo_carga,peso_kg,volume_m3,estado,preco_total,data_prevista,created_at,updated_at").eq("cliente_id",u.user.id).order("created_at",{ascending:false}).limit(200)]);
+        c.from("encomendas").select("id,codigo,simulacao_id,origem,destino,tipo_carga,peso_kg,volume_m3,estado,suspensa,preco_total,data_prevista,created_at,updated_at").eq("cliente_id",u.user.id).order("created_at",{ascending:false}).limit(200)]);
       if(s.error||e.error)throw s.error||e.error;
       const nova=JSON.stringify([s.data.map(x=>[x.codigo,x.estado,x.updated_at]),e.data.map(x=>[x.codigo,x.estado,x.updated_at])]);
       if(!forcar&&nova===assinatura)return;assinatura=nova;const linhas=juntar(s.data,e.data);avisar(linhas);try{saveAll?.()}catch(_){}redesenhar()}

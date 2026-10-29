@@ -16,9 +16,11 @@ function negocio(error: { code?: string; message: string }): { erro: string } {
 }
 
 function dependencias(): DepsEquipa {
+  let aal = '';
   return {
     async autenticar(jwt) {
       const { data, error } = await admin.auth.getUser(jwt);
+      try { aal = JSON.parse(atob(jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).aal ?? ''; } catch { aal = ''; }
       return error || !data.user ? null : data.user.id;
     },
     async limite(chave, max, janelaMin) {
@@ -27,7 +29,8 @@ function dependencias(): DepsEquipa {
       return data === true;
     },
     async empresaDoAdmin(userId) {
-      const { data, error } = await admin.rpc('servico_admin_empresa', { p_user: userId });
+      // v81: o administrador da empresa só age com o 2.º passo confirmado (sessão aal2).
+      const { data, error } = await admin.rpc('servico_admin_empresa_aal', { p_user: userId, p_aal: aal });
       if (error) throw error;
       return typeof data === 'string' ? data : null;
     },

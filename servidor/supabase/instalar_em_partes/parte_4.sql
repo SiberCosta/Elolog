@@ -1112,4 +1112,705 @@ do $$ declare r record; begin
   end loop;
 end $$;
 
+-- ===== 00143_repor_senha_empresa.sql =====
+-- v74 — Recuperar a palavra-passe da EMPRESA (1.º passo do login do prestador).
+-- Só para a Edge Function «recuperar-acesso» (chave de serviço). O código é enviado para o email oficial da empresa.
+
+-- Empresa por nome + NIF (como no login) ou por id. Devolve o email oficial e uma «impressão» do segredo atual
+-- (para o código deixar de valer depois de a palavra-passe mudar). Nada disto chega ao navegador.
+create or replace function public.servico_empresa_reposicao(p_nome text, p_nif text, p_id uuid default null) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object('id', e.id, 'nome', coalesce(e.nome_comercial, e.nome), 'email', e.email, 'estado', e.estado,
+    'impressao', md5(coalesce(s.segredo_hash, '') || e.id::text))
+  from empresas e left join empresa_segredos s on s.empresa_id = e.id
+  where (p_id is not null and e.id = p_id)
+     or (p_id is null and private.norm(e.nif) = private.norm(p_nif) and private.norm(e.nome) = private.norm(p_nome))
+  limit 1
+$$;
+
+create or replace function public.servico_empresa_definir_senha(p_id uuid, p_senha text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if length(coalesce(p_senha, '')) < 8 then raise exception 'A palavra-passe da empresa é demasiado curta (mínimo 8 caracteres).'; end if;
+  insert into empresa_segredos (empresa_id, segredo_hash) values (p_id, extensions.crypt(p_senha, extensions.gen_salt('bf')))
+  on conflict (empresa_id) do update set segredo_hash = excluded.segredo_hash;
+  delete from tentativas_gate where chave = p_id::text;
+  insert into notificacoes (empresa_id, tipo, titulo, corpo)
+  values (p_id, 'seguranca', 'Palavra-passe da empresa alterada', 'A palavra-passe de acesso da empresa foi reposta através do email oficial.');
+end $$;
+
+revoke all on function public.servico_empresa_reposicao(text, text, uuid), public.servico_empresa_definir_senha(uuid, text) from public, anon, authenticated;
+grant execute on function public.servico_empresa_reposicao(text, text, uuid), public.servico_empresa_definir_senha(uuid, text) to service_role;
+
+-- ===== 00144_espaco_ficheiros.sql =====
+-- v74 — Espaço de ficheiros garantido por plano: mede o que cada empresa (e cada cliente) guarda e trava novos envios no limite.
+-- Limite da empresa: valor acordado (Empresarial) → armazenamento_gb do plano da subscrição → 50 GB se o plano for personalizado → 2 GB.
+-- Clientes: 1 GB cada. Avisos à empresa aos 80 % e aos 100 % (e à equipa Elolog aos 100 %).
+
+alter table empresas add column if not exists armazenamento_gb_acordado numeric(8,2) check (armazenamento_gb_acordado is null or armazenamento_gb_acordado > 0);
+
+-- Bytes guardados numa pasta do bucket «documentos» (<empresa_id>/… ou <cliente_id>/…).
+create or replace function private.espaco_usado(p_pasta text) returns bigint
+language sql stable security definer set search_path = public as $$
+  select coalesce(sum(coalesce((o.metadata->>'size')::bigint, 0)), 0)::bigint
+  from storage.objects o where o.bucket_id = 'documentos' and o.name like p_pasta || '/%'
+$$;
+
+create or replace function private.espaco_limite_empresa(p_empresa uuid) returns bigint
+language plpgsql stable security definer set search_path = public as $$
+declare v_gb numeric; v_pers boolean;
+begin
+  select e.armazenamento_gb_acordado into v_gb from empresas e where e.id = p_empresa;
+  if v_gb is null then
+    select p.armazenamento_gb, p.personalizado into v_gb, v_pers from subscricoes s join planos p on p.id = s.plano_id
+    where s.empresa_id = p_empresa order by (s.estado = 'ativa') desc, s.created_at desc limit 1;
+    v_gb := coalesce(v_gb, case when v_pers then 50 else 2 end);
+  end if;
+  return (v_gb * 1073741824)::bigint;
+end $$;
+
+-- Ainda há espaço para mais um ficheiro nesta pasta? (usado pela política de envio)
+create or replace function private.espaco_disponivel(p_pasta text) returns boolean
+language sql stable security definer set search_path = public as $$
+  select case
+    when p_pasta = private.minha_empresa()::text then private.espaco_usado(p_pasta) < private.espaco_limite_empresa(private.minha_empresa())
+    when p_pasta = auth.uid()::text then private.espaco_usado(p_pasta) < 1073741824
+    else true end
+$$;
+
+do $$ begin
+  create policy storage_documentos_espaco on storage.objects as restrictive for insert to authenticated
+    with check (bucket_id <> 'documentos' or private.espaco_disponivel((storage.foldername(name))[1]));
+exception when duplicate_object then null; end $$;
+
+-- O meu espaço (empresa do funcionário ou o próprio cliente). Cria os avisos de 80 % / 100 % uma vez por mês.
+create or replace function public.espaco_ficheiros() returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_emp uuid := private.minha_empresa(); v_usado bigint; v_lim bigint; v_pct int; v_tit text;
+begin
+  if auth.uid() is null then raise exception 'Sessão inválida.'; end if;
+  if v_emp is not null then v_usado := private.espaco_usado(v_emp::text); v_lim := private.espaco_limite_empresa(v_emp);
+  else v_usado := private.espaco_usado(auth.uid()::text); v_lim := 1073741824; end if;
+  v_pct := floor(100.0 * v_usado / greatest(v_lim, 1));
+  if v_emp is not null and v_pct >= 80 then
+    v_tit := case when v_pct >= 100 then 'Espaço de ficheiros esgotado' else 'Espaço de ficheiros quase cheio' end;
+    if not exists (select 1 from notificacoes where empresa_id = v_emp and tipo = 'espaco' and titulo = v_tit and created_at > now() - interval '30 days') then
+      insert into notificacoes (empresa_id, tipo, titulo, corpo) values (v_emp, 'espaco', v_tit,
+        format('A empresa usa %s%% do espaço de ficheiros do plano. %s', v_pct,
+          case when v_pct >= 100 then 'Novos documentos ficam bloqueados até libertar espaço ou mudar de plano.' else 'Considere mudar de plano antes de chegar ao limite.' end));
+      if v_pct >= 100 then insert into notificacoes (para_plataforma, tipo, titulo, corpo, referencia_tabela, referencia_id)
+        values (true, 'espaco', 'Empresa sem espaço de ficheiros', (select coalesce(nome_comercial, nome) from empresas where id = v_emp) || ' chegou ao limite do plano.', 'empresas', v_emp); end if;
+    end if;
+  end if;
+  return jsonb_build_object('tipo', case when v_emp is null then 'cliente' else 'empresa' end, 'usado', v_usado, 'limite', v_lim, 'percentagem', v_pct);
+end $$;
+
+-- Equipa Elolog: espaço de todas as empresas, e definir o valor acordado de um contrato personalizado.
+create or replace function public.espaco_empresas()
+returns table (empresa_id uuid, nome text, plano text, usado bigint, limite bigint, acordado_gb numeric)
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not private.e_admin_plataforma() then raise exception 'Sem permissão.'; end if;
+  return query select e.id, coalesce(e.nome_comercial, e.nome),
+    (select p.nome from subscricoes s join planos p on p.id = s.plano_id where s.empresa_id = e.id order by (s.estado = 'ativa') desc, s.created_at desc limit 1),
+    private.espaco_usado(e.id::text), private.espaco_limite_empresa(e.id), e.armazenamento_gb_acordado
+  from empresas e where e.estado = 'aprovada' order by 4 desc, 2;
+end $$;
+
+create or replace function public.espaco_definir_acordado(p_empresa uuid, p_gb numeric) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if not private.e_admin_plataforma() then raise exception 'Sem permissão.'; end if;
+  if p_gb is not null and (p_gb <= 0 or p_gb > 10000) then raise exception 'Indique um valor entre 0,1 e 10 000 GB.'; end if;
+  update empresas set armazenamento_gb_acordado = p_gb where id = p_empresa;
+end $$;
+
+revoke all on function private.espaco_usado(text), private.espaco_limite_empresa(uuid), public.espaco_ficheiros(), public.espaco_empresas(),
+  public.espaco_definir_acordado(uuid, numeric) from public, anon;
+grant execute on function private.espaco_disponivel(text) to authenticated;
+grant execute on function public.espaco_ficheiros(), public.espaco_empresas(), public.espaco_definir_acordado(uuid, numeric) to authenticated;
+
+-- ===== 00145_declaracoes.sql =====
+-- v75 — Declarações da encomenda (6 modelos internos de apoio): os dados preenchem-se uma vez e servem a todos os modelos.
+-- O cliente preenche proprietário, destinatário, viatura e bens; o prestador da encomenda completa o embarque e pode corrigir tudo.
+
+create table if not exists encomenda_declaracoes (
+  encomenda_id   uuid primary key references encomendas(id) on delete cascade,
+  dados          jsonb not null default '{}'::jsonb check (jsonb_typeof(dados) = 'object' and pg_column_size(dados) < 200000),
+  atualizado_por uuid references auth.users(id) on delete set null,
+  updated_at     timestamptz not null default now()
+);
+alter table encomenda_declaracoes enable row level security;
+revoke all on encomenda_declaracoes from anon, authenticated;
+
+-- Encomenda pelo código, só para o cliente dela ou para a empresa prestadora. Devolve também quem está a pedir.
+create or replace function private.declaracao_acesso(p_codigo text, out v_id uuid, out v_papel text)
+language sql stable security definer set search_path = public as $$
+  select e.id, case when e.cliente_id = auth.uid() then 'cliente' else 'empresa' end
+  from encomendas e where e.codigo = p_codigo
+    and (e.cliente_id = auth.uid() or (private.minha_empresa() is not null and e.empresa_id = private.minha_empresa()))
+$$;
+
+create or replace function public.declaracoes_ler(p_codigo text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare a record; r jsonb;
+begin
+  select * into a from private.declaracao_acesso(p_codigo);
+  if a.v_id is null then raise exception 'Encomenda não encontrada.'; end if;
+  select jsonb_build_object('codigo', e.codigo, 'origem', e.origem, 'destino', e.destino, 'papel', a.v_papel,
+      'cliente', jsonb_build_object('nome', c.nome, 'nif', c.nif, 'telefone', c.telefone, 'morada', c.morada, 'email', c.email),
+      'empresa', jsonb_build_object('nome', coalesce(m.nome_comercial, m.nome), 'nif', m.nif, 'email', m.email, 'telefone', m.telefone),
+      'dados', coalesce(d.dados, '{}'::jsonb), 'atualizado_em', d.updated_at)
+    into r
+  from encomendas e left join clientes c on c.id = e.cliente_id left join empresas m on m.id = e.empresa_id
+    left join encomenda_declaracoes d on d.encomenda_id = e.id
+  where e.id = a.v_id;
+  return r;
+end $$;
+
+create or replace function public.declaracoes_gravar(p_codigo text, p_dados jsonb) returns timestamptz
+language plpgsql security definer set search_path = public as $$
+declare a record; v_antes jsonb; v_novo jsonb; v_quando timestamptz := now();
+begin
+  select * into a from private.declaracao_acesso(p_codigo);
+  if a.v_id is null then raise exception 'Encomenda não encontrada.'; end if;
+  if p_dados is null or jsonb_typeof(p_dados) <> 'object' then raise exception 'Dados inválidos.'; end if;
+  if jsonb_typeof(coalesce(p_dados->'bens', '[]')) <> 'array' or jsonb_array_length(coalesce(p_dados->'bens', '[]')) > 300 then raise exception 'A lista de bens é inválida (máximo 300 linhas).'; end if;
+  select dados into v_antes from encomenda_declaracoes where encomenda_id = a.v_id;
+  v_novo := p_dados;
+  if a.v_papel = 'cliente' then   -- o embarque é do prestador
+    v_novo := (v_novo - 'embarque') || jsonb_build_object('embarque', coalesce(v_antes->'embarque', '{}'::jsonb));
+  end if;
+  insert into encomenda_declaracoes (encomenda_id, dados, atualizado_por, updated_at) values (a.v_id, v_novo, auth.uid(), v_quando)
+  on conflict (encomenda_id) do update set dados = excluded.dados, atualizado_por = excluded.atualizado_por, updated_at = excluded.updated_at;
+  return v_quando;
+end $$;
+
+revoke all on function private.declaracao_acesso(text), public.declaracoes_ler(text), public.declaracoes_gravar(text, jsonb) from public, anon;
+grant execute on function public.declaracoes_ler(text), public.declaracoes_gravar(text, jsonb) to authenticated;
+
+-- ===== 00146_acesso_temporario.sql =====
+-- v76 — A equipa Elolog cria um prestador com um CÓDIGO DE ACESSO TEMPORÁRIO (válido 72 h), enviado por email ao administrador
+-- da empresa. O código serve de palavra-passe da empresa e da conta pessoal; no primeiro início de sessão é obrigatório trocar as duas.
+-- Enquanto não trocar, a conta não vê nem altera nenhum dado da empresa (minha_empresa / meu_papel devolvem nulo).
+-- (Inclui também a regra da v81: o administrador da empresa precisa do 2.º passo — sessão aal2.)
+
+create table if not exists acessos_temporarios (
+  user_id    uuid primary key references auth.users(id) on delete cascade,
+  empresa_id uuid not null references empresas(id) on delete cascade,
+  expira_em  timestamptz not null,
+  criado_por uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+alter table acessos_temporarios enable row level security;
+revoke all on acessos_temporarios from anon, authenticated;
+
+create or replace function private.minha_empresa() returns uuid
+language sql stable security definer set search_path = public as $$ select f.empresa_id from funcionarios f
+    join empresas em on em.id = f.empresa_id and em.estado = 'aprovada'
+    join sessoes_empresa s on s.user_id = f.id and s.empresa_id = f.empresa_id and s.valida_ate > now()
+   where f.id = auth.uid() and f.ativo and (f.papel <> 'admin_empresa' or coalesce(auth.jwt() ->> 'aal', '') = 'aal2')
+     and not exists (select 1 from acessos_temporarios t where t.user_id = f.id) $$;
+create or replace function private.meu_papel() returns papel_funcionario
+language sql stable security definer set search_path = public as $$ select f.papel from funcionarios f
+    join empresas em on em.id = f.empresa_id and em.estado = 'aprovada'
+    join sessoes_empresa s on s.user_id = f.id and s.empresa_id = f.empresa_id and s.valida_ate > now()
+   where f.id = auth.uid() and f.ativo and (f.papel <> 'admin_empresa' or coalesce(auth.jwt() ->> 'aal', '') = 'aal2')
+     and not exists (select 1 from acessos_temporarios t where t.user_id = f.id) $$;
+create or replace function public.servico_admin_empresa(p_user uuid) returns uuid
+language sql stable security definer set search_path = public as $$ select f.empresa_id from funcionarios f
+    join empresas em on em.id = f.empresa_id and em.estado = 'aprovada'
+    join sessoes_empresa s on s.user_id = f.id and s.empresa_id = f.empresa_id and s.valida_ate > now()
+   where f.id = p_user and f.ativo and f.papel = 'admin_empresa' and not exists (select 1 from acessos_temporarios t where t.user_id = f.id) $$;
+
+-- Estado do primeiro acesso da conta com sessão iniciada (a interface pergunta logo a seguir ao login).
+create or replace function public.primeiro_acesso() returns jsonb
+language sql stable security definer set search_path = public as $$
+  select coalesce((select jsonb_build_object('pendente', true, 'expirado', t.expira_em < now(), 'expira_em', t.expira_em)
+    from acessos_temporarios t where t.user_id = auth.uid()), jsonb_build_object('pendente', false))
+$$;
+
+-- Criar o prestador (só a Edge Function «criar-prestador», depois de criar a conta de autenticação do administrador).
+create or replace function public.servico_criar_prestador_admin(p_autor uuid, p_user uuid, p_empresa jsonb, p_admin_nome text, p_admin_email text,
+  p_plano text, p_aprovada boolean, p_codigo text, p_expira timestamptz) returns uuid
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_emp uuid; v_plano planos; t text := '';
+begin
+  if not public.servico_equipa_pode_gerir(p_autor) then raise exception 'Só um administrador da plataforma pode criar prestadores.'; end if;
+  if length(trim(coalesce(p_empresa->>'nome', ''))) < 2 then raise exception 'Indique o nome legal da empresa.'; end if;
+  if coalesce(p_empresa->>'nif', '') !~ '^\s*\d{9}\s*$' then raise exception 'O NIF da empresa deve ter 9 algarismos.'; end if;
+  if exists (select 1 from empresas where private.norm(nif) = private.norm(p_empresa->>'nif')) then raise exception 'Já existe uma empresa registada com este NIF.'; end if;
+  if length(coalesce(p_codigo, '')) < 10 then raise exception 'Código temporário inválido.'; end if;
+  select * into v_plano from planos where lower(nome) = lower(trim(coalesce(p_plano, ''))) and ativo;
+  insert into empresas (nome, nome_comercial, nif, email, telefone, morada, codigo_postal, cidade, pais, estado, aprovada_por, aprovada_em)
+  values (trim(p_empresa->>'nome'), nullif(trim(p_empresa->>'nome_comercial'), ''), trim(p_empresa->>'nif'), lower(trim(p_empresa->>'email')),
+    nullif(trim(p_empresa->>'telefone'), ''), nullif(trim(p_empresa->>'morada'), ''), nullif(trim(p_empresa->>'codigo_postal'), ''),
+    nullif(trim(p_empresa->>'cidade'), ''), coalesce(nullif(trim(p_empresa->>'pais'), ''), 'Portugal'),
+    (case when p_aprovada then 'aprovada' else 'pendente' end)::estado_empresa, case when p_aprovada then p_autor end, case when p_aprovada then now() end)
+  returning id into v_emp;
+  insert into empresa_segredos (empresa_id, segredo_hash) values (v_emp, extensions.crypt(p_codigo, extensions.gen_salt('bf')));
+  if v_plano.id is not null then
+    insert into subscricoes (empresa_id, plano_id, estado, periodicidade, valor) values (v_emp, v_plano.id, 'pendente', 'mensal', v_plano.preco_mensal);
+  end if;
+  insert into funcionarios (id, empresa_id, nome, email, papel) values (p_user, v_emp, trim(p_admin_nome), lower(trim(p_admin_email)), 'admin_empresa');
+  insert into acessos_temporarios (user_id, empresa_id, expira_em, criado_por) values (p_user, v_emp, p_expira, p_autor);
+  insert into auditoria (empresa_id, user_id, papel, acao, entidade, entidade_id, depois)
+    values (v_emp, p_autor, 'admin_plataforma', 'criar_prestador_admin', 'empresas', v_emp::text, jsonb_build_object('plano', v_plano.nome, 'aprovada', p_aprovada, 'expira_em', p_expira));
+  return v_emp;
+end $$;
+
+-- Novo código para um primeiro acesso ainda pendente (o anterior deixa de valer). Devolve o administrador e a empresa.
+create or replace function public.servico_renovar_acesso_temporario(p_autor uuid, p_empresa uuid, p_codigo text, p_expira timestamptz)
+returns table (user_id uuid, email text, nome text, empresa text, nif text)
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if not public.servico_equipa_pode_gerir(p_autor) then raise exception 'Só um administrador da plataforma pode reenviar códigos.'; end if;
+  if length(coalesce(p_codigo, '')) < 10 then raise exception 'Código temporário inválido.'; end if;
+  update acessos_temporarios t set expira_em = p_expira, criado_por = p_autor where t.empresa_id = p_empresa;
+  if not found then raise exception 'Esta empresa já concluiu o primeiro acesso.'; end if;
+  update empresa_segredos set segredo_hash = extensions.crypt(p_codigo, extensions.gen_salt('bf')) where empresa_id = p_empresa;
+  delete from tentativas_gate where chave = p_empresa::text;
+  return query select t.user_id, f.email, f.nome, e.nome, e.nif
+    from acessos_temporarios t join funcionarios f on f.id = t.user_id join empresas e on e.id = t.empresa_id where t.empresa_id = p_empresa;
+end $$;
+
+-- Ler o acesso temporário de uma conta (a Edge Function verifica-o antes de mudar a palavra-passe pessoal).
+create or replace function public.servico_acesso_temporario(p_user uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object('empresa_id', t.empresa_id, 'expirado', t.expira_em < now()) from acessos_temporarios t where t.user_id = p_user
+$$;
+
+-- Concluir o primeiro acesso: nova palavra-passe da empresa e fim do acesso temporário.
+create or replace function public.servico_concluir_primeiro_acesso(p_user uuid, p_senha_empresa text) returns uuid
+language plpgsql security definer set search_path = public, extensions as $$
+declare t acessos_temporarios;
+begin
+  select * into t from acessos_temporarios where user_id = p_user for update;
+  if not found then raise exception 'Não há nenhum primeiro acesso pendente.'; end if;
+  if t.expira_em < now() then raise exception 'O código temporário expirou. Peça um novo à Elolog.'; end if;
+  if length(coalesce(p_senha_empresa, '')) < 8 then raise exception 'A palavra-passe da empresa é demasiado curta (mínimo 8 caracteres).'; end if;
+  update empresa_segredos set segredo_hash = extensions.crypt(p_senha_empresa, extensions.gen_salt('bf')) where empresa_id = t.empresa_id;
+  delete from acessos_temporarios where user_id = p_user;
+  insert into notificacoes (empresa_id, tipo, titulo, corpo) values (t.empresa_id, 'seguranca', 'Primeiro acesso concluído', 'As palavras-passe temporárias foram substituídas pelo administrador da empresa.');
+  insert into auditoria (empresa_id, user_id, papel, acao, entidade, entidade_id) values (t.empresa_id, p_user, 'admin_empresa', 'concluir_primeiro_acesso', 'empresas', t.empresa_id::text);
+  return t.empresa_id;
+end $$;
+
+-- Equipa Elolog: primeiros acessos ainda por concluir (para reenviar o código).
+create or replace function public.acessos_temporarios_pendentes()
+returns table (empresa_id uuid, empresa text, nif text, admin_email text, expira_em timestamptz, expirado boolean)
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not private.e_admin_plataforma() then raise exception 'Sem permissão.'; end if;
+  return query select e.id, coalesce(e.nome_comercial, e.nome), e.nif, f.email, t.expira_em, t.expira_em < now()
+    from acessos_temporarios t join empresas e on e.id = t.empresa_id join funcionarios f on f.id = t.user_id order by t.created_at desc;
+end $$;
+
+revoke all on function public.primeiro_acesso(), public.servico_criar_prestador_admin(uuid, uuid, jsonb, text, text, text, boolean, text, timestamptz),
+  public.servico_renovar_acesso_temporario(uuid, uuid, text, timestamptz), public.servico_acesso_temporario(uuid),
+  public.servico_concluir_primeiro_acesso(uuid, text), public.acessos_temporarios_pendentes() from public, anon, authenticated;
+grant execute on function public.primeiro_acesso(), public.acessos_temporarios_pendentes() to authenticated;
+grant execute on function public.servico_criar_prestador_admin(uuid, uuid, jsonb, text, text, text, boolean, text, timestamptz),
+  public.servico_renovar_acesso_temporario(uuid, uuid, text, timestamptz), public.servico_acesso_temporario(uuid),
+  public.servico_concluir_primeiro_acesso(uuid, text) to service_role;
+
+-- ===== 00147_ocorrencias.sql =====
+-- v77 — Ocorrências e suspensão da encomenda; o manifesto deixa de ser obrigatório para passar a «em trânsito»
+-- (o despacho pode ser feito por um despachante à parte e carregado na plataforma como documento «despacho»).
+-- Fluxo da ocorrência: registo → classificação → responsável → resolução → comunicação ao cliente → encerramento.
+-- Uma ocorrência pode suspender a encomenda: o estado logístico mantém-se, mas não avança até ser retomada.
+
+alter table encomendas add column if not exists suspensa boolean not null default false;
+alter table encomendas add column if not exists suspensa_motivo text;
+alter table encomendas add column if not exists suspensa_em timestamptz;
+
+create table if not exists ocorrencias (
+  id             uuid primary key default gen_random_uuid(),
+  codigo         text not null unique default private.codigo_elo('ELO_OC'),
+  encomenda_id   uuid not null references encomendas(id) on delete cascade,
+  empresa_id     uuid not null references empresas(id),
+  tipo           text not null default 'outro' check (tipo in ('atraso','dano','perda','documentacao','alfandega','pagamento','endereco','outro')),
+  gravidade      text not null default 'media' check (gravidade in ('baixa','media','alta','critica')),
+  estado         text not null default 'aberta' check (estado in ('aberta','em_resolucao','resolvida','encerrada')),
+  descricao      text not null check (length(descricao) between 3 and 2000),
+  resolucao      text check (length(resolucao) <= 2000),
+  responsavel_id uuid references auth.users(id) on delete set null,
+  visivel_cliente boolean not null default false,
+  suspendeu      boolean not null default false,
+  aberta_por     uuid references auth.users(id) on delete set null,
+  aberta_por_cliente boolean not null default false,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now(),
+  encerrada_em   timestamptz
+);
+create index if not exists ocorrencias_encomenda on ocorrencias (encomenda_id, created_at desc);
+create index if not exists ocorrencias_empresa on ocorrencias (empresa_id, estado);
+create table if not exists ocorrencia_registos (
+  id            bigint generated always as identity primary key,
+  ocorrencia_id uuid not null references ocorrencias(id) on delete cascade,
+  user_id       uuid references auth.users(id) on delete set null,
+  acao          text not null,
+  nota          text,
+  created_at    timestamptz not null default now()
+);
+alter table ocorrencias enable row level security; alter table ocorrencia_registos enable row level security;
+revoke all on ocorrencias, ocorrencia_registos from anon, authenticated;
+
+-- Quem pode tratar ocorrências na empresa: administrador, operador, armazém e terreno (o financeiro só vê).
+create or replace function private.ocorrencia_gestor() returns boolean
+language sql stable security definer set search_path = public as $$ select private.papel_em(array['admin_empresa','operador','armazem','operador_terreno']) $$;
+
+/** Encomenda pelo código, para a empresa prestadora (gestão) ou para o cliente dela. */
+create or replace function private.ocorrencia_encomenda(p_codigo text, out v_enc encomendas, out v_cliente boolean)
+language plpgsql stable security definer set search_path = public as $$
+begin
+  select * into v_enc from encomendas e where e.codigo = p_codigo
+    and (e.cliente_id = auth.uid() or (private.minha_empresa() is not null and e.empresa_id = private.minha_empresa()));
+  if v_enc.id is null then raise exception 'Encomenda não encontrada.'; end if;
+  v_cliente := v_enc.cliente_id = auth.uid() and private.minha_empresa() is distinct from v_enc.empresa_id;
+end $$;
+
+create or replace function private.ocorrencia_avisar_cliente(o ocorrencias, p_titulo text, p_corpo text) returns void
+language sql security definer set search_path = public as $$
+  insert into notificacoes (user_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+  select e.cliente_id, 'ocorrencia', p_titulo, left(p_corpo, 400), 'encomendas', e.id from encomendas e where e.id = o.encomenda_id and e.cliente_id is not null
+$$;
+
+-- Suspender / retomar (o estado logístico não muda; fica registado no histórico).
+create or replace function public.encomenda_suspender(p_codigo text, p_motivo text) returns void
+language plpgsql security definer set search_path = public as $$
+declare a record;
+begin
+  select * into a from private.ocorrencia_encomenda(p_codigo);
+  if a.v_cliente or not private.ocorrencia_gestor() then raise exception 'Sem permissão para suspender a encomenda.'; end if;
+  if length(trim(coalesce(p_motivo, ''))) < 3 then raise exception 'Indique o motivo da suspensão.'; end if;
+  if (a.v_enc).estado in ('entregue','cancelada') then raise exception 'Não é possível suspender uma encomenda %.', (a.v_enc).estado; end if;
+  update encomendas set suspensa = true, suspensa_motivo = left(trim(p_motivo), 300), suspensa_em = now() where id = (a.v_enc).id;
+  insert into encomenda_historico (encomenda_id, empresa_id, de, para, nota, user_id) values ((a.v_enc).id, (a.v_enc).empresa_id, (a.v_enc).estado, (a.v_enc).estado, 'Suspensa: ' || left(trim(p_motivo), 300), auth.uid());
+  if (a.v_enc).cliente_id is not null then insert into notificacoes (user_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+    values ((a.v_enc).cliente_id, 'ocorrencia', 'A encomenda ' || p_codigo || ' está suspensa', left(trim(p_motivo), 300), 'encomendas', (a.v_enc).id); end if;
+end $$;
+
+create or replace function public.encomenda_retomar(p_codigo text, p_nota text default null) returns void
+language plpgsql security definer set search_path = public as $$
+declare a record;
+begin
+  select * into a from private.ocorrencia_encomenda(p_codigo);
+  if a.v_cliente or not private.ocorrencia_gestor() then raise exception 'Sem permissão para retomar a encomenda.'; end if;
+  if not (a.v_enc).suspensa then raise exception 'A encomenda não está suspensa.'; end if;
+  update encomendas set suspensa = false, suspensa_motivo = null, suspensa_em = null where id = (a.v_enc).id;
+  insert into encomenda_historico (encomenda_id, empresa_id, de, para, nota, user_id) values ((a.v_enc).id, (a.v_enc).empresa_id, (a.v_enc).estado, (a.v_enc).estado, 'Retomada' || coalesce(': ' || nullif(trim(p_nota), ''), ''), auth.uid());
+  if (a.v_enc).cliente_id is not null then insert into notificacoes (user_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+    values ((a.v_enc).cliente_id, 'ocorrencia', 'A encomenda ' || p_codigo || ' foi retomada', coalesce(nullif(trim(p_nota), ''), 'O processo continua.'), 'encomendas', (a.v_enc).id); end if;
+end $$;
+
+-- Registar: a empresa (com classificação, gravidade, responsável e opção de suspender) ou o cliente (fica «aberta», visível para ele).
+create or replace function public.ocorrencia_criar(p_codigo text, p_descricao text, p_tipo text default 'outro', p_gravidade text default 'media',
+  p_suspender boolean default false, p_visivel_cliente boolean default false) returns ocorrencias
+language plpgsql security definer set search_path = public as $$
+declare a record; o ocorrencias;
+begin
+  select * into a from private.ocorrencia_encomenda(p_codigo);
+  if not a.v_cliente and not private.ocorrencia_gestor() then raise exception 'Sem permissão para registar ocorrências.'; end if;
+  if (select count(*) from ocorrencias where aberta_por = auth.uid() and created_at > now() - interval '1 hour') >= 20 then raise exception 'Demasiadas ocorrências seguidas. Aguarde.'; end if;
+  insert into ocorrencias (encomenda_id, empresa_id, tipo, gravidade, descricao, visivel_cliente, suspendeu, aberta_por, aberta_por_cliente)
+  values ((a.v_enc).id, (a.v_enc).empresa_id, case when a.v_cliente then 'outro' else coalesce(p_tipo, 'outro') end, case when a.v_cliente then 'media' else coalesce(p_gravidade, 'media') end,
+    trim(p_descricao), a.v_cliente or coalesce(p_visivel_cliente, false), not a.v_cliente and coalesce(p_suspender, false), auth.uid(), a.v_cliente)
+  returning * into o;
+  insert into ocorrencia_registos (ocorrencia_id, user_id, acao, nota) values (o.id, auth.uid(), case when a.v_cliente then 'Comunicada pelo cliente' else 'Registada' end, left(trim(p_descricao), 300));
+  if a.v_cliente then
+    insert into notificacoes (empresa_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+    values (o.empresa_id, 'ocorrencia', 'Ocorrência comunicada pelo cliente — ' || p_codigo, left(trim(p_descricao), 300), 'encomendas', o.encomenda_id);
+  else
+    if o.visivel_cliente then perform private.ocorrencia_avisar_cliente(o, 'Ocorrência na encomenda ' || p_codigo, trim(p_descricao)); end if;
+    if o.suspendeu and not (a.v_enc).suspensa then perform public.encomenda_suspender(p_codigo, 'Ocorrência ' || o.codigo || ': ' || left(trim(p_descricao), 200)); end if;
+  end if;
+  return o;
+end $$;
+
+-- Tratar: classificar, atribuir responsável, mudar estado, registar resolução, comunicar ao cliente.
+create or replace function public.ocorrencia_atualizar(p_id uuid, p_estado text default null, p_tipo text default null, p_gravidade text default null,
+  p_responsavel uuid default null, p_resolucao text default null, p_comunicar boolean default null, p_nota text default null) returns ocorrencias
+language plpgsql security definer set search_path = public as $$
+declare o ocorrencias; v_nota text[] := '{}';
+begin
+  select * into o from ocorrencias where id = p_id for update;
+  if o.id is null or o.empresa_id is distinct from private.minha_empresa() or not private.ocorrencia_gestor() then raise exception 'Sem permissão para esta ocorrência.'; end if;
+  if o.estado = 'encerrada' then raise exception 'A ocorrência já está encerrada.'; end if;
+  if p_responsavel is not null and not exists (select 1 from funcionarios where id = p_responsavel and empresa_id = o.empresa_id and ativo) then raise exception 'O responsável tem de ser um funcionário ativo da empresa.'; end if;
+  if p_estado in ('resolvida','encerrada') and length(trim(coalesce(p_resolucao, o.resolucao, ''))) < 3 then raise exception 'Descreva a resolução antes de resolver ou encerrar.'; end if;
+  if p_estado is not null and p_estado <> o.estado then v_nota := v_nota || ('Estado: ' || p_estado); end if;
+  if p_tipo is not null and p_tipo <> o.tipo then v_nota := v_nota || ('Tipo: ' || p_tipo); end if;
+  if p_gravidade is not null and p_gravidade <> o.gravidade then v_nota := v_nota || ('Gravidade: ' || p_gravidade); end if;
+  if p_responsavel is not null and p_responsavel is distinct from o.responsavel_id then v_nota := v_nota || ('Responsável: ' || coalesce((select nome from funcionarios where id = p_responsavel), '?')); end if;
+  if nullif(trim(p_resolucao), '') is not null then v_nota := v_nota || 'Resolução registada'::text; end if;
+  if p_comunicar and not o.visivel_cliente then v_nota := v_nota || 'Comunicada ao cliente'::text; end if;
+  update ocorrencias set estado = coalesce(p_estado, estado), tipo = coalesce(p_tipo, tipo), gravidade = coalesce(p_gravidade, gravidade),
+    responsavel_id = coalesce(p_responsavel, responsavel_id), resolucao = coalesce(nullif(trim(p_resolucao), ''), resolucao),
+    visivel_cliente = visivel_cliente or coalesce(p_comunicar, false), updated_at = now(),
+    encerrada_em = case when coalesce(p_estado, estado) = 'encerrada' then now() else encerrada_em end
+  where id = p_id returning * into o;
+  insert into ocorrencia_registos (ocorrencia_id, user_id, acao, nota) values (o.id, auth.uid(), coalesce(nullif(array_to_string(v_nota, ' · '), ''), 'Nota'), nullif(left(trim(coalesce(p_nota, '')), 500), ''));
+  if o.visivel_cliente and (p_comunicar or p_estado in ('resolvida','encerrada')) then
+    perform private.ocorrencia_avisar_cliente(o, 'Ocorrência ' || o.codigo || ' — ' || case o.estado when 'resolvida' then 'resolvida' when 'encerrada' then 'encerrada' else 'atualização' end,
+      coalesce(o.resolucao, o.descricao));
+  end if;
+  return o;
+end $$;
+
+-- Ocorrências de uma encomenda (o cliente só vê as que lhe foram comunicadas, sem notas internas).
+create or replace function public.ocorrencias_da_encomenda(p_codigo text) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare a record;
+begin
+  select * into a from private.ocorrencia_encomenda(p_codigo);
+  return jsonb_build_object('suspensa', (a.v_enc).suspensa, 'motivo', (a.v_enc).suspensa_motivo, 'cliente', a.v_cliente,
+    'pode_gerir', not a.v_cliente and private.ocorrencia_gestor(),
+    'equipa', case when a.v_cliente then '[]'::jsonb else coalesce((select jsonb_agg(jsonb_build_object('id', f.id, 'nome', f.nome) order by f.nome) from funcionarios f where f.empresa_id = (a.v_enc).empresa_id and f.ativo), '[]') end,
+    'lista', coalesce((select jsonb_agg(jsonb_build_object('id', o.id, 'codigo', o.codigo, 'tipo', o.tipo, 'gravidade', o.gravidade, 'estado', o.estado, 'descricao', o.descricao,
+        'resolucao', o.resolucao, 'responsavel', (select nome from funcionarios where id = o.responsavel_id), 'responsavel_id', o.responsavel_id, 'visivel_cliente', o.visivel_cliente,
+        'suspendeu', o.suspendeu, 'do_cliente', o.aberta_por_cliente, 'criada', o.created_at,
+        'registos', case when a.v_cliente then '[]'::jsonb else coalesce((select jsonb_agg(jsonb_build_object('acao', r.acao, 'nota', r.nota, 'quando', r.created_at,
+            'quem', coalesce((select nome from funcionarios where id = r.user_id), (select nome from clientes where id = r.user_id), 'Sistema')) order by r.created_at) from ocorrencia_registos r where r.ocorrencia_id = o.id), '[]') end)
+      order by o.created_at desc, o.codigo desc) from ocorrencias o where o.encomenda_id = (a.v_enc).id and (not a.v_cliente or o.visivel_cliente)), '[]'));
+end $$;
+
+-- Transições: suspensa não avança; manifesto já não é obrigatório para «em trânsito».
+create or replace function public.transitar_encomenda(p_encomenda uuid, p_para estado_encomenda, p_nota text default null) returns encomendas
+language plpgsql security definer set search_path = public as $$
+declare
+  v_enc   encomendas;
+  v_papel papel_funcionario;
+  v_falta text[] := '{}';
+begin
+  select * into v_enc from encomendas where id = p_encomenda for update;
+  if not found then raise exception 'Encomenda inexistente.'; end if;
+  if private.minha_empresa() is distinct from v_enc.empresa_id then
+    raise exception 'Sem permissão para esta encomenda (inicie a sessão da empresa).';
+  end if;
+  v_papel := private.meu_papel();
+  if v_papel is null then raise exception 'Sem permissão para esta encomenda.'; end if;
+  if v_enc.suspensa and p_para <> 'cancelada' then
+    raise exception 'A encomenda está suspensa (%). Retome-a antes de mudar o estado.', coalesce(v_enc.suspensa_motivo, 'ocorrência');
+  end if;
+  if not exists (select 1 from encomenda_transicoes t
+                  where t.de = v_enc.estado and t.para = p_para and v_papel = any (t.papeis)) then
+    raise exception 'Transição % → % não permitida para o papel %.', v_enc.estado, p_para, v_papel;
+  end if;
+  if v_papel = 'operador_terreno' and not (
+       coalesce(v_enc.criado_por = auth.uid(), false)
+       or exists (select 1 from trabalhos_terreno tt
+                   where tt.encomenda_id = v_enc.id and tt.operador_id = auth.uid())) then
+    raise exception 'Este serviço não está atribuído ao operador.';
+  end if;
+  if p_para = 'armazenamento' and v_enc.criada_no_terreno then
+    if v_enc.cliente_id is null and coalesce(v_enc.cliente_nome, '') = '' then v_falta := v_falta || 'cliente'; end if;
+    if coalesce(v_enc.origem, '') = '' or coalesce(v_enc.destino, '') = '' then v_falta := v_falta || 'rota'; end if;
+    if not exists (select 1 from pagamentos pg
+                    where pg.encomenda_id = v_enc.id and pg.tipo <> 'reembolso'
+                      and pg.estado in ('pendente','parcial','pago')) then
+      v_falta := v_falta || 'primeiro pagamento';
+    end if;
+    if v_enc.assinatura_documento_id is null and v_enc.pin_validacao_hash is null then
+      v_falta := v_falta || 'assinatura ou PIN do cliente';
+    end if;
+  end if;
+  if p_para = 'expedicao' and not exists (
+       select 1 from recibos_armazem ra
+        where ra.encomenda_id = v_enc.id and ra.confirmado and ra.carga_conferida) then
+    v_falta := v_falta || 'receção confirmada e carga conferida pelo armazém';
+  end if;
+  if p_para = 'entregue' and not exists (
+       select 1 from entregas en
+        where en.encomenda_id = v_enc.id
+          and coalesce(en.identificacao, '') <> ''
+          and (en.assinatura_documento_id is not null or en.pin_validado)) then
+    v_falta := v_falta || 'identificação e assinatura/PIN de entrega';
+  end if;
+  if cardinality(v_falta) > 0 then
+    raise exception 'Não é possível avançar. Complete: %.', array_to_string(v_falta, ', ');
+  end if;
+  perform set_config('elolog.transicao', 'on', true);
+  update encomendas set estado = p_para where id = v_enc.id;
+  perform set_config('elolog.transicao', 'off', true);
+  insert into encomenda_historico (encomenda_id, empresa_id, de, para, nota, user_id)
+    values (v_enc.id, v_enc.empresa_id, v_enc.estado, p_para, p_nota, auth.uid());
+  insert into auditoria (empresa_id, user_id, papel, acao, entidade, entidade_id, antes, depois, motivo)
+    values (v_enc.empresa_id, auth.uid(), v_papel::text, 'transicao_encomenda', 'encomendas', v_enc.id::text,
+            jsonb_build_object('estado', v_enc.estado), jsonb_build_object('estado', p_para), p_nota);
+  if v_enc.cliente_id is not null then
+    insert into notificacoes (user_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+      values (v_enc.cliente_id, 'estado_encomenda', 'A sua encomenda ' || v_enc.codigo || ' mudou de estado',
+              p_para::text, 'encomendas', v_enc.id);
+  end if;
+  select * into v_enc from encomendas where id = p_encomenda;
+  return v_enc;
+end $$;
+
+revoke all on function private.ocorrencia_gestor(), private.ocorrencia_encomenda(text), private.ocorrencia_avisar_cliente(ocorrencias, text, text),
+  public.encomenda_suspender(text, text), public.encomenda_retomar(text, text), public.ocorrencia_criar(text, text, text, text, boolean, boolean),
+  public.ocorrencia_atualizar(uuid, text, text, text, uuid, text, boolean, text), public.ocorrencias_da_encomenda(text) from public, anon;
+grant execute on function public.encomenda_suspender(text, text), public.encomenda_retomar(text, text), public.ocorrencia_criar(text, text, text, text, boolean, boolean),
+  public.ocorrencia_atualizar(uuid, text, text, text, uuid, text, boolean, text), public.ocorrencias_da_encomenda(text) to authenticated;
+
+-- ===== 00148_cliente_so_clientes.sql =====
+-- v78 — A Área de Cliente é só para clientes: uma conta da equipa Elolog ou de um funcionário de prestador
+-- já não consegue entrar como cliente (nem criar um perfil de cliente por engano).
+
+-- Tipo de conta da sessão: 'equipa' (Elolog), 'funcionario' (prestador), 'cliente' ou null.
+create or replace function public.tipo_conta() returns text
+language sql stable security definer set search_path = public as $$
+  select case when exists (select 1 from administradores_plataforma where user_id = auth.uid()) then 'equipa'
+              when exists (select 1 from funcionarios where id = auth.uid()) then 'funcionario'
+              when exists (select 1 from clientes where id = auth.uid()) then 'cliente' end
+$$;
+revoke all on function public.tipo_conta() from public, anon;
+grant execute on function public.tipo_conta() to authenticated;
+
+-- A base de dados recusa criar um perfil de cliente para contas da equipa ou de prestadores.
+do $$ begin
+  create policy clientes_so_clientes on clientes as restrictive for insert to authenticated
+    with check (not exists (select 1 from administradores_plataforma a where a.user_id = auth.uid())
+            and not exists (select 1 from funcionarios f where f.id = auth.uid()));
+exception when duplicate_object then null; end $$;
+
+-- Limpar perfis de cliente criados por engano para contas da equipa/prestadores (só os que não têm simulações nem encomendas).
+delete from clientes c
+ where (exists (select 1 from administradores_plataforma a where a.user_id = c.id) or exists (select 1 from funcionarios f where f.id = c.id))
+   and not exists (select 1 from encomendas e where e.cliente_id = c.id) and not exists (select 1 from simulacoes s where s.cliente_id = c.id);
+
+-- ===== 00149_login_funcionario.sql =====
+-- v80 — Login simples para funcionários do prestador: NIF da empresa + n.º de funcionário + palavra-passe pessoal.
+-- A palavra-passe da EMPRESA só é pedida ao administrador da empresa (acesso ao portal de administração da empresa).
+-- O n.º de funcionário passa a ser dado automaticamente (0001, 0002, …) e é único dentro de cada empresa.
+
+-- Número automático: contador por empresa em «contadores», formato 0001 (salta números já usados à mão).
+create or replace function private.funcionario_numero_auto() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v int;
+begin
+  new.numero_interno := nullif(upper(trim(coalesce(new.numero_interno, ''))), '');
+  if new.numero_interno is null then
+    loop
+      insert into contadores (prefixo, ano, valor) values ('FUNC_' || new.empresa_id::text, 0, 1)
+      on conflict (prefixo, ano) do update set valor = contadores.valor + 1 returning valor into v;
+      new.numero_interno := lpad(v::text, 4, '0');
+      exit when not exists (select 1 from funcionarios f where f.empresa_id = new.empresa_id and f.id <> new.id
+        and ltrim(upper(f.numero_interno), '0') = ltrim(new.numero_interno, '0'));
+    end loop;
+  end if;
+  return new;
+end $$;
+create or replace trigger funcionarios_numero_auto before insert or update of numero_interno on funcionarios
+  for each row execute function private.funcionario_numero_auto();
+
+-- Dar número a quem ainda não tem (por ordem de criação).
+do $$ declare r record; begin
+  for r in select id from funcionarios where coalesce(trim(numero_interno), '') = '' order by created_at loop
+    update funcionarios set numero_interno = null where id = r.id;
+  end loop;
+end $$;
+create unique index if not exists funcionarios_numero_unico on funcionarios (empresa_id, (ltrim(upper(numero_interno), '0')));
+
+-- Só para a Edge Function «entrar-funcionario»: encontrar a conta pelo NIF da empresa e pelo n.º de funcionário.
+create or replace function public.servico_funcionario_por_numero(p_nif text, p_numero text)
+returns table (user_id uuid, email text, nome text, papel papel_funcionario, ativo boolean, empresa_id uuid, empresa_nome text, empresa_aprovada boolean)
+language sql stable security definer set search_path = public as $$
+  select f.id, f.email, f.nome, f.papel, f.ativo, e.id, coalesce(e.nome_comercial, e.nome), e.estado = 'aprovada'
+  from funcionarios f join empresas e on e.id = f.empresa_id
+  where private.norm(e.nif) = private.norm(regexp_replace(coalesce(p_nif, ''), '\s', '', 'g'))
+    and ltrim(upper(f.numero_interno), '0') = ltrim(upper(trim(coalesce(p_numero, ''))), '0')
+    and trim(coalesce(p_numero, '')) <> ''
+  limit 1
+$$;
+
+-- Abrir a sessão da empresa para um funcionário que já provou a palavra-passe pessoal (nunca para o administrador).
+create or replace function public.servico_abrir_sessao_funcionario(p_user uuid) returns timestamptz
+language plpgsql security definer set search_path = public as $$
+declare f funcionarios; v_validade timestamptz := now() + interval '12 hours';
+begin
+  select * into f from funcionarios where id = p_user and ativo;
+  if not found then raise exception 'Conta de funcionário inativa.'; end if;
+  if f.papel = 'admin_empresa' then raise exception 'O administrador da empresa entra com a palavra-passe da empresa.'; end if;
+  if not exists (select 1 from empresas where id = f.empresa_id and estado = 'aprovada') then raise exception 'A empresa ainda não está aprovada.'; end if;
+  insert into sessoes_empresa (user_id, empresa_id, valida_ate) values (p_user, f.empresa_id, v_validade)
+  on conflict (user_id) do update set empresa_id = excluded.empresa_id, valida_ate = excluded.valida_ate;
+  insert into auditoria (empresa_id, user_id, papel, acao, entidade, entidade_id)
+    values (f.empresa_id, p_user, f.papel::text, 'abrir_sessao_funcionario', 'funcionarios', p_user::text);
+  return v_validade;
+end $$;
+
+revoke all on function public.servico_funcionario_por_numero(text, text), public.servico_abrir_sessao_funcionario(uuid) from public, anon, authenticated;
+grant execute on function public.servico_funcionario_por_numero(text, text), public.servico_abrir_sessao_funcionario(uuid) to service_role;
+
+-- ===== 00150_mfa_admin_empresa.sql =====
+-- v81 — Verificação em dois passos (código da aplicação de autenticação) para o ADMINISTRADOR DA EMPRESA.
+-- Sem o 2.º passo (sessão aal2), o administrador não abre a sessão da empresa nem vê/altera dados da empresa,
+-- mesmo que alguém descubra as duas palavras-passe. Os restantes funcionários não são afetados.
+-- (Inclui a tabela acessos_temporarios da 00146, para esta migração funcionar com ou sem a 00146 aplicada.)
+
+create table if not exists acessos_temporarios (
+  user_id    uuid primary key references auth.users(id) on delete cascade,
+  empresa_id uuid not null references empresas(id) on delete cascade,
+  expira_em  timestamptz not null,
+  criado_por uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+alter table acessos_temporarios enable row level security;
+revoke all on acessos_temporarios from anon, authenticated;
+
+-- Sessão com o 2.º passo confirmado?
+create or replace function private.aal2() returns boolean
+language sql stable set search_path = public as $$ select coalesce(auth.jwt() ->> 'aal', '') = 'aal2' $$;
+
+create or replace function private.minha_empresa() returns uuid
+language sql stable security definer set search_path = public as $$ select f.empresa_id from funcionarios f
+    join empresas em on em.id = f.empresa_id and em.estado = 'aprovada'
+    join sessoes_empresa s on s.user_id = f.id and s.empresa_id = f.empresa_id and s.valida_ate > now()
+   where f.id = auth.uid() and f.ativo and (f.papel <> 'admin_empresa' or private.aal2())
+     and not exists (select 1 from acessos_temporarios t where t.user_id = f.id) $$;
+create or replace function private.meu_papel() returns papel_funcionario
+language sql stable security definer set search_path = public as $$ select f.papel from funcionarios f
+    join empresas em on em.id = f.empresa_id and em.estado = 'aprovada'
+    join sessoes_empresa s on s.user_id = f.id and s.empresa_id = f.empresa_id and s.valida_ate > now()
+   where f.id = auth.uid() and f.ativo and (f.papel <> 'admin_empresa' or private.aal2())
+     and not exists (select 1 from acessos_temporarios t where t.user_id = f.id) $$;
+
+-- Abrir a sessão da empresa: depois da palavra-passe da empresa certa, o administrador ainda tem de confirmar o código.
+create or replace function public.abrir_sessao_empresa(p_nome text, p_nif text, p_senha text)
+returns table (ok boolean, mensagem text, empresa_id uuid, empresa_nome text, papel papel_funcionario, funcionario_nome text, email text, valida_ate timestamptz)
+language plpgsql security definer set search_path = public as $$
+declare r record; v_f funcionarios; v_validade timestamptz := now() + interval '12 hours';
+begin
+  select * into v_f from funcionarios where id = auth.uid() and ativo;
+  if not found then
+    return query select false, 'Esta conta não é de um funcionário ativo de uma empresa.', null::uuid, null::text, null::papel_funcionario, null::text, null::text, null::timestamptz; return;
+  end if;
+  select * into r from private.verificar_empresa(p_nome, p_nif, p_senha);
+  if r.p_empresa is null then
+    return query select false, r.p_mensagem, null::uuid, null::text, null::papel_funcionario, null::text, null::text, null::timestamptz; return;
+  end if;
+  if r.p_empresa <> v_f.empresa_id then
+    return query select false, 'Esta conta de funcionário não pertence à empresa indicada.', null::uuid, null::text, null::papel_funcionario, null::text, null::text, null::timestamptz; return;
+  end if;
+  if v_f.papel = 'admin_empresa' and not private.aal2() then
+    return query select false, 'MFA_NECESSARIO', null::uuid, null::text, v_f.papel, v_f.nome, v_f.email, null::timestamptz; return;
+  end if;
+  insert into sessoes_empresa (user_id, empresa_id, valida_ate) values (auth.uid(), v_f.empresa_id, v_validade)
+  on conflict (user_id) do update set empresa_id = excluded.empresa_id, valida_ate = excluded.valida_ate;
+  insert into auditoria (empresa_id, user_id, papel, acao, entidade, entidade_id)
+    values (v_f.empresa_id, auth.uid(), v_f.papel::text, 'abrir_sessao_empresa', 'funcionarios', auth.uid()::text);
+  return query select true, null::text, e.id, e.nome, v_f.papel, v_f.nome, v_f.email, v_validade from empresas e where e.id = v_f.empresa_id;
+end $$;
+
+-- Edge Functions que agem pelo administrador da empresa (ex.: gerir funcionários) passam o nível da sessão.
+create or replace function public.servico_admin_empresa_aal(p_user uuid, p_aal text) returns uuid
+language sql stable security definer set search_path = public as $$ select f.empresa_id from funcionarios f
+    join empresas em on em.id = f.empresa_id and em.estado = 'aprovada'
+    join sessoes_empresa s on s.user_id = f.id and s.empresa_id = f.empresa_id and s.valida_ate > now()
+   where f.id = p_user and f.ativo and f.papel = 'admin_empresa' and p_aal = 'aal2'
+     and not exists (select 1 from acessos_temporarios t where t.user_id = f.id) $$;
+revoke all on function public.servico_admin_empresa_aal(uuid, text) from public, anon, authenticated;
+grant execute on function public.servico_admin_empresa_aal(uuid, text) to service_role;
+
 commit;

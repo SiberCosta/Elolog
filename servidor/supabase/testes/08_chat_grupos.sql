@@ -14,22 +14,22 @@ insert into funcionarios (id, empresa_id, nome, email, papel) values
  ('44444444-4444-4444-4444-444444444444','bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb','Dono T','dono@tejo.pt','admin_empresa');
 create temp table r (n int, ok boolean, nome text); grant all on r to authenticated; create temp table g (id uuid); grant all on g to authenticated;
 set local role authenticated;
-select set_config('request.jwt.claims', '{"sub":"33333333-3333-3333-3333-333333333333"}', true);
+select set_config('request.jwt.claims', '{"aal":"aal2","sub":"33333333-3333-3333-3333-333333333333"}', true);
 insert into g select chat_grupo_criar('Recolhas Leixões', array['35353535-3535-3535-3535-353535353535','44444444-4444-4444-4444-444444444444','11111111-1111-1111-1111-111111111111']::uuid[]);
 insert into r select 1, (select membros from chat_grupos() where id = (select id from g)) = 2, 'grupo só com colegas da mesma empresa';
 select chat_grupo_enviar((select id from g), 'Bom dia equipa') is not null;
 reset role; update chat_grupo_membros set lido_ate = lido_ate - interval '1 second' where user_id <> '33333333-3333-3333-3333-333333333333'; set local role authenticated;   -- na mesma transação now() não avança
-select set_config('request.jwt.claims', '{"sub":"35353535-3535-3535-3535-353535353535"}', true);
+select set_config('request.jwt.claims', '{"aal":"aal2","sub":"35353535-3535-3535-3535-353535353535"}', true);
 insert into r select 2, chat_por_ler() = 1 and (select por_ler from chat_grupos()) = 1, 'mensagem do grupo chega por ler';
 create temp table c2 as select * from chat_grupo_conversa((select id from g));
 insert into r select 3, (select count(*) from c2) = 1 and (select nome_de from c2) = 'Op' and chat_por_ler() = 0, 'abrir o grupo marca como lido';
-select set_config('request.jwt.claims', '{"sub":"44444444-4444-4444-4444-444444444444"}', true);
+select set_config('request.jwt.claims', '{"aal":"aal2","sub":"44444444-4444-4444-4444-444444444444"}', true);
 do $$ begin perform chat_grupo_conversa((select id from g)); insert into r values (4, false, 'outra empresa não lê o grupo');
   exception when others then insert into r values (4, true, 'outra empresa não lê o grupo'); end $$;
 insert into r select 5, (select count(*) from chat_grupos()) = 0, 'outra empresa não vê o grupo';
-select set_config('request.jwt.claims', '{"sub":"11111111-1111-1111-1111-111111111111"}', true);
+select set_config('request.jwt.claims', '{"aal":"aal2","sub":"11111111-1111-1111-1111-111111111111"}', true);
 insert into r select 6, (select count(*) from chat_grupos()) = 0 and (select count(*) from chat_contactos()) = 1, 'administração da plataforma não vê o chat do prestador';
-select set_config('request.jwt.claims', '{"sub":"35353535-3535-3535-3535-353535353535"}', true);
+select set_config('request.jwt.claims', '{"aal":"aal2","sub":"35353535-3535-3535-3535-353535353535"}', true);
 select chat_grupo_adicionar((select id from g), array['22222222-2222-2222-2222-222222222222']::uuid[]);
 insert into r select 7, (select membros from chat_grupos()) = 3, 'qualquer membro adiciona colegas';
 select chat_grupo_sair((select id from g));

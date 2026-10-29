@@ -30,3 +30,19 @@ stroke-linejoin:round}.password-recovery-dialog .auth-password-toggle.is-visible
 .password-recovery-feedback:empty{display:none}.password-recovery-feedback.success{border-left-color:#237E5F;background:#eef7f2;color:#17604a}.password-recovery-feedback.error{border-left-color:#b3261e;background:#fbeceb;color:#8a1c15}
 .password-recovery-feedback strong{display:block;margin-top:6px;font-size:18px;letter-spacing:.15em;color:#0E2433}.password-recovery-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
 .password-recovery-actions .btn-primary,.password-recovery-actions .btn-secondary{border-radius:4px}
+
+/* v76 — Criar perfil: elementos escondidos ficam mesmo escondidos; confirmação por email/telemóvel; leitura da política */
+.profile-register-modal [hidden]{display:none!important}
+.reg-via{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 18px;border:0;padding:0;margin:0}.reg-via legend{width:100%;padding:0;margin-bottom:6px;font-size:13px;font-weight:700;color:#0E2433}
+.reg-via label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#173142}.reg-via input{width:18px;height:18px}
+.reg-politica-aviso{margin:-8px 0 12px 26px;font-size:12px;color:#8a5a00}.profile-consent a{color:#236186;font-weight:700;text-decoration:underline}
+.reg-codigo{display:flex;flex-direction:column;gap:12px;padding:6px 0}.reg-codigo h3{margin:0;font-size:20px;color:#0E2433}.reg-codigo p{margin:0;color:#4b5d6b;line-height:1.5}
+.reg-codigo label{display:flex;flex-direction:column;gap:6px;max-width:240px;font-size:13px;font-weight:700;color:#294252}.reg-codigo input{min-height:46px;padding:8px 12px;border:1px solid #b9c7d1;border-radius:4px;font:700 22px/1 Consolas,Menlo,monospace;letter-spacing:6px}
+.reg-codigo-acoes{display:flex;gap:10px}
+.reg-politica{position:fixed;inset:0;z-index:13000;display:grid;place-items:center;padding:16px;background:rgba(14,36,51,.6)}.reg-politica[hidden]{display:none}
+.reg-politica-caixa{width:min(860px,100%);height:min(86vh,900px);display:flex;flex-direction:column;background:#fff;border-radius:12px;overflow:hidden}
+.reg-politica-caixa header,.reg-politica-caixa footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid #e1e9ef}.reg-politica-caixa footer{border:0;border-top:1px solid #e1e9ef}
+.reg-politica-caixa h3{margin:0;font-size:17px;color:#0E2433}.reg-politica-caixa iframe{flex:1;width:100%;border:0}.reg-politica-caixa small{color:#60737f}
+.reg-corpo .profile-form-grid .reg-via label{flex-direction:row;align-items:center;gap:10px;padding:10px 16px;border:1px solid #b9c7d1;border-radius:4px;background:#fff;cursor:pointer;font-size:14px}
+.reg-corpo .profile-form-grid .reg-via label:has(input:checked){border-color:#236186;box-shadow:inset 0 0 0 1px #236186;background:#f6fafc}
+.reg-corpo .profile-form-grid .reg-via input{width:18px;height:18px;min-height:0;margin:0;padding:0;flex:0 0 18px;accent-color:#236186;box-shadow:none}

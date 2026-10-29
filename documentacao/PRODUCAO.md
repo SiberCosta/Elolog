@@ -53,6 +53,27 @@ O ELO responde: menu, estado da encomenda (só ao número de telemóvel associad
 
 Só aceita ligações seguras (IMAP 993 e SMTP 465). Contas Gmail/Outlook com 2 passos pedem uma «palavra-passe de aplicação». Limites: 40 envios por utilizador a cada 10 minutos; mensagens com mais de 12 MB abrem-se no webmail.
 
+## Prestador criado pela Elolog com código temporário (v76)
+
+1. No Supabase › **SQL Editor**, cole e execute o conteúdo de `servidor/supabase/migrations/00146_acesso_temporario.sql` (a ferramenta automática não o aplicou).
+2. A Edge Function `criar-prestador` já está publicada e usa os segredos Brevo existentes. Só um administrador da plataforma com o 2.º fator confirmado pode criar prestadores e reenviar códigos.
+
+## Contas Pessoais por telemóvel (SMS) (v76)
+
+- A confirmação por email funciona já. A confirmação por **SMS** só funciona depois de ligar um fornecedor de SMS em Supabase › Authentication › Sign In / Providers › **Phone** (Twilio, MessageBird, Vonage ou Textlocal). Cada SMS tem custo no fornecedor escolhido. Até lá, quem escolher «Telemóvel» recebe a indicação para usar o email.
+- Contas só com telemóvel ficam com o email vazio em `clientes` e recuperam a palavra-passe pela equipa Elolog (a recuperação automática é por email).
+
+## Recuperar a palavra-passe (v74)
+
+- Os emails de recuperação saem pela Brevo (função `recuperar-acesso`), não pelos modelos do Supabase. Basta que existam os segredos `BREVO_API_KEY` e `EMAIL_REMETENTE` (já existem).
+- Em Supabase › Authentication › URL Configuration, confirme **Site URL = `https://www.elolog.pt`** e junte `https://www.elolog.pt/**` às Redirect URLs.
+- Limites: 3 pedidos por email a cada 15 min e 20 por endereço IP por hora.
+
+## Espaço de ficheiros (v74)
+
+- O plano grátis do Supabase tem **1 GB de ficheiros para o projeto inteiro** e pausa o projeto ao fim de 7 dias sem uso. Para garantir 2 GB/20 GB a cada prestador, passe para o plano **Pro** (25 $/mês, 100 GB incluídos, cerca de 0,021 $/GB a mais) antes de vender planos. Confirme os preços em supabase.com/pricing.
+- A plataforma já mede e trava por empresa (`00144_espaco_ficheiros.sql`); o valor de um contrato Empresarial define-se em «Planos e subscrições» › «Espaço de ficheiros por empresa».
+
 ## Aparecer no Google (com o logótipo)
 
 1. https://search.google.com/search-console › **Adicionar propriedade** › **Domínio** › `elolog.pt`.

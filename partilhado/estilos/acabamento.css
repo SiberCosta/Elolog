@@ -90,3 +90,6 @@ transition:border-color .2s,background-color .2s}.rodape-subir svg{width:15px;he
 .rodape a:focus-visible,html body .rodape-subir:focus-visible{outline:2px solid var(--rd-azul);outline-offset:3px}@media(max-width:960px){.rodape-topo{grid-template-columns:repeat(3,minmax(0,1fr));gap:2.5rem 2rem}.rodape-marca{grid-column:1/-1;max-width:none}}
 @media(max-width:620px){.rodape-in{padding:2.25rem 1.25rem 0}.rodape-topo{grid-template-columns:1fr 1fr;gap:1.5rem 1.25rem;padding-bottom:1.5rem}.rodape-col:last-child{grid-column:1/-1}.rodape-base{flex-wrap:wrap;gap:.9rem 1.25rem}
 .rodape-base p{flex-basis:100%}html body .rodape-subir{margin-left:auto}}@media(prefers-reduced-motion:reduce){.rodape-col a::after,.rodape-subir svg{transition:none}}@media print{.rodape-subir{display:none}}
+
+/* v76 — um botão com o atributo hidden fica mesmo escondido (vence o display:inline-flex !important acima) */
+html body :is(#elo-oculto,button,a,.btn-primary,.btn-secondary,.btn-success,.btn-danger)[hidden][hidden]{display:none!important}

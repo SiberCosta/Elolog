@@ -31,7 +31,7 @@ As ações administrativas **Autorizar**, **Ativar** e **Reativar** utilizam a m
 3. Encomenda aprovada segue para agendamento e recolha.
 4. Recolha concluída segue para receção e confirmação no armazém.
 5. Carga confirmada segue para preparação, expedição e manifesto.
-6. Manifesto confirmado permite iniciar trânsito.
+6. O manifesto faz parte do processo mas não é obrigatório para iniciar o trânsito: o despacho pode ser feito por um despachante à parte e carregado como documento «despacho» (v77).
 7. No destino, a carga fica disponível para levantamento ou entrega.
 8. Assinatura ou PIN encerra o serviço e arquiva os documentos.
 
@@ -45,7 +45,7 @@ A encomenda criada por operador autorizado não regressa à aprovação administ
 | --- | --- |
 | Terreno → Armazenamento | Cliente, rota, primeiro pagamento e assinatura/PIN |
 | Armazenamento → Expedição | Receção confirmada e carga conferida |
-| Expedição → Em trânsito | Manifesto confirmado |
+| Expedição → Em trânsito | Nenhuma condição obrigatória (manifesto ou despacho do despachante recomendados) |
 | Destino → Entregue/Levantado | Identificação e assinatura/PIN |
 
 Alterações críticas ficam registadas no histórico de auditoria. Documentos assinados e manifestos confirmados devem ser versionados, nunca substituídos silenciosamente.

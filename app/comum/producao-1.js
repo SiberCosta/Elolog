@@ -35,7 +35,7 @@
     const c=await sb(),u=await utilizador();if(!u)throw new Error("Inicie sessão novamente.");const emp=await minhaEmpresa();const en=await encomendaPorCodigo(encomenda);
     if(encomenda&&!en)throw new Error("Não encontrámos a encomenda "+encomenda+".");
     const dono=emp?.empresa_id||u.id,caminho=`${dono}/${en?en.codigo+"/":""}${Date.now()}-${nomeSeguro(file.name)}`;
-    const up=await c.storage.from("documentos").upload(caminho,file,{contentType:file.type||"application/octet-stream",upsert:false});if(up.error)throw new Error("O ficheiro não foi aceite: "+(up.error.message||"formato ou tamanho"));
+    const up=await c.storage.from("documentos").upload(caminho,file,{contentType:file.type||"application/octet-stream",upsert:false});if(up.error)throw new Error(/row-level security|policy|403|Unauthorized/i.test(up.error.message||"")?"O espaço de ficheiros do plano está esgotado. Peça à equipa Elolog para mudar de plano.":"O ficheiro não foi aceite: "+(up.error.message||"formato ou tamanho"));window.elologEspaco?.atualizar?.();
     const linha={categoria:categoria||"outro",nome:file.name.slice(0,200),visibilidade:visibilidade||(emp?"interna":"cliente"),storage_path:caminho,mime:file.type||null,tamanho_bytes:file.size,enviado_por:u.id,encomenda_id:en?.id||null};
     if(emp)linha.empresa_id=emp.empresa_id;else linha.cliente_id=u.id;
     const{data,error}=await c.from("documentos").insert(linha).select().single();if(error)throw new Error("O documento não ficou registado: "+error.message);return data}

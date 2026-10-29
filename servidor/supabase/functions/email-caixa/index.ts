@@ -43,6 +43,7 @@ Deno.serve(async (req: Request) => {
   const acesso = (ac ?? {}) as { plataforma?: boolean; empresa?: string | null; delegado?: boolean };
   if (!acesso.empresa && !acesso.plataforma && !acesso.delegado) return erro(403, 'permissao', 'Ainda não tem caixas de email atribuídas. Peça acesso ao administrador.');
   if (acesso.plataforma && !acesso.empresa && !acesso.delegado && !mfa) return erro(403, 'mfa', 'Confirme o segundo fator de autenticação para abrir o email da Elolog.');
+  if (acesso.empresa && !mfa) return erro(403, 'mfa', 'Confirme o código de verificação: entre de novo como administrador da empresa.');
   const { data: dentro } = await admin.rpc('servico_limite', { p_chave: 'email:' + user, p_max: 300, p_janela_min: 10 });
   if (dentro === false) return erro(429, 'limite', 'Demasiados pedidos. Aguarde alguns minutos.');
   const lido = await lerJson(req, 200_000);

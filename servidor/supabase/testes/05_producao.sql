@@ -14,7 +14,7 @@ do $teste$ declare
   create temp table resultados (n serial, nome text, ok boolean, detalhe text);
   execute $f$ create function pg_temp.t(p_nome text, p_user uuid, p_sql text, p_esperado text, p_papel text default 'authenticated')
   returns void language plpgsql as $b$ declare v_n bigint; v_ok boolean := false; v_det text := ''; begin
-    perform set_config('request.jwt.claims', case when p_user is null then '{}' else json_build_object('sub', p_user, 'role', p_papel)::text end, true);
+    perform set_config('request.jwt.claims', case when p_user is null then '{}' else json_build_object('sub', p_user, 'role', p_papel, 'aal', 'aal2')::text end, true);
     execute format('set local role %I', p_papel);
     begin
       if p_esperado = 'erro' then execute p_sql; v_det := 'devia ter falhado';

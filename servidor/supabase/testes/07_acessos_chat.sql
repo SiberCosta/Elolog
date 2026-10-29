@@ -58,20 +58,20 @@ begin
 end $$;
 -- como utilizadores reais (papel authenticated)
 set local role authenticated;
-select set_config('request.jwt.claims', '{"sub":"33333333-3333-3333-3333-333333333333"}', true);
+select set_config('request.jwt.claims', '{"aal":"aal2","sub":"33333333-3333-3333-3333-333333333333"}', true);
 select chat_enviar('34343434-3434-3434-3434-343434343434', 'Recolha às 10h em Leixões') is not null;
-select set_config('request.jwt.claims', '{"sub":"34343434-3434-3434-3434-343434343434"}', true);
+select set_config('request.jwt.claims', '{"aal":"aal2","sub":"34343434-3434-3434-3434-343434343434"}', true);
 insert into r select 15, chat_por_ler() = 2, 'mensagem chega por ler';
 create temp table c16 as select count(*) n from chat_conversa('33333333-3333-3333-3333-333333333333');
 insert into r select 16, (select n from c16) = 2 and chat_por_ler() = 0, 'abrir conversa marca como lida';
 insert into r select 17, (select count(*) from chat_contactos() where user_id = '35353535-3535-3535-3535-353535353535') = 1
   and (select por_ler from chat_contactos() where user_id = '33333333-3333-3333-3333-333333333333') = 0, 'contactos: toda a empresa';
-select set_config('request.jwt.claims', '{"sub":"35353535-3535-3535-3535-353535353535"}', true);
+select set_config('request.jwt.claims', '{"aal":"aal2","sub":"35353535-3535-3535-3535-353535353535"}', true);
 do $$ begin perform chat_enviar('34343434-3434-3434-3434-343434343434', 'olá'); insert into r values (18, true, 'financeiro fala com o terreno');
   exception when others then insert into r values (18, false, 'financeiro fala com o terreno'); end $$;
 do $$ begin perform 1 from chat_mensagens; insert into r values (19, false, 'tabela fechada à API');
   exception when insufficient_privilege then insert into r values (19, true, 'tabela fechada à API'); end $$;
-select set_config('request.jwt.claims', '{"sub":"22222222-2222-2222-2222-222222222222"}', true);
+select set_config('request.jwt.claims', '{"aal":"aal2","sub":"22222222-2222-2222-2222-222222222222"}', true);
 insert into r select 20, (select count(*) from chat_contactos() where organizacao = 'Elolog') = 0 and (select count(*) from chat_contactos()) = 4, 'admin do prestador vê só a sua equipa';
 reset role;
 select n, case when ok then 'OK' else 'FALHOU' end as resultado, nome from r order by n;
