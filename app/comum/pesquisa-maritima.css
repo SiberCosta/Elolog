@@ -27,3 +27,7 @@
 .mm-erro{color:#b42318;margin:0;font-size:13px}.mm-erro:empty{display:none}
 @media(max-width:760px){.pm-caixa.mm-janela{height:94dvh}.mm-filtros{grid-template-columns:1fr 1fr}.mm-filtros .mm-q{grid-column:1/-1}.mm-filtros .mm-livre{grid-column:1/-1}
   .mm-lista{grid-template-columns:1fr}.mm-rota b{font-size:14px}}
+/* v89 — navios reais na rota (AIS) */
+.mm-ais-sec{display:grid;gap:10px;margin-top:6px;padding-top:14px;border-top:1px dashed #cfdbe5}.mm-ais-sec h4{margin:0;color:#13293D;font-size:16px}.mm-ais-sec h4 small{font-weight:500;color:#1F7A5C;font-size:12px}
+.mm-ais-navio{border-left:4px solid #1F5F8B}.mm-ais-l{margin:0;font-size:13px;color:#20354d}.mm-nota{margin:0;font-size:12px;color:#7a8b97}.mm-est.azl{background:#e6f0f7;color:#1F5F8B}
+.mm-grupo{margin:6px 0 0;font-size:14px;color:#1F5F8B;display:flex;align-items:center;gap:8px}.mm-grupo span{background:#e6f0f7;border-radius:99px;padding:1px 9px;font-size:12px}.mm-ais-navio.no_porto{border-left-color:#1F7A5C}.mm-ais-navio.partiu{border-left-color:#7a8b97}

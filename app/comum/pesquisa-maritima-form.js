@@ -12,7 +12,7 @@ function formulario(x){const M=window.elologMaritimo,v=k=>esc(x?.[k]??""),PT=M.P
   <fieldset><legend>Navio</legend><label>Nome do navio *<input name="navio" required maxlength="80" value="${v("navio")}"></label>
     <label>Linha / armador<input name="linha" maxlength="80" value="${v("linha")}"></label><label>N.º da viagem<input name="viagem" maxlength="30" value="${v("viagem")}"></label>
     <label>IMO (7 dígitos)<input name="imo" inputmode="numeric" maxlength="7" pattern="[0-9]{7}" value="${v("imo")}"></label>
-    <label>MMSI (9 dígitos) <small>para ver a posição real</small><input name="mmsi" inputmode="numeric" maxlength="9" pattern="[0-9]{9}" value="${v("mmsi")}"></label></fieldset>
+    <label>MMSI (9 dígitos) <small>(opcional)</small><input name="mmsi" inputmode="numeric" maxlength="9" pattern="[0-9]{9}" value="${v("mmsi")}"></label></fieldset>
   <fieldset><legend>Rota e datas</legend><label>Sentido *<select name="sentido"><option value="PT-STP" ${s==="PT-STP"?"selected":""}>Portugal → São Tomé</option><option value="STP-PT" ${s==="STP-PT"?"selected":""}>São Tomé → Portugal</option></select></label>
     <label>Porto de origem *<select name="porto_origem" data-lado="origem">${op(s==="PT-STP"?PT:ST,x?.porto_origem)}</select></label>
     <label>Porto de destino *<select name="porto_destino" data-lado="destino">${op(s==="PT-STP"?ST:PT,x?.porto_destino)}</select></label>
@@ -35,10 +35,11 @@ function ler(f){const d=new FormData(f),o={},t=k=>String(d.get(k)||"").trim();
   if([o.cont20_livres,o.cont40_livres,o.grupagem_m3].some(n=>n!=null&&(!Number.isFinite(n)||n<0)))return"Os valores de espaço livre têm de ser números positivos.";return o}
 
 async function abrir(x){const p=P();if(!p)return;
-  if(x?.id&&p.online()){try{const sb=await p.sb(),{data}=await sb.from("viagens_maritimas").select("*").eq("id",x.id).maybeSingle();if(data)x=data}catch(_){}}const j=p.janela({eyebrow:"ELOLOG MARITIME SEARCH",titulo:x?"Editar viagem":"Publicar viagem"});j.corpo.closest(".pm-caixa").classList.add("mm-janela");
+  if(x?.id&&p.online()){try{const sb=await p.sb(),{data}=await sb.from(x.empresa_id?"viagens_maritimas":"viagens_elolog").select("*").eq("id",x.id).maybeSingle();if(data)x=data}catch(_){}}const j=p.janela({eyebrow:"ELOLOG MARITIME SEARCH",titulo:x?"Editar viagem":"Publicar viagem"});j.corpo.closest(".pm-caixa").classList.add("mm-janela");
   const guardar=async()=>{const f=j.corpo.querySelector("form"),erro=j.corpo.querySelector(".mm-erro"),o=ler(f);if(typeof o==="string"){erro.textContent=o;return}
     if(!p.online()){erro.textContent="No modo de demonstração as viagens não são gravadas.";return}
-    try{const sb=await p.sb();let r;if(x?.id)r=await sb.from("viagens_maritimas").update(o).eq("id",x.id);
+    try{const sb=await p.sb(),equipa=currentUser?.role==="admin",tabela=equipa?"viagens_elolog":"viagens_maritimas";let r;if(x?.id)r=await sb.from(x.empresa_id?"viagens_maritimas":"viagens_elolog").update(o).eq("id",x.id);
+      else if(equipa)r=await sb.from(tabela).insert(o);
       else{const emp=await p.minhaEmpresa();if(!emp?.empresa_id)throw new Error("Abra a sessão da empresa para publicar viagens.");r=await sb.from("viagens_maritimas").insert({...o,empresa_id:emp.empresa_id})}
       if(r.error)throw r.error;p.aviso(x?"Viagem atualizada.":"Viagem publicada na pesquisa marítima.","success");j.fechar();window.elologMaritimo?.abrir()}
     catch(e){erro.textContent=/LIMITE_EXCEDIDO/.test(e.message||"")?"Demasiadas alterações seguidas. Aguarde alguns minutos.":window.ELOLogServidor?.mensagem?.(e)||e.message}};

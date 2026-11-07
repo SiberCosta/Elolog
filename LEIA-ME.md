@@ -58,6 +58,35 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v92 (navios reais em São Tomé pela MyShipTracking)
+
+- Nova Edge Function **`navios-mst`** (publicada): 3 vezes por dia (05:23, 13:23, 21:23 UTC) consulta a API MyShipTracking para o porto de **São Tomé (port_id 5867 na MyShipTracking; o código STTMS não existe lá)**: navios **no porto**, **previstos chegar** (com data/hora) e que **partiram** nos últimos 7 dias.
+- Na Pesquisa marítima aparece a secção **«Navios em São Tomé»** com os três grupos, tipo de navio, bandeira, GT, IMO e ligação para o mapa (quando há posição).
+- **Ativado** a 07/11/2026 (`MYSHIPTRACKING_API_KEY` definido). Primeiro teste: 2 navios reais (saídas recentes de São Tomé), 10 créditos gastos. «Sem navios» (ERR_NOT_FOUND) não é erro nem gasta créditos.
+- **Custo estimado**: por execução ~10 créditos (navios no porto) + 1 crédito por navio previsto + 5 créditos por cada dia com saídas (máx. 35) → cerca de 20 a 60 créditos por execução, **~2 000 a 5 000 créditos/mês** (cabe no plano Basic de 50 000). Pedidos sem resultados não gastam créditos.
+- Servidor: migração `00156_navios_myshiptracking.sql` (aplicada: colunas novas em `navios_rota`, função `navios_sao_tome`, tarefa agendada `elolog-navios-mst`). Ligações Supabase inalteradas. Testes: `functions/_testes/mst.test.mts` (7/7).
+
+## v91 (pesquisa marítima sem aisstream: viagens publicadas pela Elolog)
+
+- Decisão: **não usar o aisstream.io**. A pesquisa marítima mostra as viagens publicadas pela **equipa Elolog** e pelos prestadores (sem dependência de serviços externos).
+- A **administração da plataforma** passa a ter «+ Publicar viagem» e «Editar» na Pesquisa marítima (Administração → Operações e clientes → Pesquisa marítima). As viagens aparecem aos clientes com o prestador «Elolog».
+- Servidor: migração `00155_viagens_elolog.sql` (aplicada): tabela `viagens_elolog` (só a administração escreve; auditoria e limite de alterações) e `pesquisa_maritima` junta as duas origens. Teste: `testes/20_viagens_elolog.sql` (8/8); `19_pesquisa_maritima.sql` continua 17/17.
+- A secção «Navios na rota · AIS» só aparece se um dia houver dados AIS (sem chave AIS fica escondida). A tabela `navios_rota` (v89) fica sem uso.
+- Outras fontes avaliadas: AISHub (gratuito, mas exige recetor AIS próprio); MyShipTracking / VesselFinder (pagos por créditos).
+
+## v90 (correções do menu no telemóvel)
+
+- O perfil (iniciais, nome e função) já não fica por cima da onda da capa.
+- Só o grupo **aberto** fica destacado (antes ficavam destacados todos os grupos que tinham sido abertos); a seta do grupo aberto vira para cima.
+- Textos de todos os itens com a mesma cor (o «Apoio e reclamações» aparecia esbatido).
+
+## v89 (pesquisa marítima: todos os navios e navios reais pelo AIS)
+
+- Novo separador **«Todos os navios»** (abre por omissão): mostra todas as viagens publicadas e todos os navios detetados na rota, sem filtros de sentido, porto ou datas.
+- **Navios reais na rota**: a função `navios-ais` (a cada 30 min) passa também a escutar o corredor Golfo da Guiné ⇄ Portugal e guarda os navios de carga cujo destino declarado no AIS é São Tomé/Neves (→ São Tomé) ou um porto português, vindo do sul (→ Portugal). Aparecem na secção «Navios na rota · AIS em tempo real», com destino, chegada prevista, última posição e ligação para o mapa.
+- **Para funcionar precisa da chave AIS** (gratuita): criar conta em https://aisstream.io → «API Keys» → criar chave; no Supabase → Edge Functions → Secrets → `AISSTREAM_API_KEY` = a chave. Os primeiros navios aparecem na meia hora seguinte e a lista vai crescendo (cada navio envia os dados de viagem de ~6 em 6 minutos).
+- Servidor: migração `00154_navios_na_rota.sql` (aplicada), `navios-ais` republicada (ligações Supabase inalteradas). Testes: `functions/_testes/rota.test.mts` (12/12).
+
 ## v88 (cores da marca)
 
 - O menu do telemóvel e o centro de comando voltaram às **cores do design inicial**: tinta `#13293D` → `#17425c` no fundo, azul `#1F5F8B` na opção ativa e na onda, verde `#1F7A5C` no destaque do grupo aberto e no selo, textos `#dbe9f1` / `#9fbccd`. O desenho (capa com navio, perfil, «Sair», assinatura) mantém-se.
