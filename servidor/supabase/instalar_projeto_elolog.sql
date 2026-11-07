@@ -4116,304 +4116,478 @@ create or replace function private.tipo_envia_email(p_tipo text) returns boolean
     'empresa_recusada', 'pagamento_confirmado', 'simulacao_aceite', 'simulacao_recusada', 'estado_encomenda', 'fatura_emitida',
     'pagamento_recebido', 'alerta_seguranca') $$;
 
--- ===== 00153_pesquisa_maritima.sql =====
--- v87 — EloLog Maritime Search: pesquisa de navios, partidas, chegadas e espaço disponível Portugal ⇄ São Tomé e Príncipe.
--- Só ACRESCENTA (tabela, políticas, funções). Não altera ligações, chaves nem a configuração do Supabase existente.
--- Os prestadores publicam as viagens; clientes, prestadores e administração pesquisam (com sessão iniciada).
--- Se a viagem tiver MMSI, o navio passa a ser seguido pelo AIS existente (navios-ais) e a pesquisa mostra a posição real.
+-- ===== 00158_funis_gargalo.sql =====
+-- v94 — Três funis (clientes, prestadores, financeiro) e o indicador «Gargalo principal» no Centro de comando.
+-- Só ACRESCENTA uma função de leitura (só administração). Não altera tabelas, dados nem ligações Supabase.
+-- Regras obrigatórias (só se conta o que existe de facto na base de dados):
+--  1. Só contam propostas de prestadores APROVADOS — nunca se mostram propostas fictícias.
+--  2. Só há aceite se houver proposta válida (enviada/aceite, de prestador aprovado).
+--  3. Só há valor contratado com proposta ACEITE (encomendas sem proposta aceite ficam fora do funil).
+--  4. Só há valor faturado com fatura VÁLIDA registada.
+--  5. Só há valor recebido com pagamento CONFIRMADO (estado «pago», menos reembolsos).
+--  6. Planos (subscrições) e comissões das encomendas são contabilizados em separado.
 
-create table if not exists viagens_maritimas (
-  id            uuid primary key default gen_random_uuid(),
-  empresa_id    uuid not null references empresas(id) on delete cascade,
-  navio         text not null check (length(navio) between 2 and 80),
-  imo           text check (imo ~ '^[0-9]{7}$'),
-  mmsi          text check (mmsi ~ '^[0-9]{9}$'),
-  linha         text check (length(linha) <= 80),                       -- armador / linha de navegação
-  viagem        text check (length(viagem) <= 30),                      -- n.º da viagem
-  sentido       text not null check (sentido in ('PT-STP', 'STP-PT')),
-  porto_origem  text not null check (length(porto_origem) between 2 and 60),
-  porto_destino text not null check (length(porto_destino) between 2 and 60),
-  partida       date not null,
-  chegada       date,
-  fecho_carga   date,                                                   -- último dia para entregar a carga
-  estado        text not null default 'aberta' check (estado in ('planeada','aberta','lotada','partiu','chegou','atrasada','cancelada')),
-  cont20_livres int check (cont20_livres between 0 and 9999),
-  cont40_livres int check (cont40_livres between 0 and 9999),
-  grupagem_m3   numeric(9,2) check (grupagem_m3 between 0 and 99999),   -- espaço em grupagem (carga solta)
-  aceita_viaturas boolean not null default false,
-  notas         text check (length(notas) <= 300),
-  publicada     boolean not null default true,
-  criado_por    uuid references auth.users(id) on delete set null default auth.uid(),
-  created_at    timestamptz not null default now(),
-  updated_at    timestamptz not null default now(),
-  check (chegada is null or chegada >= partida),
-  check (fecho_carga is null or fecho_carga <= partida)
-);
-create index if not exists viagens_maritimas_partida on viagens_maritimas (sentido, partida);
-create index if not exists viagens_maritimas_empresa on viagens_maritimas (empresa_id, partida desc);
-alter table viagens_maritimas enable row level security;
-revoke all on viagens_maritimas from anon;
-grant select, insert, update, delete on viagens_maritimas to authenticated;
-
-do $$ begin
-  if not exists (select 1 from pg_policies where tablename = 'viagens_maritimas' and policyname = 'viagens_ver') then
-    create policy viagens_ver on viagens_maritimas for select to authenticated
-      using (publicada or empresa_id = private.minha_empresa() or private.e_admin_plataforma());
-    create policy viagens_gerir on viagens_maritimas for all to authenticated
-      using (private.e_admin_plataforma() or (empresa_id = private.minha_empresa() and private.papel_em(array['admin_empresa','operador'])))
-      with check (private.e_admin_plataforma() or (empresa_id = private.minha_empresa() and private.papel_em(array['admin_empresa','operador'])));
-  end if;
-end $$;
-
--- Atualizado em + seguir o navio no AIS quando tem MMSI (usa a tabela navios_seguidos já existente).
-create or replace function private.viagem_antes() returns trigger language plpgsql security definer set search_path = public as $$
-begin
-  new.updated_at := now();
-  if tg_op = 'UPDATE' then new.empresa_id := old.empresa_id; new.criado_por := old.criado_por; end if;   -- não muda de dono
-  if new.mmsi is not null then
-    insert into navios_seguidos (empresa_id, mmsi, nome, viagem) values (new.empresa_id, new.mmsi, new.navio, new.viagem)
-    on conflict (empresa_id, mmsi) do nothing;
-  end if;
-  return new;
-end $$;
-create or replace trigger viagem_antes before insert or update on viagens_maritimas for each row execute function private.viagem_antes();
-create or replace trigger auditar after insert or update or delete on viagens_maritimas for each row execute function private.auditar_alteracao();
-create or replace trigger limitar_escritas before insert or update on viagens_maritimas for each row execute function private.limitar_escritas('60');
-
--- Pesquisa: viagens visíveis + nome do prestador + última posição AIS do navio (se existir).
-create or replace function public.pesquisa_maritima(p_texto text default null, p_sentido text default null, p_de date default null,
-  p_ate date default null, p_porto text default null, p_so_disponivel boolean default false, p_por text default 'partida')
-returns table (id uuid, navio text, imo text, mmsi text, linha text, viagem text, sentido text, porto_origem text, porto_destino text,
-  partida date, chegada date, fecho_carga date, estado text, cont20_livres int, cont40_livres int, grupagem_m3 numeric, aceita_viaturas boolean,
-  notas text, prestador text, empresa_id uuid, minha boolean, latitude double precision, longitude double precision, velocidade_nos numeric,
-  destino_ais text, eta_ais timestamptz, posicao_em timestamptz)
+create or replace function public.painel_funis(p_dias integer default 30) returns jsonb
 language plpgsql stable security definer set search_path = public as $$
-declare v_t text := nullif(left(trim(coalesce(p_texto, '')), 60), ''); v_p text := nullif(left(trim(coalesce(p_porto, '')), 60), '');
-        v_emp uuid := private.minha_empresa(); v_adm boolean := private.e_admin_plataforma();
+declare
+  v_ini timestamptz; r jsonb; a_sim uuid[]; a_prop uuid[]; a_aceite uuid[]; a_enc uuid[];
+  -- clientes
+  c_sim int; c_prop int; c_aceite int; c_enc int; c_entregue int; c_sem_prop int; c_expiradas int; c_recusadas int;
+  -- prestadores
+  p_registos int; p_pagos int; p_aprovados int; p_disponiveis int; p_com_prop int; p_com_enc int; p_pend48 int; p_pend int;
+  -- financeiro
+  f_sim numeric; f_prop numeric; f_aceite numeric; f_fat numeric; f_rec numeric; f_com numeric; f_sem_regra int;
+  pl_recebido numeric; pl_por_confirmar numeric; pl_ativos int; pl_mrr numeric;
+  g jsonb; taxa numeric; melhor numeric := 2; e record;
 begin
-  if auth.uid() is null then raise exception 'SESSAO_INVALIDA'; end if;
-  if p_sentido is not null and p_sentido not in ('PT-STP', 'STP-PT') then raise exception 'Sentido inválido.'; end if;
-  return query
-  select v.id, v.navio, v.imo, v.mmsi, v.linha, v.viagem, v.sentido, v.porto_origem, v.porto_destino, v.partida, v.chegada, v.fecho_carga, v.estado,
-         v.cont20_livres, v.cont40_livres, v.grupagem_m3, v.aceita_viaturas, v.notas, coalesce(e.nome_comercial, e.nome), v.empresa_id,
-         v.empresa_id = v_emp, p.latitude, p.longitude, p.velocidade_nos, p.destino, p.eta, p.posicao_em
-    from viagens_maritimas v
-    join empresas e on e.id = v.empresa_id and e.estado = 'aprovada'
-    left join navios_posicoes p on p.mmsi = v.mmsi
-   where (v.publicada or v.empresa_id = v_emp or v_adm)
-     and (p_sentido is null or v.sentido = p_sentido)
-     and (p_de is null or (case when p_por = 'chegada' then coalesce(v.chegada, v.partida) else v.partida end) >= p_de)
-     and (p_ate is null or (case when p_por = 'chegada' then coalesce(v.chegada, v.partida) else v.partida end) <= p_ate)
-     and (v_p is null or v.porto_origem ilike '%' || v_p || '%' or v.porto_destino ilike '%' || v_p || '%')
-     and (v_t is null or concat_ws(' ', v.navio, v.imo, v.mmsi, v.linha, v.viagem, e.nome, e.nome_comercial) ilike '%' || v_t || '%')
-     and (not p_so_disponivel or (v.estado in ('aberta', 'planeada', 'atrasada') and (v.fecho_carga is null or v.fecho_carga >= current_date)
-          and (coalesce(v.cont20_livres, 0) + coalesce(v.cont40_livres, 0) > 0 or coalesce(v.grupagem_m3, 0) > 0 or v.aceita_viaturas)))
-   order by case when p_por = 'chegada' then coalesce(v.chegada, v.partida) else v.partida end, v.navio
-   limit 200;
-end $$;
-revoke all on function public.pesquisa_maritima(text, text, date, date, text, boolean, text) from public, anon;
-grant execute on function public.pesquisa_maritima(text, text, date, date, text, boolean, text) to authenticated;
+  if not private.e_admin_plataforma() then raise exception 'Apenas a administração da plataforma.'; end if;
+  if p_dias is null or p_dias not in (7, 14, 30, 60, 90, 180, 365) then raise exception 'Período inválido.'; end if;
+  v_ini := now() - make_interval(days => p_dias);
 
--- ===== 00154_navios_na_rota.sql =====
--- v89 — Navios REAIS na rota Portugal ⇄ São Tomé e Príncipe, descobertos pelo AIS (navios-ais, a cada 30 min).
--- Só ACRESCENTA uma tabela e uma função de leitura; não altera ligações nem configuração do Supabase.
--- Precisa do segredo AISSTREAM_API_KEY (conta gratuita em aisstream.io) definido nas Edge Functions.
+  -- ---------- coorte: simulações enviadas no período, propostas válidas/aceites e encomendas com proposta aceite
+  select coalesce(array_agg(s.id), '{}') into a_sim from simulacoes s
+   where s.estado <> 'rascunho' and coalesce(s.enviada_em, s.created_at) >= v_ini;
+  select coalesce(array_agg(p.id), '{}') into a_prop
+    from propostas p join empresas em on em.id = p.empresa_id and em.estado = 'aprovada'            -- regra 1
+   where p.simulacao_id = any(a_sim)
+     and (p.estado = 'aceite' or (p.estado = 'enviada' and (p.validade is null or p.validade >= current_date)));   -- regra 2
+  select coalesce(array_agg(p.id), '{}') into a_aceite from propostas p where p.id = any(a_prop) and p.estado = 'aceite';
+  select coalesce(array_agg(o.id), '{}') into a_enc from encomendas o
+   where o.proposta_id = any(a_aceite) and o.estado <> 'cancelada';                                                   -- regra 3
 
-create table if not exists navios_rota (
-  mmsi         text primary key check (mmsi ~ '^[0-9]{9}$'),
-  nome         text,
-  imo          text,
-  tipo         int,
-  destino      text not null,
-  eta          timestamptz,
-  sentido      text not null check (sentido in ('PT-STP', 'STP-PT')),
-  latitude     double precision,
-  longitude    double precision,
-  visto_em     timestamptz not null,
-  atualizado_em timestamptz not null default now()
-);
-create index if not exists navios_rota_sentido on navios_rota (sentido, visto_em desc);
-alter table navios_rota enable row level security;
-revoke all on navios_rota from anon, authenticated;            -- só o servidor escreve; a leitura é pela função abaixo
+  select count(*) into c_sim from simulacoes where id = any(a_sim);
+  select count(distinct simulacao_id) into c_prop from propostas where id = any(a_prop);
+  select count(distinct simulacao_id) into c_aceite from propostas where id = any(a_aceite);
+  select count(*) into c_enc from encomendas where id = any(a_enc);
+  select count(*) into c_entregue from encomendas where id = any(a_enc) and estado = 'entregue';
+  select count(*) into c_sem_prop from encomendas o where o.created_at >= v_ini and o.estado <> 'cancelada'
+     and not exists (select 1 from propostas p where p.id = o.proposta_id and p.estado = 'aceite');
+  select count(*) filter (where p.estado = 'enviada' and p.validade < current_date), count(*) filter (where p.estado = 'recusada')
+    into c_expiradas, c_recusadas from propostas p where p.simulacao_id = any(a_sim);
 
--- Navios vistos nos últimos 21 dias com destino na rota (com a última posição conhecida, se for seguido).
-create or replace function public.navios_na_rota(p_sentido text default null, p_texto text default null)
-returns table (mmsi text, nome text, imo text, destino text, eta timestamptz, sentido text, latitude double precision,
-  longitude double precision, visto_em timestamptz, velocidade_nos numeric, posicao_em timestamptz)
-language sql stable security definer set search_path = public as $$
-  select r.mmsi, r.nome, r.imo, r.destino, r.eta, r.sentido,
-         coalesce(p.latitude, r.latitude), coalesce(p.longitude, r.longitude), r.visto_em, p.velocidade_nos, p.posicao_em
-    from navios_rota r left join navios_posicoes p on p.mmsi = r.mmsi
-   where auth.uid() is not null
-     and r.visto_em > now() - interval '21 days'
-     and (p_sentido is null or r.sentido = p_sentido)
-     and (nullif(trim(coalesce(p_texto, '')), '') is null
-          or concat_ws(' ', r.nome, r.imo, r.mmsi, r.destino) ilike '%' || left(trim(p_texto), 60) || '%')
-   order by coalesce(r.eta, r.visto_em + interval '30 days'), r.nome
-   limit 100 $$;
-revoke all on function public.navios_na_rota(text, text) from public, anon;
-grant execute on function public.navios_na_rota(text, text) to authenticated;
+  -- ---------- prestadores (estado atual + atividade no período)
+  select count(*), count(*) filter (where estado = 'aprovada'), count(*) filter (where estado = 'pendente' and created_at < now() - interval '48 hours'),
+         count(*) filter (where estado = 'pendente')
+    into p_registos, p_aprovados, p_pend48, p_pend from empresas;
+  select count(distinct empresa_id) into p_pagos from subscricoes where pago_em is not null or estado = 'ativa';
+  select count(*) into p_disponiveis from empresas em where em.estado = 'aprovada'
+     and exists (select 1 from subscricoes s where s.empresa_id = em.id and s.estado = 'ativa');
+  select count(distinct empresa_id) into p_com_prop from propostas where id = any(a_prop);
+  select count(distinct empresa_id) into p_com_enc from encomendas where id = any(a_enc);
 
--- ===== 00155_viagens_elolog.sql =====
--- v91 — A equipa Elolog (administração da plataforma) também publica viagens na Pesquisa marítima, sem depender
--- de prestadores nem de fontes AIS externas. Só ACRESCENTA uma tabela e substitui a função de pesquisa (mesma assinatura),
--- que passa a juntar as viagens dos prestadores e as da Elolog. Não altera ligações nem configuração do Supabase.
+  -- ---------- financeiro (coorte do período)
+  select coalesce(sum(preco_estimado), 0) into f_sim from simulacoes where id = any(a_sim);
+  select coalesce(sum(preco), 0) into f_prop from propostas where id = any(a_prop);
+  select coalesce(sum(preco), 0) into f_aceite from propostas where id = any(a_aceite);
+  select coalesce(sum(f.total), 0) into f_fat from faturas f where f.estado = 'valida' and f.encomenda_id = any(a_enc);   -- regra 4
+  select coalesce(sum(case when pg.tipo = 'reembolso' then -pg.valor else pg.valor end), 0) into f_rec
+    from pagamentos pg where pg.estado = 'pago' and pg.encomenda_id = any(a_enc);                                          -- regra 5
+  -- comissões: regra ativa da empresa (ou a global) sobre o valor RECEBIDO de cada encomenda
+  select coalesce(sum(case when rc.tipo_valor = 'percentagem' then x.recebido * rc.valor / 100 when rc.tipo_valor = 'fixo' then rc.valor else 0 end), 0),
+         count(*) filter (where rc.id is null)
+    into f_com, f_sem_regra
+    from (select o.id, o.empresa_id, sum(case when pg.tipo = 'reembolso' then -pg.valor else pg.valor end) as recebido
+            from encomendas o join pagamentos pg on pg.encomenda_id = o.id and pg.estado = 'pago' where o.id = any(a_enc) group by o.id, o.empresa_id having sum(pg.valor) > 0) x
+    left join lateral (select * from regras_comissao c where c.ativa and (c.empresa_id = x.empresa_id or c.empresa_id is null)
+                        order by (c.empresa_id is null), c.updated_at desc limit 1) rc on true;
+  -- planos (regra 6: separados das comissões)
+  select coalesce(sum(valor) filter (where tipo = 'recibo' and estado = 'paga' and emitida_em >= v_ini), 0) into pl_recebido from faturas_plataforma;
+  select coalesce(sum(valor) filter (where estado = 'pendente' and pago_em is null), 0), count(*) filter (where estado = 'ativa'),
+         coalesce(sum(case when periodicidade = 'anual' then valor / 12 else valor end) filter (where estado = 'ativa'), 0)
+    into pl_por_confirmar, pl_ativos, pl_mrr from subscricoes;
 
-create table if not exists viagens_elolog (
-  id            uuid primary key default gen_random_uuid(),
-  navio         text not null check (length(navio) between 2 and 80),
-  imo           text check (imo ~ '^[0-9]{7}$'),
-  mmsi          text check (mmsi ~ '^[0-9]{9}$'),
-  linha         text check (length(linha) <= 80),
-  viagem        text check (length(viagem) <= 30),
-  sentido       text not null check (sentido in ('PT-STP', 'STP-PT')),
-  porto_origem  text not null check (length(porto_origem) between 2 and 60),
-  porto_destino text not null check (length(porto_destino) between 2 and 60),
-  partida       date not null,
-  chegada       date,
-  fecho_carga   date,
-  estado        text not null default 'aberta' check (estado in ('planeada','aberta','lotada','partiu','chegou','atrasada','cancelada')),
-  cont20_livres int check (cont20_livres between 0 and 9999),
-  cont40_livres int check (cont40_livres between 0 and 9999),
-  grupagem_m3   numeric(9,2) check (grupagem_m3 between 0 and 99999),
-  aceita_viaturas boolean not null default false,
-  notas         text check (length(notas) <= 300),
-  publicada     boolean not null default true,
-  criado_por    uuid references auth.users(id) on delete set null default auth.uid(),
-  created_at    timestamptz not null default now(),
-  updated_at    timestamptz not null default now(),
-  check (chegada is null or chegada >= partida),
-  check (fecho_carga is null or fecho_carga <= partida)
-);
-create index if not exists viagens_elolog_partida on viagens_elolog (sentido, partida);
-alter table viagens_elolog enable row level security;
-revoke all on viagens_elolog from anon;
-grant select, insert, update, delete on viagens_elolog to authenticated;
-
-do $$ begin
-  if not exists (select 1 from pg_policies where tablename = 'viagens_elolog' and policyname = 'viagens_elolog_ver') then
-    create policy viagens_elolog_ver on viagens_elolog for select to authenticated using (publicada or private.e_admin_plataforma());
-    create policy viagens_elolog_gerir on viagens_elolog for all to authenticated
-      using (private.e_admin_plataforma()) with check (private.e_admin_plataforma());
+  -- ---------- gargalo principal: a primeira condição que trava tudo; senão, a etapa com pior passagem
+  if p_disponiveis = 0 then
+    g := jsonb_build_object('funil', 'prestadores', 'etapa', 'disponiveis', 'titulo', 'Sem prestadores disponíveis',
+      'mensagem', case when p_pend > 0 then p_pend || ' pedido(s) de inscrição à espera de validação. Sem prestadores aprovados com subscrição ativa não há propostas.'
+                       else 'Não há prestadores aprovados com subscrição ativa: os clientes não recebem propostas.' end,
+      'acao', 'Validar pedidos de inscrição', 'pagina', 'adminProviderRequests');
+  elsif c_sim = 0 then
+    g := jsonb_build_object('funil', 'clientes', 'etapa', 'simulacoes', 'titulo', 'Sem procura', 'mensagem', 'Não houve simulações no período.',
+      'acao', 'Divulgar o simulador e a pesquisa marítima', 'pagina', 'dashboard');
+  else
+    for e in select * from (values
+        ('clientes', 'propostas', 'Simulações sem proposta', c_prop::numeric, c_sim::numeric, 'Pedir aos prestadores que respondam às simulações', 'adminOperations'),
+        ('clientes', 'aceites', 'Propostas não aceites', c_aceite::numeric, c_prop::numeric, 'Rever preços e prazos das propostas', 'adminOperations'),
+        ('clientes', 'encomendas', 'Aceites sem encomenda', c_enc::numeric, c_aceite::numeric, 'Acompanhar a criação das encomendas', 'adminOperations'),
+        ('financeiro', 'faturado', 'Valor contratado por faturar', f_fat, f_aceite, 'Pedir aos prestadores que registem as faturas', 'adminBilling'),
+        ('financeiro', 'recebido', 'Faturado por receber', f_rec, f_fat, 'Confirmar pagamentos em falta', 'adminBilling')) t(funil, etapa, titulo, num, den, acao, pagina)
+    loop
+      if e.den > 0 then
+        taxa := least(e.num / e.den, 1);
+        if taxa < melhor then melhor := taxa;
+          g := jsonb_build_object('funil', e.funil, 'etapa', e.etapa, 'titulo', e.titulo, 'taxa', round(taxa * 100),
+            'mensagem', 'Só ' || round(taxa * 100) || ' % passam esta etapa.', 'acao', e.acao, 'pagina', e.pagina);
+        end if;
+      end if;
+    end loop;
+    if g is null then g := jsonb_build_object('funil', 'clientes', 'etapa', 'aceites', 'titulo', 'Sem gargalo', 'mensagem', 'O funil está a avançar sem bloqueios.', 'acao', '', 'pagina', 'dashboard'); end if;
   end if;
+
+  r := jsonb_build_object('gerado_em', now(), 'periodo_dias', p_dias, 'gargalo', g,
+    'clientes', jsonb_build_object('etapas', jsonb_build_array(
+        jsonb_build_object('id', 'simulacoes', 'nome', 'Simulações', 'n', c_sim, 'pagina', 'adminOperations'),
+        jsonb_build_object('id', 'propostas', 'nome', 'Com proposta válida', 'n', c_prop, 'pagina', 'adminOperations', 'extra', jsonb_build_object('expiradas', c_expiradas, 'recusadas', c_recusadas)),
+        jsonb_build_object('id', 'aceites', 'nome', 'Aceites', 'n', c_aceite, 'pagina', 'adminOperations'),
+        jsonb_build_object('id', 'encomendas', 'nome', 'Encomendas', 'n', c_enc, 'pagina', 'adminOperations', 'extra', jsonb_build_object('sem_proposta_aceite', c_sem_prop)),
+        jsonb_build_object('id', 'entregues', 'nome', 'Entregues', 'n', c_entregue, 'pagina', 'adminOperations'))),
+    'prestadores', jsonb_build_object('etapas', jsonb_build_array(
+        jsonb_build_object('id', 'registos', 'nome', 'Registados', 'n', p_registos, 'pagina', 'adminProviderRequests', 'extra', jsonb_build_object('pendentes', p_pend, 'pendentes_48h', p_pend48)),
+        jsonb_build_object('id', 'pagos', 'nome', 'Subscrição paga', 'n', p_pagos, 'pagina', 'adminPlans'),
+        jsonb_build_object('id', 'aprovados', 'nome', 'Aprovados', 'n', p_aprovados, 'pagina', 'adminActiveProviders'),
+        jsonb_build_object('id', 'disponiveis', 'nome', 'Disponíveis', 'n', p_disponiveis, 'pagina', 'adminActiveProviders'),
+        jsonb_build_object('id', 'com_proposta', 'nome', 'Com propostas', 'n', p_com_prop, 'pagina', 'adminActiveProviders'),
+        jsonb_build_object('id', 'com_encomenda', 'nome', 'Com encomendas', 'n', p_com_enc, 'pagina', 'adminActiveProviders'))),
+    'financeiro', jsonb_build_object('etapas', jsonb_build_array(
+        jsonb_build_object('id', 'simulado', 'nome', 'Valor simulado', 'v', f_sim, 'pagina', 'adminOperations'),
+        jsonb_build_object('id', 'proposto', 'nome', 'Valor proposto', 'v', f_prop, 'pagina', 'adminOperations'),
+        jsonb_build_object('id', 'contratado', 'nome', 'Valor contratado', 'v', f_aceite, 'pagina', 'adminOperations'),
+        jsonb_build_object('id', 'faturado', 'nome', 'Valor faturado', 'v', f_fat, 'pagina', 'adminBilling'),
+        jsonb_build_object('id', 'recebido', 'nome', 'Valor recebido', 'v', f_rec, 'pagina', 'adminBilling'),
+        jsonb_build_object('id', 'comissoes', 'nome', 'Comissões Elolog', 'v', round(f_com, 2), 'pagina', 'adminCommissions', 'extra', jsonb_build_object('sem_regra', f_sem_regra))),
+      'planos', jsonb_build_object('recebido', pl_recebido, 'por_confirmar', pl_por_confirmar, 'ativos', pl_ativos, 'mrr', round(pl_mrr, 2))),
+    'resumo', jsonb_build_object('prestadores_disponiveis', p_disponiveis, 'simulacoes', c_sim,
+      'conversao', case when c_sim > 0 then round(c_enc * 100.0 / c_sim) end, 'valor_contratado', f_aceite,
+      'receita_comissoes', round(f_com, 2), 'receita_planos', pl_recebido));
+  return r;
 end $$;
+revoke all on function public.painel_funis(integer) from public, anon;
+grant execute on function public.painel_funis(integer) to authenticated;
 
-create or replace function private.viagem_elolog_antes() returns trigger language plpgsql set search_path = public as $$
-begin new.updated_at := now(); if tg_op = 'UPDATE' then new.criado_por := old.criado_por; end if; return new; end $$;
-create or replace trigger viagem_elolog_antes before insert or update on viagens_elolog for each row execute function private.viagem_elolog_antes();
-create or replace trigger auditar after insert or update or delete on viagens_elolog for each row execute function private.auditar_alteracao();
-create or replace trigger limitar_escritas before insert or update on viagens_elolog for each row execute function private.limitar_escritas('60');
+-- ===== 00160_encomendas_diretas.sql =====
+-- v98 — Encomendas diretas com validação da administração e decisão do prestador.
+-- Só ACRESCENTA tabelas, funções e uma política de leitura de documentos. Tabelas, dados e ligações existentes ficam iguais.
+-- Fluxo: cliente submete (pendente_validacao) → administração: em_analise_admin → validada | nao_validada (motivo) → enviada_prestador
+--        → prestador: em_analise_prestador → aceite | recusada (motivo obrigatório). O cliente vê tudo; nunca há eliminação.
+-- Regra: uma recusa não é eliminada nem reencaminhada a outro prestador sem o cliente — só o cliente troca de prestador.
 
--- Pesquisa: viagens dos prestadores + viagens publicadas pela Elolog (mesma assinatura da 00153).
-create or replace function public.pesquisa_maritima(p_texto text default null, p_sentido text default null, p_de date default null,
-  p_ate date default null, p_porto text default null, p_so_disponivel boolean default false, p_por text default 'partida')
-returns table (id uuid, navio text, imo text, mmsi text, linha text, viagem text, sentido text, porto_origem text, porto_destino text,
-  partida date, chegada date, fecho_carga date, estado text, cont20_livres int, cont40_livres int, grupagem_m3 numeric, aceita_viaturas boolean,
-  notas text, prestador text, empresa_id uuid, minha boolean, latitude double precision, longitude double precision, velocidade_nos numeric,
-  destino_ais text, eta_ais timestamptz, posicao_em timestamptz)
-language plpgsql stable security definer set search_path = public as $$
-declare v_t text := nullif(left(trim(coalesce(p_texto, '')), 60), ''); v_p text := nullif(left(trim(coalesce(p_porto, '')), 60), '');
-        v_emp uuid := private.minha_empresa(); v_adm boolean := private.e_admin_plataforma();
+create table if not exists encomendas_diretas (
+  id               uuid primary key default gen_random_uuid(),
+  codigo           text not null unique default private.proximo_codigo('ED'),
+  cliente_id       uuid not null references auth.users(id),
+  empresa_id       uuid not null references empresas(id),
+  origem           text not null check (length(origem) between 2 and 120),
+  destino          text not null check (length(destino) between 2 and 120),
+  mercadoria       text not null check (length(mercadoria) between 2 and 300),
+  volumes          int  not null check (volumes between 1 and 10000),
+  peso_kg          numeric(12,2) check (peso_kg is null or peso_kg >= 0),
+  volume_m3        numeric(12,3) check (volume_m3 is null or volume_m3 >= 0),
+  valor_acordado   numeric(12,2) not null check (valor_acordado >= 0),
+  data_prevista    date,
+  observacoes      text check (observacoes is null or length(observacoes) <= 1000),
+  documento_id     uuid references documentos(id),
+  estado           text not null default 'pendente_validacao' check (estado in ('pendente_validacao','em_analise_admin','validada',
+                     'nao_validada','enviada_prestador','em_analise_prestador','aceite','recusada','cancelada')),
+  motivo_tipo      text check (motivo_tipo is null or motivo_tipo in ('rota','espaco','preco','documentacao','mercadoria','outro')),
+  motivo           text check (motivo is null or length(motivo) <= 500),
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now());
+create index if not exists encomendas_diretas_cliente on encomendas_diretas (cliente_id, created_at desc);
+create index if not exists encomendas_diretas_empresa on encomendas_diretas (empresa_id, estado);
+
+create table if not exists encomendas_diretas_historico (
+  id          bigint generated always as identity primary key,
+  encomenda_id uuid not null references encomendas_diretas(id),
+  estado      text not null,
+  papel       text not null check (papel in ('cliente','administracao','prestador')),
+  por         uuid,
+  nota        text,
+  created_at  timestamptz not null default now());
+create index if not exists encomendas_diretas_historico_enc on encomendas_diretas_historico (encomenda_id, id);
+
+alter table encomendas_diretas enable row level security;
+alter table encomendas_diretas_historico enable row level security;
+revoke all on encomendas_diretas, encomendas_diretas_historico from anon, authenticated;
+grant select on encomendas_diretas, encomendas_diretas_historico to authenticated;   -- escritas só pelas funções abaixo
+
+-- O prestador só vê o pedido depois de a administração o encaminhar.
+create or replace function private.ed_visivel(e encomendas_diretas) returns boolean language sql stable security definer set search_path = public as $$
+  select e.cliente_id = auth.uid() or private.e_admin_plataforma()
+      or (e.empresa_id = private.minha_empresa() and e.estado in ('enviada_prestador','em_analise_prestador','aceite','recusada')) $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename = 'encomendas_diretas' and policyname = 'ed_ver') then
+    create policy ed_ver on encomendas_diretas for select to authenticated using (private.ed_visivel(encomendas_diretas)); end if;
+  if not exists (select 1 from pg_policies where tablename = 'encomendas_diretas_historico' and policyname = 'edh_ver') then
+    create policy edh_ver on encomendas_diretas_historico for select to authenticated
+      using (exists (select 1 from encomendas_diretas e where e.id = encomenda_id and private.ed_visivel(e))); end if;
+  -- comprovativo: a administração já lê todos os documentos; o prestador lê o comprovativo do pedido que lhe foi encaminhado
+  if not exists (select 1 from pg_policies where tablename = 'documentos' and policyname = 'docs_encomenda_direta_prestador') then
+    create policy docs_encomenda_direta_prestador on documentos for select to authenticated using (exists (select 1 from encomendas_diretas e
+      where e.documento_id = documentos.id and e.empresa_id = private.minha_empresa() and e.estado in ('enviada_prestador','em_analise_prestador','aceite','recusada'))); end if;
+end $$;
+create or replace trigger auditar after insert or update on encomendas_diretas for each row execute function private.auditar_alteracao('updated_at');
+create or replace trigger limitar_escritas before insert on encomendas_diretas for each row execute function private.limitar_escritas('20');
+
+-- Prestadores ativos (aprovados e com subscrição ativa) e elegíveis para a rota:
+-- se o prestador tem tarifas ativas com origem/destino, a rota tem de coincidir com uma delas; sem tarifas de rota, serve todas.
+create or replace function public.prestadores_encomenda_direta(p_origem text default null, p_destino text default null)
+returns table (id uuid, nome text, cidade text, pais text) language sql stable security definer set search_path = public as $$
+  select d.id, d.nome, d.cidade, d.pais from empresas_disponiveis d
+   where auth.uid() is not null
+     and (nullif(trim(coalesce(p_origem,'')),'') is null or nullif(trim(coalesce(p_destino,'')),'') is null
+          or not exists (select 1 from tarifas t where t.empresa_id = d.id and t.ativa and (t.origem is not null or t.destino is not null)
+                           and (t.validade_fim is null or t.validade_fim >= current_date))
+          or exists (select 1 from tarifas t where t.empresa_id = d.id and t.ativa and (t.validade_fim is null or t.validade_fim >= current_date)
+                       and (t.origem is null or p_origem ilike '%' || t.origem || '%' or t.origem ilike '%' || p_origem || '%')
+                       and (t.destino is null or p_destino ilike '%' || t.destino || '%' or t.destino ilike '%' || p_destino || '%')))
+   order by d.nome $$;
+
+create or replace function private.ed_registar(p_id uuid, p_estado text, p_papel text, p_nota text) returns void
+language plpgsql security definer set search_path = public as $$
+declare e encomendas_diretas;
 begin
-  if auth.uid() is null then raise exception 'SESSAO_INVALIDA'; end if;
-  if p_sentido is not null and p_sentido not in ('PT-STP', 'STP-PT') then raise exception 'Sentido inválido.'; end if;
-  return query
-  with todas as (
-    select v.id, v.navio, v.imo, v.mmsi, v.linha, v.viagem, v.sentido, v.porto_origem, v.porto_destino, v.partida, v.chegada, v.fecho_carga, v.estado,
-           v.cont20_livres, v.cont40_livres, v.grupagem_m3, v.aceita_viaturas, v.notas, coalesce(e.nome_comercial, e.nome) as prestador, v.empresa_id,
-           v.empresa_id = v_emp as minha, concat_ws(' ', e.nome, e.nome_comercial) as pesquisa_extra
-      from viagens_maritimas v join empresas e on e.id = v.empresa_id and e.estado = 'aprovada'
-     where v.publicada or v.empresa_id = v_emp or v_adm
-    union all
-    select g.id, g.navio, g.imo, g.mmsi, g.linha, g.viagem, g.sentido, g.porto_origem, g.porto_destino, g.partida, g.chegada, g.fecho_carga, g.estado,
-           g.cont20_livres, g.cont40_livres, g.grupagem_m3, g.aceita_viaturas, g.notas, 'Elolog', null::uuid, v_adm, 'Elolog'
-      from viagens_elolog g
-     where g.publicada or v_adm)
-  select t.id, t.navio, t.imo, t.mmsi, t.linha, t.viagem, t.sentido, t.porto_origem, t.porto_destino, t.partida, t.chegada, t.fecho_carga, t.estado,
-         t.cont20_livres, t.cont40_livres, t.grupagem_m3, t.aceita_viaturas, t.notas, t.prestador, t.empresa_id, t.minha,
-         p.latitude, p.longitude, p.velocidade_nos, p.destino, p.eta, p.posicao_em
-    from todas t left join navios_posicoes p on p.mmsi = t.mmsi
-   where (p_sentido is null or t.sentido = p_sentido)
-     and (p_de is null or (case when p_por = 'chegada' then coalesce(t.chegada, t.partida) else t.partida end) >= p_de)
-     and (p_ate is null or (case when p_por = 'chegada' then coalesce(t.chegada, t.partida) else t.partida end) <= p_ate)
-     and (v_p is null or t.porto_origem ilike '%' || v_p || '%' or t.porto_destino ilike '%' || v_p || '%')
-     and (v_t is null or concat_ws(' ', t.navio, t.imo, t.mmsi, t.linha, t.viagem, t.pesquisa_extra) ilike '%' || v_t || '%')
-     and (not p_so_disponivel or (t.estado in ('aberta', 'planeada', 'atrasada') and (t.fecho_carga is null or t.fecho_carga >= current_date)
-          and (coalesce(t.cont20_livres, 0) + coalesce(t.cont40_livres, 0) > 0 or coalesce(t.grupagem_m3, 0) > 0 or t.aceita_viaturas)))
-   order by case when p_por = 'chegada' then coalesce(t.chegada, t.partida) else t.partida end, t.navio
-   limit 200;
+  update encomendas_diretas set estado = p_estado, updated_at = now() where id = p_id returning * into e;
+  insert into encomendas_diretas_historico (encomenda_id, estado, papel, por, nota) values (p_id, p_estado, p_papel, auth.uid(), nullif(trim(p_nota), ''));
+  -- avisos: cliente sempre; administração nas decisões do cliente e do prestador; prestador quando recebe o pedido
+  insert into notificacoes (user_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+    values (e.cliente_id, 'encomenda_direta', 'Encomenda direta ' || e.codigo, 'Estado: ' || replace(p_estado, '_', ' '), 'encomendas_diretas', e.id);
+  if p_papel <> 'administracao' then
+    insert into notificacoes (para_plataforma, tipo, titulo, corpo, referencia_tabela, referencia_id)
+      values (true, 'encomenda_direta', 'Encomenda direta ' || e.codigo || ' — ' || replace(p_estado, '_', ' '), nullif(trim(p_nota), ''), 'encomendas_diretas', e.id); end if;
+  if p_estado = 'enviada_prestador' then
+    insert into notificacoes (empresa_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+      values (e.empresa_id, 'encomenda_direta', 'Nova encomenda direta ' || e.codigo, e.origem || ' → ' || e.destino, 'encomendas_diretas', e.id); end if;
 end $$;
-revoke all on function public.pesquisa_maritima(text, text, date, date, text, boolean, text) from public, anon;
-grant execute on function public.pesquisa_maritima(text, text, date, date, text, boolean, text) to authenticated;
 
--- ===== 00156_navios_myshiptracking.sql =====
--- v92 — Navios reais em São Tomé pela API MyShipTracking (função navios-mst, 3 vezes por dia).
--- Só ACRESCENTA colunas, uma função de leitura e uma tarefa agendada. Não altera ligações nem configuração do Supabase.
--- Precisa do segredo MYSHIPTRACKING_API_KEY nas Edge Functions (o utilizador define-o no painel do Supabase).
+-- Cliente: registar a encomenda direta
+create or replace function public.criar_encomenda_direta(p_empresa uuid, p_origem text, p_destino text, p_mercadoria text, p_volumes int,
+  p_peso_kg numeric, p_volume_m3 numeric, p_valor numeric, p_data date, p_documento uuid, p_observacoes text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_id uuid; v_cod text;
+begin
+  if auth.uid() is null or private.minha_empresa() is not null or private.e_admin_plataforma() then raise exception 'Só um cliente com sessão iniciada pode registar encomendas diretas.'; end if;
+  if not exists (select 1 from public.prestadores_encomenda_direta(p_origem, p_destino) x where x.id = p_empresa) then
+    raise exception 'O prestador escolhido não está ativo ou não serve esta rota.'; end if;
+  if p_documento is null or not exists (select 1 from documentos d where d.id = p_documento and d.cliente_id = auth.uid()) then
+    raise exception 'Anexe o comprovativo da negociação (proposta, orçamento, recibo ou documento de transporte).'; end if;
+  if p_data is not null and p_data < current_date then raise exception 'A data prevista não pode ser no passado.'; end if;
+  insert into encomendas_diretas (cliente_id, empresa_id, origem, destino, mercadoria, volumes, peso_kg, volume_m3, valor_acordado, data_prevista, documento_id, observacoes)
+    values (auth.uid(), p_empresa, trim(p_origem), trim(p_destino), trim(p_mercadoria), p_volumes, p_peso_kg, p_volume_m3, p_valor, p_data, p_documento, nullif(trim(p_observacoes), ''))
+    returning id, codigo into v_id, v_cod;
+  perform private.ed_registar(v_id, 'pendente_validacao', 'cliente', null);
+  return jsonb_build_object('id', v_id, 'codigo', v_cod);
+end $$;
 
-alter table navios_rota add column if not exists estado    text check (estado in ('a_caminho', 'no_porto', 'partiu'));
-alter table navios_rota add column if not exists fonte     text not null default 'ais';
-alter table navios_rota add column if not exists evento_em timestamptz;      -- chegada ao porto ou saída
-alter table navios_rota add column if not exists tipo_txt  text;
-alter table navios_rota add column if not exists bandeira  text;
-alter table navios_rota add column if not exists gt        int;
+-- Cliente: depois de uma recusa ou de não validação, escolher outro prestador (volta à validação) ou cancelar
+create or replace function public.cliente_encomenda_direta(p_id uuid, p_acao text, p_empresa uuid default null) returns void
+language plpgsql security definer set search_path = public as $$
+declare e encomendas_diretas;
+begin
+  select * into e from encomendas_diretas where id = p_id and cliente_id = auth.uid() for update;
+  if not found then raise exception 'Encomenda direta não encontrada.'; end if;
+  if p_acao = 'trocar_prestador' then
+    if e.estado not in ('recusada', 'nao_validada') then raise exception 'Só pode trocar de prestador depois de uma recusa ou de uma não validação.'; end if;
+    if not exists (select 1 from public.prestadores_encomenda_direta(e.origem, e.destino) x where x.id = p_empresa) then raise exception 'O prestador escolhido não está ativo ou não serve esta rota.'; end if;
+    update encomendas_diretas set empresa_id = p_empresa, motivo = null, motivo_tipo = null where id = p_id;
+    perform private.ed_registar(p_id, 'pendente_validacao', 'cliente', 'Novo prestador escolhido pelo cliente.');
+  elsif p_acao = 'cancelar' then
+    if e.estado not in ('pendente_validacao', 'em_analise_admin', 'nao_validada', 'recusada') then raise exception 'Esta encomenda já não pode ser cancelada pelo cliente.'; end if;
+    perform private.ed_registar(p_id, 'cancelada', 'cliente', null);
+  else raise exception 'Ação inválida.'; end if;
+end $$;
 
--- Navios em São Tomé: a caminho e no porto (atualizados nas últimas 24 h) e saídas dos últimos 10 dias.
-create or replace function public.navios_sao_tome(p_texto text default null)
-returns table (mmsi text, nome text, imo text, estado text, sentido text, destino text, eta timestamptz, evento_em timestamptz,
-  tipo_txt text, bandeira text, gt int, latitude double precision, longitude double precision, visto_em timestamptz, fonte text)
-language sql stable security definer set search_path = public as $$
-  select r.mmsi, r.nome, r.imo, coalesce(r.estado, 'a_caminho'), r.sentido, r.destino, r.eta, r.evento_em, r.tipo_txt, r.bandeira, r.gt,
-         coalesce(p.latitude, r.latitude), coalesce(p.longitude, r.longitude), r.visto_em, r.fonte
-    from navios_rota r left join navios_posicoes p on p.mmsi = r.mmsi
-   where auth.uid() is not null
-     and ((r.fonte = 'myshiptracking' and ((r.estado in ('a_caminho', 'no_porto') and r.visto_em > now() - interval '24 hours')
-                                          or (r.estado = 'partiu' and r.evento_em > now() - interval '10 days')))
-          or (r.fonte <> 'myshiptracking' and r.visto_em > now() - interval '21 days'))
-     and (nullif(trim(coalesce(p_texto, '')), '') is null
-          or concat_ws(' ', r.nome, r.imo, r.mmsi, r.tipo_txt, r.bandeira) ilike '%' || left(trim(p_texto), 60) || '%')
-   order by case coalesce(r.estado, 'a_caminho') when 'no_porto' then 0 when 'a_caminho' then 1 else 2 end,
-            coalesce(r.eta, r.evento_em), r.nome
-   limit 150 $$;
-revoke all on function public.navios_sao_tome(text) from public, anon;
-grant execute on function public.navios_sao_tome(text) to authenticated;
+-- Administração: analisar, validar, não validar (motivo) e encaminhar ao prestador escolhido pelo cliente
+create or replace function public.admin_encomenda_direta(p_id uuid, p_acao text, p_nota text default null) returns void
+language plpgsql security definer set search_path = public as $$
+declare e encomendas_diretas; novo text;
+begin
+  if not private.e_admin_plataforma() then raise exception 'Apenas a administração da plataforma.'; end if;
+  select * into e from encomendas_diretas where id = p_id for update;
+  if not found then raise exception 'Encomenda direta não encontrada.'; end if;
+  novo := case
+    when p_acao = 'analisar'    and e.estado = 'pendente_validacao' then 'em_analise_admin'
+    when p_acao = 'validar'     and e.estado in ('pendente_validacao', 'em_analise_admin') then 'validada'
+    when p_acao = 'nao_validar' and e.estado in ('pendente_validacao', 'em_analise_admin') then 'nao_validada'
+    when p_acao = 'enviar'      and e.estado = 'validada' then 'enviada_prestador' end;
+  if novo is null then raise exception 'Esta ação não é possível no estado atual (%).', e.estado; end if;
+  if novo = 'nao_validada' then
+    if length(trim(coalesce(p_nota, ''))) < 5 then raise exception 'Indique ao cliente o motivo da não validação.'; end if;
+    update encomendas_diretas set motivo = trim(p_nota), motivo_tipo = null where id = p_id; end if;
+  if novo = 'enviada_prestador' and not exists (select 1 from empresas_disponiveis d where d.id = e.empresa_id) then
+    raise exception 'O prestador escolhido já não está ativo. Contacte o cliente para escolher outro.'; end if;
+  perform private.ed_registar(p_id, novo, 'administracao', p_nota);
+end $$;
 
--- Tarefa agendada: 3 vezes por dia (cerca de 50 créditos por execução com poucos navios).
+-- Prestador: colocar em análise, aceitar ou recusar (motivo obrigatório)
+create or replace function public.prestador_encomenda_direta(p_id uuid, p_acao text, p_motivo_tipo text default null, p_motivo text default null) returns void
+language plpgsql security definer set search_path = public as $$
+declare e encomendas_diretas; novo text;
+begin
+  if not private.papel_em(array['admin_empresa', 'operador']) then raise exception 'Sem permissão para decidir encomendas diretas.'; end if;
+  select * into e from encomendas_diretas where id = p_id and empresa_id = private.minha_empresa() for update;
+  if not found then raise exception 'Encomenda direta não encontrada.'; end if;
+  novo := case
+    when p_acao = 'analisar' and e.estado = 'enviada_prestador' then 'em_analise_prestador'
+    when p_acao = 'aceitar'  and e.estado in ('enviada_prestador', 'em_analise_prestador') then 'aceite'
+    when p_acao = 'recusar'  and e.estado in ('enviada_prestador', 'em_analise_prestador') then 'recusada' end;
+  if novo is null then raise exception 'Esta ação não é possível no estado atual (%).', e.estado; end if;
+  if novo = 'recusada' then
+    if p_motivo_tipo is null or p_motivo_tipo not in ('rota','espaco','preco','documentacao','mercadoria','outro') then raise exception 'Escolha o motivo da recusa.'; end if;
+    if p_motivo_tipo = 'outro' and length(trim(coalesce(p_motivo, ''))) < 5 then raise exception 'Descreva o motivo da recusa.'; end if;
+    update encomendas_diretas set motivo_tipo = p_motivo_tipo, motivo = nullif(trim(p_motivo), '') where id = p_id; end if;
+  perform private.ed_registar(p_id, novo, 'prestador', case when novo = 'recusada' then p_motivo_tipo || coalesce(': ' || nullif(trim(p_motivo), ''), '') end);
+end $$;
+
+revoke all on function public.prestadores_encomenda_direta(text, text), public.criar_encomenda_direta(uuid, text, text, text, int, numeric, numeric, numeric, date, uuid, text),
+  public.cliente_encomenda_direta(uuid, text, uuid), public.admin_encomenda_direta(uuid, text, text), public.prestador_encomenda_direta(uuid, text, text, text) from public, anon;
+grant execute on function public.prestadores_encomenda_direta(text, text), public.criar_encomenda_direta(uuid, text, text, text, int, numeric, numeric, numeric, date, uuid, text),
+  public.cliente_encomenda_direta(uuid, text, uuid), public.admin_encomenda_direta(uuid, text, text), public.prestador_encomenda_direta(uuid, text, text, text) to authenticated;
+revoke all on function private.ed_registar(uuid, text, text, text) from public, anon, authenticated;
+
+-- Lista para cada perfil (cliente: as suas; administração: todas; prestador: as encaminhadas), com nomes, comprovativo e histórico.
+-- Os contactos do cliente só chegam ao prestador depois de aceitar.
+create or replace function public.encomendas_diretas_lista() returns jsonb language sql stable security definer set search_path = public as $$
+  select coalesce(jsonb_agg(x order by x->>'created_at' desc), '[]'::jsonb) from (
+    select to_jsonb(e) || jsonb_build_object(
+      'prestador', coalesce(em.nome_comercial, em.nome),
+      'cliente_nome', coalesce(c.nome, u.email),
+      'cliente_email', case when private.e_admin_plataforma() or e.cliente_id = auth.uid() or e.estado = 'aceite' then coalesce(c.email, u.email) end,
+      'cliente_telefone', case when private.e_admin_plataforma() or e.cliente_id = auth.uid() or e.estado = 'aceite' then c.telefone end,
+      'documento', (select jsonb_build_object('nome', d.nome, 'caminho', d.storage_path, 'verificado', d.verificado) from documentos d where d.id = e.documento_id),
+      'historico', (select coalesce(jsonb_agg(jsonb_build_object('estado', h.estado, 'papel', h.papel, 'nota', h.nota, 'em', h.created_at) order by h.id), '[]'::jsonb)
+                      from encomendas_diretas_historico h where h.encomenda_id = e.id)) as x
+      from encomendas_diretas e join empresas em on em.id = e.empresa_id
+      left join clientes c on c.id = e.cliente_id left join auth.users u on u.id = e.cliente_id
+     where private.ed_visivel(e)) t $$;
+revoke all on function public.encomendas_diretas_lista() from public, anon;
+grant execute on function public.encomendas_diretas_lista() to authenticated;
+
+-- ===== 00161_encomendas_diretas_revisao.sql =====
+-- v99 — Encomendas diretas: revisão administrativa.
+-- A administração vê o comprovativo antes de validar, corrige dados administrativos, pede documentos adicionais ao cliente
+-- e valida/encaminha ao prestador. Só ACRESCENTA colunas, uma tabela e funções; nada é apagado.
+
+alter table encomendas_diretas add column if not exists pedido_documentos    text check (pedido_documentos is null or length(pedido_documentos) <= 500);
+alter table encomendas_diretas add column if not exists pedido_documentos_em timestamptz;
+alter table encomendas_diretas add column if not exists comprovativo_visto_em timestamptz;      -- quando a administração abriu o comprovativo
+
+create table if not exists encomendas_diretas_anexos (
+  id           bigint generated always as identity primary key,
+  encomenda_id uuid not null references encomendas_diretas(id),
+  documento_id uuid not null references documentos(id),
+  nota         text check (nota is null or length(nota) <= 300),
+  enviado_por  uuid,
+  created_at   timestamptz not null default now());
+create index if not exists encomendas_diretas_anexos_enc on encomendas_diretas_anexos (encomenda_id, id);
+alter table encomendas_diretas_anexos enable row level security;
+revoke all on encomendas_diretas_anexos from anon, authenticated;
+grant select on encomendas_diretas_anexos to authenticated;
 do $$ begin
-  if exists (select 1 from pg_extension where extname = 'pg_cron') then
-    perform cron.schedule('elolog-navios-mst', '23 5,13,21 * * *', $c$select private.chamar_funcao('navios-mst')$c$);
-  end if;
+  if not exists (select 1 from pg_policies where tablename = 'encomendas_diretas_anexos' and policyname = 'eda_ver') then
+    create policy eda_ver on encomendas_diretas_anexos for select to authenticated
+      using (exists (select 1 from encomendas_diretas e where e.id = encomenda_id and private.ed_visivel(e))); end if;
+  if not exists (select 1 from pg_policies where tablename = 'documentos' and policyname = 'docs_encomenda_direta_anexos_prestador') then
+    create policy docs_encomenda_direta_anexos_prestador on documentos for select to authenticated using (exists (select 1 from encomendas_diretas_anexos a
+      join encomendas_diretas e on e.id = a.encomenda_id where a.documento_id = documentos.id and e.empresa_id = private.minha_empresa()
+      and e.estado in ('enviada_prestador','em_analise_prestador','aceite','recusada'))); end if;
 end $$;
 
--- ===== 00157_navios_stp_zonas.sql =====
--- v93 — Todos os navios com destino São Tomé (ST TMS) e partidas de São Tomé (MyShipTracking, 1 vez por dia).
--- Só ACRESCENTA uma coluna e uma função de leitura e muda o horário da tarefa já existente. Ligações Supabase inalteradas.
-
-alter table navios_rota add column if not exists local text;     -- onde o navio foi visto (Lisboa, Leixões, Setúbal, Sines, São Tomé)
-
-create or replace function public.navios_stp(p_texto text default null)
-returns table (mmsi text, nome text, imo text, estado text, sentido text, destino text, eta timestamptz, evento_em timestamptz,
-  tipo_txt text, bandeira text, gt int, latitude double precision, longitude double precision, visto_em timestamptz, local text)
-language sql stable security definer set search_path = public as $$
-  select r.mmsi, r.nome, r.imo, coalesce(r.estado, 'a_caminho'), r.sentido, r.destino, r.eta, r.evento_em, r.tipo_txt, r.bandeira, r.gt,
-         coalesce(p.latitude, r.latitude), coalesce(p.longitude, r.longitude), r.visto_em, r.local
-    from navios_rota r left join navios_posicoes p on p.mmsi = r.mmsi
-   where auth.uid() is not null and r.fonte = 'myshiptracking'
-     and ((r.estado in ('a_caminho', 'no_porto') and r.visto_em > now() - interval '36 hours')
-          or (r.estado = 'partiu' and coalesce(r.evento_em, r.visto_em) > now() - interval '30 days'))
-     and (nullif(trim(coalesce(p_texto, '')), '') is null
-          or concat_ws(' ', r.nome, r.imo, r.mmsi, r.destino, r.local, r.tipo_txt, r.bandeira) ilike '%' || left(trim(p_texto), 60) || '%')
-   order by case coalesce(r.estado, 'a_caminho') when 'no_porto' then 0 when 'a_caminho' then 1 else 2 end,
-            case when r.estado = 'partiu' then null else coalesce(r.eta, r.visto_em) end, r.evento_em desc nulls last, r.nome
-   limit 200 $$;
-revoke all on function public.navios_stp(text) from public, anon;
-grant execute on function public.navios_stp(text) to authenticated;
-
--- 1 vez por dia (06:23 UTC), como escolhido pelo utilizador (custo).
-do $$ begin
-  if exists (select 1 from pg_extension where extname = 'pg_cron') then
-    perform cron.schedule('elolog-navios-mst', '23 6 * * *', $c$select private.chamar_funcao('navios-mst')$c$);
-  end if;
+-- Administração: o comprovativo foi aberto (fica registado; validar exige que tenha sido visto)
+create or replace function public.admin_comprovativo_visto(p_id uuid) returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not private.e_admin_plataforma() then raise exception 'Apenas a administração da plataforma.'; end if;
+  update encomendas_diretas set comprovativo_visto_em = coalesce(comprovativo_visto_em, now()) where id = p_id;
 end $$;
+
+-- Administração: analisar, pedir documentos, validar (só depois de ver o comprovativo), validar e encaminhar, não validar, encaminhar
+create or replace function public.admin_encomenda_direta(p_id uuid, p_acao text, p_nota text default null) returns void
+language plpgsql security definer set search_path = public as $$
+declare e encomendas_diretas; novo text;
+begin
+  if not private.e_admin_plataforma() then raise exception 'Apenas a administração da plataforma.'; end if;
+  select * into e from encomendas_diretas where id = p_id for update;
+  if not found then raise exception 'Encomenda direta não encontrada.'; end if;
+  novo := case
+    when p_acao = 'analisar'         and e.estado = 'pendente_validacao' then 'em_analise_admin'
+    when p_acao = 'pedir_documentos' and e.estado in ('pendente_validacao', 'em_analise_admin', 'validada') then 'em_analise_admin'
+    when p_acao in ('validar', 'validar_enviar') and e.estado in ('pendente_validacao', 'em_analise_admin') then 'validada'
+    when p_acao = 'nao_validar'      and e.estado in ('pendente_validacao', 'em_analise_admin') then 'nao_validada'
+    when p_acao = 'enviar'           and e.estado = 'validada' then 'enviada_prestador' end;
+  if novo is null then raise exception 'Esta ação não é possível no estado atual (%).', e.estado; end if;
+  if p_acao = 'pedir_documentos' then
+    if length(trim(coalesce(p_nota, ''))) < 5 then raise exception 'Indique ao cliente que documentos são precisos.'; end if;
+    update encomendas_diretas set pedido_documentos = trim(p_nota), pedido_documentos_em = now() where id = p_id;
+    perform private.ed_registar(p_id, novo, 'administracao', 'Documentos pedidos: ' || trim(p_nota)); return; end if;
+  if p_acao in ('validar', 'validar_enviar') then
+    if e.comprovativo_visto_em is null then raise exception 'Abra e analise o comprovativo antes de validar.'; end if;
+    if e.pedido_documentos is not null then raise exception 'Há documentos pedidos ao cliente ainda por receber.'; end if; end if;
+  if novo = 'nao_validada' then
+    if length(trim(coalesce(p_nota, ''))) < 5 then raise exception 'Indique ao cliente o motivo da não validação.'; end if;
+    update encomendas_diretas set motivo = trim(p_nota), motivo_tipo = null, pedido_documentos = null where id = p_id; end if;
+  if (novo = 'enviada_prestador' or p_acao = 'validar_enviar') and not exists (select 1 from empresas_disponiveis d where d.id = e.empresa_id) then
+    raise exception 'O prestador escolhido já não está ativo. Contacte o cliente para escolher outro.'; end if;
+  perform private.ed_registar(p_id, novo, 'administracao', p_nota);
+  if p_acao = 'validar_enviar' then perform private.ed_registar(p_id, 'enviada_prestador', 'administracao', null); end if;
+end $$;
+
+-- Administração: corrigir dados administrativos antes de encaminhar (o prestador continua a ser o escolhido pelo cliente)
+create or replace function public.admin_corrigir_encomenda_direta(p_id uuid, p_dados jsonb, p_nota text default null) returns void
+language plpgsql security definer set search_path = public as $$
+declare e encomendas_diretas; n encomendas_diretas; dif text := '';
+begin
+  if not private.e_admin_plataforma() then raise exception 'Apenas a administração da plataforma.'; end if;
+  select * into e from encomendas_diretas where id = p_id for update;
+  if not found then raise exception 'Encomenda direta não encontrada.'; end if;
+  if e.estado not in ('pendente_validacao', 'em_analise_admin', 'validada') then raise exception 'Só pode corrigir antes de encaminhar ao prestador.'; end if;
+  update encomendas_diretas set
+    origem = coalesce(nullif(trim(p_dados->>'origem'), ''), origem), destino = coalesce(nullif(trim(p_dados->>'destino'), ''), destino),
+    mercadoria = coalesce(nullif(trim(p_dados->>'mercadoria'), ''), mercadoria), volumes = coalesce((p_dados->>'volumes')::int, volumes),
+    peso_kg = case when p_dados ? 'peso_kg' then (p_dados->>'peso_kg')::numeric else peso_kg end,
+    volume_m3 = case when p_dados ? 'volume_m3' then (p_dados->>'volume_m3')::numeric else volume_m3 end,
+    valor_acordado = coalesce((p_dados->>'valor_acordado')::numeric, valor_acordado),
+    data_prevista = case when p_dados ? 'data_prevista' then (p_dados->>'data_prevista')::date else data_prevista end,
+    observacoes = case when p_dados ? 'observacoes' then nullif(trim(p_dados->>'observacoes'), '') else observacoes end
+   where id = p_id returning * into n;
+  if not exists (select 1 from public.prestadores_encomenda_direta(n.origem, n.destino) x where x.id = n.empresa_id) then
+    raise exception 'Com esta rota, o prestador escolhido pelo cliente deixa de ser elegível. Contacte o cliente.'; end if;
+  if n.data_prevista is distinct from e.data_prevista and n.data_prevista < current_date then raise exception 'A data prevista não pode ser no passado.'; end if;
+  dif := concat_ws('; ',
+    case when n.origem is distinct from e.origem then 'origem: ' || e.origem || ' → ' || n.origem end,
+    case when n.destino is distinct from e.destino then 'destino: ' || e.destino || ' → ' || n.destino end,
+    case when n.mercadoria is distinct from e.mercadoria then 'mercadoria: ' || n.mercadoria end,
+    case when n.volumes is distinct from e.volumes then 'volumes: ' || e.volumes || ' → ' || n.volumes end,
+    case when n.peso_kg is distinct from e.peso_kg then 'peso: ' || coalesce(e.peso_kg::text, '—') || ' → ' || coalesce(n.peso_kg::text, '—') || ' kg' end,
+    case when n.volume_m3 is distinct from e.volume_m3 then 'volume: ' || coalesce(e.volume_m3::text, '—') || ' → ' || coalesce(n.volume_m3::text, '—') || ' m³' end,
+    case when n.valor_acordado is distinct from e.valor_acordado then 'valor: ' || e.valor_acordado || ' → ' || n.valor_acordado || ' €' end,
+    case when n.data_prevista is distinct from e.data_prevista then 'data: ' || coalesce(to_char(e.data_prevista, 'DD/MM/YYYY'), '—') || ' → ' || coalesce(to_char(n.data_prevista, 'DD/MM/YYYY'), '—') end,
+    case when n.observacoes is distinct from e.observacoes then 'observações atualizadas' end);
+  if dif = '' then raise exception 'Não há alterações.'; end if;
+  perform private.ed_registar(p_id, n.estado, 'administracao', 'Dados corrigidos — ' || dif || coalesce('. ' || nullif(trim(p_nota), ''), ''));
+end $$;
+
+-- Cliente: enviar documentos adicionais pedidos pela administração
+create or replace function public.cliente_anexo_encomenda_direta(p_id uuid, p_documento uuid, p_nota text default null) returns void
+language plpgsql security definer set search_path = public as $$
+declare e encomendas_diretas;
+begin
+  select * into e from encomendas_diretas where id = p_id and cliente_id = auth.uid() for update;
+  if not found then raise exception 'Encomenda direta não encontrada.'; end if;
+  if e.estado not in ('pendente_validacao', 'em_analise_admin', 'validada', 'nao_validada') then raise exception 'Já não é possível juntar documentos a esta encomenda.'; end if;
+  if not exists (select 1 from documentos d where d.id = p_documento and d.cliente_id = auth.uid()) then raise exception 'Documento inválido.'; end if;
+  insert into encomendas_diretas_anexos (encomenda_id, documento_id, nota, enviado_por) values (p_id, p_documento, nullif(trim(p_nota), ''), auth.uid());
+  update encomendas_diretas set pedido_documentos = null, pedido_documentos_em = null where id = p_id;
+  perform private.ed_registar(p_id, case when e.estado = 'nao_validada' then 'em_analise_admin' else e.estado end, 'cliente',
+    'Documento adicional enviado' || coalesce(': ' || nullif(trim(p_nota), ''), '.'));
+end $$;
+
+-- Lista com anexos (mesma visibilidade)
+create or replace function public.encomendas_diretas_lista() returns jsonb language sql stable security definer set search_path = public as $$
+  select coalesce(jsonb_agg(x order by x->>'created_at' desc), '[]'::jsonb) from (
+    select to_jsonb(e) || jsonb_build_object(
+      'prestador', coalesce(em.nome_comercial, em.nome),
+      'cliente_nome', coalesce(c.nome, u.email),
+      'cliente_email', case when private.e_admin_plataforma() or e.cliente_id = auth.uid() or e.estado = 'aceite' then coalesce(c.email, u.email) end,
+      'cliente_telefone', case when private.e_admin_plataforma() or e.cliente_id = auth.uid() or e.estado = 'aceite' then c.telefone end,
+      'documento', (select jsonb_build_object('nome', d.nome, 'caminho', d.storage_path, 'mime', d.mime, 'verificado', d.verificado) from documentos d where d.id = e.documento_id),
+      'anexos', (select coalesce(jsonb_agg(jsonb_build_object('nome', d.nome, 'caminho', d.storage_path, 'mime', d.mime, 'nota', a.nota, 'em', a.created_at) order by a.id), '[]'::jsonb)
+                   from encomendas_diretas_anexos a join documentos d on d.id = a.documento_id where a.encomenda_id = e.id),
+      'historico', (select coalesce(jsonb_agg(jsonb_build_object('estado', h.estado, 'papel', h.papel, 'nota', h.nota, 'em', h.created_at) order by h.id), '[]'::jsonb)
+                      from encomendas_diretas_historico h where h.encomenda_id = e.id)) as x
+      from encomendas_diretas e join empresas em on em.id = e.empresa_id
+      left join clientes c on c.id = e.cliente_id left join auth.users u on u.id = e.cliente_id
+     where private.ed_visivel(e)) t $$;
+
+revoke all on function public.admin_comprovativo_visto(uuid), public.admin_corrigir_encomenda_direta(uuid, jsonb, text), public.cliente_anexo_encomenda_direta(uuid, uuid, text) from public, anon;
+grant execute on function public.admin_comprovativo_visto(uuid), public.admin_corrigir_encomenda_direta(uuid, jsonb, text), public.cliente_anexo_encomenda_direta(uuid, uuid, text) to authenticated;
 
 commit;

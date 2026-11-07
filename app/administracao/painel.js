@@ -46,7 +46,7 @@ filtroOp.prestador)}</select></label>
       <button type="button" class="ct-limpar" onclick="painelAdminLimparFiltros()">Limpar</button>
       <span class="ct-conta" id="ctConta" aria-live="polite">${r.resumo}</span></div>
     <div class="ct-tab-wrap"><table class="ct-tab"><thead><tr><th>Ref.ª da encomenda</th><th>Rota</th><th>Cliente</th><th>Estado atual</th><th>Última atualização</th><th>Prestador</th><th></th></tr></thead><tbody id="ctCorpo">${r.corpo}</tbody></table></div>`}
-function rotas(d){const r=d.rotas||[];if(!r.length)return'<p class="pa-vazio">Ainda sem pedidos no período. As rotas mais pedidas aparecem quando os clientes enviarem simulações.</p>';const max=Math.max(...r.map(x=>x.pedidos));
+function rotas(d){const r=d.rotas||[];if(!r.length)return'<p class="pa-vazio">Sem pedidos no período.</p>';const max=Math.max(...r.map(x=>x.pedidos));
 return`<ol class="pa-lista">${r.map(x=>`<li><div class="pa-linha"><strong>${esc(x.origem)} <span class="pa-seta" aria-hidden="true">→</span> ${esc(x.destino)}</strong><i class="pa-pontos" aria-hidden="true"></i><span>${num(x.pedidos)} pedidos</span></div><small>${x.preco_medio==null?"sem preço calculado":"preço médio "+eur(x.preco_medio)}</small></li>`).join("")}</ol>`}
 function topPrestadores(d){const t=d.top_prestadores||[];if(!t.length)return'<p class="pa-vazio">Ainda sem encomendas no período.</p>';const max=Math.max(...t.map(x=>x.encomendas));
 return`<ol class="pa-lista">${t.map(x=>`<li><div class="pa-linha"><strong>${esc(x.nome)}</strong><i class="pa-pontos" aria-hidden="true"></i><span>${num(x.encomendas)} enc. · ${eur(x.valor)}</span></div></li>`).join("")}</ol>`}function serie(d){
@@ -109,7 +109,7 @@ const modo=sessaoDemo()?"":"";if(!dados){
 painel.innerHTML=`<section class="painel-admin" aria-busy="true">${modo}<div class="pa-vazio pa-grande">${erro?"⚠ "+esc(erro)+' <button type="button" class="pa-botao-pequeno" onclick="painelAdminAtualizar()">Tentar novamente</button>':"A carregar os indicadores da plataforma…"}</div></section>`;
 return}const d=dados,p=d.prestadores||{},s=d.subscricoes||{},e=d.encomendas||{},f=d.funil||{},c=d.clientes||{};
 const aviso=erro?`<div class="pa-erro" role="alert"><i class="ic ic-warning" aria-hidden="true"></i> Não foi possível atualizar (${esc(erro)}). A mostrar os últimos dados de ${esc(hora(d.gerado_em))}. <button type="button" class="pa-botao-pequeno" onclick="painelAdminAtualizar()">Tentar novamente</button></div>`:"";
-const vazio=sessaoServidor()&&semAtividade(d)?'<div class="pa-guia" role="note">Ainda não há atividade na plataforma. Os indicadores enchem-se quando os prestadores se registarem (e forem autorizados) e os clientes enviarem simulações.</div>':"";
+const vazio="";if(sessaoServidor()&&semAtividade(d))window.elologAvisoUnico?.("guia-sem-atividade",{audience:"admin",title:"Plataforma ainda sem atividade",message:"Os indicadores enchem-se quando os prestadores forem autorizados e os clientes enviarem simulações.",type:"info",categoria:"sistema",prioridade:"normal",targetPage:"adminProviderRequests"});
 painel.innerHTML=`
 <section class="painel-admin pa-centro ${animar?"pa-anim":""}">
   ${modo}${aviso}${vazio}

@@ -17,7 +17,7 @@
       ["Manifestos de carga","showProviderPage('providerManifestos',this)","providerManifestos","view_manifests"],["Calendário marítimo","showProviderPage('providerMaritimeCalendar',this)","providerMaritimeCalendar","view_loads"],
       ["Mapa marítimo","showProviderPage('providerMapa',this)","providerMapa","view_loads"],["Em trânsito","showProviderPage('providerTransito',this)","providerTransito","view_loads"],
       ["No destino","showProviderPage('providerDestino',this)","providerDestino","view_loads"],["Disponível","showProviderPage('providerDisponivel',this)","providerDisponivel","view_loads"],
-      ["Saídas e levantamentos","showProviderPage('providerLevantamento',this)","providerLevantamento","view_loads"],["Navios em tempo real","elologNavios.abrir(this)","","view_loads"],["Pesquisa marítima","elologMaritimo.abrir(this)","","view_loads"]]],
+      ["Saídas e levantamentos","showProviderPage('providerLevantamento',this)","providerLevantamento","view_loads"],["Navios em tempo real","elologNavios.abrir(this)","","view_loads"]]],
     ["eq","Equipa e transportes","truck",[["Agenda de serviços","showProviderFieldPage('planning',this)","providerFieldTeam","field_work"],["Painel do terreno","showProviderFieldPage('dashboard',this)","providerFieldTeam","field_work"],
       ["Motoristas e operadores","showProviderFieldPage('operators',this)","providerFieldTeam","field_work"],["Viaturas","showProviderFieldPage('vehicles',this)","providerFieldTeam","field_work"],
       ["Recolhas","showProviderFieldPage('pickups',this)","providerFieldTeam","field_work"],["Entregas","showProviderFieldPage('deliveries',this)","providerFieldTeam","field_work"]]],
@@ -47,5 +47,8 @@
     if(box.dataset.feito===html)return;box.dataset.feito=html;box.innerHTML=html;box.classList.add("admin-menu-structure","prov-menu");box.style.display="block";
     const dash=document.getElementById("menuDashboard");if(dash)dash.style.display="none";document.body.classList.add("prov-lateral")}
   const orig=window.applyProviderPermissions;if(typeof orig==="function")window.applyProviderPermissions=function(){const r=orig.apply(this,arguments);try{construir()}catch(e){}return r};
-  const conf=window.configureRole;if(typeof conf==="function")window.configureRole=function(){const r=conf.apply(this,arguments);if(currentUser?.role!=="prestador")document.body.classList.remove("prov-lateral");else try{construir()}catch(e){}return r};
+  const conf=window.configureRole;if(typeof conf==="function")window.configureRole=function(){const r=conf.apply(this,arguments);if(currentUser?.role!=="prestador")document.body.classList.remove("prov-lateral");else try{construir();marcarInicio()}catch(e){}return r};
+  /* v97: como nos outros perfis, a opção do painel aparece ativa ao entrar */
+  function marcarInicio(){const m=document.getElementById("providerMenuStructure");if(!m||m.querySelector("button.active"))return;
+    [...m.querySelectorAll("button")].find(b=>/showPage\('dashboard'/.test(b.getAttribute("onclick")||""))?.classList.add("active")}
 })();

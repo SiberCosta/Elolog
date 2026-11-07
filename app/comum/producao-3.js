@@ -27,8 +27,8 @@
         if(d.metodo==="multibanco"){j.mostrar(`<div class="pm-ref"><div><small>Entidade</small><strong>${esc(d.entidade)}</strong><button type="button" class="btn-secondary" data-c="${esc(d.entidade)}">Copiar</button></div>
           <div><small>Referência</small><strong>${esc(String(d.referencia).replace(/(\d{3})(?=\d)/g,"$1 "))}</strong><button type="button" class="btn-secondary" data-c="${esc(d.referencia)}">Copiar</button></div>
           <div><small>Valor</small><strong>${p.euros(d.valor)}</strong></div></div><p class="pm-nota">${d.expira_em?"Pague até "+new Date(d.expira_em).toLocaleDateString("pt-PT")+". ":""}Quando pagar, a confirmação chega sozinha e recebe um email.</p>`,[{texto:"Concluir",principal:true,acao:j.fechar}]);
-          j.corpo.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>copiar(b.dataset.c,b));marcar("Aguardando confirmação","Multibanco",d.referencia);return}
-        marcar("Aguardando confirmação","MB WAY",tel);esperar(d.id,Date.now())}catch(e){p.aviso(e.message||"Não foi possível iniciar o pagamento.","error");
+          j.corpo.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>copiar(b.dataset.c,b));marcar("A aguardar confirmação","Multibanco",d.referencia);return}
+        marcar("A aguardar confirmação","MB WAY",tel);esperar(d.id,Date.now())}catch(e){p.aviso(e.message||"Não foi possível iniciar o pagamento.","error");
         if(/não aceita pagamentos online|não disponível|não encontrada/i.test(e.message||"")){j.fechar();original(id)}}};
     const esperar=(pedido,inicio)=>{const falta=Math.max(0,240-Math.round((Date.now()-inicio)/1000));
       j.mostrar(`<div class="pm-espera" role="status" aria-live="polite"><span class="pm-roda" aria-hidden="true"></span><strong>Confirme o pagamento na app MB WAY</strong><p>Tem ${Math.floor(falta/60)}:${String(falta%60).padStart(2,"0")} para aceitar no telemóvel ${esc(tel)}.</p></div>`,[{texto:"Fechar",acao:j.fechar}]);

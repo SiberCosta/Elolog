@@ -19,7 +19,7 @@
 
   function html(){const souAdmin=(lista||[]).some(f=>f.sou_eu&&f.papel==="admin")||!P()?.online();
     const linhas=(lista||[]).map(f=>`<li class="eq-linha${f.ativo?"":" eq-inativo"}"><span class="eq-avatar" aria-hidden="true">${esc((f.nome||"?").split(/\s+/).map(x=>x[0]).slice(0,2).join("").toUpperCase())}</span>
-      <div class="eq-quem"><b>${esc(f.nome)}${f.sou_eu?' <small class="eq-eu">(você)</small>':""}</b><small>${esc(f.email||"")}</small></div>
+      <div class="eq-quem"><b>${esc(f.nome)}${f.sou_eu?' <small class="eq-eu">(a sua conta)</small>':""}</b><small>${esc(f.email||"")}</small></div>
       <div class="eq-funcao"><span class="estado-pill ${f.ativo?"sa-info":"sa-mau"}">${f.ativo?esc(FUNCOES[f.papel]?.[0]||f.papel):"Desativado"}</span><small>${esc(FUNCOES[f.papel]?.[1]||"")}</small></div>
       ${souAdmin&&!f.sou_eu?`<div class="eq-acoes"><button type="button" class="btn-secondary" data-eq="papel" data-id="${esc(f.user_id)}">Função</button><button type="button" class="btn-secondary" data-eq="senha" data-id="${esc(f.user_id)}">Palavra-passe</button>
       <button type="button" class="${f.ativo?"btn-danger":"btn-secondary"}" data-eq="ativo" data-id="${esc(f.user_id)}">${f.ativo?"Desativar":"Ativar"}</button></div>`:"<div></div>"}</li>`).join("");

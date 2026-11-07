@@ -10,9 +10,9 @@
   const servidor=()=>!!window.elologProducao?.online();
 
   window.eloChips={
-    admin:["Pedido por contacto","Simulações dos clientes","Novo funcionário","Pedidos de inscrição","Resumo"],
-    prestador:["Pedidos de cotação","Nova tarifa","Registar fatura","Navios em tempo real","Resumo"],
-    cliente:["Nova simulação","Última encomenda","Pagar encomenda","Os meus documentos","Falar com um humano"]};
+    admin:["Pedido por contacto","Pedidos de inscrição","Resumo"],
+    prestador:["Pedidos de cotação","Nova tarifa","Resumo"],
+    cliente:["Nova simulação","Última encomenda","Pagar encomenda"]};
 
   window.eloFluxos=[
     /* ---------- administração ---------- */
@@ -36,6 +36,8 @@
     {papeis:["prestador"],re:/pagamentos? online|multibanco|mb ?way|ifthenpay/,
       fazer:()=>({texto:"A abrir a configuração dos pagamentos online (Multibanco e MB WAY pela ifthenpay).",go:chama("elologPagamentos.config")})},
     /* ---------- cliente ---------- */
+    {papeis:["cliente"],re:/encomenda direta|ja negociei|negociei (com|diretamente)|registar encomenda direta|comprovativo da negociac/,
+      fazer:()=>({texto:"Abri o registo de encomenda direta: escolha o prestador da lista, indique a carga e o valor acordado e anexe o comprovativo. A administração valida e encaminha ao prestador.",go:chama("elologEncDireta.nova")})},
     {papeis:["cliente"],re:/^nova simulac|^simular$|quero simular|fazer (uma )?simulac/,
       fazer:()=>({texto:"A abrir a simulação. Preencha rota, destinatário e volumes; o resumo e as propostas aparecem à direita. Se um prestador ainda não tiver preço para a rota, pode pedir-lhe cotação.",go:pagina("cliente","clientSimulation")})},
     {papeis:["cliente"],re:/pagar (a )?encomenda|pagar agora|referencia multibanco/,

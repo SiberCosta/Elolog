@@ -58,6 +58,65 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v99 (encomendas diretas: revisão administrativa)
+
+- **Ver o comprovativo antes de validar**: «Analisar e validar» abre o comprovativo (PDF ou imagem) ao lado dos dados, com separadores para os documentos adicionais. A abertura fica registada no servidor e **só depois é possível validar**.
+- **Corrigir dados administrativos** (antes de encaminhar): origem, destino, mercadoria, volumes, peso, volume, valor, data e observações, com razão da correção. O percurso guarda «antes → depois» e o cliente é avisado. O prestador não muda (só o cliente o pode trocar); uma correção que torne o prestador inelegível para a rota é recusada.
+- **Pedir documentos adicionais**: pedido com sugestões (fatura pró-forma, lista de volumes, identificação do destinatário, comprovativo de pagamento). A encomenda mostra «Documentos pedidos» e não pode ser validada até o cliente enviar. O cliente usa «Enviar documentos pedidos» (ou «Juntar documento») na Área de Cliente.
+- **Encaminhar**: «Validar e encaminhar» num só passo, ou «Validar» e depois «Encaminhar ao prestador». O prestador vê o comprovativo e os documentos adicionais.
+- Servidor: migração `00161_encomendas_diretas_revisao.sql` (aplicada; só acrescenta colunas, a tabela `encomendas_diretas_anexos` e funções). Testes: `testes/23_encomendas_diretas_revisao.sql` (16/16) e `22` atualizado (22/22). Front: `app/administracao/encomendas-diretas-revisao.js`.
+
+## v98 (encomendas diretas com validação da administração e decisão do prestador)
+
+- **Área de Cliente**: novo menu «Encomendas diretas» e atalho «Registar encomenda direta» (também pelo ELO). Formulário: prestador (só ativos e elegíveis para a rota), origem, destino, mercadoria, volumes, peso, volume, valor acordado, data prevista, comprovativo (PDF/JPG/PNG, até 10 MB) e observações. O cliente acompanha o percurso completo e, depois de uma recusa ou não validação, pode **escolher outro prestador** (volta à validação) ou cancelar.
+- **Administração** (Operações e clientes › Encomendas diretas): colocar em análise, validar, não validar (motivo para o cliente), enviar ao prestador, ver o comprovativo e contactar o cliente. Não pode mudar o prestador.
+- **Prestador** (Operações › Encomendas diretas): só vê o pedido depois do encaminhamento; coloca em análise, aceita ou recusa — a recusa exige motivo (rota, espaço, preço/condições, documentação, mercadoria, outro com descrição). Os contactos do cliente só aparecem depois de aceitar.
+- **Estados**: Pendente de validação (cliente) → Em análise / Validada / Não validada / Enviada ao prestador (administração) → Em análise / Aceite / Recusada (prestador). Nada é eliminado; cada passo fica no histórico e gera aviso ao cliente, à administração e ao prestador.
+- **Elegibilidade**: prestador aprovado com subscrição ativa; se tiver tarifas com rota, a rota pedida tem de coincidir com uma delas; sem tarifas de rota, serve todas.
+- Servidor: migração `00160_encomendas_diretas.sql` (aplicada; só acrescenta tabelas, funções e uma política de leitura do comprovativo). Testes: `testes/22_encomendas_diretas.sql` (22/22). Front: `app/comum/encomendas-diretas-dados.js`, `app/cliente/encomenda-direta.js`, `app/administracao/encomendas-diretas.js`, `app/comum/encomendas-diretas.css`.
+
+## v97 (menu igual no telemóvel, avisos nas notificações, ELO mais curto, sem Pesquisa marítima)
+
+- **Menu do telemóvel igual para cliente, prestador e administração**: mesma capa e posição do perfil, opções com a mesma altura, letra e ícones, a opção atual sempre destacada (também no prestador, que antes não destacava), grupos com seta e submenus com a mesma linha lateral (`app/comum/menu-movel.css`, `app/prestador/menu-lateral.js`).
+- **Avisos de orientação fora do ecrã**: a faixa «Ainda não há atividade na plataforma…» passa a ser uma notificação (uma só vez) no painel de notificações (`window.elologAvisoUnico` em `app/comum/notificacoes.js`). Retiradas também as frases explicativas dos estados vazios e a nota do funil de clientes.
+- **ELO mais curto**: ao abrir mostra só «Olá! Sou o ELO, o assistente virtual da Elolog. Em que posso ajudar?». Os atalhos, o botão da equipa e a nota de segurança só aparecem depois de a pessoa escrever; menos atalhos por perfil.
+- **Pesquisa marítima retirada**: saem o menu (cliente, prestador e administração), os ficheiros `pesquisa-maritima*.js/.css`, as migrações 00153–00157, os testes 19 e 20, a função `navios-mst` e a parte «rota» da `navios-ais`. A tarefa diária da MyShipTracking foi desligada no Supabase (deixa de gastar créditos). O ELO deixou de indicar datas de navios.
+- Para apagar as tabelas e funções da pesquisa no Supabase, executar à mão `servidor/supabase/migrations/00159_retirar_pesquisa_maritima.sql` no SQL Editor; depois apagar a Edge Function `navios-mst` e o segredo `MYSHIPTRACKING_API_KEY` no painel.
+
+## v96 (regras de funcionamento do ELO e respostas em PT, EN e FR)
+
+Novo ficheiro `partilhado/scripts/assistente-regras.js`, carregado antes do assistente em todas as páginas. As regras são verificadas antes de qualquer outra resposta:
+
+1. **Não inventa preços, transportadoras nem datas de navios**: os preços só vêm da simulação, com tarifas de prestadores aprovados; as datas abrem a Pesquisa marítima (dados da plataforma); com servidor, deixa de sugerir prestadores guardados no dispositivo.
+2. **Não confirma encomendas sem consultar a plataforma**: com servidor, o estado é lido no Supabase (ligação existente) e mostra a hora da consulta; o agendamento passa para a encomenda, onde só fica confirmado quando o prestador aceitar.
+3. **Não recebe pagamentos**: encaminha para «Pagamentos»; se alguém escrever um cartão, IBAN ou palavra-passe, avisa e oculta-o.
+4. **Não aprova prestadores**: explica que a aprovação é feita por uma pessoa; à administração abre «Pedidos de inscrição».
+5. **Não mostra dados de terceiros**: sem sessão iniciada não consulta encomendas (nem por email/NIF do destinatário); com sessão, só vê o que as regras de acesso (RLS) da conta permitem.
+6. e 7. **Pessoa da equipa e terminar**: atalhos «Falar com uma pessoa» e «Terminar conversa» sempre visíveis; ao terminar, a conversa é apagada do dispositivo.
+8. **Identifica-se sempre como assistente virtual** na saudação e quando perguntam «és um robô?».
+9. **Minimização de dados**: emails, telefones, NIF, IBAN, cartões e palavras-passe são ocultados antes de guardar a conversa e no resumo enviado à equipa; «apagar conversa» apaga já.
+10. **Português, inglês e francês**: deteta a língua da mensagem ou escolhe-se no atalho «Idioma · Language · Langue»; respostas e atalhos mudam de língua.
+
+## v95 (português de Portugal)
+
+- Textos com termos do Brasil corrigidos para português de Portugal: «senha» → «palavra-passe» (entrada do prestador, registo, avisos), «Aguardando …» → «A aguardar …» (estados de propostas, pagamentos e encomendas), «Baixar» → «Descarregar», «Visualizar» → «Ver», «Confira» → «Verifique», «nota fiscal» → «nota de crédito», «(você)» → «(a sua conta)». A tradução para inglês foi atualizada com os novos textos.
+- Pagamentos antigos guardados como «Aguardando confirmação» continuam a ser reconhecidos.
+
+## v94 (três funis e «Gargalo principal» no Centro de comando)
+
+- O Centro de comando mostra, ao mesmo tempo, o **Funil de Clientes**, o **Funil de Prestadores** e o **Funil Financeiro**, com indicadores resumidos no topo e cada etapa expansível (explicação, perdas face à etapa anterior, detalhes e atalho para a página certa). No telemóvel os funis ficam empilhados.
+- Novo indicador **Gargalo principal**: primeiro o que trava tudo (sem prestadores disponíveis, sem procura); senão, a etapa com pior passagem, com a ação recomendada.
+- Regras aplicadas no servidor (só dados registados, nunca valores inventados):
+  1. sem prestadores **aprovados e disponíveis** (subscrição ativa), não há propostas;
+  2. sem proposta válida (dentro da validade, de prestador aprovado), não há aceite;
+  3. sem aceite, não há valor contratado (encomendas sem proposta aceite aparecem como «fora do funil»);
+  4. sem fatura válida, não há valor faturado;
+  5. sem pagamento confirmado, não há valor recebido (reembolsos descontados);
+  6. **planos** dos prestadores e **comissões** das encomendas contados em separado (comissão calculada sobre o recebido, com a regra ativa).
+- Em modo de demonstração os funis usam dados fictícios, sempre identificados.
+- Servidor: migração `00158_funis_gargalo.sql` (aplicada; só acrescenta a função `painel_funis`, só para a administração — tabelas, dados e ligação Supabase inalterados). Testes: `testes/21_funis.sql` (14/14).
+- Front: `app/administracao/funis.js` (usa a ligação existente `ELOLogServidor.cliente()`).
+
 ## v93 (todos os navios com destino São Tomé e partidas de São Tomé)
 
 - `navios-mst` passa a procurar também, por zona, os navios que **declaram destino São Tomé (ST TMS / STTMS / SAO TOME)** nos portos de **Lisboa, Leixões, Setúbal e Sines**, e os navios **a sair de São Tomé** com o destino declarado. As saídas registadas no porto passam a 20 dias (limite das chaves de teste).
@@ -173,7 +232,7 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Separadores «Cliente | Prestador»** no topo do login (computador e telemóvel); ligação discreta **«Equipa Elolog»** por baixo para a administração.
 - **Endereços curtos:** `www.elolog.pt/prestador` e `www.elolog.pt/admin` (pastas `prestador/` e `admin/` na raiz).
 - O aparelho **lembra-se do último acesso**: quem entra como prestador ou administração volta direto a esse login ao abrir a Área de Cliente (o separador «Cliente» desfaz).
-- Prestador: **«Lembrar a empresa neste aparelho»** guarda o nome, o NIF e o email do funcionário (nunca as palavras-passe); da próxima vez só escreve as senhas. Passos renumerados: 1 · Empresa, 2 · Funcionário. Ficheiro: `app/comum/portas.js`.
+- Prestador: **«Lembrar a empresa neste aparelho»** guarda o nome, o NIF e o email do funcionário (nunca as palavras-passe); da próxima vez só escreve as palavras-passe. Passos renumerados: 1 · Empresa, 2 · Funcionário. Ficheiro: `app/comum/portas.js`.
 
 ## v78 (Área de Cliente só para clientes)
 

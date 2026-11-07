@@ -7,7 +7,7 @@ pb.innerHTML='<svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentCol
 pb.onclick=()=>window.Painel&&Painel.lateral(chave);pb.style.display="block";pb.style.order="99"}else if(pb)pb.style.display="none";if(!cliente)return;const av=$("fieldSidebarAvatar");
 if(av&&!av.dataset.foto)av.textContent=String(currentUser.name||"C").trim().split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase();const inicio=$("menuDashboard");if(inicio){inicio.style.display="block";
 inicio.innerHTML='<svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>Início'}
-["menuPayments","menuDocuments","menuSupport","menuClientProfile","menuMaritimo"].forEach(id=>{if($(id))$(id).style.display="block"});["menuDashboard","menuSimulation","menuMaritimo","menuOrders","clientOrdersSubmenu","menuFinance","clientFinanceSubmenu","menuHelp",
+["menuPayments","menuDocuments","menuSupport","menuClientProfile"].forEach(id=>{if($(id))$(id).style.display="block"});["menuDashboard","menuSimulation","menuOrders","clientOrdersSubmenu","menuFinance","clientFinanceSubmenu","menuHelp",
 "clientHelpSubmenu"].forEach((id,i)=>{if($(id))$(id).style.order=String(i+1)})}})();(function(){const mostrar=window.showPage;if(typeof mostrar!=="function")return;window.showPage=function(pagina){const r=mostrar.apply(this,arguments);
 if(currentUser?.role==="cliente"){document.querySelectorAll("#sidebar .menu button").forEach(b=>{const on=(b.getAttribute("onclick")||"").includes("showPage('"+pagina+"'");if(on)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")})}
 return r}})();

@@ -162,7 +162,7 @@ document.write(["                    </div>","",'                    <div class=
 '    <div class="sim-result-header"><h4>Resumo em tempo real</h4><span>Atualização automática</span></div>','    <div class="sim-result-grid">',
 '      <div id="clientResDistanceBox"><small>Distância total</small><strong id="clientResDistance">0 km</strong></div>','      <div id="clientResKmBox" hidden><small>Custo do percurso</small><strong id="clientResKm">0,00 €</strong></div>',
 '      <div><small>Total de pacotes</small><strong id="clientResPackages">0</strong></div>','      <div><small>Volume total</small><strong id="clientResVolume">0,000 m³</strong></div>',
-'      <div><small>Peso taxável</small><strong id="clientResVolWeight">0,0 kg</strong></div>','      <div class="sim-total"><small>Preço</small><strong id="clientResTotal">Aguardando proposta</strong></div>',"    </div>","",
+'      <div><small>Peso taxável</small><strong id="clientResVolWeight">0,0 kg</strong></div>','      <div class="sim-total"><small>Preço</small><strong id="clientResTotal">A aguardar proposta</strong></div>',"    </div>","",
 '    <div id="clientSimulationSummary" class="client-simulation-summary" hidden aria-hidden="true">','      <div class="client-simulation-summary-head">',"        <div>",'          <span class="eyebrow">Simulação registada</span>',
 "          <h5>Resumo da simulação</h5>","        </div>",'        <span class="simulation-status-pill">Simulação efetuada</span>',"      </div>",'      <div class="client-simulation-summary-grid">',
 '        <div><small>N.º de registo</small><strong id="clientSimRegistration">—</strong></div>','        <div><small>Data e hora</small><strong id="clientSimRegistrationDate">—</strong></div>'].join("\n"));

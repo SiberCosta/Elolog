@@ -25,7 +25,7 @@ document.write(['        <label>Limite de operações/mês<input id="newProvider
 '    <button id="continueToProviderPlans" type="button" class="btn-primary full" hidden onclick="continueProviderRegistrationToAdmin()">Criar administrador da empresa</button>',"    </section>",
 '    <section id="providerAdminRegistration" class="provider-admin-registration" hidden>',
 '      <div class="subscription-step-head"><span>2</span><div><strong>Criar administrador da empresa</strong><small>Esta será a primeira conta individual com controlo total do prestador.</small></div></div>',
-'      <div class="provider-admin-registration-note"><strong>Conta administrativa</strong><span>A senha desta conta é independente da senha utilizada para identificar a empresa.</span></div>','      <div class="profile-form-grid">',
+'      <div class="provider-admin-registration-note"><strong>Conta administrativa</strong><span>A palavra-passe desta conta é independente da palavra-passe utilizada para identificar a empresa.</span></div>','      <div class="profile-form-grid">',
 '        <label>Nome do administrador<input id="profileAdminName" type="text" placeholder="Nome completo" autocomplete="name"></label>',
 '        <label>E-mail de acesso<input id="profileAdminEmail" type="email" placeholder="admin@empresa.pt" autocomplete="email"></label>',
 '        <label class="full">Palavra-passe do administrador<input id="profileAdminPassword" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password"></label>',

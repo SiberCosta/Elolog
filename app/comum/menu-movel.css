@@ -50,4 +50,35 @@
   html body.modo-lat #sidebar#sidebar.open::after{content:"Elolog  •  Ligando o mundo";position:fixed;left:0;bottom:0;width:min(330px,86vw);height:50px;box-sizing:border-box;padding-top:14px;
     text-align:center;font-style:italic;letter-spacing:.18em;font-size:12px;color:#9fbccd;pointer-events:none;
     background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 330 50' preserveAspectRatio='none'%3E%3Cpath d='M0 38 C90 52 200 24 330 34 L330 50 L0 50Z' fill='%231F5F8B' opacity='.9'/%3E%3C/svg%3E") bottom/100% 22px no-repeat,linear-gradient(180deg,rgba(23,66,92,0),#17425c 40%)}
+  /* v97 — o mesmo menu para cliente, prestador e administração: mesma capa, perfil, altura das opções, ícones, seta e opção ativa */
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.ct-logo,.user-box){flex:0 0 auto!important}
+  html body.modo-lat #sidebar#sidebar#sidebar .ct-logo{height:158px!important;padding:30px 8px 0!important;margin:0!important}
+  html body.modo-lat #sidebar#sidebar#sidebar .user-box.user-box{margin:44px 0 14px!important;min-height:99px;box-sizing:border-box}
+  html body.modo-lat #sidebar#sidebar#sidebar .user-box #fieldSidebarStatus{display:none!important}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.menu,.provider-menu-structure)>button:not([style*="none"]):not([hidden]),html body.modo-lat #sidebar#sidebar#sidebar .provider-menu-main:not([style*="none"]):not([hidden]){display:flex!important}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.menu,.provider-menu-structure)>button,html body.modo-lat #sidebar#sidebar#sidebar .provider-menu-main{align-items:center!important;gap:14px!important;
+    min-height:48px!important;height:auto!important;padding:12px 14px!important;margin:2px 0!important;border-radius:14px!important;border:1px solid transparent!important;color:#dbe9f1!important;
+    font-size:15.5px!important;font-weight:500!important;line-height:1.25!important;text-align:left!important;background:none!important;box-shadow:none!important;opacity:1!important;letter-spacing:0!important}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.menu,.provider-menu-structure) button *{color:inherit!important;opacity:1!important}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.menu,.provider-menu-structure)>button>:is(svg,i.ic):first-child,html body.modo-lat #sidebar#sidebar#sidebar .provider-menu-main>:is(svg,i.ic),html body.modo-lat #sidebar#sidebar#sidebar :is(.menu,.provider-menu-structure) button .mi-l>:is(svg,i.ic){
+    width:22px!important;height:22px!important;flex:0 0 22px!important;font-size:22px!important;margin:0!important;stroke-width:1.7;color:#fff!important}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.menu,.provider-menu-structure) button .mi-l{display:flex!important;align-items:center;gap:14px}
+  html body.modo-lat #sidebar#sidebar#sidebar .provider-menu-main>span:last-child:not(:first-child){margin-left:auto!important;color:#9fbccd!important}
+  html body.modo-lat #sidebar#sidebar#sidebar .provider-menu-main>span.mi-l{color:#dbe9f1!important;font-size:15.5px!important}
+  html body.modo-lat #sidebar#sidebar#sidebar .menu>button.client-group::after{content:"⌄";margin-left:auto;color:#9fbccd;font-size:16px;transition:transform .2s}
+  html body.modo-lat #sidebar#sidebar#sidebar .menu>button.client-group[aria-expanded="true"]::after{transform:rotate(180deg)}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.menu,.provider-menu-structure)>button:is(.active,.client-menu-active,[aria-current="page"]):not(.client-group){font-weight:700!important;color:#fff!important;
+    background:linear-gradient(90deg,#1F5F8B,#24709f)!important;border-color:rgba(159,188,205,.35)!important;box-shadow:0 6px 14px rgba(31,95,139,.4)!important;position:relative}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.menu,.provider-menu-structure)>button:is(.active,.client-menu-active,[aria-current="page"]):not(.client-group)::after{content:"›";position:absolute;right:16px;top:50%;
+    transform:translateY(-52%);font-size:26px;font-weight:400;line-height:1}
+  html body.modo-lat #sidebar#sidebar#sidebar .menu>button.client-group[aria-expanded="true"],html body.modo-lat #sidebar#sidebar#sidebar .provider-menu-group:has(>.provider-submenu.open)>.provider-menu-main{
+    font-weight:700!important;background:rgba(31,95,139,.32)!important;box-shadow:inset 4px 0 0 #1F7A5C!important;border-color:rgba(255,255,255,.12)!important}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu) button:not([style*="none"]):not([hidden]){display:flex!important}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu) button{align-items:center;min-height:40px;font-size:14.5px!important;color:#b4cddc!important;
+    padding:9px 14px 9px 50px!important;margin:1px 0!important;border-radius:12px!important;background:none!important;border:0!important;box-shadow:none!important;font-weight:500!important}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu) button:is(.active,.client-menu-active){color:#fff!important;background:rgba(255,255,255,.09)!important}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu) button svg{display:none}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu){margin:4px 0 8px 25px!important;padding:0!important;border:0!important;border-left:2px solid rgba(159,188,205,.35)!important;background:none!important}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu) button{height:40px!important;min-height:40px!important;justify-content:flex-start!important;text-align:left!important;padding:0 14px 0 26px!important;line-height:1.2!important;width:100%!important}
+  html body.modo-lat #sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu) button::before{display:none!important;content:none!important}
 }

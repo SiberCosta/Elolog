@@ -58,5 +58,7 @@ const d=JSON.parse(localStorage.getItem("elolog_profiles")||"[]").find(x=>String
 (o,t,a)=>{const r=o.apply(t,a);try{const d=JSON.parse(localStorage.getItem("elolog_profiles")||"[]").find(x=>String(x.id)===String(a[0]));if(d)emitir("prestador.aprovado",{empresa:d.tradeName||d.name})}catch(e){}return r});envolver("submitAdminInvoice",(o,t,
 a)=>{const id=document.getElementById("newInvoiceProvider")?.value,num=document.getElementById("newInvoiceNumber")?.value,antes=typeof adminBillingRecords==="function"?adminBillingRecords().length:0,r=o.apply(t,a);try{
 const d=JSON.parse(localStorage.getItem("elolog_profiles")||"[]").find(x=>String(x.id)===String(id));if(d&&typeof adminBillingRecords==="function"&&adminBillingRecords().length>antes)emitir("fatura.emitida",{empresa:d.tradeName||d.name,numero:num})}catch(e){}
-return r});envolver("startApp",(o,t,a)=>{const r=o.apply(t,a);Promise.resolve(r).then(()=>{try{escalar();renderNotificationCenter();avisar()}catch(e){}});return r});setInterval(()=>{try{escalar()}catch(e){}},3e5);window.elologAlertas={emitir,escalar,avisar,
+return r});envolver("startApp",(o,t,a)=>{const r=o.apply(t,a);Promise.resolve(r).then(()=>{try{escalar();renderNotificationCenter();avisar()}catch(e){}});return r});setInterval(()=>{try{escalar()}catch(e){}},3e5);
+/* v97: avisos de orientação («ainda sem atividade», etc.) vão uma só vez para o painel de notificações, nunca para o ecrã. */
+window.elologAvisoUnico=(key,o)=>{try{if(getOperationNotifications().some(n=>n.key===key))return;window.addOperationNotification({actor:"Elolog",...o,key});renderNotificationCenter()}catch(e){}};window.elologAlertas={emitir,escalar,avisar,
 pref:(k,on)=>{const m=mudas().filter(x=>x!==k);if(!on)m.push(k);setMudas(m);renderNotificationCenter()}}})();

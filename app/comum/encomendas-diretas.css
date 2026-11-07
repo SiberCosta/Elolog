@@ -1,0 +1,36 @@
+/* Elolog — Encomendas diretas (v98): cartões, estados e percurso. Cores da marca: #13293D, #1F5F8B, #1F7A5C. */
+.ed-topo{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin:0 0 14px}
+.ed-topo h2{margin:0 0 4px;color:#13293D;font-size:22px}.ed-topo p{margin:0;color:#5b6b7b;font-size:14px;max-width:640px}
+.ed-filtros{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.ed-filtros b{margin-left:4px;font-weight:700}
+.ed-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.ed-vazio{color:#7c8da0;font-size:14px;padding:18px;border:1px dashed #cfdbe4;border-radius:12px;text-align:center}
+.ed-cartao{background:#fff;border:1px solid #dbe4ec;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.ed-cartao header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.ed-cartao header strong{color:#13293D;margin-right:6px}
+.ed-cartao header small{color:#7c8da0}.ed-rota{margin:0;font-weight:700;color:#1F5F8B}.ed-rota i{font-style:normal;color:#7c8da0}
+.ed-dados{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin:0}.ed-dados dt{font-size:11px;color:#7c8da0}.ed-dados dd{margin:0;font-size:14px;color:#13293D;word-break:break-word}
+.ed-obs{margin:0;font-size:13px;color:#4a5a6a;background:#f4f7fa;border-radius:8px;padding:6px 8px}
+.ed-motivo{margin:0;font-size:13px;color:#8a2d1f;background:#fbefec;border:1px solid #f0cfc8;border-radius:8px;padding:6px 8px}
+.ed-hist summary{cursor:pointer;font-size:13px;color:#1F5F8B;font-weight:600}.ed-hist ol{list-style:none;margin:8px 0 0;padding:0 0 0 12px;border-left:2px solid #dbe4ec}
+.ed-hist li{position:relative;padding:0 0 8px 10px;font-size:13px}.ed-hist li::before{content:"";position:absolute;left:-18px;top:4px;width:9px;height:9px;border-radius:50%;background:#1F5F8B}
+.ed-hist li small{color:#7c8da0}.ed-hist li p{margin:2px 0 0;color:#4a5a6a}
+.ed-acoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}.ed-acoes a{text-decoration:none;display:inline-flex;align-items:center}
+.ed-estado{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;border:1px solid}
+.ed-amb{color:#9a6408;border-color:#e0951a;background:#fdf6ea}.ed-azul{color:#1F5F8B;border-color:#9fbccd;background:#eef5fa}
+.ed-verde{color:#1F7A5C;border-color:#9fd1bd;background:#edf7f2}.ed-verm{color:#b0412e;border-color:#ecb4a8;background:#fbefec}.ed-cinza{color:#5b6b7b;border-color:#cfd8df;background:#f4f6f8}
+.ed-intro{margin:0 0 10px;color:#4a5a6a;font-size:14px}.ed-largo{grid-column:1/-1}
+.ed-motivos{border:1px solid #dbe4ec;border-radius:10px;padding:8px 12px;margin:8px 0;display:grid;gap:6px}.ed-motivos legend{font-size:12px;font-weight:700;color:#18384a}
+.ed-motivos label{display:flex;gap:8px;align-items:center;font-size:14px}
+@media(max-width:600px){.ed-lista{grid-template-columns:1fr}.ed-dados{grid-template-columns:1fr}.ed-topo .btn-primary{width:100%}}
+/* v99 — revisão administrativa: comprovativo ao lado dos dados, documentos pedidos e anexos */
+.ed-pedido{margin:0;font-size:13px;color:#7a4f06;background:#fdf6ea;border:1px solid #f1d29b;border-radius:8px;padding:6px 8px}
+.ed-anexos{list-style:none;margin:0;padding:0;display:grid;gap:4px}.ed-anexos small{color:#7c8da0}
+.ed-link{background:none;border:0;padding:0;color:#1F5F8B;font:inherit;font-size:13px;font-weight:600;cursor:pointer;text-align:left}.ed-link:hover{text-decoration:underline}
+.pm-caixa:has(.ed-rev){width:min(1120px,96vw)!important;max-width:none!important}
+.ed-rev{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:16px;align-items:start}
+.ed-rev-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}
+.ed-prev{border:1px solid #dbe4ec;border-radius:10px;background:#f4f7fa;overflow:hidden;height:min(62vh,640px);display:flex;align-items:center;justify-content:center}
+.ed-prev iframe{width:100%;height:100%;border:0;background:#fff}.ed-prev img{max-width:100%;max-height:100%;object-fit:contain}
+.ed-prev-vazio{padding:20px;color:#7c8da0;font-size:14px;text-align:center}.ed-prev-link{margin:6px 0 0;font-size:13px}.ed-prev-link a{color:#1F5F8B}
+.ed-rev-dados{grid-template-columns:1fr}.ed-rev-info{display:grid;gap:10px}.ed-rev-nota{margin:0;font-size:12px;color:#7c8da0}
+.ed-sug{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+@media(max-width:800px){.ed-rev{grid-template-columns:1fr}.ed-prev{height:48vh}}
