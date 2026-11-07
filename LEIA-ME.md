@@ -1,6 +1,6 @@
 # Elolog
 
-**Versão de 29/10/2026 (v81).** Se esta pasta tem este ficheiro, é a versão nova.
+**Versão de 29/10/2026 (v82).** Se esta pasta tem este ficheiro, é a versão nova.
 
 Plataforma de intermediação logística: clientes simulam e comparam propostas; transitárias gerem encomendas, equipa e cobranças; a administração Elolog valida e acompanha a rede.
 
@@ -57,6 +57,64 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Código de confirmação ao ligar uma caixa:** ao ligar uma caixa nova (ou mudar o endereço), a plataforma envia um código de 6 dígitos para essa caixa e só guarda depois de o escrever (válido 10 minutos, máx. 8 tentativas por 10 min).
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
+
+## v88 (cores da marca)
+
+- O menu do telemóvel e o centro de comando voltaram às **cores do design inicial**: tinta `#13293D` → `#17425c` no fundo, azul `#1F5F8B` na opção ativa e na onda, verde `#1F7A5C` no destaque do grupo aberto e no selo, textos `#dbe9f1` / `#9fbccd`. O desenho (capa com navio, perfil, «Sair», assinatura) mantém-se.
+
+## v87 (EloLog Maritime Search e novo menu no telemóvel)
+
+- **Pesquisa marítima Portugal ⇄ São Tomé e Príncipe** (menu: Cliente → «Pesquisa marítima»; Prestador → Encomendas → «Pesquisa marítima»; Administração → Operações e clientes → «Pesquisa marítima»).
+  - Separadores: **Partidas**, **Chegadas**, **Navios** (agrupa as viagens por navio, com a próxima partida) e **Com espaço** (só viagens abertas, com prazo de carga em aberto e espaço livre).
+  - Filtros: navio/linha/viagem, sentido, porto (Lisboa, Leixões, Setúbal, Sines, Aveiro, Figueira da Foz, São Tomé, Neves), datas e «só com espaço disponível».
+  - Cada viagem mostra datas (e «daqui a N dias»), prazo de entrega da carga, estado, espaço livre (20', 40', grupagem m³, viaturas), prestador e, se houver MMSI, a **posição real AIS** com ligação para o mapa.
+  - O cliente carrega em «Pedir cotação» e a simulação abre já preenchida com os portos e o navio.
+  - O prestador (administrador ou operador) carrega em «+ Publicar viagem» / «Editar» para publicar e atualizar as suas viagens; pode deixá-las ocultas (rascunho).
+  - **Ligações Supabase intactas**: o módulo usa a ligação já existente da plataforma; não cria clientes nem altera chaves ou configuração. No servidor só acrescenta a tabela `viagens_maritimas` e a função `pesquisa_maritima` (migração `00153`, aplicada). Viagens com MMSI passam a ser seguidas pelo AIS que já existe.
+  - Segurança: só a própria empresa publica/altera; datas coerentes; limite de 60 alterações por 10 min; tudo na auditoria. Teste: `testes/19_pesquisa_maritima.sql` (17/17).
+  - Sem servidor (modo de demonstração) mostra viagens fictícias identificadas como tal. Em produção a lista começa vazia até os prestadores publicarem.
+  - Ficheiros: `app/comum/pesquisa-maritima.js`, `pesquisa-maritima-form.js`, `pesquisa-maritima.css`.
+- **Menu lateral no telemóvel** com o visual do modelo enviado: capa com navio no porto e onda azul, perfil com iniciais e selo de verificação (administração), opção ativa em azul vivo com seta, grupo aberto destacado, «Sair» com contorno e «Elolog • Ligando o mundo». Ficheiro: `app/comum/menu-movel.css` (só em ecrãs até 900 px).
+
+## v86 (voltar atrás, avisos de email, centro de comando no telemóvel)
+
+- **Voltar atrás**: o botão «voltar» do telemóvel/navegador regressa à opção anterior dentro da plataforma (e fecha o menu lateral se estiver aberto). No início pede um segundo toque para sair. Ficheiro: `app/comum/historico.js`.
+- **Avisos de email**: as caixas são verificadas a cada 30 s (antes 2 min). Quando chega um email aparece no ecrã um cartão com a caixa, o remetente e o assunto, e o botão «Abrir». Se autorizar os avisos do sistema (pedido ao abrir o Email), também avisa com a página em segundo plano (verificação a cada 60 s). Ficheiros: `app/comum/email-1.js`, `app/comum/email-avisos.js`.
+- **Centro de comando no telemóvel**: painel visual no topo com o resumo do dia (operações em curso, valor e barra colorida por etapa), estado (a aguardar ação, urgentes, receita mensal), 8 atalhos grandes com contadores e as últimas 5 operações em cartões. A tabela larga e o fluxo em grelha ficam só no computador. Ficheiros: `app/administracao/centro-movel.js`, `app/administracao/centro.css`.
+
+## v85 (código de reserva e menu)
+
+- **2.ª opção de verificação — código de reserva**: para a administração da plataforma e o administrador da empresa, quando não há acesso ao telemóvel.
+  - Depois de confirmar o código do telemóvel pela primeira vez, a plataforma mostra **uma vez** um código fixo (`XXXX-XXXX-XXXX-XXXX`). Guarde-o fora do telemóvel (papel ou gestor de palavras-passe).
+  - Sem telemóvel: no 2.º passo, «Sem acesso ao telemóvel? Usar o código de reserva» → escreve o código → entra.
+  - Para trocar o código: marcar «Gerar um novo código de reserva ao entrar com o telemóvel» (o anterior deixa de valer).
+  - Segurança: guardado só como hash; 5 tentativas por 15 min; só se gera com o telemóvel; vale apenas para a sessão em que foi usado; cada uso fica na auditoria e gera um aviso (notificação e email).
+  - O **painel de email** continua a pedir o código do telemóvel.
+  - Servidor: migração `00152_codigo_reserva_mfa.sql` (aplicada); `gerir-equipa`, `criar-prestador`, `gerir-funcionarios` republicadas. Front: `app/comum/codigo-reserva.js`. Teste: `testes/18_codigo_reserva.sql` (17/17).
+- **Menu (telemóvel)**: tocar num grupo do menu (ex.: «Encomendas») já não fecha o menu; só fecha depois de escolher a opção.
+
+## v84 (regras de segurança obrigatórias)
+
+- Regras e onde cada uma é garantida: `documentacao/REGRAS_SEGURANCA.md`.
+- **Ficheiros**: só PDF, JPG, PNG, WEBP, DOC(X), XLS(X) até 20 MB. Verificados no navegador, na base de dados e pelo conteúdo no servidor (`verificar-ficheiro`). Até à verificação, só quem enviou vê o ficheiro; um ficheiro falso é apagado e a recusa fica registada.
+- **Auditoria** só acrescenta (não se altera nem apaga) e regista sozinha as alterações sensíveis, sem segredos.
+- **Limites de escrita** por utilizador na base de dados (ex.: 60 documentos / 10 min).
+- **Edge Functions** com bloqueio seguro (`_shared/seguranca.ts`): segredos em falta, pedido grande demais ou qualquer falha → a operação não é executada.
+- **Assistente ELO**: entrada limpa e limitada (500 caracteres, 15 mensagens/min); respostas verificadas antes de aparecer.
+- Servidor: migração `00151_regras_seguranca.sql` (aplicada); todas as 13 funções republicadas. Testes: `testes/17_regras_seguranca.sql` (12/12).
+
+## v83 (marca nova)
+
+- **Logótipos novos** em `partilhado/imagens`: `elolog-logo.svg` (horizontal a cor), `elolog-logo-negativo.svg` (branco, para fundos escuros: rodapé e painel de entrada), `elolog-logo-nav.png`, `elolog-logo-full.png`, `elolog-logo-600.png` (também usado nos emails).
+- **Ícones** novos: `favicon.ico`, `favicon-48/96/192`, `apple-touch-icon`, `icon-192/512` e `icon-maskable-512` (app instalada).
+- **Imagem de partilha** (`elolog-partilha.jpg`) com o logótipo novo sobre azul-escuro.
+- **Cores da marca**: azul `#1F5F8B`, verde `#1F7A5C`, tinta `#13293D` (antes `#236186`, `#237E5F`, `#0E2433`).
+- **Logótipo animado** (`partilhado/scripts/logo-animado.js`): na primeira página de cada visita, o logótipo da barra desenha-se (cerca de 2 s). Nas páginas seguintes fica parado. Respeita a opção «reduzir movimento» do aparelho.
+
+## v82 (endereços parecidos levam ao sítio certo)
+
+- `app/administrador.html` abre a entrada da administração (tal como `app/administracao.html` e `/admin`).
+- A página «Página não encontrada» (`404.html`) reencaminha sozinha endereços parecidos: com «admin/gestão/equipa» → administração; «prestador/empresa/funcionário» → acesso do prestador; «cliente/entrar/login/conta» → Área de Cliente; «simular/cotação/preço» → simulador.
 
 ## v81 (dois passos para o administrador da empresa)
 
