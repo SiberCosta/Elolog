@@ -32,11 +32,15 @@ window.elologMfaEmpresa=async function(c){cred=c;erro("");let m;try{const sb=awa
 async function verificar(){const codigo=$("mfaCodigo").value.trim(),b=$("mfaVerificar");if(!/^\d{6}$/.test(codigo))return erro("Escreva os 6 dígitos do código.");b.disabled=true;erro("");
   try{const sb=await S().cliente(),{data:ch,error}=await sb.auth.mfa.challenge({factorId:fator});if(error)throw error;
     const{error:e2}=await sb.auth.mfa.verify({factorId:fator,challengeId:ch.id,code:codigo});if(e2)return erro("Código errado ou expirado. Use o código que está agora na aplicação.");
+    await window.elologReserva?.depoisDoTelemovel();await concluir()}
+  catch(e){erro(S()?.mensagem?S().mensagem(e):"Não foi possível verificar o código.")}finally{b.disabled=false}}
+/** Abre a sessão da empresa depois do 2.º passo (código do telemóvel OU código de reserva). */
+async function concluir(){const sb=await S().cliente();if(!cred)throw new Error("Recomece a entrada da empresa.");
     const{data,error:e3}=await sb.rpc("abrir_sessao_empresa",{p_nome:cred.nome,p_nif:cred.nif,p_senha:cred.senha});if(e3)throw e3;const r=Array.isArray(data)?data[0]:data;
     if(!r?.ok)return erro(r?.mensagem||"Não foi possível abrir a sessão da empresa.");
     currentUser={email:r.email,role:"prestador",name:r.funcionario_nome,providerFunction:FUNCAO[r.papel]||"operador",providerCompany:{id:r.empresa_id,name:r.empresa_nome,nif:cred.nif||"",server:true}};
     cred=null;sessionStorage.setItem("th_user",JSON.stringify(currentUser));localStorage.removeItem("th_user");startApp()}
-  catch(e){erro(S()?.mensagem?S().mensagem(e):"Não foi possível verificar o código.")}finally{b.disabled=false}}
+window.elologMfaEmpresaConcluir=async()=>{try{await concluir()}catch(e){erro(S()?.mensagem?S().mensagem(e):e.message)}};
 $("mfaVerificar").onclick=verificar;$("mfaCodigo").addEventListener("keydown",e=>{if(e.key==="Enter")verificar()});
 $("mfaCancelar").onclick=async()=>{cred=null;try{(await S().cliente()).auth.signOut()}catch(_){}window.showAuthPage("providerCompanyPage")};
 })();

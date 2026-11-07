@@ -3849,4 +3849,369 @@ language sql stable security definer set search_path = public as $$ select f.emp
 revoke all on function public.servico_admin_empresa_aal(uuid, text) from public, anon, authenticated;
 grant execute on function public.servico_admin_empresa_aal(uuid, text) to service_role;
 
+-- ===== 00151_regras_seguranca.sql =====
+-- v84 — Regras de segurança obrigatórias (documentacao/REGRAS_SEGURANCA.md). Tudo falha em modo fechado:
+-- se uma verificação não puder ser feita, a operação é recusada.
+
+-- ---------- R7. Registo de auditoria: só se acrescenta, nunca se altera nem apaga ----------
+revoke update, delete, truncate on auditoria from anon, authenticated;
+create or replace function private.auditoria_imutavel() returns trigger language plpgsql as $$
+begin raise exception 'AUDITORIA_IMUTAVEL: o registo de auditoria não pode ser alterado nem apagado.'; end $$;
+create or replace trigger auditoria_imutavel before update or delete on auditoria
+  for each row execute function private.auditoria_imutavel();
+
+-- Guarda quem fez o quê nas tabelas sensíveis. Argumento opcional: lista de campos a guardar (o resto fica de fora).
+-- Campos secretos nunca são guardados.
+create or replace function private.auditar_alteracao() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_antes jsonb; v_depois jsonb; v_id text; v_emp text; v_campos text[];
+  v_secretos constant text[] := array['segredo_hash','mb_key','mbway_key','chave_antiphishing','pin_validacao_hash','segredo_id'];
+begin
+  if tg_nargs > 0 then v_campos := string_to_array(tg_argv[0], ','); end if;
+  if tg_op <> 'INSERT' then v_antes := to_jsonb(old) - v_secretos; end if;
+  if tg_op <> 'DELETE' then v_depois := to_jsonb(new) - v_secretos; end if;
+  if tg_op = 'UPDATE' and v_antes = v_depois then return new; end if;
+  v_id := coalesce(v_depois->>'id', v_antes->>'id', v_depois->>'user_id', v_antes->>'user_id', v_depois->>'empresa_id', v_antes->>'empresa_id');
+  v_emp := case when tg_table_name = 'empresas' then v_id else coalesce(v_depois->>'empresa_id', v_antes->>'empresa_id') end;
+  if v_campos is not null then
+    select jsonb_object_agg(k, v) into v_antes from jsonb_each(v_antes) e(k, v) where k = any(v_campos);
+    select jsonb_object_agg(k, v) into v_depois from jsonb_each(v_depois) e(k, v) where k = any(v_campos);
+  end if;
+  insert into auditoria (empresa_id, user_id, papel, acao, entidade, entidade_id, antes, depois)
+  values (nullif(v_emp, '')::uuid, auth.uid(), coalesce(auth.role(), 'sistema'), lower(tg_op), tg_table_name, v_id, v_antes, v_depois);
+  return coalesce(new, old);
+end $$;
+
+do $$ declare t text; begin
+  foreach t in array array['empresas','funcionarios','administradores_plataforma','acessos_temporarios','pagamentos',
+    'pedidos_pagamento','faturas','faturas_plataforma','subscricoes','planos','regras_comissao','regras_financeiras',
+    'regras_conformidade','tarifas','caixas_email','caixas_email_acesso','documentos'] loop
+    execute format('create or replace trigger auditar after insert or update or delete on %I for each row execute function private.auditar_alteracao()', t);
+  end loop;
+end $$;
+create or replace trigger auditar after insert or update or delete on empresa_segredos
+  for each row execute function private.auditar_alteracao('empresa_id,updated_at');
+create or replace trigger auditar after insert or update or delete on empresa_pagamentos_config
+  for each row execute function private.auditar_alteracao('empresa_id,ativo,sandbox,updated_at');
+create or replace trigger auditar after insert or delete on clientes
+  for each row execute function private.auditar_alteracao('id,estado,created_at');
+create or replace trigger auditar after insert or delete on encomendas
+  for each row execute function private.auditar_alteracao('id,codigo,empresa_id,estado,preco_total,suspensa');
+create or replace trigger auditar_estado after update on encomendas for each row
+  when (old.estado is distinct from new.estado or old.preco_total is distinct from new.preco_total or old.suspensa is distinct from new.suspensa
+        or old.empresa_id is distinct from new.empresa_id or old.cliente_id is distinct from new.cliente_id)
+  execute function private.auditar_alteracao('id,codigo,empresa_id,estado,preco_total,suspensa,suspensa_motivo');
+
+-- Bloqueios de segurança (pedido recusado, limite, verificação falhada) registados pelas Edge Functions.
+create or replace function public.servico_registar_bloqueio(p_funcao text, p_motivo text, p_user uuid default null) returns void
+language sql security definer set search_path = public as $$
+  insert into auditoria (user_id, papel, acao, entidade, motivo)
+  values (p_user, 'sistema', 'bloqueio_seguranca', left(coalesce(p_funcao, '?'), 60), left(coalesce(p_motivo, ''), 300)) $$;
+revoke all on function public.servico_registar_bloqueio(text, text, uuid) from public, anon, authenticated;
+grant execute on function public.servico_registar_bloqueio(text, text, uuid) to service_role;
+
+-- ---------- R5/R11. Ficheiros: só tipos permitidos, verificados pelo servidor antes de outros os verem ----------
+alter table documentos add column if not exists verificado boolean not null default false;
+alter table documentos add column if not exists verificado_em timestamptz;
+alter table documentos add column if not exists verificacao_motivo text;
+
+create or replace function private.tipos_ficheiro() returns jsonb language sql immutable as $$ select '{
+  "application/pdf":["pdf"], "image/jpeg":["jpg","jpeg"], "image/png":["png"], "image/webp":["webp"],
+  "application/msword":["doc"], "application/vnd.ms-excel":["xls"],
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":["docx"],
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":["xlsx"]}'::jsonb $$;
+
+create or replace function private.documento_validar() returns trigger
+language plpgsql security definer set search_path = public, storage as $$
+declare o record; v_ext text; v_servico boolean := coalesce(auth.role(), 'service_role') = 'service_role';  -- sem JWT = ligação direta à base (migrações, tarefas)
+begin
+  if tg_op = 'UPDATE' then
+    if not v_servico and (new.verificado is distinct from old.verificado or new.storage_path is distinct from old.storage_path
+        or new.mime is distinct from old.mime or new.tamanho_bytes is distinct from old.tamanho_bytes or new.verificado_em is distinct from old.verificado_em) then
+      raise exception 'FICHEIRO_RECUSADO: só o servidor pode alterar a verificação de um ficheiro.'; end if;
+    return new;
+  end if;
+  if not v_servico then new.verificado := false; new.verificado_em := null; new.verificacao_motivo := null; end if;
+  if new.mime is null or not (private.tipos_ficheiro() ? new.mime) then
+    raise exception 'FICHEIRO_RECUSADO: tipo de ficheiro não permitido.'; end if;
+  v_ext := lower(substring(new.storage_path from '\.([A-Za-z0-9]{1,5})$'));
+  if v_ext is null or not ((private.tipos_ficheiro() -> new.mime) ? v_ext) then
+    raise exception 'FICHEIRO_RECUSADO: a extensão do ficheiro não corresponde ao tipo.'; end if;
+  if coalesce(new.tamanho_bytes, 0) < 1 or new.tamanho_bytes > 20971520 then
+    raise exception 'FICHEIRO_RECUSADO: tamanho inválido (máximo 20 MB).'; end if;
+  select owner, metadata into o from storage.objects where bucket_id = 'documentos' and name = new.storage_path;
+  if not found then raise exception 'FICHEIRO_RECUSADO: o ficheiro não está no armazenamento.'; end if;
+  if not v_servico and o.owner is distinct from auth.uid() then
+    raise exception 'FICHEIRO_RECUSADO: o ficheiro não foi enviado por este utilizador.'; end if;
+  if (o.metadata->>'mimetype') is distinct from new.mime or (o.metadata->>'size')::bigint is distinct from new.tamanho_bytes then
+    raise exception 'FICHEIRO_RECUSADO: o ficheiro guardado não corresponde ao declarado.'; end if;
+  if not v_servico then new.enviado_por := auth.uid(); end if;
+  return new;
+end $$;
+create or replace trigger documento_validar before insert or update on documentos
+  for each row execute function private.documento_validar();
+
+-- Ninguém (além de quem o enviou) vê um documento antes de o servidor confirmar o conteúdo.
+do $$ begin
+  if not exists (select 1 from pg_policies where policyname = 'documentos_so_verificados') then
+    create policy documentos_so_verificados on documentos as restrictive for select to authenticated
+      using (verificado or enviado_por = auth.uid());
+  end if;
+  if not exists (select 1 from pg_policies where policyname = 'storage_documentos_verificados') then
+    create policy storage_documentos_verificados on storage.objects as restrictive for select to authenticated
+      using (bucket_id <> 'documentos' or owner = auth.uid()
+             or exists (select 1 from public.documentos d where d.storage_path = storage.objects.name and d.verificado));
+  end if;
+end $$;
+
+create or replace function public.servico_documento_verificado(p_id uuid, p_ok boolean, p_motivo text) returns void
+language plpgsql security definer set search_path = public as $$ begin
+  update documentos set verificado = p_ok, verificado_em = now(), verificacao_motivo = left(p_motivo, 200) where id = p_id;
+  insert into auditoria (user_id, papel, acao, entidade, entidade_id, motivo)
+  values (null, 'sistema', case when p_ok then 'ficheiro_verificado' else 'ficheiro_recusado' end, 'documentos', p_id::text, left(p_motivo, 200));
+end $$;
+revoke all on function public.servico_documento_verificado(uuid, boolean, text) from public, anon, authenticated;
+grant execute on function public.servico_documento_verificado(uuid, boolean, text) to service_role;
+
+-- ---------- R9/R10. Limite de pedidos também em escritas diretas (fora das Edge Functions) ----------
+create or replace function private.limitar_escritas() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_max int := coalesce(tg_argv[0], '60')::int; v_n int; v_chave text;
+begin
+  if auth.uid() is null or coalesce(auth.role(), '') = 'service_role' then return new; end if;
+  v_chave := 'esc:' || tg_table_name || ':' || auth.uid();
+  insert into tentativas_gate (chave, falhas, ultima_falha) values (v_chave, 1, now())
+  on conflict (chave) do update set falhas = case when tentativas_gate.ultima_falha < now() - interval '10 minutes' then 1
+    else tentativas_gate.falhas + 1 end, ultima_falha = now()
+  returning falhas into v_n;
+  if v_n > v_max then raise exception 'LIMITE_EXCEDIDO: demasiados pedidos. Aguarde alguns minutos.'; end if;
+  return new;
+end $$;
+do $$ declare r record; begin
+  for r in select * from (values ('documentos',60),('chat_mensagens',150),('chat_grupo_mensagens',150),('ocorrencias',30),
+      ('ocorrencia_registos',60),('tickets',20),('ticket_mensagens',60),('simulacoes',60),('pedidos_cliente',30),
+      ('encomendas',120),('pagamentos',120),('cliente_notas',60),('propostas',120)) v(t, m) loop
+    if to_regclass('public.' || r.t) is not null then
+      execute format('create or replace trigger limitar_escritas before insert on %I for each row execute function private.limitar_escritas(%L)', r.t, r.m::text);
+    end if;
+  end loop;
+end $$;
+
+-- ===== 00152_codigo_reserva_mfa.sql =====
+-- v85 — 2.ª opção de verificação: CÓDIGO DE RESERVA (para quando não há acesso ao telemóvel).
+-- Quem já usa a aplicação de autenticação (administração da plataforma e administrador da empresa) gera um código fixo
+-- de 16 caracteres, mostrado UMA vez. Se perder o telemóvel, entra com a palavra-passe + este código.
+-- Segurança: só se gera com o telemóvel confirmado (aal2); guardado só como hash (bcrypt); 5 tentativas por 15 min;
+-- cada uso fica na auditoria e gera um aviso por email; vale só para a sessão em que foi usado (12 h); pode ser trocado.
+
+create table if not exists codigos_reserva (
+  user_id    uuid primary key references auth.users(id) on delete cascade,
+  hash       text not null,
+  criado_em  timestamptz not null default now(),
+  usado_em   timestamptz,
+  usos       int not null default 0
+);
+create table if not exists sessoes_reserva (
+  session_id uuid primary key,
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  valida_ate timestamptz not null
+);
+alter table codigos_reserva enable row level security;
+alter table sessoes_reserva enable row level security;
+revoke all on codigos_reserva, sessoes_reserva from anon, authenticated;
+
+-- Sessão reforçada = código da aplicação (aal2) OU código de reserva usado nesta mesma sessão.
+create or replace function private.sessao_reforcada() returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce(auth.jwt() ->> 'aal', '') = 'aal2' or exists (select 1 from sessoes_reserva s
+    where s.session_id::text = auth.jwt() ->> 'session_id' and s.user_id = auth.uid() and s.valida_ate > now()) $$;
+
+create or replace function private.aal2() returns boolean
+language sql stable security definer set search_path = public as $$ select private.sessao_reforcada() $$;
+
+create or replace function private.minha_empresa() returns uuid
+language sql stable security definer set search_path = public as $$ select f.empresa_id from funcionarios f
+    join empresas em on em.id = f.empresa_id and em.estado = 'aprovada'
+    join sessoes_empresa s on s.user_id = f.id and s.empresa_id = f.empresa_id and s.valida_ate > now()
+   where f.id = auth.uid() and f.ativo and (f.papel <> 'admin_empresa' or private.sessao_reforcada())
+     and not exists (select 1 from acessos_temporarios t where t.user_id = f.id) $$;
+create or replace function private.meu_papel() returns papel_funcionario
+language sql stable security definer set search_path = public as $$ select f.papel from funcionarios f
+    join empresas em on em.id = f.empresa_id and em.estado = 'aprovada'
+    join sessoes_empresa s on s.user_id = f.id and s.empresa_id = f.empresa_id and s.valida_ate > now()
+   where f.id = auth.uid() and f.ativo and (f.papel <> 'admin_empresa' or private.sessao_reforcada())
+     and not exists (select 1 from acessos_temporarios t where t.user_id = f.id) $$;
+
+create or replace function private.mfa_ok() returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce((select valor from private.plataforma_config where chave = 'exigir_mfa_admin'), 'false') <> 'true'
+      or private.sessao_reforcada() $$;
+
+-- Gerar (ou trocar) o código. Só com o telemóvel confirmado nesta sessão (não com outro código de reserva).
+create or replace function public.gerar_codigo_reserva() returns text
+language plpgsql volatile security definer set search_path = public as $$
+declare v_alf text := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; v_b bytea := extensions.gen_random_bytes(16); v_c text := ''; i int;
+begin
+  if auth.uid() is null then raise exception 'SESSAO_INVALIDA'; end if;
+  if coalesce(auth.jwt() ->> 'aal', '') <> 'aal2' then
+    raise exception 'MFA_NECESSARIO: confirme primeiro o código da aplicação de autenticação.'; end if;
+  for i in 0..15 loop
+    v_c := v_c || substr(v_alf, (get_byte(v_b, i) % 32) + 1, 1);
+    if i in (3, 7, 11) then v_c := v_c || '-'; end if;
+  end loop;
+  insert into codigos_reserva (user_id, hash) values (auth.uid(), extensions.crypt(v_c, extensions.gen_salt('bf', 10)))
+  on conflict (user_id) do update set hash = excluded.hash, criado_em = now(), usado_em = null, usos = 0;
+  insert into auditoria (user_id, acao, entidade, entidade_id) values (auth.uid(), 'codigo_reserva_gerado', 'codigos_reserva', auth.uid()::text);
+  return v_c;
+end $$;
+
+create or replace function public.estado_codigo_reserva() returns table (tem boolean, criado_em timestamptz, usado_em timestamptz)
+language sql stable security definer set search_path = public as $$
+  select true, c.criado_em, c.usado_em from codigos_reserva c where c.user_id = auth.uid()
+  union all select false, null, null where not exists (select 1 from codigos_reserva where user_id = auth.uid()) $$;
+
+-- Usar o código: depois da palavra-passe certa (sessão aal1). Erro = devolve false (não lança, para a auditoria ficar).
+create or replace function public.usar_codigo_reserva(p_codigo text) returns boolean
+language plpgsql volatile security definer set search_path = public as $$
+declare v_c text := upper(regexp_replace(coalesce(p_codigo, ''), '[^A-Za-z0-9]', '', 'g')); v_h text; v_sess uuid;
+begin
+  if auth.uid() is null then return false; end if;
+  begin v_sess := (auth.jwt() ->> 'session_id')::uuid; exception when others then v_sess := null; end;
+  if v_sess is null then return false; end if;
+  if not public.servico_limite('reserva:' || auth.uid(), 5, 15) then
+    insert into auditoria (user_id, acao, entidade, entidade_id, depois)
+      values (auth.uid(), 'bloqueio_seguranca', 'codigos_reserva', auth.uid()::text, jsonb_build_object('motivo', 'demasiadas tentativas do código de reserva'));
+    return false;
+  end if;
+  select hash into v_h from codigos_reserva where user_id = auth.uid();
+  if v_h is null or length(v_c) <> 16
+     or extensions.crypt(substr(v_c,1,4)||'-'||substr(v_c,5,4)||'-'||substr(v_c,9,4)||'-'||substr(v_c,13,4), v_h) <> v_h then
+    insert into auditoria (user_id, acao, entidade, entidade_id) values (auth.uid(), 'codigo_reserva_errado', 'codigos_reserva', auth.uid()::text);
+    return false;
+  end if;
+  insert into sessoes_reserva (session_id, user_id, valida_ate) values (v_sess, auth.uid(), now() + interval '12 hours')
+  on conflict (session_id) do update set valida_ate = excluded.valida_ate where sessoes_reserva.user_id = auth.uid();
+  update codigos_reserva set usado_em = now(), usos = usos + 1 where user_id = auth.uid();
+  insert into auditoria (user_id, acao, entidade, entidade_id) values (auth.uid(), 'codigo_reserva_usado', 'codigos_reserva', auth.uid()::text);
+  insert into notificacoes (user_id, tipo, titulo, corpo)
+    values (auth.uid(), 'alerta_seguranca', 'Entrada com o código de reserva',
+            'Alguém entrou na sua conta com o código de reserva. Se não foi você, mude já a palavra-passe e gere um novo código.');
+  return true;
+end $$;
+
+-- Para as Edge Functions: a sessão (utilizador + session_id do token já validado) está reforçada?
+create or replace function public.servico_sessao_reforcada(p_user uuid, p_session text) returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from sessoes_reserva s where s.user_id = p_user and s.session_id::text = p_session and s.valida_ate > now()) $$;
+
+revoke all on function public.gerar_codigo_reserva(), public.estado_codigo_reserva(), public.usar_codigo_reserva(text),
+  public.servico_sessao_reforcada(uuid, text) from public, anon;
+grant execute on function public.gerar_codigo_reserva(), public.estado_codigo_reserva(), public.usar_codigo_reserva(text) to authenticated;
+revoke all on function public.servico_sessao_reforcada(uuid, text) from authenticated;
+grant execute on function public.servico_sessao_reforcada(uuid, text) to service_role;
+
+-- O aviso de uso também segue por email.
+create or replace function private.tipo_envia_email(p_tipo text) returns boolean language sql immutable set search_path = public as $$
+  select p_tipo in ('novo_prestador', 'pedido_subscricao', 'pedido_cliente', 'apoio', 'nova_simulacao', 'empresa_aprovada',
+    'empresa_recusada', 'pagamento_confirmado', 'simulacao_aceite', 'simulacao_recusada', 'estado_encomenda', 'fatura_emitida',
+    'pagamento_recebido', 'alerta_seguranca') $$;
+
+-- ===== 00153_pesquisa_maritima.sql =====
+-- v87 — EloLog Maritime Search: pesquisa de navios, partidas, chegadas e espaço disponível Portugal ⇄ São Tomé e Príncipe.
+-- Só ACRESCENTA (tabela, políticas, funções). Não altera ligações, chaves nem a configuração do Supabase existente.
+-- Os prestadores publicam as viagens; clientes, prestadores e administração pesquisam (com sessão iniciada).
+-- Se a viagem tiver MMSI, o navio passa a ser seguido pelo AIS existente (navios-ais) e a pesquisa mostra a posição real.
+
+create table if not exists viagens_maritimas (
+  id            uuid primary key default gen_random_uuid(),
+  empresa_id    uuid not null references empresas(id) on delete cascade,
+  navio         text not null check (length(navio) between 2 and 80),
+  imo           text check (imo ~ '^[0-9]{7}$'),
+  mmsi          text check (mmsi ~ '^[0-9]{9}$'),
+  linha         text check (length(linha) <= 80),                       -- armador / linha de navegação
+  viagem        text check (length(viagem) <= 30),                      -- n.º da viagem
+  sentido       text not null check (sentido in ('PT-STP', 'STP-PT')),
+  porto_origem  text not null check (length(porto_origem) between 2 and 60),
+  porto_destino text not null check (length(porto_destino) between 2 and 60),
+  partida       date not null,
+  chegada       date,
+  fecho_carga   date,                                                   -- último dia para entregar a carga
+  estado        text not null default 'aberta' check (estado in ('planeada','aberta','lotada','partiu','chegou','atrasada','cancelada')),
+  cont20_livres int check (cont20_livres between 0 and 9999),
+  cont40_livres int check (cont40_livres between 0 and 9999),
+  grupagem_m3   numeric(9,2) check (grupagem_m3 between 0 and 99999),   -- espaço em grupagem (carga solta)
+  aceita_viaturas boolean not null default false,
+  notas         text check (length(notas) <= 300),
+  publicada     boolean not null default true,
+  criado_por    uuid references auth.users(id) on delete set null default auth.uid(),
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
+  check (chegada is null or chegada >= partida),
+  check (fecho_carga is null or fecho_carga <= partida)
+);
+create index if not exists viagens_maritimas_partida on viagens_maritimas (sentido, partida);
+create index if not exists viagens_maritimas_empresa on viagens_maritimas (empresa_id, partida desc);
+alter table viagens_maritimas enable row level security;
+revoke all on viagens_maritimas from anon;
+grant select, insert, update, delete on viagens_maritimas to authenticated;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename = 'viagens_maritimas' and policyname = 'viagens_ver') then
+    create policy viagens_ver on viagens_maritimas for select to authenticated
+      using (publicada or empresa_id = private.minha_empresa() or private.e_admin_plataforma());
+    create policy viagens_gerir on viagens_maritimas for all to authenticated
+      using (private.e_admin_plataforma() or (empresa_id = private.minha_empresa() and private.papel_em(array['admin_empresa','operador'])))
+      with check (private.e_admin_plataforma() or (empresa_id = private.minha_empresa() and private.papel_em(array['admin_empresa','operador'])));
+  end if;
+end $$;
+
+-- Atualizado em + seguir o navio no AIS quando tem MMSI (usa a tabela navios_seguidos já existente).
+create or replace function private.viagem_antes() returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  new.updated_at := now();
+  if tg_op = 'UPDATE' then new.empresa_id := old.empresa_id; new.criado_por := old.criado_por; end if;   -- não muda de dono
+  if new.mmsi is not null then
+    insert into navios_seguidos (empresa_id, mmsi, nome, viagem) values (new.empresa_id, new.mmsi, new.navio, new.viagem)
+    on conflict (empresa_id, mmsi) do nothing;
+  end if;
+  return new;
+end $$;
+create or replace trigger viagem_antes before insert or update on viagens_maritimas for each row execute function private.viagem_antes();
+create or replace trigger auditar after insert or update or delete on viagens_maritimas for each row execute function private.auditar_alteracao();
+create or replace trigger limitar_escritas before insert or update on viagens_maritimas for each row execute function private.limitar_escritas('60');
+
+-- Pesquisa: viagens visíveis + nome do prestador + última posição AIS do navio (se existir).
+create or replace function public.pesquisa_maritima(p_texto text default null, p_sentido text default null, p_de date default null,
+  p_ate date default null, p_porto text default null, p_so_disponivel boolean default false, p_por text default 'partida')
+returns table (id uuid, navio text, imo text, mmsi text, linha text, viagem text, sentido text, porto_origem text, porto_destino text,
+  partida date, chegada date, fecho_carga date, estado text, cont20_livres int, cont40_livres int, grupagem_m3 numeric, aceita_viaturas boolean,
+  notas text, prestador text, empresa_id uuid, minha boolean, latitude double precision, longitude double precision, velocidade_nos numeric,
+  destino_ais text, eta_ais timestamptz, posicao_em timestamptz)
+language plpgsql stable security definer set search_path = public as $$
+declare v_t text := nullif(left(trim(coalesce(p_texto, '')), 60), ''); v_p text := nullif(left(trim(coalesce(p_porto, '')), 60), '');
+        v_emp uuid := private.minha_empresa(); v_adm boolean := private.e_admin_plataforma();
+begin
+  if auth.uid() is null then raise exception 'SESSAO_INVALIDA'; end if;
+  if p_sentido is not null and p_sentido not in ('PT-STP', 'STP-PT') then raise exception 'Sentido inválido.'; end if;
+  return query
+  select v.id, v.navio, v.imo, v.mmsi, v.linha, v.viagem, v.sentido, v.porto_origem, v.porto_destino, v.partida, v.chegada, v.fecho_carga, v.estado,
+         v.cont20_livres, v.cont40_livres, v.grupagem_m3, v.aceita_viaturas, v.notas, coalesce(e.nome_comercial, e.nome), v.empresa_id,
+         v.empresa_id = v_emp, p.latitude, p.longitude, p.velocidade_nos, p.destino, p.eta, p.posicao_em
+    from viagens_maritimas v
+    join empresas e on e.id = v.empresa_id and e.estado = 'aprovada'
+    left join navios_posicoes p on p.mmsi = v.mmsi
+   where (v.publicada or v.empresa_id = v_emp or v_adm)
+     and (p_sentido is null or v.sentido = p_sentido)
+     and (p_de is null or (case when p_por = 'chegada' then coalesce(v.chegada, v.partida) else v.partida end) >= p_de)
+     and (p_ate is null or (case when p_por = 'chegada' then coalesce(v.chegada, v.partida) else v.partida end) <= p_ate)
+     and (v_p is null or v.porto_origem ilike '%' || v_p || '%' or v.porto_destino ilike '%' || v_p || '%')
+     and (v_t is null or concat_ws(' ', v.navio, v.imo, v.mmsi, v.linha, v.viagem, e.nome, e.nome_comercial) ilike '%' || v_t || '%')
+     and (not p_so_disponivel or (v.estado in ('aberta', 'planeada', 'atrasada') and (v.fecho_carga is null or v.fecho_carga >= current_date)
+          and (coalesce(v.cont20_livres, 0) + coalesce(v.cont40_livres, 0) > 0 or coalesce(v.grupagem_m3, 0) > 0 or v.aceita_viaturas)))
+   order by case when p_por = 'chegada' then coalesce(v.chegada, v.partida) else v.partida end, v.navio
+   limit 200;
+end $$;
+revoke all on function public.pesquisa_maritima(text, text, date, date, text, boolean, text) from public, anon;
+grant execute on function public.pesquisa_maritima(text, text, date, date, text, boolean, text) to authenticated;
+
 commit;

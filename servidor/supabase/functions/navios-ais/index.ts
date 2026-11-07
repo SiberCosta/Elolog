@@ -5,6 +5,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { juntar, subscricao, type Posicao } from './ais.ts';
 import { pedidoAgendado } from '../_shared/cofre.ts';
 import { erro, resposta } from '../_shared/http.ts';
+import { seguro } from '../_shared/seguranca.ts';
 
 const admin = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
   { auth: { persistSession: false, autoRefreshToken: false } });
@@ -29,7 +30,7 @@ function escutar(chave: string, mmsis: string[], estado: Map<string, Posicao>): 
   });
 }
 
-Deno.serve(async (req: Request) => {
+Deno.serve(seguro('navios-ais', async (req: Request) => {
   if (req.method !== 'POST') return erro(405, 'metodo', 'Método não permitido.');
   if (!(await pedidoAgendado(req, admin))) return erro(401, 'nao_autorizado', 'Não autorizado.');
   const chave = Deno.env.get('AISSTREAM_API_KEY') ?? '';
@@ -53,4 +54,4 @@ Deno.serve(async (req: Request) => {
     console.error('navios-ais: erro', e instanceof Error ? e.message : e);
     return erro(500, 'interno', 'Erro interno.');
   }
-});
+}, { admin }));

@@ -10,7 +10,9 @@ import { enviarSmtp, ErroSmtp } from './smtp.ts';
 import { construir, enderecos, palavras, separar } from './mime.ts';
 import { abrir, comImap, comPrazo, type Cred, HOST, mensagem, pasta, smtp } from './ligacao.ts';
 import { codigoValido, novoCodigo } from './codigo.ts';
+import { seguro } from '../_shared/seguranca.ts';
 
+function nivel(jwt: string): string { try { return JSON.parse(atob(jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).aal ?? ''; } catch { return ''; } }
 const admin = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '', { auth: { persistSession: false, autoRefreshToken: false } });
 const txt = (v: unknown, max = 300) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const ehUuid = (v: unknown): v is string => typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
@@ -19,7 +21,6 @@ const ID_MSG = /^<[^<>\s]{3,250}>$/;
 const PASTAS = ['entrada', 'enviados', 'lixo'];
 const b64 = (b: Uint8Array) => { let s = ''; for (let i = 0; i < b.length; i += 8192) s += String.fromCharCode(...b.subarray(i, i + 8192)); return btoa(s); };
 const quando = (d?: string) => { const t = d ? Date.parse(d.replace(/\s*\([^)]*\)\s*$/, '')) : NaN; return Number.isNaN(t) ? null : new Date(t).toISOString(); };
-function nivel(jwt: string): string { try { return JSON.parse(atob(jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).aal ?? ''; } catch { return ''; } }
 
 function falha(e: unknown): Response {
   if (e instanceof ErroImap || e instanceof ErroSmtp) {
@@ -32,7 +33,7 @@ function falha(e: unknown): Response {
   return erro(500, 'interno', 'Erro interno. Tente novamente.');
 }
 
-Deno.serve(async (req: Request) => {
+Deno.serve(seguro('email-caixa', async (req: Request) => {
   if (req.method === 'OPTIONS') return preflight();
   if (req.method !== 'POST') return erro(405, 'metodo', 'Método não permitido.');
   const jwt = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
@@ -45,7 +46,7 @@ Deno.serve(async (req: Request) => {
   if (acesso.plataforma && !acesso.empresa && !acesso.delegado && !mfa) return erro(403, 'mfa', 'Confirme o segundo fator de autenticação para abrir o email da Elolog.');
   if (acesso.empresa && !mfa) return erro(403, 'mfa', 'Confirme o código de verificação: entre de novo como administrador da empresa.');
   const { data: dentro } = await admin.rpc('servico_limite', { p_chave: 'email:' + user, p_max: 300, p_janela_min: 10 });
-  if (dentro === false) return erro(429, 'limite', 'Demasiados pedidos. Aguarde alguns minutos.');
+  if (dentro !== true) return erro(429, 'limite', 'Demasiados pedidos. Aguarde alguns minutos.');
   const lido = await lerJson(req, 200_000);
   if (!lido.ok) return lido.resp;
   const c = (lido.valor ?? {}) as Record<string, unknown>, acao = txt(c.acao, 20);
@@ -103,7 +104,7 @@ Deno.serve(async (req: Request) => {
             texto: `O seu código para ligar esta caixa de email à plataforma Elolog é:\n\n${n}\n\nÉ válido durante 10 minutos. Se não foi você, ignore esta mensagem.` }));
           return resposta(200, { ok: true, confirmar: true, email: d.email });
         }
-        const { data: pode } = await admin.rpc('servico_limite', { p_chave: 'email-codigo:' + user, p_max: 8, p_janela_min: 10 }); if (pode === false) return erro(429, 'limite', 'Demasiadas tentativas. Peça um código novo daqui a 10 minutos.');
+        const { data: pode } = await admin.rpc('servico_limite', { p_chave: 'email-codigo:' + user, p_max: 8, p_janela_min: 10 }); if (pode !== true) return erro(429, 'limite', 'Demasiadas tentativas. Peça um código novo daqui a 10 minutos.');
         if (!(await codigoValido(chave, user, d.email, codigo))) return erro(400, 'codigo', 'Código errado ou expirado. Confirme o email recebido ou peça outro.');
       } else { const l = await abrir(teste.smtp_host, 465); await comPrazo(l, enviarSmtp(l, { utilizador: teste.utilizador, senha: teste.senha, de: d.email, para: [], mensagem: '', ehlo: d.email.split('@')[1] })); }
       const { data, error } = await admin.rpc('servico_email_gravar', { p_user: user, p_id: c.caixa ?? null, p_dados: { ...d, utilizador: teste.utilizador }, p_senha: senha });
@@ -158,7 +159,7 @@ Deno.serve(async (req: Request) => {
     }
     if (acao === 'enviar') {
       const { data: ok } = await admin.rpc('servico_limite', { p_chave: 'email-envio:' + user, p_max: 40, p_janela_min: 10 });
-      if (ok === false) return erro(429, 'limite', 'Limite de envios atingido. Aguarde alguns minutos.');
+      if (ok !== true) return erro(429, 'limite', 'Limite de envios atingido. Aguarde alguns minutos.');
       const para = enderecos(txt(c.para, 2000)).map((x) => x.email), cc = enderecos(txt(c.cc, 2000)).map((x) => x.email);
       if (!para.length || [...para, ...cc].some((e) => !EMAIL.test(e)) || para.length + cc.length > 20) return erro(400, 'para', 'Indique destinatários válidos (máximo 20).');
       const assunto = txt(c.assunto, 300), texto = typeof c.texto === 'string' ? c.texto.slice(0, 100_000) : '';
@@ -177,4 +178,4 @@ Deno.serve(async (req: Request) => {
     }
     return erro(400, 'acao', 'Ação desconhecida.');
   } catch (e) { return falha(e); }
-});
+}, { admin }));

@@ -1,5 +1,5 @@
 /* Elolog — melhoria transversal de disposição e responsividade */
-:root{--layout-bg:#f3f6f8;--layout-surface:#fff;--layout-line:#dce4e9;--layout-ink:#173447;--layout-muted:#687a86;--layout-accent:#236186;--layout-radius:16px;--layout-shadow:0 8px 28px rgba(19,45,62,.07)}*,*::before,*::after{box-sizing:border-box}
+:root{--layout-bg:#f3f6f8;--layout-surface:#fff;--layout-line:#dce4e9;--layout-ink:#173447;--layout-muted:#687a86;--layout-accent:#1F5F8B;--layout-radius:16px;--layout-shadow:0 8px 28px rgba(19,45,62,.07)}*,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth}body{overflow-x:hidden}img,svg,video{max-width:100%;height:auto}.main{min-width:0;background:var(--layout-bg)}.topbar{min-height:72px;padding:14px clamp(18px,2.5vw,34px);gap:18px;border-bottom:1px solid var(--layout-line);
 background:rgba(255,255,255,.94);backdrop-filter:blur(12px)}.topbar h2{font-size:clamp(18px,2vw,24px);line-height:1.2}.content{width:100%;max-width:1600px;margin:0 auto;padding:clamp(18px,2.4vw,34px)}.page.active{display:block;
 animation:layoutEnter .18s ease-out}@keyframes layoutEnter{from{opacity:.2;transform:translateY(4px)}to{opacity:1;transform:none}}.card{width:100%;padding:clamp(18px,2.2vw,30px);border:1px solid var(--layout-line);border-radius:var(--layout-radius);

@@ -81,12 +81,17 @@
   const podeContar=()=>currentUser?.role==="admin"||(currentUser?.role==="prestador"&&(()=>{try{return providerFunction()!=="field_operator"}catch(e){return true}})());
   function marcar(n){document.querySelectorAll('button[onclick^="elologEmail.abrir"]').forEach(b=>{let c=b.querySelector(".em-contador");
     if(!n){c?.remove();return}if(!c){c=document.createElement("span");c.className="em-contador";(b.querySelector(".mi-l")||b).appendChild(c)}c.textContent=n>99?"99+":String(n);c.setAttribute("aria-label",n+" emails por ler")})}
-  async function contar(){if(parar||!podeContar()||document.visibilityState!=="visible")return;
+  // v86: verifica a cada 30 s com a página à vista (60 s em segundo plano, se o aviso do sistema estiver autorizado) e avisa logo no ecrã.
+  const fora=()=>document.visibilityState!=="visible",sistema=()=>typeof Notification!=="undefined"&&Notification.permission==="granted";let porCaixa=null;
+  async function contar(){if(parar||!podeContar()||(fora()&&!sistema()))return;
     if(!online()){ultimo=DEMO.entrada.filter(m=>!m.lida).length;return marcar(ultimo)}
-    try{const r=await E.chamar("contar");if(ultimo!=null&&r.total>ultimo&&!aberto())P().aviso(`Tem ${r.total-ultimo} email${r.total-ultimo>1?"s":""} novo${r.total-ultimo>1?"s":""}. Abra o menu Email.`,"info");ultimo=r.total;marcar(ultimo)}
+    try{const r=await E.chamar("contar"),antes=porCaixa;porCaixa={};(r.caixas||[]).forEach(x=>{if(x.novas!=null)porCaixa[x.id]=x.novas});
+      const novas=antes?(r.caixas||[]).filter(x=>x.novas!=null&&x.novas>(antes[x.id]??0)):[];
+      if(novas.length&&(!aberto()||fora()))document.dispatchEvent(new CustomEvent("elolog:email-novo",{detail:{caixas:novas,total:r.total}}));ultimo=r.total;marcar(ultimo)}
     catch(e){if(["permissao","mfa","sessao"].includes(e.codigo))parar=true}}
+  (function ciclo(){setTimeout(async()=>{await contar();ciclo()},fora()?6e4:3e4)})();
   setInterval(()=>{if(aberto()&&(E.caixa||E.pasta==="atribuidos")&&!E.carregando&&document.visibilityState==="visible")E.carregarLista(true)},3e4);
-  setInterval(contar,12e4);setInterval(()=>{if(ultimo)marcar(ultimo)},4e3);
+  setInterval(()=>{if(ultimo)marcar(ultimo)},4e3);
   document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")contar()});
   if(typeof startApp==="function"){const ini=startApp;startApp=async function(){const r=await ini.apply(this,arguments);parar=false;setTimeout(contar,3e3);return r}}
   window.elologEmail={abrir,contar};

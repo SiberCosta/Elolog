@@ -3,8 +3,8 @@
    As folhas antigas continuam a existir, mas as variáveis delas passam a apontar para estes tokens. */
 :root{
   /* cor */
-  --e-azul:#236186;--e-azul-esc:#1a4d6c;--e-azul-claro:#e8f1f7;--e-verde:#237E5F;--e-verde-claro:#e7f5ee;
-  --e-tinta:#0E2433;--e-texto:#4b5d6b;--e-suave:#6b7d89;--e-fio:#e1e9ef;--e-fundo:#f3f6f8;--e-branco:#fff;
+  --e-azul:#1F5F8B;--e-azul-esc:#184B6E;--e-azul-claro:#e8f1f7;--e-verde:#1F7A5C;--e-verde-claro:#e7f5ee;
+  --e-tinta:#13293D;--e-texto:#4b5d6b;--e-suave:#6b7d89;--e-fio:#e1e9ef;--e-fundo:#f3f6f8;--e-branco:#fff;
   --e-aviso:#b45309;--e-aviso-claro:#fdf3e2;--e-erro:#c2414b;--e-erro-claro:#fdecee;
   /* tipografia: 12 · 13 · 14 · 15 · 16 · 18 · 20 · 24 · 28 · 32 */
   --e-letra:"Work Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;

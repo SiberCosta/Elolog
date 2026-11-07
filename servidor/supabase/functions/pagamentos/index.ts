@@ -5,6 +5,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { tratar, type DepsPag, type Pedido } from './handler.ts';
 import { criarIfthenpay } from './ifthenpay.ts';
 import { pedidoAgendado } from '../_shared/cofre.ts';
+import { seguro } from '../_shared/seguranca.ts';
 
 const admin = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
   { auth: { persistSession: false, autoRefreshToken: false } });
@@ -50,4 +51,4 @@ const deps: DepsPag = {
   api,
 };
 
-Deno.serve((req: Request) => tratar(req, deps));
+Deno.serve(seguro('pagamentos', (req: Request) => tratar(req, deps), { admin }));

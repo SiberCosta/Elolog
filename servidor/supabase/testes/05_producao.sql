@@ -37,8 +37,12 @@ do $teste$ declare
   insert into clientes (id, nome, email) values (cl, 'Cliente p5', 'p5-cl@teste.elolog.invalid'), (c2, 'Cliente 2 p5', 'p5-c2@teste.elolog.invalid');
   insert into encomendas (id, codigo, empresa_id, cliente_id, cliente_nif, origem, destino, tipo_carga, preco_total)
     values (en, 'TR-P5-0001', ea, cl, '123456789', 'Lisboa', 'São Tomé', 'Comercial', 150);
-  insert into documentos (id, empresa_id, categoria, nome, visibilidade, storage_path, enviado_por)
-    values (dc, ea, 'outro', 'fatura.pdf', 'interna', ea || '/faturas/fatura.pdf', aa);
+  insert into storage.objects (bucket_id, name, owner, metadata) values
+    ('documentos', ea || '/faturas/fatura.pdf', aa, '{"mimetype":"application/pdf","size":100}'),
+    ('documentos', cl || '/y.pdf', cl, '{"mimetype":"application/pdf","size":100}'),
+    ('documentos', c2 || '/x.pdf', c2, '{"mimetype":"application/pdf","size":100}');
+  insert into documentos (id, empresa_id, categoria, nome, visibilidade, storage_path, enviado_por, mime, tamanho_bytes, verificado)
+    values (dc, ea, 'outro', 'fatura.pdf', 'interna', ea || '/faturas/fatura.pdf', aa, 'application/pdf', 100, true);
 
   -- ---------- faturas
   perform pg_temp.t('F1 operador não regista faturas', oa, format('select registar_fatura(%L, %L, %L)', dc, qr, en), 'erro');
@@ -84,7 +88,8 @@ do $teste$ declare
   perform pg_temp.t('N3 empresa B não vê os navios da A', ab, 'select * from navios_seguidos', 'nada');
   perform pg_temp.t('N4 ninguém escreve posições à mão', aa, $q$insert into navios_posicoes (mmsi) values ('255806000')$q$, 'erro');
   perform pg_temp.t('D1 cliente não junta documentos à encomenda de outro', c2, format($q$insert into documentos (cliente_id, encomenda_id, categoria, nome, visibilidade, storage_path, enviado_por) values (auth.uid(), %L, 'outro', 'x.pdf', 'cliente', auth.uid() || '/x.pdf', auth.uid())$q$, en), 'erro');
-  perform pg_temp.t('D2 cliente junta documento à sua encomenda', cl, format($q$insert into documentos (cliente_id, encomenda_id, categoria, nome, visibilidade, storage_path, enviado_por) values (auth.uid(), %L, 'outro', 'y.pdf', 'cliente', auth.uid() || '/y.pdf', auth.uid())$q$, en), 'ok');
+  perform pg_temp.t('D2 cliente junta documento à sua encomenda', cl, format($q$insert into documentos (cliente_id, encomenda_id, categoria, nome, visibilidade, storage_path, enviado_por, mime, tamanho_bytes) values (auth.uid(), %L, 'outro', 'y.pdf', 'cliente', auth.uid() || '/y.pdf', auth.uid(), 'application/pdf', 100)$q$, en), 'ok');
+  perform set_config('request.jwt.claims', '{"role":"service_role"}', true); update documentos set verificado = true where nome = 'y.pdf';
   perform pg_temp.t('D3 a empresa vê o documento do cliente', aa, $q$select * from documentos where nome = 'y.pdf'$q$, 'linhas=1');
   perform pg_temp.t('T1 tarefas agendadas existem', null, $q$select count(*) from cron.job where jobname like 'elolog-%'$q$, '=4', 'postgres');
 

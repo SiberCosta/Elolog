@@ -5,7 +5,7 @@
 const S=()=>window.ELOLogServidor,ativo=()=>!!(S()&&S().ativo&&S().ativo());
 const gb=b=>(Number(b||0)/1073741824).toLocaleString("pt-PT",{maximumFractionDigits:b<1073741824?2:1})+" GB";
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
-const barra=p=>`<span class="espaco-barra" aria-hidden="true"><i style="width:${Math.min(100,p)}%;background:${p>=100?"#b42318":p>=80?"#b54708":"#236186"}"></i></span>`;
+const barra=p=>`<span class="espaco-barra" aria-hidden="true"><i style="width:${Math.min(100,p)}%;background:${p>=100?"#b42318":p>=80?"#b54708":"#1F5F8B"}"></i></span>`;
 async function rpc(nome,args){const sb=await S().cliente(),{data,error}=await sb.rpc(nome,args||{});if(error)throw error;return data}
 let ultimo=null;
 async function atualizar(){if(!ativo())return;try{ultimo=await rpc("espaco_ficheiros")}catch(_){return}pintarPrestador()}

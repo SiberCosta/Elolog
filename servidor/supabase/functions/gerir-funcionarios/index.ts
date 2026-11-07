@@ -3,6 +3,7 @@
 // (o token é validado no código com auth.getUser; --no-verify-jwt evita depender do formato de chaves do gateway)
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { tratar, type DepsEquipa, type FuncionarioBD } from './handler.ts';
+import { nivelSessao, seguro } from '../_shared/seguranca.ts';
 
 const URL_PROJETO = Deno.env.get('SUPABASE_URL') ?? '';
 const CHAVE_SERVICO = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
@@ -20,8 +21,9 @@ function dependencias(): DepsEquipa {
   return {
     async autenticar(jwt) {
       const { data, error } = await admin.auth.getUser(jwt);
-      try { aal = JSON.parse(atob(jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).aal ?? ''; } catch { aal = ''; }
-      return error || !data.user ? null : data.user.id;
+      if (error || !data.user) return null;
+      aal = await nivelSessao(admin, jwt);   // aal2 = telemóvel ou código de reserva (00152)
+      return data.user.id;
     },
     async limite(chave, max, janelaMin) {
       const { data, error } = await admin.rpc('servico_limite', { p_chave: chave, p_max: max, p_janela_min: janelaMin });
@@ -105,4 +107,4 @@ function dependencias(): DepsEquipa {
   };
 }
 
-Deno.serve((req: Request) => tratar(req, dependencias()));
+Deno.serve(seguro('gerir-funcionarios', (req: Request) => tratar(req, dependencias()), { admin }));

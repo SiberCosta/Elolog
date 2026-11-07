@@ -3,6 +3,7 @@
 //   supabase functions deploy registar-prestador --no-verify-jwt
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { tratar, type DepsRegisto } from './handler.ts';
+import { seguro } from '../_shared/seguranca.ts';
 
 const URL_PROJETO = Deno.env.get('SUPABASE_URL') ?? '';
 const CHAVE_ANON = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
@@ -62,4 +63,4 @@ function dependencias(): DepsRegisto {
   };
 }
 
-Deno.serve((req: Request) => tratar(req, dependencias()));
+Deno.serve(seguro('registar-prestador', (req: Request) => tratar(req, dependencias()), { admin: null, segredos: ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_ANON_KEY'] }));

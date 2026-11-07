@@ -9,4 +9,4 @@ Ficheiros usados pelo site público e pela Área de Cliente.
 | `imagens/` | Logótipos (`elolog-logo-full.png` com lema, `elolog-logo-nav.png` sem lema, `logo-elolog-icone.png` símbolo), fotografias do site (`.webp`) e ícones da aplicação (`icon-192.png`, `icon-512.png`, `icon-maskable-512.png`) |
 | `fontes/` | Work Sans (normal e negrito) e a licença `WorkSans-OFL.txt` |
 
-**Cores da marca:** azul `#236186` (ações principais) e verde `#237E5F` (confirmações e rótulos).
+**Cores da marca:** azul `#1F5F8B` (ações principais) e verde `#237E5F` (confirmações e rótulos).

@@ -10,7 +10,7 @@
   const semPrefixo=s=>String(s||"").replace(/^((re|res|fw|fwd|enc)\s*:\s*)+/i,"");
 
   function iframe(m){const f=document.createElement("iframe");f.className="em-html";f.title="Conteúdo da mensagem";f.setAttribute("sandbox","allow-same-origin allow-popups allow-popups-to-escape-sandbox");f.setAttribute("referrerpolicy","no-referrer");
-    f.srcdoc=`<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src data:; img-src data: cid:${imagens?" https: http:":""}"><base target="_blank"><style>body{font:15px/1.5 system-ui,sans-serif;color:#0E2433;margin:4px;overflow-wrap:anywhere}img{max-width:100%;height:auto}table{max-width:100%}</style>${m.html}`;
+    f.srcdoc=`<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src data:; img-src data: cid:${imagens?" https: http:":""}"><base target="_blank"><style>body{font:15px/1.5 system-ui,sans-serif;color:#13293D;margin:4px;overflow-wrap:anywhere}img{max-width:100%;height:auto}table{max-width:100%}</style>${m.html}`;
     f.onload=()=>{try{f.style.height=Math.min(4000,f.contentDocument.documentElement.scrollHeight+20)+"px"}catch(_){f.style.height="60vh"}};return f}
 
   function ler(d){const m=E().aberta;if(!m)return;const c=E().caixas.find(x=>x.id===(m.caixa||E().caixa)),r=!!m.restrito,lixo=(m.pasta||E().pasta)==="lixo";

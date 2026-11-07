@@ -11,7 +11,7 @@
   "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "any",
   "background_color": "#f4f6f8",
-  "theme_color": "#236186",
+  "theme_color": "#1F5F8B",
   "categories": ["business", "productivity", "navigation"],
   "icons": [
     {"src":"../partilhado/imagens/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},

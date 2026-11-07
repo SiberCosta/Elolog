@@ -4,6 +4,7 @@
 // Deploy: supabase functions deploy entrar-funcionario --no-verify-jwt
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { erro, lerJson, preflight, resposta } from '../_shared/http.ts';
+import { seguro } from '../_shared/seguranca.ts';
 
 const env = (k: string) => Deno.env.get(k) ?? '';
 const opc = { auth: { persistSession: false, autoRefreshToken: false } };
@@ -17,10 +18,10 @@ async function hash(v: string): Promise<string> {
 }
 async function limite(chave: string, max: number, min: number): Promise<boolean> {
   const { data } = await admin.rpc('servico_limite', { p_chave: chave, p_max: max, p_janela_min: min });
-  return data !== false;
+  return data === true;
 }
 
-Deno.serve(async (req: Request) => {
+Deno.serve(seguro('entrar-funcionario', async (req: Request) => {
   if (req.method === 'OPTIONS') return preflight();
   if (req.method !== 'POST') return erro(405, 'metodo', 'Método não permitido.');
   const lido = await lerJson(req, 2_000);
@@ -50,4 +51,4 @@ Deno.serve(async (req: Request) => {
     console.error('entrar-funcionario:', x instanceof Error ? x.message.slice(0, 200) : '');
     return erro(500, 'interno', 'Erro interno. Tente novamente.');
   }
-});
+}, { admin, segredos: ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_ANON_KEY'] }));

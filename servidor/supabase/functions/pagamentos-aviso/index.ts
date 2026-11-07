@@ -5,10 +5,11 @@
 // A chave é comparada no servidor com a guardada pela empresa; o valor tem de ser igual ao do pedido; repetir o aviso não paga duas vezes.
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { avisar, texto } from './aviso.ts';
+import { seguro } from '../_shared/seguranca.ts';
 
 const admin = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
   { auth: { persistSession: false, autoRefreshToken: false } });
-Deno.serve(async (req: Request) => {
+Deno.serve(seguro('pagamentos-aviso', async (req: Request) => {
   if (req.method !== 'GET' && req.method !== 'POST') return texto(405, 'metodo');
   try {
     return await avisar(new URL(req.url), async (o, k, v) => {
@@ -20,4 +21,4 @@ Deno.serve(async (req: Request) => {
     console.error('pagamentos-aviso: erro', e instanceof Error ? e.message : e);
     return texto(500, 'erro');
   }
-});
+}, { admin }));

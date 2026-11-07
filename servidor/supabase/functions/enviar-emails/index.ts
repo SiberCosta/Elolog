@@ -10,6 +10,7 @@ import { tratar, type DepsEmails } from './handler.ts';
 import { criarBrevo } from './brevo.ts';
 import type { ItemEmail } from '../_shared/emails.ts';
 import { segredoCron } from '../_shared/cofre.ts';
+import { seguro } from '../_shared/seguranca.ts';
 
 const URL_PROJETO = Deno.env.get('SUPABASE_URL') ?? '';
 const CHAVE_SERVICO = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
@@ -50,4 +51,4 @@ async function dependencias(): Promise<DepsEmails> {
   };
 }
 
-Deno.serve(async (req: Request) => tratar(req, await dependencias()));
+Deno.serve(seguro('enviar-emails', async (req: Request) => tratar(req, await dependencias()), { admin }));

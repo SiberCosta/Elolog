@@ -17,7 +17,7 @@
       ["Manifestos de carga","showProviderPage('providerManifestos',this)","providerManifestos","view_manifests"],["Calendário marítimo","showProviderPage('providerMaritimeCalendar',this)","providerMaritimeCalendar","view_loads"],
       ["Mapa marítimo","showProviderPage('providerMapa',this)","providerMapa","view_loads"],["Em trânsito","showProviderPage('providerTransito',this)","providerTransito","view_loads"],
       ["No destino","showProviderPage('providerDestino',this)","providerDestino","view_loads"],["Disponível","showProviderPage('providerDisponivel',this)","providerDisponivel","view_loads"],
-      ["Saídas e levantamentos","showProviderPage('providerLevantamento',this)","providerLevantamento","view_loads"],["Navios em tempo real","elologNavios.abrir(this)","","view_loads"]]],
+      ["Saídas e levantamentos","showProviderPage('providerLevantamento',this)","providerLevantamento","view_loads"],["Navios em tempo real","elologNavios.abrir(this)","","view_loads"],["Pesquisa marítima","elologMaritimo.abrir(this)","","view_loads"]]],
     ["eq","Equipa e transportes","truck",[["Agenda de serviços","showProviderFieldPage('planning',this)","providerFieldTeam","field_work"],["Painel do terreno","showProviderFieldPage('dashboard',this)","providerFieldTeam","field_work"],
       ["Motoristas e operadores","showProviderFieldPage('operators',this)","providerFieldTeam","field_work"],["Viaturas","showProviderFieldPage('vehicles',this)","providerFieldTeam","field_work"],
       ["Recolhas","showProviderFieldPage('pickups',this)","providerFieldTeam","field_work"],["Entregas","showProviderFieldPage('deliveries',this)","providerFieldTeam","field_work"]]],

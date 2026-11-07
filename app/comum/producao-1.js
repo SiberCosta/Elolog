@@ -29,16 +29,28 @@
   async function minhaEmpresa(){const c=await sb(),u=await utilizador();if(!u)return null;const{data}=await c.from("funcionarios").select("empresa_id,papel").eq("id",u.id).maybeSingle();return data}
   async function encomendaPorCodigo(codigo){if(!codigo)return null;const c=await sb();const{data}=await c.from("encomendas").select("id,codigo,cliente_id,cliente_nif,preco_total,empresa_id").eq("codigo",codigo).maybeSingle();return data}
   const nomeSeguro=n=>String(n||"documento").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\w.-]+/g,"_").slice(-80);
-  /** Envia o ficheiro para o armazenamento privado e regista-o em «documentos». Devolve a linha criada. */
+  // Regra de segurança: ficheiro não permitido = rejeitar (tem de coincidir com private.tipos_ficheiro(), migração 00151).
+  const TIPOS={pdf:"application/pdf",jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",webp:"image/webp",doc:"application/msword",xls:"application/vnd.ms-excel",
+    docx:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"};
+  const ASSIN={pdf:[[0x25,0x50,0x44,0x46,0x2d]],jpg:[[0xff,0xd8,0xff]],png:[[0x89,0x50,0x4e,0x47]],webp:[[0x52,0x49,0x46,0x46],[0x57,0x45,0x42,0x50],8],doc:[[0xd0,0xcf,0x11,0xe0]],docx:[[0x50,0x4b,0x03,0x04]]};
+  ASSIN.jpeg=ASSIN.jpg;ASSIN.xls=ASSIN.doc;ASSIN.xlsx=ASSIN.docx;
+  async function verificarFicheiro(file){const ext=(String(file.name).match(/\.([A-Za-z0-9]{1,5})$/)||[])[1]?.toLowerCase()||"";
+    if(!TIPOS[ext])throw new Error("Ficheiro não permitido. Use PDF, JPG, PNG, WEBP, DOC, DOCX, XLS ou XLSX.");
+    if(file.size<1||file.size>20*1024*1024)throw new Error("O ficheiro tem de ter entre 1 byte e 20 MB.");
+    const b=new Uint8Array(await file.slice(0,16).arrayBuffer()),[s1,s2,pos]=ASSIN[ext],igual=(s,d)=>s.every((x,i)=>b[d+i]===x);
+    if(!igual(s1,0)||(s2&&!igual(s2,pos)))throw new Error("Ficheiro recusado: o conteúdo não corresponde à extensão ."+ext+".");return TIPOS[ext]}
+  /** Envia o ficheiro para o armazenamento privado e regista-o em «documentos». Só fica visível depois de verificado no servidor. */
   async function enviarDocumento(file,{encomenda,categoria,visibilidade}={}){
-    if(!file)throw new Error("Escolha um ficheiro.");if(file.size>20*1024*1024)throw new Error("O ficheiro passa de 20 MB.");
+    if(!file)throw new Error("Escolha um ficheiro.");const mime=await verificarFicheiro(file);
     const c=await sb(),u=await utilizador();if(!u)throw new Error("Inicie sessão novamente.");const emp=await minhaEmpresa();const en=await encomendaPorCodigo(encomenda);
     if(encomenda&&!en)throw new Error("Não encontrámos a encomenda "+encomenda+".");
     const dono=emp?.empresa_id||u.id,caminho=`${dono}/${en?en.codigo+"/":""}${Date.now()}-${nomeSeguro(file.name)}`;
-    const up=await c.storage.from("documentos").upload(caminho,file,{contentType:file.type||"application/octet-stream",upsert:false});if(up.error)throw new Error(/row-level security|policy|403|Unauthorized/i.test(up.error.message||"")?"O espaço de ficheiros do plano está esgotado. Peça à equipa Elolog para mudar de plano.":"O ficheiro não foi aceite: "+(up.error.message||"formato ou tamanho"));window.elologEspaco?.atualizar?.();
-    const linha={categoria:categoria||"outro",nome:file.name.slice(0,200),visibilidade:visibilidade||(emp?"interna":"cliente"),storage_path:caminho,mime:file.type||null,tamanho_bytes:file.size,enviado_por:u.id,encomenda_id:en?.id||null};
+    const up=await c.storage.from("documentos").upload(caminho,file,{contentType:mime,upsert:false});if(up.error)throw new Error(/row-level security|policy|403|Unauthorized/i.test(up.error.message||"")?"O espaço de ficheiros do plano está esgotado. Peça à equipa Elolog para mudar de plano.":"O ficheiro não foi aceite: "+(up.error.message||"formato ou tamanho"));window.elologEspaco?.atualizar?.();
+    const linha={categoria:categoria||"outro",nome:file.name.slice(0,200),visibilidade:visibilidade||(emp?"interna":"cliente"),storage_path:caminho,mime,tamanho_bytes:file.size,enviado_por:u.id,encomenda_id:en?.id||null};
     if(emp)linha.empresa_id=emp.empresa_id;else linha.cliente_id=u.id;
-    const{data,error}=await c.from("documentos").insert(linha).select().single();if(error)throw new Error("O documento não ficou registado: "+error.message);return data}
+    const{data,error}=await c.from("documentos").insert(linha).select().single();if(error)throw new Error(/FICHEIRO_RECUSADO|LIMITE_EXCEDIDO/.test(error.message)?error.message.replace(/^[A-Z_]+:\s*/,""):"O documento não ficou registado: "+error.message);
+    try{await window.ELOLogServidor.chamarFuncao("verificar-ficheiro",{documento_id:data.id})}catch(e){throw new Error(/recusado/i.test(e?.message||"")?e.message:"O ficheiro não pôde ser verificado e ficou bloqueado. Tente novamente mais tarde.")}
+    data.verificado=true;return data}
   async function abrirDocumento(caminho,nome){const c=await sb();const{data,error}=await c.storage.from("documentos").createSignedUrl(caminho,120,{download:nome||true});
     if(error)throw new Error("Não foi possível abrir o documento.");const a=document.createElement("a");a.href=data.signedUrl;a.rel="noopener";document.body.appendChild(a);a.click();a.remove()}
   window.elologProducao={online,janela,esc,aviso,euros,sb,utilizador,minhaEmpresa,encomendaPorCodigo,enviarDocumento,abrirDocumento};

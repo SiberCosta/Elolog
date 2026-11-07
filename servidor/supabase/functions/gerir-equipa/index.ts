@@ -4,6 +4,7 @@
 // Deploy: supabase functions deploy gerir-equipa --no-verify-jwt (o token é validado no código).
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { erro, lerJson, preflight, resposta } from '../_shared/http.ts';
+import { nivelSessao, seguro } from '../_shared/seguranca.ts';
 
 const texto = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
 const normalizarEmail = (v: unknown) => texto(v).toLowerCase();
@@ -19,25 +20,21 @@ const admin = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUP
   { auth: { persistSession: false, autoRefreshToken: false } });
 const PAPEIS = ['admin', 'operador', 'apoio'];
 
-/** Nível de autenticação (aal1/aal2) lido do token já validado por auth.getUser. */
-function nivel(jwt: string): string {
-  try { return JSON.parse(atob(jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).aal ?? ''; } catch { return ''; }
-}
 const negocio = (e: { code?: string; message: string }) =>
   e.code === 'P0001' ? erro(400, 'regra', e.message) : (console.error('gerir-equipa: bd', e.code), erro(500, 'interno', 'Erro interno. Tente novamente.'));
 
-Deno.serve(async (req: Request) => {
+Deno.serve(seguro('gerir-equipa', async (req: Request) => {
   if (req.method === 'OPTIONS') return preflight();
   if (req.method !== 'POST') return erro(405, 'metodo', 'Método não permitido.');
   const jwt = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
   const { data: u, error: eu } = jwt ? await admin.auth.getUser(jwt) : { data: null, error: true };
   if (eu || !u?.user) return erro(401, 'sessao', 'Sessão inválida. Entre de novo.');
-  if (nivel(jwt) !== 'aal2') return erro(403, 'mfa', 'Confirme o segundo fator de autenticação antes de gerir a equipa.');
+  if ((await nivelSessao(admin, jwt)) !== 'aal2') return erro(403, 'mfa', 'Confirme o segundo fator de autenticação antes de gerir a equipa.');
   const autor = u.user.id;
   const { data: pode } = await admin.rpc('servico_equipa_pode_gerir', { p_user: autor });
   if (pode !== true) return erro(403, 'permissao', 'Só um administrador da plataforma pode gerir a equipa.');
   const { data: dentro } = await admin.rpc('servico_limite', { p_chave: 'equipa:' + autor, p_max: 30, p_janela_min: 10 });
-  if (dentro === false) return erro(429, 'limite', 'Demasiados pedidos. Aguarde alguns minutos.');
+  if (dentro !== true) return erro(429, 'limite', 'Demasiados pedidos. Aguarde alguns minutos.');
 
   const lido = await lerJson(req);
   if (!lido.ok) return lido.resp;
@@ -85,4 +82,4 @@ Deno.serve(async (req: Request) => {
     return resposta(200, { ok: true });
   }
   return erro(400, 'acao', 'Ação desconhecida.');
-});
+}, { admin }));

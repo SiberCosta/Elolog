@@ -1,6 +1,6 @@
 /* Elolog — painel da administração: centro de comando da logística transitária (js/administracao/painel.js)
    Tudo fica sob .painel-admin, para não afetar o resto da aplicação. */
-.painel-admin{--pa-ink:#173447;--pa-muted:#5d6f7b;--pa-line:#dce4e9;--pa-teal:#236186;--pa-teal2:#237e5f;--pa-navy:#0f2a3a;--pa-bg:#f4f7f9;--pa-amber:#a86a00;--pa-amber-bg:#fff6e0;--pa-red:#b3261e;--pa-red-bg:#fdecea;--pa-blue:#1b5e8c;--pa-blue-bg:#e8f3fa;
+.painel-admin{--pa-ink:#173447;--pa-muted:#5d6f7b;--pa-line:#dce4e9;--pa-teal:#1F5F8B;--pa-teal2:#1F7A5C;--pa-navy:#0f2a3a;--pa-bg:#f4f7f9;--pa-amber:#a86a00;--pa-amber-bg:#fff6e0;--pa-red:#b3261e;--pa-red-bg:#fdecea;--pa-blue:#1b5e8c;--pa-blue-bg:#e8f3fa;
 --pa-green:#17784f;--pa-green-bg:#e6f6ee;display:flex;flex-direction:column;gap:18px;color:var(--pa-ink);font-size:14px}.painel-admin h3{margin:2px 0 4px;font-size:clamp(20px,2.2vw,26px);line-height:1.2}.painel-admin h4{margin:0;font-size:15px}
 .painel-admin p{margin:0}.pa-cabecalho{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}.pa-cabecalho p{color:var(--pa-muted);font-size:13px}.pa-acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .pa-periodo,.pa-botao,.pa-botao-pequeno{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--pa-line);background:#fff;color:var(--pa-ink);border-radius:10px;padding:8px 13px;cursor:pointer;transition:background .15s,border-color .15s}

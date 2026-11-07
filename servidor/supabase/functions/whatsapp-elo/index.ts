@@ -6,6 +6,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { interpretar, textoEstado, type Conversa, type Encomenda } from './elo.ts';
 import { assinaturaValida, enviarTexto, mensagens } from './meta.ts';
+import { entradaAssistente, limitar, registarBloqueio, saidaAssistente, seguro } from '../_shared/seguranca.ts';
 
 const env = (k: string) => Deno.env.get(k) ?? '';
 const admin = createClient(env('SUPABASE_URL'), env('SUPABASE_SERVICE_ROLE_KEY'), { auth: { persistSession: false, autoRefreshToken: false } });
@@ -18,8 +19,10 @@ async function hash(v: string) {
 }
 
 async function tratar(de: string, nome: string, texto: string) {
-  const { data: dentro } = await admin.rpc('servico_limite', { p_chave: 'wa:' + (await hash(de)), p_max: 30, p_janela_min: 10 });
-  if (dentro === false) return;
+  if (!(await limitar(admin, 'wa:' + (await hash(de)), 30, 10))) return;   // limite ou serviço indisponível: não responde
+  const entrada = entradaAssistente(texto);
+  if (!entrada.ok) { await registarBloqueio(admin, 'whatsapp-elo', 'mensagem recusada: ' + entrada.motivo); await enviarTexto(cfg, de, 'A mensagem é demasiado longa. Escreva em poucas palavras ou *3* para falar com a equipa.'); return; }
+  texto = entrada.texto;
   const { data: conv } = await admin.from('whatsapp_conversas').select('passo,humano_desde,dados,mensagens').eq('telefone', de).maybeSingle();
   const c: Conversa & { mensagens?: number } = conv ?? {};
   const acao = interpretar(texto, c);
@@ -39,10 +42,11 @@ async function tratar(de: string, nome: string, texto: string) {
   }
   await admin.from('whatsapp_conversas').upsert({ telefone: de, nome: nome || null, passo, dados, humano_desde: humano,
     mensagens: (c.mensagens ?? 0) + 1, updated_at: new Date().toISOString() });
-  if (resposta) await enviarTexto(cfg, de, resposta);
+  // A resposta automática só sai depois de verificada (sem ligações externas nem conteúdo estranho).
+  if (resposta) await enviarTexto(cfg, de, saidaAssistente(resposta, 'Escreva *MENU* para ver as opções ou *3* para falar com a equipa.'));
 }
 
-Deno.serve(async (req: Request) => {
+Deno.serve(seguro('whatsapp-elo', async (req: Request) => {
   const url = new URL(req.url);
   if (req.method === 'GET') {   // verificação do Webhook pela Meta
     const verifica = env('WHATSAPP_VERIFY_TOKEN');
@@ -61,4 +65,4 @@ Deno.serve(async (req: Request) => {
     try { await tratar(m.de, m.nome, m.texto); } catch (e) { console.error('whatsapp-elo: erro', e instanceof Error ? e.message : e); }
   }
   return ok();   // responder sempre 200 para a Meta não repetir o aviso
-});
+}, { metodos: ['GET', 'POST'], maxBytes: 200_000, admin }));

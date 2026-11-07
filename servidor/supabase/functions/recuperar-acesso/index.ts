@@ -8,6 +8,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { erro, lerJson, preflight, resposta } from '../_shared/http.ts';
 import { type Email, emailAlterada, emailEmpresa, emailRecuperacao } from './modelo.ts';
+import { seguro } from '../_shared/seguranca.ts';
 
 const env = (k: string) => Deno.env.get(k) ?? '';
 const admin = createClient(env('SUPABASE_URL'), env('SUPABASE_SERVICE_ROLE_KEY'), { auth: { persistSession: false, autoRefreshToken: false } });
@@ -28,7 +29,7 @@ async function codigoEmpresa(id: string, impressao: string, janela: number): Pro
 }
 async function limite(chave: string, max: number, min: number): Promise<boolean> {
   const { data } = await admin.rpc('servico_limite', { p_chave: chave, p_max: max, p_janela_min: min });
-  return data !== false;
+  return data === true;
 }
 async function enviar(para: string, e: Email, etiqueta: string): Promise<boolean> {
   if (!env('BREVO_API_KEY') || !env('EMAIL_REMETENTE')) { console.error('recuperar-acesso: Brevo não configurado'); return false; }
@@ -41,7 +42,7 @@ async function enviar(para: string, e: Email, etiqueta: string): Promise<boolean
 }
 const senhaFraca = (s: string) => s.length < 8 || s.length > 72 || !/[a-zA-Z]/.test(s) || !/\d/.test(s);
 
-Deno.serve(async (req: Request) => {
+Deno.serve(seguro('recuperar-acesso', async (req: Request) => {
   if (req.method === 'OPTIONS') return preflight();
   if (req.method !== 'POST') return erro(405, 'metodo', 'Método não permitido.');
   const lido = await lerJson(req, 5_000);
@@ -100,4 +101,4 @@ Deno.serve(async (req: Request) => {
     console.error('recuperar-acesso:', e instanceof Error ? e.message.slice(0, 200) : '');
     return erro(500, 'interno', 'Erro interno. Tente novamente.');
   }
-});
+}, { admin }));

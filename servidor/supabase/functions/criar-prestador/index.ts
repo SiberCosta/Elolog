@@ -6,6 +6,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { erro, lerJson, preflight, resposta } from '../_shared/http.ts';
 import { type Email, emailPrimeiroAcesso } from '../recuperar-acesso/modelo.ts';
+import { nivelSessao, seguro } from '../_shared/seguranca.ts';
 
 const env = (k: string) => Deno.env.get(k) ?? '';
 const admin = createClient(env('SUPABASE_URL'), env('SUPABASE_SERVICE_ROLE_KEY'), { auth: { persistSession: false, autoRefreshToken: false } });
@@ -22,7 +23,6 @@ function codigo(): string {
   return `ELO-${c.slice(0, 4).join('')}-${c.slice(4).join('')}`;
 }
 const quando = (d: Date) => d.toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon', dateStyle: 'short', timeStyle: 'short' });
-function nivel(jwt: string): string { try { return JSON.parse(atob(jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).aal ?? ''; } catch { return ''; } }
 const fraca = (s: unknown, min: number) => typeof s !== 'string' || s.length < min || s.length > 72 || !/[a-zA-Z]/.test(s) || !/\d/.test(s);
 async function enviar(para: string, e: Email): Promise<boolean> {
   if (!env('BREVO_API_KEY') || !env('EMAIL_REMETENTE')) return false;
@@ -35,7 +35,7 @@ async function enviar(para: string, e: Email): Promise<boolean> {
 }
 const regra = (e: { code?: string; message?: string } | null) => e?.code === 'P0001' ? erro(400, 'regra', e.message ?? 'Pedido recusado.') : erro(500, 'interno', 'Erro interno. Tente novamente.');
 
-Deno.serve(async (req: Request) => {
+Deno.serve(seguro('criar-prestador', async (req: Request) => {
   if (req.method === 'OPTIONS') return preflight();
   if (req.method !== 'POST') return erro(405, 'metodo', 'Método não permitido.');
   const jwt = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
@@ -60,11 +60,11 @@ Deno.serve(async (req: Request) => {
       return resposta(200, { ok: true });
     }
     if (acao !== 'criar' && acao !== 'reenviar') return erro(400, 'acao', 'Ação desconhecida.');
-    if (nivel(jwt) !== 'aal2') return erro(403, 'mfa', 'Confirme o segundo fator de autenticação antes de criar prestadores.');
+    if ((await nivelSessao(admin, jwt)) !== 'aal2') return erro(403, 'mfa', 'Confirme o segundo fator de autenticação antes de criar prestadores.');
     const { data: pode } = await admin.rpc('servico_equipa_pode_gerir', { p_user: eu });
     if (pode !== true) return erro(403, 'permissao', 'Só um administrador da plataforma pode criar prestadores.');
     const { data: dentro } = await admin.rpc('servico_limite', { p_chave: 'criar-prestador:' + eu, p_max: 30, p_janela_min: 60 });
-    if (dentro === false) return erro(429, 'limite', 'Demasiados pedidos. Aguarde alguns minutos.');
+    if (dentro !== true) return erro(429, 'limite', 'Demasiados pedidos. Aguarde alguns minutos.');
     const cod = codigo(), expira = new Date(Date.now() + HORAS * 3600e3);
 
     if (acao === 'reenviar') {
@@ -98,4 +98,4 @@ Deno.serve(async (req: Request) => {
     console.error('criar-prestador:', x instanceof Error ? x.message.slice(0, 200) : '');
     return erro(500, 'interno', 'Erro interno. Tente novamente.');
   }
-});
+}, { admin }));
