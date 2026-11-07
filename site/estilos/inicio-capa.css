@@ -59,3 +59,10 @@ html.dn-capa .hero .hero-title{font-size:clamp(2.5rem,12.5vw,4rem)!important;mar
 .servicos-mais{display:flex;align-items:center;gap:8px;margin:28px auto 0;min-height:44px;padding:0 22px;border:1px solid var(--e-azul,#1F5F8B);border-radius:999px;background:transparent;color:var(--e-azul,#1F5F8B);font:700 14px/1 "Work Sans",Arial,sans-serif;cursor:pointer;transition:background-color .2s,color .2s}
 .servicos-mais::after{content:"⌄";transition:transform .2s}.servicos-mais[aria-expanded=true]::after{transform:rotate(180deg)}@media(hover:hover){.servicos-mais:hover{background:var(--e-azul,#1F5F8B);color:#fff}}
 #servicos .services-grid>[hidden]{display:none!important}
+/* v105 — capa mais humana: sem letra de máquina de escrever nem maiúsculas forçadas; o título fica em frase normal e um pouco mais contido */
+html.dn-capa{--cp-mono:"Work Sans",Arial,sans-serif}
+html.dn-capa body :is(.navbar a,.nav-dropdown-toggle,.btn-client,.elo-idioma-botao,.hero-subtitle,.sim-rapida label,.sim-rapida-nota,.sim-rapida .hero-btn){text-transform:none!important;letter-spacing:0!important}
+html.dn-capa body .navbar :is(a,.nav-dropdown-toggle){font-size:.9rem!important;font-weight:500!important}
+html.dn-capa body .hero .hero-title{text-transform:none!important;font-size:clamp(2.6rem,6vw,5.6rem)!important;line-height:1!important;max-width:16ch}
+html.dn-capa body .hero .hero-subtitle{font-size:1.06rem!important;line-height:1.6!important;max-width:58ch}
+html.dn-capa body .sim-rapida label{font-size:.8rem!important;font-weight:600!important}

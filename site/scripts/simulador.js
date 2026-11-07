@@ -69,7 +69,7 @@ mostrarErroSimulacao("Preencha a descrição, quantidade, peso e dimensões de t
 ...detalhesCarga};mostrarResumoSimulacao();renderizarPrestadores(volumeTotalM3,rota);atualizarProgressoSimulacao()}function mostrarResumoSimulacao(){const resumo=document.getElementById("simulation-summary");resumo.hidden=false;
 resumo.setAttribute("aria-hidden","false");document.getElementById("sim-registro").textContent=simulacaoAtual.numero;document.getElementById("sim-datahora").textContent=formatarDataHora(simulacaoAtual.dataHora);
 document.getElementById("sim-volume").textContent=`${simulacaoAtual.volumeTotalM3.toFixed(3)} m³`;document.getElementById("sim-valor").textContent="A aguardar proposta";
-document.getElementById("simulation-message").textContent=`Simulação efetuada em ${formatarDataHora(simulacaoAtual.dataHora)} · Registo ${simulacaoAtual.numero}`}function calcularPropostaPrestador(prestador,volumeTotalM3,rota){
+document.getElementById("simulation-message").textContent=`Simulação efetuada em ${formatarDataHora(simulacaoAtual.dataHora)}, Registo ${simulacaoAtual.numero}`}function calcularPropostaPrestador(prestador,volumeTotalM3,rota){
 const detalhes=simulacaoAtual||obterDetalhesCarga();const metodo=detalhes.metodoCobranca||"volume";const{totalPacotes}=obterDadosCarga();const configurada=obterTarifaFinanceiraAtiva(prestador,rota,detalhes);
 const tarifa=Number(configurada?.value??prestador.tarifa);const metodoConfigurado=normalizarTexto(configurada?.method||"");let base=0;if(metodoConfigurado.includes("fixo")){base=tarifa}
 else if(metodoConfigurado.includes("peso")&&!metodoConfigurado.includes("medida")){const pesoReal=Number(detalhes.pesoTotalKg||0);const pesoVolumetrico=volumeTotalM3*Number(configurada?.rules?.volumetricFactor||167);base=Math.max(pesoReal,
@@ -100,11 +100,11 @@ return`<article class="provider-card" data-provider="${p.id}" data-total="${valo
 numeroSimulacao:simulacaoAtual.numero};window.prestadorSelecionado={...prestadorSelecionado,total:Number(valor)};document.querySelectorAll(".provider-card").forEach(card=>card.classList.toggle("selected",card.dataset.provider===id));
 const valorFormatado=Number(valor).toFixed(2).replace(".",",");const resumoValor=document.getElementById("sim-valor");if(resumoValor)resumoValor.textContent=`${valorFormatado} €`;const aviso=document.getElementById("prestador-escolhido");aviso.hidden=false;
 aviso.innerHTML=`<strong>${prestador.displayName||prestador.nome}</strong> selecionado para a simulação <strong>${simulacaoAtual.numero}</strong>. <span class="selected-total">Preço total: <strong>${valorFormatado} €</strong></span>`;
-const btnProposta=document.getElementById("btn-criar-proposta");const estadoProposta=document.getElementById("proposta-action-status");if(btnProposta){btnProposta.disabled=false;btnProposta.textContent="Criar proposta ao prestador escolhido →"}
-if(estadoProposta)estadoProposta.textContent=`${prestador.displayName||prestador.nome} selecionado · ${valorFormatado} €`}function invalidarSimulacao(){simulacaoAtual=null;prestadorSelecionado=null;window.prestadorSelecionado=null;
+const btnProposta=document.getElementById("btn-criar-proposta");const estadoProposta=document.getElementById("proposta-action-status");if(btnProposta){btnProposta.disabled=false;btnProposta.textContent="Criar proposta ao prestador escolhido"}
+if(estadoProposta)estadoProposta.textContent=`${prestador.displayName||prestador.nome} selecionado, ${valorFormatado} €`}function invalidarSimulacao(){simulacaoAtual=null;prestadorSelecionado=null;window.prestadorSelecionado=null;
 const resumo=document.getElementById("simulation-summary");const section=document.getElementById("prestadores-section");if(resumo){resumo.hidden=true;resumo.setAttribute("aria-hidden","true")}if(section){section.classList.remove("visible");section.hidden=true;
 section.setAttribute("aria-hidden","true")}const grid=document.getElementById("prestadores-grid");const aviso=document.getElementById("prestador-escolhido");if(grid)grid.innerHTML="";if(aviso)aviso.hidden=true;
-const btnProposta=document.getElementById("btn-criar-proposta");const estadoProposta=document.getElementById("proposta-action-status");if(btnProposta){btnProposta.disabled=true;btnProposta.textContent="Criar proposta ao prestador escolhido →"}
+const btnProposta=document.getElementById("btn-criar-proposta");const estadoProposta=document.getElementById("proposta-action-status");if(btnProposta){btnProposta.disabled=true;btnProposta.textContent="Criar proposta ao prestador escolhido"}
 if(estadoProposta)estadoProposta.textContent="Selecione um prestador para continuar."}function iniciarNavegacao(){const navToggle=document.getElementById("nav-toggle");const navMenu=document.getElementById("nav-menu");
 const servicesToggle=document.querySelector(".nav-dropdown-toggle");const servicesDropdown=document.querySelector(".nav-dropdown");if(!navToggle||!navMenu)return;navToggle.addEventListener("click",()=>{const aberto=navMenu.classList.toggle("open");
 navToggle.setAttribute("aria-expanded",String(aberto))});if(servicesToggle&&servicesDropdown){servicesToggle.addEventListener("click",event=>{if(window.innerWidth<=900){event.preventDefault();const aberto=servicesDropdown.classList.toggle("mobile-open");
@@ -130,7 +130,7 @@ i)=>`
         <div class="provider-avatar">🚚</div>
         <div>
           <strong>${p.nome}</strong>
-          <div class="provider-meta">Entrega estimada: ${p.prazo} · Avaliação ${p.nota}/5</div>
+          <div class="provider-meta">Entrega estimada: ${p.prazo}, Avaliação ${p.nota}/5</div>
           ${i===0?'<span class="badge-melhor-preco">Melhor preço</span>':""}
         </div>
       </div>
@@ -147,18 +147,18 @@ i)=>`
   `).join("");
 count.textContent=`${propostas.length} prestadores`;sec.hidden=false;const acao=document.getElementById("acao-criar-proposta");if(acao)acao.hidden=false;window.propostasPrestadoresAtuais=propostas}window.selecionarPrestadorParaProposta=function(id){
 const proposta=(window.propostasPrestadoresAtuais||[]).find(p=>p.id===id);if(!proposta)return;window.prestadorSelecionado=proposta;document.querySelectorAll(".proposta-prestador-card").forEach(card=>{card.classList.toggle("selecionada",card.dataset.id===id)});
-const status=document.getElementById("proposta-action-status");const btn=document.getElementById("btn-criar-proposta");if(btn)btn.disabled=false;if(status)status.textContent=`${proposta.nome} selecionado · ${proposta.total.toLocaleString("pt-PT",{
-style:"currency",currency:"EUR"})}`;const selected=document.getElementById("proposta-selecionada");if(selected){selected.hidden=false;selected.innerHTML=`<strong>Prestador escolhido:</strong> ${proposta.nome} · <strong>${proposta.total.toLocaleString("pt-PT",{
+const status=document.getElementById("proposta-action-status");const btn=document.getElementById("btn-criar-proposta");if(btn)btn.disabled=false;if(status)status.textContent=`${proposta.nome} selecionado, ${proposta.total.toLocaleString("pt-PT",{
+style:"currency",currency:"EUR"})}`;const selected=document.getElementById("proposta-selecionada");if(selected){selected.hidden=false;selected.innerHTML=`<strong>Prestador escolhido:</strong> ${proposta.nome}, <strong>${proposta.total.toLocaleString("pt-PT",{
 style:"currency",currency:"EUR"})}</strong>`}};function criarPropostaAoPrestador(){const prestador=window.prestadorSelecionado||prestadorSelecionado;if(!prestador){const status2=document.getElementById("proposta-action-status");
 if(status2)status2.textContent="Selecione um prestador antes de criar a proposta.";return}const simulacao=obterSimulacaoParaProposta();const proposta={id:`PROP-${Date.now()}`,simulacaoId:simulacao.numero||simulacao.id||`SIM-${Date.now()}`,
 prestadorId:prestador.id,prestador:prestador.nome,valorTotal:Number(prestador.total??prestador.valor??0),estado:"Enviada ao prestador",criadaEm:new Date().toISOString(),dadosSimulacao:simulacao};let propostasGuardadas=[];try{
 propostasGuardadas=JSON.parse(localStorage.getItem("elolog_propostas")||"[]")}catch(erro){propostasGuardadas=[]}propostasGuardadas.unshift(proposta);localStorage.setItem("elolog_propostas",JSON.stringify(propostasGuardadas));let simulacoesPrestador=[];try{
 simulacoesPrestador=JSON.parse(localStorage.getItem("elolog_client_simulations")||"[]")}catch(erro){simulacoesPrestador=[]}const registoPrestador={registro:proposta.simulacaoId,dataHora:proposta.criadaEm,volume:Number(simulacao.volumeTotalM3||0),
 total:proposta.valorTotal.toLocaleString("pt-PT",{style:"currency",currency:"EUR"}),origin:simulacao.origem||"",destination:simulacao.destino||"",cargo:simulacao.tipoCarga||simulacao.cargo||"",
-goods:(simulacao.volumes||[]).map(v=>`${v.carga} — ${v.quantidade}`).join("; "),date:simulacao.data||"",client:simulacao.remetente?.nome||"Cliente Elolog",provider:prestador.nome,providerId:prestador.id,proposalId:proposta.id,
+goods:(simulacao.volumes||[]).map(v=>`${v.carga}, ${v.quantidade}`).join("; "),date:simulacao.data||"",client:simulacao.remetente?.nome||"Cliente Elolog",provider:prestador.nome,providerId:prestador.id,proposalId:proposta.id,
 sentToProviderAt:proposta.criadaEm,status:"Proposta enviada"};simulacoesPrestador=simulacoesPrestador.filter(item=>item.registro!==registoPrestador.registro);simulacoesPrestador.unshift(registoPrestador);localStorage.setItem("elolog_client_simulations",
 JSON.stringify(simulacoesPrestador.slice(0,100)));const status=document.getElementById("proposta-action-status");if(status)status.textContent=`Proposta ${proposta.id} criada e enviada a ${prestador.nome}.`;
-const btn=document.getElementById("btn-criar-proposta");if(btn){btn.disabled=true;btn.textContent="✓ Proposta enviada ao prestador"}if(typeof simulacaoAtual!=="undefined"&&simulacaoAtual){simulacaoAtual.propostaId=proposta.id;
+const btn=document.getElementById("btn-criar-proposta");if(btn){btn.disabled=true;btn.textContent="Proposta enviada ao prestador"}if(typeof simulacaoAtual!=="undefined"&&simulacaoAtual){simulacaoAtual.propostaId=proposta.id;
 simulacaoAtual.propostaPrestador=prestador.nome;simulacaoAtual.estado="Proposta enviada"}}document.addEventListener("DOMContentLoaded",()=>{const btn=document.getElementById("btn-criar-proposta");if(btn)btn.addEventListener("click",criarPropostaAoPrestador)});
 document.addEventListener("DOMContentLoaded",()=>{const candidates=["btn-criar-simulacao","btn-realizar-simulacao"];candidates.forEach(id=>{const el=document.getElementById(id);if(el&&!el.dataset.propostasHook){el.dataset.propostasHook="1";
 el.addEventListener("click",()=>{setTimeout(()=>{const simulacao=obterSimulacaoParaProposta();apresentarPropostasPrestadores(simulacao)},50)})}})});

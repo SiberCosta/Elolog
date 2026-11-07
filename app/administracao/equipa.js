@@ -30,7 +30,7 @@
     if(box)box.outerHTML=html();else pag.insertAdjacentHTML("afterbegin",html());if(recarregar){await carregar();desenhar(false)}}
 
   const campo=(id,rotulo,tipo="text",extra="")=>`<label for="${id}">${rotulo}</label><input id="${id}" type="${tipo}" ${extra}>`;
-  const funcoes=sel=>Object.entries(FUNCOES).map(([k,[n,d]])=>`<option value="${k}"${k===sel?" selected":""}>${n} — ${d}</option>`).join("");
+  const funcoes=sel=>Object.entries(FUNCOES).map(([k,[n,d]])=>`<option value="${k}"${k===sel?" selected":""}>${n}, ${d}</option>`).join("");
   const senhaOk=s=>s.length>=10&&/[a-z]/.test(s)&&/[A-Z]/.test(s)&&/\d/.test(s);
   function novo(){const j=P().janela({eyebrow:"EQUIPA ELOLOG",titulo:"Novo funcionário",passos:["Dados","Acesso"]});j.passo(0);
     j.mostrar(`${campo("eqNome","Nome completo","text",'autocomplete="off" required')}${campo("eqEmail","Email de trabalho","email",'autocomplete="off" required')}
@@ -43,7 +43,7 @@
         catch(e){j.passo(0);P().aviso(e.message,"error")}}}]);setTimeout(()=>document.getElementById("eqNome")?.focus(),40)}
   function papel(f){const j=P().janela({eyebrow:"EQUIPA ELOLOG",titulo:"Função de "+f.nome});j.mostrar(`<label for="eqPapel2">Função</label><select id="eqPapel2">${funcoes(f.papel)}</select>`,
     [{texto:"Cancelar",acao:j.fechar},{texto:"Guardar",principal:true,acao:async()=>{try{await pedir({acao:"alterar",alvo:f.user_id,papel:document.getElementById("eqPapel2").value});j.fechar();P().aviso("Função atualizada.","success");desenhar(true)}catch(e){P().aviso(e.message,"error")}}}])}
-  function senha(f){const j=P().janela({eyebrow:"EQUIPA ELOLOG",titulo:"Nova palavra-passe · "+f.nome});j.mostrar(`${campo("eqSenha2","Nova palavra-passe temporária","password",'autocomplete="new-password"')}<p class="campo-ajuda">10+ caracteres com maiúscula, minúscula e número.</p>`,
+  function senha(f){const j=P().janela({eyebrow:"EQUIPA ELOLOG",titulo:"Nova palavra-passe, "+f.nome});j.mostrar(`${campo("eqSenha2","Nova palavra-passe temporária","password",'autocomplete="new-password"')}<p class="campo-ajuda">10+ caracteres com maiúscula, minúscula e número.</p>`,
     [{texto:"Cancelar",acao:j.fechar},{texto:"Alterar",principal:true,acao:async()=>{const s=document.getElementById("eqSenha2").value;if(!senhaOk(s))return P().aviso("Palavra-passe fraca.","warning");
       try{await pedir({acao:"senha",alvo:f.user_id,senha:s});j.fechar();P().aviso("Palavra-passe alterada.","success")}catch(e){P().aviso(e.message,"error")}}}])}
   function ativo(f){const j=P().janela({eyebrow:"EQUIPA ELOLOG",titulo:(f.ativo?"Desativar ":"Ativar ")+f.nome});

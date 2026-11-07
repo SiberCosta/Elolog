@@ -20,7 +20,7 @@
         if(metodo==="mbway"){tel=document.getElementById("pmTel").value.replace(/\D/g,"");if(!/^9[1236]\d{7}$/.test(tel)){document.getElementById("pmTel").setAttribute("aria-invalid","true");return p.aviso("Indique um telemóvel português com 9 dígitos (começa por 91, 92, 93 ou 96).","warning")}}
         passo2()}}]);
       j.corpo.querySelectorAll('input[name="pmMetodo"]').forEach(r=>r.onchange=()=>{document.getElementById("pmTelBloco").hidden=r.value!=="mbway"||!r.checked})};
-    const passo2=()=>{j.passo(1);j.mostrar(`<dl class="pm-resumo"><div><dt>Encomenda</dt><dd>${esc(pag.operationId||"—")}</dd></div><div><dt>Método</dt><dd>${metodo==="mbway"?"MB WAY · "+esc(tel):"Multibanco (referência válida 3 dias)"}</dd></div>
+    const passo2=()=>{j.passo(1);j.mostrar(`<dl class="pm-resumo"><div><dt>Encomenda</dt><dd>${esc(pag.operationId||"—")}</dd></div><div><dt>Método</dt><dd>${metodo==="mbway"?"MB WAY, "+esc(tel):"Multibanco (referência válida 3 dias)"}</dd></div>
       <div class="pm-total"><dt>Valor</dt><dd>${p.euros(pag.amount)}</dd></div></dl><p class="pm-nota">O valor final é confirmado pelo servidor com base na encomenda. O pagamento é processado pela ifthenpay.</p>`,
       [{texto:"Voltar",acao:passo1},{texto:metodo==="mbway"?"Enviar pedido MB WAY":"Gerar referência",principal:true,acao:pedir}])};
     const pedir=async()=>{try{const r=await window.ELOLogServidor.chamarFuncao("pagamentos",{acao:"pedir",encomenda:pag.operationId,metodo,telemovel:tel});const d=r.pedido;j.passo(2);
@@ -47,7 +47,7 @@
     j.mostrar(`<p class="pm-nota">Peça à ifthenpay as chaves de cada método e um endereço de aviso (callback). As chaves ficam só no servidor: aqui aparecem mascaradas e não voltam ao navegador.</p>
       <div class="pm-grelha"><label>Chave Multibanco (MB Key)<input id="pmMbKey" autocomplete="off" placeholder="${esc(atual.multibanco||"por definir")}"></label>
       <label>Chave MB WAY<input id="pmMbwKey" autocomplete="off" placeholder="${esc(atual.mbway||"por definir")}"></label>
-      <label class="pm-largo">Chave anti-phishing (mín. 12 caracteres)<input id="pmAnti" type="password" autocomplete="new-password" placeholder="${atual.antiphishing?"guardada · deixe vazio para manter":"por definir"}"></label></div>
+      <label class="pm-largo">Chave anti-phishing (mín. 12 caracteres)<input id="pmAnti" type="password" autocomplete="new-password" placeholder="${atual.antiphishing?"guardada, deixe vazio para manter":"por definir"}"></label></div>
       <label class="pm-opcao"><input id="pmSandbox" type="checkbox" ${atual.sandbox!==false?"checked":""}> Modo de testes (sandbox) da ifthenpay</label>
       <label class="pm-opcao"><input id="pmAtivo" type="checkbox" ${atual.ativo?"checked":""}> Aceitar pagamentos online dos clientes</label>
       <label class="pm-largo">Endereço de aviso a dar à ifthenpay<input readonly value="${esc(url)}" onclick="this.select()"></label>`,

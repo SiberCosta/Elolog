@@ -24,13 +24,13 @@ if(!operation){result.innerHTML='<div class="client-home-result-error">Encomenda
         <div class="client-home-result client-home-result-card">
             <div>
                 <strong>${operation.id}</strong>
-                <small>${operation.origin||"—"} → ${operation.destination||"—"} · Previsão: ${operation.date||"—"}</small>
+                <small>${operation.origin||"—"} → ${operation.destination||"—"}, Previsão: ${operation.date||"—"}</small>
             </div>
             <span class="status ${statusClass(operation.status)}">${operation.status||"Recebido"}</span>
         </div>`}
 /* Elolog — edição dos dados de um funcionário (Admin do prestador). Script clássico, carregado depois de equipa-terreno.js. */
 function openProviderEmployeeEdit(id){editFoto=void 0;if(!requireProviderPermission("manage_employees"))return;const e=getProviderEmployees().find(x=>String(x.id)===String(id));if(!e)return showPlatformNotice("Funcionário não encontrado.","error");
-const v=k=>escapeHtml(e[k]||""),roles=["admin","operador","field_operator","armazem","financeiro"],self=e.email===currentUser?.email;openPlatformRecordDrawer(`Editar · ${e.name}`,
+const v=k=>escapeHtml(e[k]||""),roles=["admin","operador","field_operator","armazem","financeiro"],self=e.email===currentUser?.email;openPlatformRecordDrawer(`Editar: ${e.name}`,
 "DADOS DO FUNCIONÁRIO",`<form class="admin-provider-form" onsubmit="saveProviderEmployeeEdit(event,'${e.id}')"><section class="admin-provider-form-section"><div class="admin-provider-form-grid">
     <label>Nome completo<input id="editEmpName" required value="${v("name")}"></label>
     <label>E-mail / utilizador<input id="editEmpEmail" type="email" required value="${v("email")}"></label>

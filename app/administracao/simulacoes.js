@@ -13,14 +13,14 @@
 
   function html(){const l=(linhas||[]).filter(r=>filtro==="todas"||(filtro==="cotacao"?r.estado==="enviada"&&r.preco_estimado==null:r.estado===filtro));
     const n=k=>(linhas||[]).filter(r=>r.estado===k).length,chip=(k,t)=>`<button type="button" class="pa-periodo ${filtro===k?"ativo":""}" aria-pressed="${filtro===k}" data-simf="${k}">${t}</button>`;
-    const corpo=linhas==null?`<p class="pa-vazio">${erro?"⚠ "+esc(erro):"A carregar simulações…"}</p>`:!l.length?'<p class="pa-vazio">Ainda não há simulações de clientes'+(filtro==="todas"?".":" neste filtro.")+"</p>":
+    const corpo=linhas==null?`<p class="pa-vazio">${erro?""+esc(erro):"A carregar simulações…"}</p>`:!l.length?'<p class="pa-vazio">Ainda não há simulações de clientes'+(filtro==="todas"?".":" neste filtro.")+"</p>":
       `<ul class="sa-lista">${l.slice(0,12).map(r=>{const[e,c]=ESTADO[r.estado]||[r.estado,"neutro"],cot=r.estado==="enviada"&&r.preco_estimado==null;
-        return`<li><div class="sa-rota"><b>${esc(r.origem)} → ${esc(r.destino)}</b><small>${esc(r.codigo)} · ${quando(r.created_at)}</small></div>
+        return`<li><div class="sa-rota"><b>${esc(r.origem)} → ${esc(r.destino)}</b><small>${esc(r.codigo)}, ${quando(r.created_at)}</small></div>
         <div class="sa-quem"><span>${esc(r.cliente||"Cliente")}</span><small>${r.prestador?"para "+esc(r.prestador):"ainda sem prestador"}</small></div>
         <div class="sa-valor"><b>${cot?"Por cotação":eur(r.preco_estimado)}</b><small>${Number(r.volume_m3||0).toFixed(3)} m³</small></div>
         <span class="estado-pill sa-${c}">${cot?"Pedido de cotação":e}</span></li>`}).join("")}</ul>`;
     return`<section class="pa-cartao sa-cartao" id="paSimulacoes" aria-labelledby="saTitulo"><header class="sa-topo"><div><h4 id="saTitulo">Simulações dos clientes</h4>
-      <p class="ct-sub">${linhas?`${linhas.length} recentes · ${n("rascunho")} só simuladas · ${n("enviada")} enviadas · ${n("convertida")} convertidas`:"últimas simulações registadas"}</p></div>
+      <p class="ct-sub">${linhas?`${linhas.length} recentes, ${n("rascunho")} só simuladas, ${n("enviada")} enviadas, ${n("convertida")} convertidas`:"últimas simulações registadas"}</p></div>
       <div class="sa-filtros" role="group" aria-label="Filtrar simulações">${chip("todas","Todas")}${chip("rascunho","Simuladas")}${chip("enviada","Enviadas")}${chip("cotacao","Cotação")}${chip("convertida","Convertidas")}</div></header>${corpo}</section>`}
 
   function inserir(){const p=document.querySelector("#adminDashboardProviders .painel-admin");if(!p||currentUser?.role!=="admin")return;const velho=document.getElementById("paSimulacoes"),novo=html();

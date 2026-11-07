@@ -50,7 +50,7 @@ const finalidade=d=>d.finalidade==="outra"?(d.finalidade_texto||"outra finalidad
 const MODELOS=[
  {id:"viatura",n:1,nome:"Declaração de identificação da viatura",so:d=>!!d.viatura?.inclui,f(D,b,d){const v=d.viatura||{},p=d.proprietario||{},q=d.destinatario||{};
    D.seccao("Viatura");D.campos([["Matrícula",v.matricula],["Marca",v.marca],["Modelo",v.modelo],["VIN / n.º de chassis",v.vin],["Ano",v.ano],["Combustível",v.combustivel],["Cilindrada",v.cilindrada&&(v.cilindrada+" cm³")],["Cor",v.cor],["Valor estimado",v.valor?eur(v.valor):""]]);
-   D.seccao("Proprietário");D.campos([["Nome",p.nome],["Documento / NIF",[p.documento,p.nif&&"NIF "+p.nif].filter(Boolean).join(" · ")],["Morada",p.morada],["Contacto",[p.telefone,p.email].filter(Boolean).join(" · ")]]);
+   D.seccao("Proprietário");D.campos([["Nome",p.nome],["Documento / NIF",[p.documento,p.nif&&"NIF "+p.nif].filter(Boolean).join(", ")],["Morada",p.morada],["Contacto",[p.telefone,p.email].filter(Boolean).join(", ")]]);
    D.seccao("Destinatário");D.campos([["Nome",q.nome],["Documento",q.documento],["Morada",[q.morada,q.cidade].filter(Boolean).join(", ")],["Contacto",q.telefone]]);
    D.par(`Declaro que a viatura acima identificada é exportada de ${b.origem||"—"} para ${b.destino||"—"} no âmbito do processo ${b.codigo}.`,{antes:12});D.assinaturas(["O proprietário"])}},
  {id:"bens",n:2,nome:"Declaração de bens no interior da viatura",titulo:d=>d.viatura?.inclui?null:"Declaração de bens transportados",f(D,b,d){const c=contas(d);
@@ -58,14 +58,14 @@ const MODELOS=[
    D.tabela(["#","Descrição","Qtd.","Estado","Valor"],[28,247,50,85,85],c.bens.map((x,i)=>[i+1,x.descricao,x.quantidade||1,x.estado||"Usado",eur(x.valor)]).concat([["","Total","","",eur(c.vb)]]),["","","d","","d"]);
    D.par(`Declaro que os bens acima são todos os que seguem ${d.viatura?.inclui?"no interior da viatura":"na carga"} e que os valores indicados são estimativas razoáveis.`,{antes:12});D.assinaturas(["O proprietário"])}},
  {id:"valor",n:3,nome:"Declaração de conteúdo e valor",f(D,b,d){const c=contas(d);
-   D.tabela(["Conteúdo","Detalhe","Valor"],[150,230,115],[...(d.viatura?.inclui?[["Viatura",viaturaTxt(d.viatura),eur(c.vv)]]:[]),["Bens",c.bens.length+" linha(s) — ver declaração de bens",eur(c.vb)],["Valor total declarado","",eur(c.total)]],["","","d"]);
+   D.tabela(["Conteúdo","Detalhe","Valor"],[150,230,115],[...(d.viatura?.inclui?[["Viatura",viaturaTxt(d.viatura),eur(c.vv)]]:[]),["Bens",c.bens.length+" linha(s), ver declaração de bens",eur(c.vb)],["Valor total declarado","",eur(c.total)]],["","","d"]);
    D.seccao("Finalidade do envio");D.par(`O envio destina-se a ${finalidade(d)}.`);D.par(`Declaro que o conteúdo deste processo (${b.codigo}) é o descrito acima e que o valor total declarado é de ${eur(c.total)}.`,{antes:10});D.assinaturas(["O proprietário"])}},
  {id:"propriedade",n:4,nome:"Declaração de propriedade e finalidade",f(D,b,d){const p=d.proprietario||{},q=d.destinatario||{},v=d.viatura||{};
    D.par(`Eu, ${p.nome||"________________"}${p.documento?", portador(a) do documento "+p.documento:""}${p.nif?", NIF "+p.nif:""}${p.morada?", residente em "+p.morada:""}, declaro ser o(a) legítimo(a) proprietário(a) ${v.inclui?"da viatura "+viaturaTxt(v)+" e ":""}dos bens descritos no processo ${b.codigo}.`,{antes:8});
    D.par(`Declaro que se destinam a ${finalidade(d)} e não a revenda${d.finalidade==="comercial"?" (exceto o indicado como fins comerciais)":""}.`,{antes:8});
    D.seccao("Destinatário");D.campos([["Nome",q.nome],["Documento",q.documento],["Morada",[q.morada,q.cidade].filter(Boolean).join(", ")],["Destino",b.destino],["Contacto",q.telefone]]);D.assinaturas(["O proprietário"])}},
  {id:"responsabilidade",n:5,nome:"Declaração de responsabilidade",f(D,b,d){const p=d.proprietario||{},c=contas(d);
-   D.par(`Eu, ${quem(p)}, declaro sob compromisso de honra que todas as informações prestadas no processo ${b.codigo} — identificação do proprietário e do destinatário${d.viatura?.inclui?", dados da viatura":""}, lista de bens (${c.bens.length} linha(s)) e valores (total declarado ${eur(c.total)}) — são verdadeiras e completas.`,{antes:8});
+   D.par(`Eu, ${quem(p)}, declaro sob compromisso de honra que todas as informações prestadas no processo ${b.codigo}, identificação do proprietário e do destinatário${d.viatura?.inclui?", dados da viatura":""}, lista de bens (${c.bens.length} linha(s)) e valores (total declarado ${eur(c.total)}), são verdadeiras e completas.`,{antes:8});
    D.par("Declaro que a carga não contém bens proibidos, perigosos ou sujeitos a licença sem a respetiva autorização, e assumo a responsabilidade por qualquer informação incorreta ou omissa, bem como pelos encargos que daí resultem.",{antes:8});
    D.par(`Destinatário: ${quem(d.destinatario||{})}.`,{antes:8});D.assinaturas(["O declarante"])}},
  {id:"processo",n:6,nome:"Folha de processo de exportação e transporte",f(D,b,d){const e=d.embarque||{},c=contas(d);
@@ -75,8 +75,8 @@ const MODELOS=[
 
 function gerar(base,dados,ids){const D=Doc(),lista=MODELOS.filter(m=>(!ids||ids.includes(m.id))&&(!m.so||m.so(dados)));if(!lista.length)throw new Error("Escolha pelo menos um modelo.");
   const local=dados.local||"",data=(dados.data||new Date().toISOString().slice(0,10)).split("-").reverse().join("/");
-  D.quando=`${local?local+", ":""}${data}`;lista.forEach(m=>{D.pagina();D.titulo((m.titulo&&m.titulo(dados))||m.nome,`Modelo ${m.n} · Processo ${base.codigo} · ${base.origem||"—"} – ${base.destino||"—"}`);m.f(D,base,dados)});
+  D.quando=`${local?local+", ":""}${data}`;lista.forEach(m=>{D.pagina();D.titulo((m.titulo&&m.titulo(dados))||m.nome,`Modelo ${m.n}: Processo ${base.codigo}, ${base.origem||"—"} – ${base.destino||"—"}`);m.f(D,base,dados)});
   return D.blob(()=>["0.055 0.141 0.2 rg 0 812 595 30 re f",`BT 1 1 1 rg /F2 12 Tf 50 822 Td (ELOLOG) Tj ET`,`BT 0.75 0.84 0.9 rg /F1 8 Tf 112 822.5 Td (${pdfTxt("Intermediação e Gestão Logística")}) Tj ET`,`BT 0.75 0.84 0.9 rg /F1 8 Tf ${(545-largura(base.codigo,8)).toFixed(1)} 822.5 Td (${pdfTxt(base.codigo)}) Tj ET`],
-    (i,n)=>["0.82 0.86 0.89 RG 0.6 w 50 48 m 545 48 l S",`BT 0.42 0.49 0.54 rg /F1 7.5 Tf 50 36 Td (${pdfTxt("Documento interno de apoio ao processo — não substitui documentos aduaneiros oficiais. · www.elolog.pt")}) Tj ET`,`BT 0.42 0.49 0.54 rg /F1 7.5 Tf 505 36 Td (${pdfTxt(`Pág. ${i+1}/${n}`)}) Tj ET`])}
+    (i,n)=>["0.82 0.86 0.89 RG 0.6 w 50 48 m 545 48 l S",`BT 0.42 0.49 0.54 rg /F1 7.5 Tf 50 36 Td (${pdfTxt("Documento interno de apoio ao processo, não substitui documentos aduaneiros oficiais., www.elolog.pt")}) Tj ET`,`BT 0.42 0.49 0.54 rg /F1 7.5 Tf 505 36 Td (${pdfTxt(`Pág. ${i+1}/${n}`)}) Tj ET`])}
 window.elologDeclaracoesPdf={MODELOS,gerar,contas,largura};
 })();

@@ -14,7 +14,7 @@
     f.onload=()=>{try{f.style.height=Math.min(4000,f.contentDocument.documentElement.scrollHeight+20)+"px"}catch(_){f.style.height="60vh"}};return f}
 
   function ler(d){const m=E().aberta;if(!m)return;const c=E().caixas.find(x=>x.id===(m.caixa||E().caixa)),r=!!m.restrito,lixo=(m.pasta||E().pasta)==="lixo";
-    if(m.carregando||m.erro){d.innerHTML=`<button type="button" class="btn-secondary em-voltar" data-em="voltar">‹ Voltar</button><h4 class="em-titulo">${esc(m.assunto||"(sem assunto)")}</h4><p class="em-vazio">${m.erro?"⚠ "+esc(m.erro):"A abrir a mensagem…"}</p>`;return}
+    if(m.carregando||m.erro){d.innerHTML=`<button type="button" class="btn-secondary em-voltar" data-em="voltar">‹ Voltar</button><h4 class="em-titulo">${esc(m.assunto||"(sem assunto)")}</h4><p class="em-vazio">${m.erro?""+esc(m.erro):"A abrir a mensagem…"}</p>`;return}
     const remotas=m.html&&/<img[^>]+src=["']?https?:/i.test(m.html);
     d.innerHTML=`<div class="em-acoes"><button type="button" class="btn-secondary em-voltar" data-em="voltar">‹ Voltar</button><button type="button" class="btn-primary" data-em="responder">↩ Responder</button>
       <button type="button" class="btn-secondary" data-em="todos">Responder a todos</button>${r?"":`<button type="button" class="btn-secondary" data-em="atribuir">👤 Encaminhar a funcionário</button><button type="button" class="btn-secondary" data-em="reencaminhar">Reencaminhar</button>
@@ -29,8 +29,8 @@
     if(!c&&!r)d.querySelectorAll('[data-em="responder"],[data-em="todos"]').forEach(x=>x.disabled=true)}
   function atribuir(d){const m=E().aberta,l=equipa;
     d.innerHTML=`<div class="em-form"><button type="button" class="btn-secondary em-voltar-cfg" data-em="ver">‹ Voltar ao email</button><h4 class="em-titulo">Encaminhar a um funcionário</h4>
-      <p class="campo-ajuda">«${esc(m?.assunto||"")}» — o colega recebe o email na pasta <b>Atribuídos</b> e um aviso no chat da equipa, e pode responder-lhe diretamente.</p>
-      ${l==null?'<p class="em-vazio">A carregar a equipa…</p>':!l.length?'<p class="em-vazio">Não há outros funcionários ativos nesta equipa.</p>':`<label>Funcionário<select id="emAtribAlvo">${l.map(f=>`<option value="${esc(f.user_id)}">${esc(f.nome)} — ${esc(FUNCAO[f.papel]||f.papel)}</option>`).join("")}</select></label>
+      <p class="campo-ajuda">«${esc(m?.assunto||"")}», o colega recebe o email na pasta <b>Atribuídos</b> e um aviso no chat da equipa, e pode responder-lhe diretamente.</p>
+      ${l==null?'<p class="em-vazio">A carregar a equipa…</p>':!l.length?'<p class="em-vazio">Não há outros funcionários ativos nesta equipa.</p>':`<label>Funcionário<select id="emAtribAlvo">${l.map(f=>`<option value="${esc(f.user_id)}">${esc(f.nome)}, ${esc(FUNCAO[f.papel]||f.papel)}</option>`).join("")}</select></label>
       <label>Nota para o colega (opcional)<textarea id="emAtribNota" rows="3" maxlength="500" placeholder="Ex.: responde com prazo e preço"></textarea></label>
       <div class="em-acoes"><button type="button" class="btn-secondary" data-em="ver">Cancelar</button><button type="button" class="btn-primary" data-em="atribuir-ok">Encaminhar</button></div>`}</div>`}
 
@@ -50,9 +50,9 @@
   function acessos(d){const c=acessosCaixa,l=acessosLista;
     d.innerHTML=`<div class="em-form"><button type="button" class="btn-secondary em-voltar-cfg" data-em="config">‹ Caixas</button><h4 class="em-titulo">Quem pode usar ${esc(c?.email||"")}</h4>
       <p class="campo-ajuda">Os funcionários com acesso leem, respondem e apagam emails desta caixa. Só o administrador liga, altera ou remove caixas.</p>
-      ${l==null?'<p class="em-vazio">A carregar a equipa…</p>':!l.length?'<p class="em-vazio">Ainda não há outros funcionários ativos na equipa.</p>':`<ul class="em-config">${l.map(f=>`<li><div><b>${esc(f.nome)}</b><small>${esc(FUNCAO[f.papel]||f.papel)} · ${esc(f.email||"")}</small></div>
+      ${l==null?'<p class="em-vazio">A carregar a equipa…</p>':!l.length?'<p class="em-vazio">Ainda não há outros funcionários ativos na equipa.</p>':`<ul class="em-config">${l.map(f=>`<li><div><b>${esc(f.nome)}</b><small>${esc(FUNCAO[f.papel]||f.papel)}, ${esc(f.email||"")}</small></div>
         <button type="button" class="${f.acesso?"btn-danger":"btn-primary"}" data-em="conceder" data-id="${esc(f.user_id)}" aria-pressed="${f.acesso}">${f.acesso?"Retirar acesso":"Dar acesso"}</button></li>`).join("")}</ul>`}</div>`}
-  function config(d){const e=editar||{},cs=E().caixas.filter(c=>c.gerir!==false),lista=cs.map(c=>`<li><div><b>${esc(c.email)}</b><small>${esc(c.nome||"")}${c.elolog?" · Elolog":""} · ${esc(c.imap_host)}</small></div>
+  function config(d){const e=editar||{},cs=E().caixas.filter(c=>c.gerir!==false),lista=cs.map(c=>`<li><div><b>${esc(c.email)}</b><small>${esc(c.nome||"")}${c.elolog?", Elolog":""}, ${esc(c.imap_host)}</small></div>
       <button type="button" class="btn-secondary" data-em="acessos" data-id="${esc(c.id)}">Acessos</button><button type="button" class="btn-secondary" data-em="editar" data-id="${esc(c.id)}">Editar</button><button type="button" class="btn-danger" data-em="remover" data-id="${esc(c.id)}">Remover</button></li>`).join("");
     d.innerHTML=`<div class="em-form"><h4 class="em-titulo">Caixas de email</h4>${cs.length?`<ul class="em-config">${lista}</ul>`:""}
       <h5>${e.id?"Editar "+esc(e.email):"Ligar uma caixa"}</h5><p class="campo-ajuda">Ligação segura: IMAP na porta 993 e SMTP na porta 465. A palavra-passe fica cifrada no servidor e não volta a ser mostrada.</p>

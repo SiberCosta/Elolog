@@ -7,7 +7,7 @@
   const E=window.__elologEmail={caixas:[],caixa:"",pasta:"entrada",pagina:0,pesquisa:"",lista:null,aberta:null,erro:"",j:null,elolog:false,empresa:false};
   const PASTAS=[["entrada","Entrada"],["enviados","Enviados"],["lixo","Lixo"],["atribuidos","Atribuídos"]];
   const agora=Date.now(),h=n=>new Date(agora-n*36e5).toISOString();
-  const DEMO={caixas:[{id:"demo",email:"contacto@elolog.pt",nome:"Elolog — Contacto",imap_host:"imap.correio.pt",smtp_host:"smtp.correio.pt",utilizador:"contacto@elolog.pt",elolog:true,tem_senha:true}],
+  const DEMO={caixas:[{id:"demo",email:"contacto@elolog.pt",nome:"Elolog: Contacto",imap_host:"imap.correio.pt",smtp_host:"smtp.correio.pt",utilizador:"contacto@elolog.pt",elolog:true,tem_senha:true}],
     atribuidos:[{chave:"demo:3",caixa:"demo",caixa_email:"contacto@elolog.pt",uid:3,de:"Importadora Atlântico <compras@atlantico.ao>",assunto:"Pedido de cotação Leixões → Luanda",nota:"Responde com prazo e preço, por favor.",por:"Administrador Elolog",estado:"aberto",data:h(1)}],
     entrada:[{uid:3,de:"Importadora Atlântico <compras@atlantico.ao>",para:"contacto@elolog.pt",assunto:"Pedido de cotação Leixões → Luanda",data:h(1),lida:false,anexos:true,
         texto:"Bom dia,\n\nPrecisamos de enviar 2 paletes (1,8 m³) de Leixões para Luanda até ao fim do mês.\nPodem indicar prazo e preço?\n\nObrigado,\nMarta Silva",anexos_l:[{indice:0,nome:"lista-de-carga.pdf",tipo:"application/pdf",tamanho:48213}]},
@@ -24,10 +24,10 @@
 
   function lado_html(){const c=E.caixas.find(x=>x.id===E.caixa),l=E.lista;
     const atrib=E.pasta==="atribuidos",chave=m=>m.chave??m.uid;
-    const itens=!c&&!atrib?"":l==null?`<li class="em-vazio">${E.erro?"⚠ "+esc(E.erro):"A carregar…"}</li>`:!l.mensagens.length?`<li class="em-vazio">${E.pesquisa?"Nada encontrado.":"Sem mensagens nesta pasta."}</li>`:
+    const itens=!c&&!atrib?"":l==null?`<li class="em-vazio">${E.erro?""+esc(E.erro):"A carregar…"}</li>`:!l.mensagens.length?`<li class="em-vazio">${E.pesquisa?"Nada encontrado.":"Sem mensagens nesta pasta."}</li>`:
       l.mensagens.map(m=>`<li><button type="button" class="em-item${m.lida?"":" em-nova"}${String(E.abertaChave)===String(chave(m))?" em-atual":""}" data-em-abrir="${esc(chave(m))}">
         <span class="em-quem">${esc(E.nome(E.pasta==="enviados"?"Para: "+m.para:m.de))}</span><time>${quando(m.data)}</time>
-        <span class="em-assunto">${m.respondida?'<i title="Respondida">↩</i> ':""}${esc(m.assunto||"(sem assunto)")}${m.anexos?' <i title="Tem anexos">📎</i>':""}</span>${atrib?`<small class="em-atrib">${m.estado==="respondido"?"✓ Respondido":"Por responder"} · de ${esc(m.por||"")} · ${esc(m.caixa_email||"")}</small>`:""}</button></li>`).join("");
+        <span class="em-assunto">${m.respondida?'<i title="Respondida">↩</i> ':""}${esc(m.assunto||"(sem assunto)")}${m.anexos?' <i title="Tem anexos">📎</i>':""}</span>${atrib?`<small class="em-atrib">${m.estado==="respondido"?"Respondido":"Por responder"}, de ${esc(m.por||"")}, ${esc(m.caixa_email||"")}</small>`:""}</button></li>`).join("");
     const pags=l&&l.total>25?`<div class="em-pags"><button type="button" class="btn-secondary" data-em-pag="-1" ${E.pagina?"":"disabled"}>‹ Mais recentes</button><small>${E.pagina*25+1}–${Math.min(l.total,E.pagina*25+25)} de ${l.total}</small><button type="button" class="btn-secondary" data-em-pag="1" ${(E.pagina+1)*25<l.total?"":"disabled"}>Mais antigas ›</button></div>`:"";
     return`<div class="em-caixas">${E.caixas.length?`<label class="sr-only" for="emCaixa">Caixa de email</label><select id="emCaixa">${E.caixas.map(x=>`<option value="${esc(x.id)}"${x.id===E.caixa?" selected":""}>${esc(x.email)}</option>`).join("")}</select>`:""}
       ${E.podeLigar?'<button type="button" class="btn-secondary" data-em="config" title="Configurar caixas e acessos" aria-label="Configurar caixas de email e acessos">⚙</button>':""}</div>
@@ -76,7 +76,7 @@
     window.elologEmail2?.acao(b.dataset.em,b)});
   document.addEventListener("change",e=>{if(e.target.id==="emCaixa"){E.caixa=e.target.value;E.pagina=0;E.vista=null;E.aberta=null;E.carregarLista()}});
   document.addEventListener("submit",e=>{if(e.target.matches?.(".em-procura")){e.preventDefault();E.pesquisa=document.getElementById("emProcura").value.trim();E.pagina=0;E.carregarLista()}});
-  /* Atualização automática: com o painel aberto, a lista atualiza-se a cada 30 s; fechado, o contador «Email» do menu a cada 2 min. */
+  /* Muda à medida que preenche: com o painel aberto, a lista atualiza-se a cada 30 s; fechado, o contador «Email» do menu a cada 2 min. */
   const aberto=()=>!!document.querySelector("#pmJanela .em-janela");let parar=false,ultimo=null;
   const podeContar=()=>currentUser?.role==="admin"||(currentUser?.role==="prestador"&&(()=>{try{return providerFunction()!=="field_operator"}catch(e){return true}})());
   function marcar(n){document.querySelectorAll('button[onclick^="elologEmail.abrir"]').forEach(b=>{let c=b.querySelector(".em-contador");

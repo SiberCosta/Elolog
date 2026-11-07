@@ -10,7 +10,7 @@ const hoje=()=>new Date().toISOString().slice(0,10);
 
 async function opcoes(sel,origem,destino,excluir){sel.innerHTML='<option value="">A carregar…</option>';
   try{const l=(await D().prestadores(origem,destino)).filter(p=>p.id!==excluir);
-    sel.innerHTML=l.length?'<option value="">Escolha o prestador…</option>'+l.map(p=>`<option value="${esc(p.id)}">${esc(p.nome)}${p.cidade?" · "+esc(p.cidade):""}</option>`).join("")
+    sel.innerHTML=l.length?'<option value="">Escolha o prestador…</option>'+l.map(p=>`<option value="${esc(p.id)}">${esc(p.nome)}${p.cidade?", "+esc(p.cidade):""}</option>`).join("")
       :'<option value="">Nenhum prestador ativo serve esta rota</option>'}catch(e){sel.innerHTML=`<option value="">${esc(D().erro(e))}</option>`}}
 
 function nova(){if(!P()||!D())return;

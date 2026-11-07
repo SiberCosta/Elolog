@@ -8,7 +8,7 @@ let pilha=null;const vistos=new Set();
 
 function cartao(m){if(!pilha){pilha=document.createElement("div");pilha.className="em-avisos";pilha.setAttribute("aria-live","polite");document.body.appendChild(pilha)}
   const d=document.createElement("div");d.className="em-aviso";d.setAttribute("role","status");
-  d.innerHTML=`<span class="em-aviso-ic" aria-hidden="true">✉</span><div class="em-aviso-txt"><strong>Novo email${m.caixa?` · ${esc(curto(m.caixa,28))}`:""}</strong>
+  d.innerHTML=`<span class="em-aviso-ic" aria-hidden="true">✉</span><div class="em-aviso-txt"><strong>Novo email${m.caixa?`, ${esc(curto(m.caixa,28))}`:""}</strong>
     ${m.de?`<span>${esc(curto(m.de,48))}</span>`:""}<em>${esc(curto(m.assunto||"(sem assunto)",70))}</em></div>
     <div class="em-aviso-acoes"><button type="button" class="btn-primary" data-abrir>Abrir</button><button type="button" class="em-aviso-x" aria-label="Fechar aviso" data-fechar>×</button></div>`;
   const fechar=()=>{d.classList.add("sair");setTimeout(()=>d.remove(),250)};
@@ -17,7 +17,7 @@ function cartao(m){if(!pilha){pilha=document.createElement("div");pilha.classNam
   try{navigator.vibrate?.(120)}catch(_){}}
 
 function sistema(m){if(document.visibilityState==="visible"||typeof Notification==="undefined"||Notification.permission!=="granted")return;
-  try{const n=new Notification("Novo email — Elolog",{body:`${curto(m.de,60)}\n${curto(m.assunto||"(sem assunto)",90)}`,tag:"elolog-email-"+(m.uid||""),icon:"../partilhado/imagens/icon-192.png"});
+  try{const n=new Notification("Novo email (Elolog)",{body:`${curto(m.de,60)}\n${curto(m.assunto||"(sem assunto)",90)}`,tag:"elolog-email-"+(m.uid||""),icon:"../partilhado/imagens/icon-192.png"});
     n.onclick=()=>{window.focus();window.elologEmail?.abrir();n.close()}}catch(_){}}
 
 async function avisar(ev){const caixas=(ev.detail?.caixas||[]).slice(0,3);

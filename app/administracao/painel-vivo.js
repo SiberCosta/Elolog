@@ -1,7 +1,7 @@
-/* Elolog — Centro de Controlo «Painel ao vivo» (v101), para a administração.
+/* Elolog — Centro de comando (v103), para a administração: um só ecrã (o antigo «Indicadores e simulações» está aqui dentro).
    Dados reais pela função painel_vivo (só leitura) através da ligação Supabase existente (ELOLogServidor.cliente); atualiza a cada 30 s.
    Não muda fluxos, permissões, comissões nem planos: cada botão leva a uma página ou ação que já existe (ficha da operação, Operações,
-   Faturação, Comissões…). A vista anterior continua disponível no separador «Indicadores e simulações». */
+   Faturação, Comissões…). As secções do período (negócio, rotas, prestadores, atividade) vêm de painel-vivo-seccoes.js. */
 (function(){"use strict";
 const I=()=>window.__ELOLOG_INTERNO?.["painel@administracao"]||{},M=()=>window.elologPVMapa;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
@@ -14,7 +14,7 @@ const IC={euro:"M17 6.5A7 7 0 1 0 17 17.5M4 10h9M4 14h9",caixa:"M3.5 7.5 12 3l8.
   armazem:"M3 10l9-6 9 6v10H3zM8 20v-6h8v6"};
 const ico=(p,s)=>`<svg width="${s||18}" height="${s||18}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${p}"/></svg>`;
 const pill=(t,c)=>`<span class="pv-pill pv-${c}">${esc(t)}</span>`;
-let dados=null,erro="",aba="vivo",sel=0,zoom=1,ecra=false,q="",ord="atualizada",dir=-1,soServico=false,carregando=false,temp=null;
+let dados=null,erro="",ed=0,sel=0,zoom=1,ecra=false,q="",ord="atualizada",dir=-1,carregando=false,temp=null;
 
 function demo(){const h=new Date(),d=n=>new Date(h.getTime()+n*864e5).toISOString().slice(0,10);return{demo:true,gerado_em:h.toISOString(),
   kpis:{receita_hoje:1284,comissoes_hoje:1046,planos_hoje:238,receita_media_14d:1088,em_curso:156,novas_30d:142,novas_30d_anteriores:131,prazo_pct:94.8,prazo_pct_anterior:96,risco_valor:3140,risco_pagamentos:4,atrasadas:2},
@@ -27,19 +27,16 @@ function demo(){const h=new Date(),d=n=>new Date(h.getTime()+n*864e5).toISOStrin
   recentes:(window.__ELOLOG_INTERNO?.painelDados?.()?.operacoes_recentes||[]).slice(0,8).map((o,i)=>({codigo:o.ref,origem:o.origem,destino:o.destino,chegada:d(i*3-2),transporte:i%2?"Ilhéu das Rolas 118":null,prestador:o.prestador,
     cliente:o.cliente,estado:{"Em trânsito":"em_transito","Armazém":"armazenamento","Recolha":"recolha","Expedição":"expedicao","Aprovação":"aprovacao","No destino":"destino","Entregue":"entregue"}[o.estado]||"aprovacao",atrasada:i===3,pagamento_pendente:i===1,atualizada:o.quando}))}}
 
+const exc=()=>recs().filter(r=>r.atrasada||r.pagamento_pendente||r.suspensa);
 const recs=()=>dados?.demo&&!(dados.recentes||[]).length?(dados.recentes=demo().recentes):(dados?.recentes||[]);
-async function carregar(){const i=I();if(i.sessaoDemo?.()){dados=demo();erro="";return desenhar()}if(!i.sessaoServidor?.()||carregando)return;carregando=true;
+async function contarDiretas(){try{const l=await window.elologED?.listar?.();if(Array.isArray(l))ed=l.filter(x=>["pendente_validacao","em_analise_admin","validada","recusada"].includes(x.estado)).length}catch(_){}}
+async function carregar(){const i=I();contarDiretas().then(()=>{if(dados)desenhar()});if(i.sessaoDemo?.()){dados=demo();erro="";return desenhar()}if(!i.sessaoServidor?.()||carregando)return;carregando=true;
   try{const sb=await window.ELOLogServidor.cliente();const{data,error}=await sb.rpc("painel_vivo");if(error)throw error;dados=data;erro=""}
   catch(e){erro=window.ELOLogServidor?.mensagem?.(e)||e.message}finally{carregando=false;desenhar()}}
 
-function kpis(k){const delta=(a,b,inv)=>{if(b==null||!b)return["",""];const p=(a-b)/b*100,bom=inv?p<=0:p>=0;return[(p>=0?"↑ ":"↓ ")+Math.abs(p).toFixed(1).replace(".",",")+" %",bom?"ok":"verm"]};
-  const r=delta(k.receita_hoje,k.receita_media_14d),c=delta(k.novas_30d,k.novas_30d_anteriores),z=k.prazo_pct!=null&&k.prazo_pct_anterior!=null?[(k.prazo_pct>=k.prazo_pct_anterior?"↑ ":"↓ ")+Math.abs(k.prazo_pct-k.prazo_pct_anterior).toFixed(1).replace(".",",")+" pp",k.prazo_pct>=k.prazo_pct_anterior?"ok":"verm"]:["",""];
-  const C=[["euro","ok","Receita da Elolog hoje",eur(k.receita_hoje),`${eur(k.comissoes_hoje)} comissões, ${eur(k.planos_hoje)} planos`,r[0]&&r[0]+" vs média",r[1],"adminCommissions"],
-    ["caixa","azul","Encomendas em curso",num(k.em_curso),"novas nos últimos 30 dias",c[0],c[1],"adminOperations"],
-    ["relogio","mar","Levantadas no prazo",k.prazo_pct==null?"—":String(k.prazo_pct).replace(".",",")+" %","últimos 30 dias",z[0],z[1],"adminOperations"],
-    ["alerta","amb","Dinheiro em risco",eur(k.risco_valor),`${num(k.risco_pagamentos)} pagamento(s) pendente(s)`,k.atrasadas?`${k.atrasadas} atrasada(s)`:"",k.atrasadas?"amb":"","adminBilling"]];
-  return C.map(x=>`<button type="button" class="pv-kpi" data-pv-ir="${x[7]}"><span class="pv-kpi-t"><span class="pv-ic pv-ic-${x[1]}">${ico(IC[x[0]],16)}</span>${x[2]}</span>
-    <strong>${x[3]}</strong><span class="pv-kpi-b"><span>${esc(x[4])}</span>${x[5]?`<b class="pv-delta pv-${x[6]||"cinza"}">${esc(x[5])}</b>`:""}</span></button>`).join("")}
+function receita(k){const m=k.receita_media_14d,p=m?Math.round((k.receita_hoje-m)*1000/m)/10:null;
+  return`<button type="button" class="pv-receita" data-pv-ir="adminCommissions"><span class="pv-rot">Receita da Elolog hoje</span><strong>${eur(k.receita_hoje)}</strong>
+    <span class="pv-rec-d">${eur(k.comissoes_hoje)} em comissões e ${eur(k.planos_hoje)} em planos${p==null?"":` <b class="pv-delta pv-${p>=0?"ok":"verm"}">${p>=0?"↑":"↓"} ${String(Math.abs(p)).replace(".",",")} % face à média de 14 dias</b>`}</span></button>`}
 
 function viagens(vs){if(!vs.length)return'<p class="pv-vazio">Sem navios com carga Elolog neste momento.</p>';return vs.map((v,i)=>{const p=Math.round(M().progresso(v)*100),c=M().corViagem(v),pos=M().posicao(v);
   return`<div class="pv-viagem ${i===sel?"on":""}"><button type="button" class="pv-viagem-b" data-pv-viagem="${i}" aria-pressed="${i===sel}">
@@ -48,12 +45,6 @@ function viagens(vs){if(!vs.length)return'<p class="pv-vazio">Sem navios com car
     <span class="pv-sub pv-1l">${num(v.encomendas)} encomenda(s), ${esc((v.prestadores||[]).join(", "))}</span>
     <span class="pv-row pv-sub"><span>Chega a ${dia(v.chegada)}</span><span class="pv-pos pv-pos-${pos[2]==="AIS"?"ais":"est"}">Posição ${pos[2]}${v.ais?.nos!=null?`, ${String(v.ais.nos).replace(".",",")} nós`:""}</span></span></button>
     ${i===sel?`<div class="pv-codigos">${(v.codigos||[]).slice(0,8).map(c=>`<button type="button" class="pv-cod" data-ficha="${esc(c)}">${esc(c)}</button>`).join("")}</div>`:""}</div>`}).join("")}
-
-function meios(d){const L=[];(d.viagens||[]).forEach((v,i)=>L.push({ic:"navio",tipo:"Navio",cod:v.navio,nome:`${v.origem||"—"} para ${v.destino||"—"}`,est:v.atrasada?["Atrasado","verm"]:["Em rota","azul"],det:`${num(v.encomendas)} encomenda(s)`,acao:`data-pv-viagem="${i}"`,servico:true}));
-  (d.veiculos||[]).forEach(v=>L.push({ic:"camiao",tipo:"Viatura",cod:v.matricula,nome:`${v.descricao||"Viatura"}, ${v.empresa}`,est:v.servicos_hoje?["Em serviço","ok"]:["Disponível","cinza"],det:v.servicos_hoje?`${v.por_fazer} de ${v.servicos_hoje} por fazer`:"sem serviços hoje",acao:'data-pv-ir="adminOperations"',servico:!!v.servicos_hoje}));
-  const l=soServico?L.filter(x=>x.servico):L;if(!l.length)return'<p class="pv-vazio">Sem meios em serviço.</p>';
-  return l.map(x=>`<button type="button" class="pv-meio" ${x.acao}><span class="pv-meio-ic" title="${x.tipo}">${ico(IC[x.ic],20)}</span><span class="pv-meio-t"><strong>${esc(x.cod)}</strong><span title="${esc(x.nome)}">${esc(x.nome)}</span></span>
-    <span class="pv-meio-e">${pill(x.est[0],x.est[1])}<small>${esc(x.det)}</small></span></button>`).join("")}
 
 const COL=[["codigo","Código"],["origem","Origem"],["destino","Destino"],["chegada","Chegada prevista"],["transporte","Transporte"],["prestador","Prestador"],["estado","Estado"]];
 function tabela(rs){const f=q.trim().toLowerCase();let l=rs.filter(r=>!f||[r.codigo,r.origem,r.destino,r.cliente,r.prestador,r.transporte].join(" ").toLowerCase().includes(f));
@@ -64,46 +55,54 @@ function tabela(rs){const f=q.trim().toLowerCase();let l=rs.filter(r=>!f||[r.cod
       <td data-label="Chegada">${dia(r.chegada)}</td><td data-label="Transporte">${r.transporte?`<span class="pv-tr-ic">${ico(IC.navio,16)}${esc(r.transporte)}</span>`:"—"}</td><td data-label="Prestador">${esc(r.prestador||"—")}</td><td data-label="Estado">${est}${r.pagamento_pendente?' <span class="pv-pend" title="Pagamento pendente">€</span>':""}</td></tr>`}).join("");
   return`<table class="pv-tab"><thead><tr>${th}</tr></thead><tbody>${tr||`<tr><td colspan="7" class="pv-vazio">Nenhuma encomenda corresponde à procura.</td></tr>`}</tbody></table>`}
 
-function armazens(as){if(!as.length)return'<p class="pv-vazio">Sem armazéns ativos registados.</p>';const max=Math.max(1,...as.map(a=>a.volumes||a.encomendas||0));
-  return as.map(a=>{const v=a.volumes||a.encomendas||0,p=Math.round(v*100/max);return`<button type="button" class="pv-arm" data-pv-ir="adminOperations"><span class="pv-row"><strong>${esc(a.nome)}</strong><span>${num(a.volumes)} vol., ${num(a.encomendas)} enc.</span></span>
-    <span class="pv-arm-b" aria-hidden="true"><i style="width:${p}%"></i></span><small>${esc(a.empresa||"")}</small></button>`}).join("")}
 
-function html(){const d=dados,k=d.kpis||{},hora=new Date(d.gerado_em||Date.now()).toLocaleTimeString("pt-PT");
-  return`<div class="pv-topo"><span class="pv-vivo"><i></i>${d.demo?"Demonstração":"Ao vivo"}, atualizado às ${hora}</span>${erro?`<span class="pv-erro">Não foi possível atualizar (${esc(erro)}).</span>`:""}
-    <button type="button" class="pv-btn" data-pv-atualizar>Atualizar agora</button></div>
-  <section class="pv-kpis" aria-label="Indicadores">${kpis(k)}</section>
-  <section class="pv-cartao pv-mapa-c" aria-labelledby="pvMapa"><div class="pv-cab"><h3 id="pvMapa">Navios ao vivo</h3><span>${zoom>1?`Aproximado ${zoom.toFixed(1).replace(".",",")}×`:"Vista geral do corredor"}</span></div>
+const S=()=>window.elologPVS,P=()=>window.__ELOLOG_INTERNO?.painelDados?.(),PA=()=>window.__ELOLOG_INTERNO?.painelAnterior?.(),DIAS=()=>window.__ELOLOG_INTERNO?.painelDias?.()||30;
+function html(){const d=dados,k=d.kpis||{},p=P(),hora=new Date(d.gerado_em||Date.now()).toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"});
+  return`<section class="pv-escuro pv-heroi" aria-label="Estado do negócio agora">
+    <div class="pv-barra-sup"><span class="pv-vivo"><i></i>${d.demo?"Demonstração":"Ao vivo"}, ${hora}</span>${erro?`<span class="pv-erro">Não foi possível atualizar (${esc(erro)}).</span>`:""}
+      <div class="pv-acoes"><button type="button" class="btn-primary pv-bt" data-pv-acao="contacto">${ico("M12 5v14M5 12h14",15)}Pedido por contacto</button><button type="button" class="btn-secondary pv-bt" data-pv-acao="auditoria">${ico("M9 4h6v3H9zM7 5H5v16h14V5h-2M9 13l2 2 4-4",15)}Auditoria de prestador</button>
+        <button type="button" class="btn-secondary pv-bt pv-bt-i" data-pv-acao="ecra" aria-label="Ecrã inteiro (modo apresentação)" title="Ecrã inteiro">${ico("M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",16)}</button><button type="button" class="btn-secondary pv-bt pv-bt-i" data-pv-acao="atualizar" aria-label="Atualizar agora" title="Atualizar agora">${ico("M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7",16)}</button></div></div>
+    <div class="pv-heroi-n">${receita(k)}<div class="pv-secs">${S().numeros(k,p)}</div></div>
     <div class="pv-mapa-g"><div class="pv-mapa ${ecra?"grande":""}">${M().svg(d,sel,zoom)}
         <div class="pv-zoom"><button type="button" class="pv-btn-i" data-pv-zoom="1" aria-label="Aproximar o mapa">+</button><button type="button" class="pv-btn-i" data-pv-zoom="-1" aria-label="Afastar o mapa">−</button>
           <button type="button" class="pv-btn-i" data-pv-ecra aria-label="${ecra?"Reduzir":"Aumentar"} o mapa">${ico("M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",15)}</button></div>
-        <div class="pv-legenda" aria-hidden="true"><span><i style="background:#1F5F8B"></i>Em rota</span><span><i style="background:#1F7A5C"></i>Chega em breve</span><span><i style="background:#C27A12"></i>Atrasado</span></div></div>
-      <div class="pv-acomp"><div class="pv-cab"><strong>Acompanhamento</strong><span>${num((d.viagens||[]).length)} viagem(ns)</span></div><div class="pv-acomp-l">${viagens(d.viagens||[])}</div></div></div></section>
-  <section class="pv-cartao pv-tab-c" aria-labelledby="pvEnc"><div class="pv-cab"><h3 id="pvEnc">Encomendas recentes</h3>
-      <label class="pv-q"><span class="pv-sr">Procurar nas encomendas recentes</span>${ico("M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-3.5-3.5",14)}<input type="search" data-pv-q value="${esc(q)}" placeholder="Código, cidade, cliente ou prestador"></label></div>
-      <div class="pv-tab-w">${tabela(recs())}</div></section>
-  <div class="pv-linha"><section class="pv-cartao pv-meios-c" aria-labelledby="pvMeios"><div class="pv-cab"><h3 id="pvMeios">Meios em serviço</h3><button type="button" class="pv-btn" data-pv-filtro>${soServico?"Ver todos":"Só em serviço"}</button></div><div class="pv-meios">${meios(d)}</div></section>
-    <section class="pv-cartao pv-lado" aria-labelledby="pvArm"><div class="pv-cab"><h3 id="pvArm">Carga nos armazéns</h3><span>volumes guardados</span></div>${armazens(d.armazens||[])}</section></div>`}
+        <div class="pv-legenda" aria-hidden="true"><span><i style="background:#1F5F8B"></i>Em rota</span><span><i style="background:#1F7A5C"></i>Chega em breve</span><span><i style="background:#C27A12"></i>Atrasado</span></div>
+        <span class="pv-mapa-t">${zoom>1?`Aproximado ${zoom.toFixed(1).replace(".",",")}×`:"Corredor atlântico"}</span></div>
+      <div class="pv-acomp"><div class="pv-acomp-c"><strong>Navios com carga Elolog</strong><span>${num((d.viagens||[]).length)} viagem(ns)</span></div><div class="pv-acomp-l">${viagens(d.viagens||[])}</div></div></div></section>
+  ${S().atencao(p,ed)}
+  <section class="pv-cartao pv-tab-c" aria-labelledby="pvEnc"><div class="pv-cab"><div><h3 id="pvEnc">Encomendas a acompanhar</h3><p class="pv-cab-p">Com atraso, pagamento pendente ou suspensas, entre as atualizadas mais recentemente</p></div>
+      <button type="button" class="pv-lig" data-pv-ir="adminOperations">Ver todas as operações</button></div>
+      <div class="pv-tab-w">${exc().length?tabela(exc()):'<p class="pv-vazio pv-vazio-ok">Nenhuma encomenda com atraso, pagamento pendente ou suspensão.</p>'}</div></section>
+  ${S().corrente(p)}
+  ${S().negocio(p,PA(),DIAS())}`}
 
+/* o painel antigo continua a ser desenhado (dados, simulações, apresentação), mas fica escondido; este ecrã fica no lugar dele */
 function seccao(){const sec=document.querySelector("#adminDashboardProviders .pa-centro");if(!sec)return null;let p=sec.querySelector("#pvPainel");
-  if(!p){const cab=sec.querySelector(".pa-cabecalho");if(!cab)return null;cab.insertAdjacentHTML("afterend",'<div class="pv-abas" role="tablist"><button type="button" role="tab" data-pv-tab="vivo">Ao vivo</button><button type="button" role="tab" data-pv-tab="classico">Indicadores e simulações</button></div><div id="pvPainel" class="pv"></div>');
-    p=sec.querySelector("#pvPainel");sec.addEventListener("click",clique);sec.addEventListener("input",ev=>{if(ev.target.matches("[data-pv-q]")){q=ev.target.value;const w=p.querySelector(".pv-tab-w");if(w&&dados)w.innerHTML=tabela(recs())}});
+  if(!p){sec.insertAdjacentHTML("afterbegin",'<div id="pvPainel" class="pv"><div class="pv-corpo"></div><div class="pv-fim"></div></div>');
+    p=sec.querySelector("#pvPainel");sec.addEventListener("click",clique);
     sec.addEventListener("keydown",ev=>{const tr=ev.target.closest?.(".pv-tr");if(tr&&(ev.key==="Enter"||ev.key===" ")){ev.preventDefault();tr.click()}})}
-  sec.classList.toggle("pv-ativo",aba==="vivo");sec.querySelectorAll("[data-pv-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.pvTab===aba)));return p}
-function desenhar(){const p=seccao();if(!p)return;if(!dados){p.innerHTML=`<p class="pv-vazio">${erro?esc(erro):"A carregar o painel ao vivo…"}</p>`;return}
-  const foco=document.activeElement?.matches?.("[data-pv-q]");p.innerHTML=html();if(foco){const i=p.querySelector("[data-pv-q]");i.focus();i.setSelectionRange(i.value.length,i.value.length)}}
-function clique(ev){const b=ev.target.closest("[data-pv-tab],[data-pv-ir],[data-pv-viagem],[data-pv-zoom],[data-pv-ecra],[data-pv-atualizar],[data-pv-filtro],[data-pv-ord]");if(!b)return;
-  if(b.dataset.pvTab){aba=b.dataset.pvTab;seccao();return}
-  if(b.dataset.pvIr){const pg=b.dataset.pvIr;try{showAdminPage(pg,document.querySelector(`#sidebar [onclick*="'${pg}'"]`))}catch(_){}return}
+  sec.classList.add("pv-ativo");return p}
+function simulacoes(){const s=document.getElementById("paSimulacoes"),f=document.querySelector("#pvPainel .pv-fim");if(s&&f&&!f.contains(s))f.appendChild(s)}
+function nomeMenu(){const b=document.getElementById("menuDashboard");if(!b||typeof currentUser==="undefined"||currentUser?.role!=="admin")return;
+  for(const n of b.childNodes)if(n.nodeType===3&&/Dashboard/.test(n.textContent))n.textContent=n.textContent.replace("Dashboard","Centro de comando");
+  b.querySelectorAll(".mi-l,span").forEach(x=>{if(x.childElementCount===0&&x.textContent.trim()==="Dashboard")x.textContent="Centro de comando"});
+  const pm=document.getElementById("menuPersonalizar");if(pm&&pm.style.display!=="none")pm.style.display="none"/* o ecrã único tem composição fixa */}
+function desenhar(){const p=seccao();nomeMenu();if(!p)return;const c=p.querySelector(".pv-corpo");if(!dados){c.innerHTML=`<p class="pv-vazio">${erro?esc(erro):"A carregar o centro de comando…"}</p>`;return}
+  c.innerHTML=html();simulacoes()}
+function clique(ev){const b=ev.target.closest("[data-pv-ir],[data-pv-viagem],[data-pv-zoom],[data-pv-ecra],[data-pv-acao],[data-pv-ord],[data-pv-periodo]");if(!b)return;
+  if(b.dataset.pvIr==="adminDirectOrders")return window.elologEncDiretasGestao?.abrir(document.querySelector("#sidebar [data-ed-menu]"));
+  if(b.dataset.pvIr){const pg=b.dataset.pvIr;try{showAdminPage(pg,document.querySelector(`#sidebar [onclick*="'${pg}'"],#sidebar [onclick*='"${pg}"']`))}catch(_){}return}
   if(b.dataset.pvViagem!=null){sel=+b.dataset.pvViagem;zoom=Math.max(zoom,1.8);return desenhar()}
   if(b.dataset.pvZoom){zoom=Math.max(1,Math.min(3.2,zoom+(+b.dataset.pvZoom)*.6));return desenhar()}
   if(b.hasAttribute("data-pv-ecra")){ecra=!ecra;return desenhar()}
-  if(b.hasAttribute("data-pv-atualizar"))return carregar();
-  if(b.hasAttribute("data-pv-filtro")){soServico=!soServico;return desenhar()}
-  if(b.dataset.pvOrd){const k=b.dataset.pvOrd;dir=ord===k?-dir:1;ord=k;const w=document.querySelector("#pvPainel .pv-tab-w");if(w&&dados)w.innerHTML=tabela(recs())}}
+  if(b.dataset.pvPeriodo)return window.painelAdminPeriodo?.(+b.dataset.pvPeriodo);
+  const a=b.dataset.pvAcao;if(a==="contacto")return window.elologPedidoContacto?.();if(a==="auditoria")return window.abrirAuditoria?.();if(a==="ecra")return window.painelAdminApresentar?.();
+  if(a==="atualizar"){window.painelAdminAtualizar?.();window.elologSimulacoesAdmin?.carregar?.();return carregar()}
+  if(b.dataset.pvOrd){const k=b.dataset.pvOrd;dir=ord===k?-dir:1;ord=k;const w=document.querySelector("#pvPainel .pv-tab-w");if(w&&dados)w.innerHTML=tabela(exc())}}
 
 function ligar(){const alvo=document.getElementById("adminDashboardProviders");if(!alvo)return setTimeout(ligar,500);
-  new MutationObserver(()=>{if(alvo.querySelector(".pa-centro")&&!alvo.querySelector("#pvPainel")){desenhar();if(!dados||(dados.demo&&!(dados.recentes||[]).length))carregar()}}).observe(alvo,{childList:true});
-  clearInterval(temp);temp=setInterval(()=>{if(document.visibilityState==="visible"&&document.getElementById("pvPainel")?.offsetParent&&aba==="vivo")carregar()},3e4)}
+  new MutationObserver(()=>{if(alvo.querySelector(".pa-centro")&&!alvo.querySelector("#pvPainel")){desenhar();if(!dados||(dados.demo&&!(dados.recentes||[]).length))carregar()}else simulacoes()}).observe(alvo,{childList:true,subtree:true});
+  clearInterval(temp);temp=setInterval(()=>{if(document.visibilityState==="visible"&&document.getElementById("pvPainel")?.offsetParent)carregar()},3e4)}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",ligar);else ligar();
 window.elologPainelVivo={carregar,desenhar,dados:()=>dados};
 })();

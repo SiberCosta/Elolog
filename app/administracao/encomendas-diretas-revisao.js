@@ -12,7 +12,7 @@ async function rever(e,depois){const j=P().janela({eyebrow:"ENCOMENDA DIRETA "+e
   const docs=[{d:e.documento,t:"Comprovativo"},...(e.anexos||[]).map((a,i)=>({d:a,t:"Documento adicional "+(i+1)}))].filter(x=>x.d);
   const resumo=`<dl class="ed-dados ed-rev-dados"><div><dt>Cliente</dt><dd>${esc(e.cliente_nome)}${e.cliente_email?`<br><small>${esc(e.cliente_email)}</small>`:""}</dd></div>
     <div><dt>Prestador escolhido</dt><dd>${esc(e.prestador)}</dd></div><div><dt>Rota</dt><dd>${esc(e.origem)} → ${esc(e.destino)}</dd></div>
-    <div><dt>Mercadoria</dt><dd>${esc(e.mercadoria)}</dd></div><div><dt>Volumes</dt><dd>${esc(e.volumes)}${e.peso_kg?` · ${esc(e.peso_kg)} kg`:""}${e.volume_m3?` · ${esc(e.volume_m3)} m³`:""}</dd></div>
+    <div><dt>Mercadoria</dt><dd>${esc(e.mercadoria)}</dd></div><div><dt>Volumes</dt><dd>${esc(e.volumes)}${e.peso_kg?`, ${esc(e.peso_kg)} kg`:""}${e.volume_m3?`, ${esc(e.volume_m3)} m³`:""}</dd></div>
     <div><dt>Valor acordado</dt><dd>${eur(e.valor_acordado)}</dd></div><div><dt>Data prevista</dt><dd>${esc(D().data(e.data_prevista))}</dd></div></dl>
     ${e.observacoes?`<p class="ed-obs">${esc(e.observacoes)}</p>`:""}${e.pedido_documentos?`<p class="ed-pedido"><b>À espera do cliente:</b> ${esc(e.pedido_documentos)}</p>`:""}`;
   const pode=ANTES_ENVIO.includes(e.estado),aval=["pendente_validacao","em_analise_admin"].includes(e.estado);

@@ -1,0 +1,68 @@
+/* Elolog — Centro de comando (v103), parte 2: secções claras (etapas, atenção, encomendas, meios, armazéns, rankings) e ecrãs pequenos. */
+.pv-cartao,.pv-faixa{background:#fff;border:1px solid #DCE4EA;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.pv-faixa{padding:22px 24px}
+.pv-cab{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:#5A6E7E}.pv-cab>span{white-space:nowrap}
+.pv-cab-p{margin:4px 0 0;font-size:13.5px;color:#5A6E7E}.pv-vazio-ok{padding:14px 18px 18px;color:#1F6B50}
+.pv-cab h3,.pv-faixa h3{margin:0;font-size:17px;font-weight:650;color:#13293D}
+.pv-faixa-cab{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}.pv-faixa-cab p{margin:4px 0 0;font-size:13.5px;color:#5A6E7E}
+.pv .pv-lig{border:0!important;padding:0!important;min-height:0!important;background:none!important;text-decoration:underline;text-underline-offset:3px}
+.pv-btn,.pv .pv-lig{min-height:32px;padding:0 12px;border-radius:9px;border:1px solid #1F5F8B;background:#fff;color:#1F5F8B!important;font-size:13px!important;font-weight:600;white-space:nowrap}
+.pv-btn:hover,.pv .pv-lig:hover{background:#EEF4F9}
+
+/* onde estão as encomendas: uma barra contínua e as etapas por baixo */
+.pv-faixa-tot{display:flex;align-items:baseline;gap:8px;font-size:13px;color:#5A6E7E}.pv-faixa-tot strong{font-size:28px;font-weight:600;color:#13293D;letter-spacing:-.02em}
+.pv-faixa-sep{width:1px;height:22px;background:#DCE4EA;margin:0 8px;align-self:center}
+.pv-banda{display:flex;gap:3px;height:16px;border-radius:999px;overflow:hidden}.pv-banda i{min-width:6px}
+.pv-etapas{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.pv .pv-et{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:10px 10px 8px;border:1px solid transparent;border-radius:12px;background:none}
+.pv .pv-et:hover{background:#F4F8FB;border-color:#DCE4EA}.pv .pv-et.zero{opacity:.55}
+.pv-et-n{font-size:28px;line-height:1;font-weight:600;letter-spacing:-.02em}
+.pv-et-l{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#4D6172}.pv-et-l i{width:8px;height:8px;border-radius:2px}
+.pv-et small{font-size:12px;color:#7A8D9B}
+
+/* atenção necessária (regras do painel da administração) */
+.pv-atencao .ct-resumo{margin:0;font-size:14px;color:#4D6172}
+.pv-atencao .ct-alertas{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.pv-atencao .ct-alertas li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;align-items:start;padding:14px;border:1px solid #EBDDC2;border-left:4px solid #E0951A;border-radius:12px;background:#FFFBF3;cursor:pointer;margin:0}
+.pv-atencao .ct-alertas li.alta{border-color:#EFC9C1;border-left-color:#C2412D;background:#FFF7F5}
+.pv-atencao .ct-alertas li:hover{box-shadow:0 8px 20px -12px rgba(19,41,61,.35)}
+.pv-atencao .ct-alertas strong{display:block;font-size:14.5px;color:#13293D}.pv-atencao .ct-alertas small{display:block;font-size:13px;color:#5A6E7E;margin-top:2px}
+.pv-atencao .ct-alertas li>:last-child{grid-column:2;justify-self:start;font-size:13px;font-weight:600;color:#1F5F8B}
+.pv-atencao .pa-vazio{margin:0;padding:12px 14px;border-radius:12px;background:#EEF7F2;color:#1F6B50;font-size:14px}
+
+/* encomendas recentes */
+.pv-q{display:flex;align-items:center;gap:8px;border:1px solid #DCE4EA;border-radius:9px;padding:0 10px;min-height:36px;width:min(320px,100%)}
+.pv-q input{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:13px;outline:none;color:#13293D}
+.pv-tab-w{overflow-x:auto;margin:0 -18px -18px}
+.pv-tab{width:100%;min-width:760px;border-collapse:collapse;font-size:14px}
+.pv-tab th{text-align:left;padding:9px 18px;background:#F6F9FB;border-top:1px solid #EDF1F3;border-bottom:1px solid #DCE4EA;white-space:nowrap}
+.pv .pv-th{background:none;border:0;padding:0;min-height:0;display:inline-flex;gap:5px;align-items:center;font-size:13px!important;font-weight:600;color:#4D6172!important}
+.pv-th span{color:#9FB3C2}
+.pv-tab td{padding:11px 18px;border-bottom:1px solid #EDF1F3;vertical-align:middle}.pv-tab tr:last-child td{border-bottom:0}
+.pv-tab td small{display:block;color:#5A6E7E;font-size:12px;margin-top:2px}.pv-tab td:nth-child(4){white-space:nowrap}
+.pv-tr{cursor:pointer}.pv-tr:hover{background:#F6F9FB}
+.pv-tr-ic{display:inline-flex;align-items:center;gap:6px;color:#1F5F8B}
+.pv-pend{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#FBEFD9;color:#8A5300;font-size:11px;font-weight:700;margin-left:4px}
+.pv-pill{display:inline-flex;align-items:center;font-size:12px;font-weight:600;border-radius:999px;padding:3px 9px;border:1px solid;white-space:nowrap}
+.pv-ok{color:#1F6B50;border-color:#9FD1BD;background:#EEF7F2}.pv-amb{color:#8A5300;border-color:#EBC27E;background:#FDF5E7}.pv-verm{color:#A2392A;border-color:#E9B1A6;background:#FCEFEC}
+.pv-cinza{color:#4D6172;border-color:#CFD8DF;background:#F3F6F8}.pv-azul{color:#1F5F8B;border-color:#A9C3D3;background:#EEF4F9}
+
+/* ecrãs mais pequenos */
+@media(max-width:1180px){.pv-heroi-n{grid-template-columns:1fr;gap:18px}.pv-secs{border-left:0}.pv .pv-sec:nth-child(odd){padding-left:0}}
+@media(max-width:1100px){.pv-mapa-g{grid-template-columns:minmax(0,1fr) 290px}.pv-neg-n{grid-template-columns:repeat(3,minmax(0,1fr))}.pv .pv-neg:nth-child(4){border-left:0;padding-left:0}
+  .pv-etapas{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:900px){.pv-mapa-g,.pv-neg-g{grid-template-columns:1fr}.pv-acomp,.pv-mapa.grande+.pv-acomp{max-height:none}.pv-mapa{height:340px}}
+@media(max-width:760px){.pv,.pv-corpo{gap:14px}.pv-serie{gap:5px}.pv-serie small{font-size:10px}.pv-escuro{border-radius:18px;padding:16px 16px 18px}.pv-faixa{padding:16px}.pv-cartao{padding:14px}
+  .pv-acoes{margin-left:0;width:100%}.pv .pv-bt{flex:1 1 auto;justify-content:center}.pv .pv-bt-i{flex:0 0 36px}
+  .pv .pv-sec{padding:10px 12px;grid-template-areas:"r" "n" "d" "s";grid-template-columns:1fr}.pv .pv-sec>.pv-delta{justify-self:start}.pv-receita strong{font-size:52px}
+  .pv-mapa{height:280px}.pv-mapa.grande{height:420px}.pv-legenda,.pv-mapa-t{display:none}
+  .pv-neg-n{grid-template-columns:1fr 1fr}.pv .pv-neg{padding:12px 10px 12px 0!important;border-left:0!important}.pv-etapas{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pv-faixa-tot strong{font-size:22px}.pv-q{width:100%}.pv-cab{flex-wrap:wrap}
+  .pv-tab-w{margin:0;overflow:visible}html body .pv table.pv-tab{min-width:0}html body .pv table.pv-tab tr{margin:0 0 10px;padding:10px 14px;border-color:#DCE4EA}
+  html body .pv table.pv-tab td{align-items:center;font-size:14px}html body .pv table.pv-tab td small{text-align:right}
+  html body .pv table.pv-tab td[data-label]::before{text-transform:none;letter-spacing:0;font-weight:600;font-size:12px}}
+/* simulações dos clientes (bloco já existente, aqui só alinhado com o resto do ecrã) */
+.pv-fim #paSimulacoes{border-radius:18px;border:1px solid #DCE4EA;box-shadow:none;padding:20px 22px}
+.pv-fim .sa-filtros{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:11px;background:#F1F5F8;border:1px solid #DCE4EA}
+.pv-fim .sa-filtros .pa-periodo{min-height:30px!important;padding:0 12px!important;border:0!important;border-radius:8px!important;background:none!important;box-shadow:none!important;color:#4D6172!important;font-size:13px!important;font-weight:600!important}
+.pv-fim .sa-filtros .pa-periodo.ativo{background:#13293D!important;color:#fff!important}

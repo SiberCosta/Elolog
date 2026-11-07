@@ -58,6 +58,73 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v105 (uma só linguagem de cor, botões novos e auditoria de texto)
+
+- **Centro de comando numa só linguagem de cor**: acabaram os painéis escuros. Tudo em superfícies claras, com o azul-escuro da Elolog para texto e ações, verde para o que está concluído e âmbar só para atrasos e risco. O mapa passou a claro (terra em trama de pontos, rotas e navios em azul).
+- **Botões novos em toda a Elolog** (`partilhado/estilos/botoes-vivos.css`, carregado por último na aplicação e no site, e `partilhado/scripts/botoes-vivos.js`):
+  - principal com contorno azul-escuro que se preenche da esquerda para a direita ao passar o rato;
+  - secundário com contorno leve que escurece, ganha fundo suave e sobe ligeiramente;
+  - confirmar (verde) e perigo (vermelho) com a mesma lógica;
+  - ao carregar, o botão cede ligeiramente e nasce uma onda no ponto tocado;
+  - anel de foco visível pelo teclado;
+  - estado «a trabalhar» com o texto visível e um círculo a rodar;
+  - respeita a opção «reduzir movimento» do sistema.
+  Só muda o aspeto: nenhum botão mudou de ação.
+- **Auditoria de texto e visual (retirar o ar de «gerado por máquina»)**:
+  - 557 sinais retirados em 66 ficheiros:
+    - setas no fim de botões («Simular →»);
+    - símbolos colados ao texto (✓ ⚠ ✉ ▦ 📦);
+    - pontos médios a separar dados («A · B»), passados a vírgulas;
+    - travessões, passados a vírgulas ou dois pontos.
+  - As setas de rota (origem → destino) mantêm-se, porque dão informação.
+  - Feito por script só no texto visível (nunca em comentários nem dados estruturados), com as mesmas regras aplicadas ao dicionário de inglês.
+  - Frases feitas reescritas com factos concretos:
+    - capa do site: «Peça preços a vários transitários de uma só vez.» e como funciona;
+    - serviços, rastreio, contacto e rodapé;
+    - entrada na Área de Cliente;
+    - painel do cliente.
+  - «Em tempo real» e «atualização automática» trocados por descrições do que acontece.
+  - Pequenos rótulos por cima dos títulos retirados (incluía um «Centro inteligente»).
+  - Maiúsculas à inglesa corrigidas para português («Como funciona», «Transporte aéreo»).
+  - Letra de máquina de escrever e maiúsculas forçadas retiradas do menu e da capa do site.
+  - «Dashboard» que restava passou a «Painel».
+  - ELO: respostas sem «Entendi»/«Com certeza». **Continua a identificar-se como assistente virtual**, por regra.
+- Testes: 81 páginas abertas nos três perfis e as 3 páginas do site sem erros; todos os botões do Centro de comando executam a sua ação.
+
+## v104 (Centro de comando só com o trabalho da administração)
+
+- **Ficou**:
+  - estado do negócio (receita de hoje, encomendas em curso, prazo, dinheiro em risco, subscrições);
+  - navios com carga Elolog;
+  - **Atenção necessária**, que passa a incluir as **encomendas diretas por tratar** (validação ou decisão da administração, com acesso direto à página);
+  - **Encomendas a acompanhar** (só as que têm atraso, pagamento pendente ou suspensão, com «Ver todas as operações»);
+  - onde estão as encomendas;
+  - negócio no período com as encomendas por semana;
+  - simulações dos clientes.
+- **Saiu**:
+  - meios em serviço (viaturas dos prestadores);
+  - carga nos armazéns;
+  - mapa de calor «Quando chegam os pedidos»;
+  - rotas mais pedidas, prestadores mais ativos e atividade recente;
+  - tabela de todas as encomendas recentes (continua em Operações).
+- Só apresentação: nada foi apagado no servidor; os dados continuam disponíveis nas páginas próprias (Operações, Prestadores, Relatórios).
+
+## v103 (Centro de comando num só ecrã; menu lateral igual em todos os ecrãs)
+
+- **Um só ecrã**: acabaram os separadores «Ao vivo» e «Indicadores e simulações». Tudo o que estava nos dois está no Centro de comando, por esta ordem:
+  - painel escuro com a receita de hoje em grande, encomendas em curso, levantadas no prazo, dinheiro em risco, subscrições por mês, e o mapa noturno do Atlântico com os navios;
+  - «Onde estão as encomendas» (a cadeia logística numa barra contínua, com o número em cada etapa);
+  - «Atenção necessária»;
+  - encomendas recentes;
+  - meios em serviço e carga nos armazéns;
+  - painel escuro «Negócio nos últimos 7, 30 ou 90 dias» (serviços contratados, recibos de subscrição, novos prestadores e clientes, cancelamentos, evolução semanal e as horas a que chegam os pedidos);
+  - rotas mais pedidas, prestadores mais ativos, atividade recente e simulações dos clientes.
+- **Cabeçalho retirado** (título, frase, «atualizado há…» e separadores): as ações «Pedido por contacto», «Auditoria de prestador», «Ecrã inteiro» e «Atualizar» estão na linha de cima do painel escuro.
+- **«Dashboard» passa a «Centro de comando»** na administração, a «Painel» no prestador e a «Início» no cliente (também no título do topo). «Personalizar painel» deixa de aparecer na administração, porque o ecrã único tem composição fixa.
+- **Menu lateral igual no telemóvel e no computador** (capa com o porto, perfil com selo, mesmas opções e assinatura «Elolog • Ligando o mundo»). O menu rola por inteiro e «Sair» fica no fim, sem tapar opções.
+- **Opção ativa nova**: uma aba clara que sai do menu escuro e se liga à área de conteúdo (cantos côncavos), com o ícone num selo azul-escuro. Igual para administração, prestador e cliente.
+- Só apresentação: dados, permissões, fluxos, comissões, planos e ligação Supabase sem alterações. Ficheiros: `app/administracao/painel-vivo.js`, `painel-vivo-seccoes.js` (novo), `painel-vivo-mapa.js`, `painel-vivo.css`, `painel-vivo-2.css` (novo), `painel.js` (só expõe o período e a comparação), `app/comum/menu-movel.css`, `navegacao.js`, `pagina-1.js`, `prestador/menu-lateral.js` e `prestador/equipa-terreno-1.js` (só o nome «Painel»).
+
 ## v102 (Painel ao vivo: apresentação dos conteúdos)
 
 - **Mapa sem nada por cima**: o acompanhamento das viagens passa para uma coluna ao lado do mapa (no telemóvel fica por baixo) e o mapa ganha uma legenda das cores (em rota, chega em breve, atrasado).

@@ -26,7 +26,7 @@
   const item=(k,nome,sub,n,grupo)=>`<li><button type="button" class="ch-contacto${chave(C.atual)===k?" ch-atual":""}" data-ch="${esc(k)}">
     <span class="ch-av${grupo?" ch-av-grupo":""}" aria-hidden="true">${grupo?"👥":esc(iniciais(nome))}</span><span class="ch-txt"><b>${esc(nome)}</b><small>${esc(sub)}</small></span>
     ${n?`<span class="em-contador" aria-label="${n} por ler">${n}</span>`:""}</button></li>`;
-  function lista(){const l=C.contactos;if(l==null)return`<p class="em-vazio">${C.erro?"⚠ "+esc(C.erro):"A carregar a equipa…"}</p>`;
+  function lista(){const l=C.contactos;if(l==null)return`<p class="em-vazio">${C.erro?""+esc(C.erro):"A carregar a equipa…"}</p>`;
     const org=l[0]?.organizacao||"Equipa";
     return`<div class="ch-grupos-topo"><h5 class="ch-org">Grupos</h5><button type="button" class="btn-secondary ch-novo" data-ch-acao="novo">+ Novo grupo</button></div>
       ${C.grupos.length?`<ul class="ch-lista">${C.grupos.map(g=>item("g:"+g.id,g.nome,g.ultima||`${g.membros} membros`,g.por_ler,true)).join("")}</ul>`:'<p class="em-vazio ch-pouco">Ainda não pertence a nenhum grupo.</p>'}
@@ -42,7 +42,7 @@
   function conversa(){if(C.form)return formGrupo();const a=C.atual;if(!a)return'<div class="em-boas"><span aria-hidden="true">💬</span><p>Escolha um colega ou um grupo para conversar.</p></div>';
     const g=a.tipo==="grupo";
     return`<header class="ch-topo"><button type="button" class="btn-secondary em-voltar" data-ch-voltar>‹ Voltar</button><span class="ch-av${g?" ch-av-grupo":""}" aria-hidden="true">${g?"👥":esc(iniciais(a.nome))}</span>
-      <div><b>${esc(a.nome)}</b><small>${g?esc(`${a.membros} membros · ${a.nomes||""}`):esc(`${FUNCAO[a.papel]||a.papel} · ${a.organizacao}`)}</small></div>
+      <div><b>${esc(a.nome)}</b><small>${g?esc(`${a.membros} membros, ${a.nomes||""}`):esc(`${FUNCAO[a.papel]||a.papel}, ${a.organizacao}`)}</small></div>
       ${g?'<span class="ch-topo-acoes"><button type="button" class="btn-secondary" data-ch-acao="adicionar">+ Pessoas</button><button type="button" class="btn-danger" data-ch-acao="sair">Sair</button></span>':""}</header>
       <div class="ch-msgs" aria-live="polite">${msgsHtml()}</div>
       <form class="ch-form"><label class="sr-only" for="chTexto">Mensagem</label><textarea id="chTexto" rows="2" maxlength="2000" placeholder="Escreva uma mensagem… (Enter envia)"></textarea><button type="submit" class="btn-primary">Enviar</button></form>`}

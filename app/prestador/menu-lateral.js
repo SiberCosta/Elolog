@@ -4,7 +4,7 @@
 (function(){
   const I=n=>`<i class="ic ic-${n}" aria-hidden="true"></i>`;
   const AREAS=[
-    ["dashboard","Dashboard","chart",[["Dashboard","showPage('dashboard',this)","dashboard",""]]],
+    ["dashboard","Painel","chart",[["Painel","showPage('dashboard',this)","dashboard",""]]],
     ["op","Operações","box",[["Quadro de encomendas","showProviderPage('providerBoard',this)","providerBoard","view_loads"],["Criar encomenda","openProviderDirectMode('order',this)","providerDirectSimulation","create_order"],
       ["Simular serviço","openProviderDirectMode('simulation',this)","providerDirectSimulation","create_order"],["Atualizar estado","showProviderPage('providerOrder',this)","providerOrder","change_status"],
       ["Aprovar pedidos","showProviderPage('providerAprovacao',this)","providerAprovacao","approve"],["Programar recolhas","showProviderPage('providerRecolha',this)","providerRecolha","view_loads"],
@@ -32,7 +32,7 @@
     ["emp","Empresa e configurações","settings",[["Dados da empresa","showProviderPage('providerSettings',this)","providerSettings","settings",1],["Subscrição","showProviderPage('providerSubscription',this)","providerSubscription","",1],
       ["Pagamentos online","elologPagamentos.config(this)","","settings",1],
       ["O meu perfil","showProviderPage('providerPerfil',this)","providerPerfil",""]]]];
-  const CAMPO=[["Dashboard","dashboard","chart"],["Recolhas","pickups","truck"],["Entregas","deliveries","pin"],["Rota","route","map"],["Pagamentos","payments","euro"],["Ocorrências","incidents","warning"],["Histórico","history","clock"],["O meu perfil","profile","user"]];
+  const CAMPO=[["Painel","dashboard","chart"],["Recolhas","pickups","truck"],["Entregas","deliveries","pin"],["Rota","route","map"],["Pagamentos","payments","euro"],["Ocorrências","incidents","warning"],["Histórico","history","clock"],["O meu perfil","profile","user"]];
   const pode=(perm,soAdmin)=>{try{const f=providerFunction();if(soAdmin&&f!=="admin")return false;return!perm||f==="admin"||hasProviderPermission(perm)}catch(e){return true}};
   const item=([t,ir,pg])=>`<button type="button" data-pagina="${pg}" onclick="${ir}">${t}</button>`;
   window.elologGrupoPrestador=function(id,b){const g=document.getElementById(id);if(!g)return;const abre=!g.classList.contains("open");

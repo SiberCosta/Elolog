@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id),S=()=>window.ELOLogServidor;
 const FUNCAO={admin_empresa:"admin",operador:"operador",operador_terreno:"field_operator",armazem:"armazem",financeiro:"financeiro"};
 const card=document.querySelector("#loginScreen .login-card");if(!card)return;
 card.querySelector("#providerEmployeePage")?.insertAdjacentHTML("afterend",`<div id="providerMfaPage" style="display:none">
-  <span class="auth-step-label">ADMINISTRADOR · PASSO 3 · VERIFICAÇÃO</span><h1 id="mfaTitulo">Código de verificação</h1>
+  <span class="auth-step-label">ADMINISTRADOR, PASSO 3: VERIFICAÇÃO</span><h1 id="mfaTitulo">Código de verificação</h1>
   <p id="mfaTexto">Abra a aplicação de autenticação no telemóvel e escreva o código de 6 dígitos da Elolog.</p>
   <div id="mfaRegisto" hidden><ol class="mfa-passos"><li>Instale no telemóvel uma aplicação de autenticação (Google Authenticator, Microsoft Authenticator ou Authy).</li>
     <li>Na aplicação, escolha «Adicionar conta» e leia este código QR.</li><li>Escreva abaixo o código de 6 dígitos que a aplicação mostrar.</li></ol>

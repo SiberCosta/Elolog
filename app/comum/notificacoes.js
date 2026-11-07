@@ -24,7 +24,7 @@ window.renderNotificationCenter=function(){const all=visibleOperationNotificatio
 box=document.getElementById("notificationList"),bell=document.getElementById("notificationBell");if(count){count.textContent=unread.length>99?"99+":unread.length;count.hidden=!unread.length}bell?.classList.toggle("tem-urgente",!!urg.length);
 const cab=document.querySelector("#notificationPanel .notification-panel-head");if(cab&&!cab.dataset.nt){cab.dataset.nt=1;
 cab.innerHTML='<div><h3>Notificações</h3><span class="nt-sub"></span></div><button type="button" onclick="markAllNotificationsRead()">Marcar todas como lidas</button>'}const sub=cab?.querySelector(".nt-sub");
-if(sub)sub.textContent=urg.length?`${unread.length} por ler · ${urg.length} urgente${urg.length>1?"s":""}`:unread.length?`${unread.length} por ler`:"Tudo em dia";if(!box)return;if(!box.previousElementSibling?.classList.contains("nt-barra")){
+if(sub)sub.textContent=urg.length?`${unread.length} por ler, ${urg.length} urgente${urg.length>1?"s":""}`:unread.length?`${unread.length} por ler`:"Tudo em dia";if(!box)return;if(!box.previousElementSibling?.classList.contains("nt-barra")){
 const bar2=document.createElement("div");bar2.className="nt-barra";
 bar2.innerHTML='<button type="button" data-t="todas">Todas</button><button type="button" data-t="nao">Não lidas</button><button type="button" data-t="urg">Urgentes</button><button type="button" class="nt-cfg" data-t="cfg" aria-label="Preferências de alertas" title="Preferências de alertas">⚙</button>';
 bar2.onclick=e=>{const b=e.target.closest("button");if(!b)return;e.stopPropagation();tab=b.dataset.t==="cfg"?tab==="cfg"?"todas":"cfg":b.dataset.t;renderNotificationCenter()};box.before(bar2)}const bar=box.previousElementSibling;

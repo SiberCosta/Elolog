@@ -14,7 +14,7 @@ const CODIGO=/\b(?:TR|EL|ENC|ORD)-\d{4,12}(?:-\d{4,8})?\b/i;
 
 const T={
 pt:{eu:"Sou o ELO, o assistente virtual da Elolog: um programa automático, não uma pessoa. Se preferir, escreva «falar com uma pessoa» e passo o assunto à equipa.",
- humano:"Com certeza. Preparei um resumo (sem dados pessoais) para a equipa Elolog. Toque em «Escrever à equipa» — uma pessoa responde-lhe.",
+ humano:"Preparei um resumo (sem dados pessoais) para a equipa Elolog. Toque em «Escrever à equipa», uma pessoa responde-lhe.",
  pagar:"Por segurança, não recebo pagamentos nem dados de pagamento. Pague apenas na página «Pagamentos» da sua conta, pelo valor calculado pela plataforma.",
  sensivel:"Por favor, não partilhe dados de cartão, IBAN ou palavras-passe no chat. Ocultei essa informação e não a guardei.",
  aprovarAdmin:"Não aprovo prestadores automaticamente. A aprovação é feita por um administrador, depois de verificar os documentos, em «Pedidos de inscrição». Vou abrir a página.",
@@ -37,7 +37,7 @@ pt:{eu:"Sou o ELO, o assistente virtual da Elolog: um programa automático, não
  ola:n=>`Olá${n}! Sou o ELO, o assistente virtual da Elolog. Em que posso ajudar?`,
  opcoes:"Claro. Escolha uma opção ou escreva o seu pedido."},
 en:{eu:"I'm ELO, Elolog's virtual assistant: an automated program, not a person. If you prefer, type “talk to a person” and I'll pass it to the team.",
- humano:"Of course. I've prepared a summary (without personal data) for the Elolog team. Tap “Write to the team” — a person will reply.",
+ humano:"Of course. I've prepared a summary (without personal data) for the Elolog team. Tap “Write to the team”, a person will reply.",
  pagar:"For security, I don't take payments or payment details. Pay only on the “Payments” page of your account, for the amount calculated by the platform.",
  sensivel:"Please don't share card details, IBAN or passwords in the chat. I've hidden that information and haven't stored it.",
  aprovarAdmin:"I don't approve providers automatically. An administrator approves them after checking the documents, in “Registration requests”. Opening the page.",
@@ -61,7 +61,7 @@ en:{eu:"I'm ELO, Elolog's virtual assistant: an automated program, not a person.
  ola:n=>`Hello${n}! I'm ELO, Elolog's virtual assistant. How can I help?`,
  opcoes:"Sure. Choose an option or type your request."},
 fr:{eu:"Je suis ELO, l'assistant virtuel d'Elolog : un programme automatique, pas une personne. Si vous préférez, écrivez « parler à une personne ».",
- humano:"Bien sûr. J'ai préparé un résumé (sans données personnelles) pour l'équipe Elolog. Touchez « Écrire à l'équipe » — une personne vous répondra.",
+ humano:"Bien sûr. J'ai préparé un résumé (sans données personnelles) pour l'équipe Elolog. Touchez « Écrire à l'équipe », une personne vous répondra.",
  pagar:"Par sécurité, je ne reçois ni paiements ni données de paiement. Payez uniquement sur la page « Paiements » de votre compte, au montant calculé par la plateforme.",
  sensivel:"Merci de ne pas partager de carte bancaire, d'IBAN ou de mot de passe dans le chat. J'ai masqué ces informations et je ne les ai pas gardées.",
  aprovarAdmin:"Je n'approuve pas les prestataires automatiquement. Un administrateur les approuve après vérification des documents, dans « Demandes d'inscription ». J'ouvre la page.",
@@ -88,9 +88,9 @@ const t=k=>T[L][k]??T.pt[k];
 const ESTADOS={pt:{aprovacao:"a aguardar aprovação",agendamento:"agendamento",recolha:"recolha",armazenamento:"em armazém",expedicao:"expedição",em_transito:"em trânsito",destino:"no destino",entregue:"entregue",cancelada:"cancelada"},
  en:{aprovacao:"awaiting approval",agendamento:"scheduling",recolha:"pickup",armazenamento:"in warehouse",expedicao:"dispatch",em_transito:"in transit",destino:"at destination",entregue:"delivered",cancelada:"cancelled"},
  fr:{aprovacao:"en attente d'approbation",agendamento:"planification",recolha:"enlèvement",armazenamento:"en entrepôt",expedicao:"expédition",em_transito:"en transit",destino:"à destination",entregue:"livrée",cancelada:"annulée"}};
-const CHIPS={pt:["Falar com uma pessoa","Terminar conversa","Idioma · Language · Langue"],
- en:["New simulation","Order status","Talk to a person","End chat","Idioma · Language · Langue"],
- fr:["Nouvelle simulation","Suivi de commande","Parler à une personne","Terminer la conversation","Idioma · Language · Langue"]};
+const CHIPS={pt:["Falar com uma pessoa","Terminar conversa","Idioma / Language / Langue"],
+ en:["New simulation","Order status","Talk to a person","End chat","Idioma / Language / Langue"],
+ fr:["Nouvelle simulation","Suivi de commande","Parler à une personne","Terminer la conversation","Idioma / Language / Langue"]};
 
 /* 9 — dados pessoais ocultados antes de guardar ou enviar o resumo à equipa */
 function ocultar(s){return String(s||"").replace(/\b[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]){11,30}\b/g,"[IBAN]").replace(/\b(?:\d[ -]?){13,19}\b/g,"[cartão]")

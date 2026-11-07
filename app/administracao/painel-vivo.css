@@ -1,120 +1,91 @@
-/* Elolog — Painel ao vivo (v102). Cores da marca: #13293D (mar), #1F5F8B (corrente), #1F7A5C (concluído), âmbar só para atrasos e risco.
-   Composição: números → mapa com acompanhamento ao lado → encomendas (largura total) → meios e armazéns. */
-.pa-centro.pv-ativo>:not(.pa-cabecalho):not(.pv-abas):not(#pvPainel):not(.cm-painel){display:none!important}
-.pa-centro:not(.pv-ativo) #pvPainel{display:none}
-.pv-abas{display:flex;gap:4px;border-bottom:1px solid #DCE4EA;margin:4px 0 18px}
-.pv-abas button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;font:inherit;font-size:14px;font-weight:600;color:#4D6172;cursor:pointer}
-.pv-abas button[aria-selected=true]{color:#13293D;border-bottom-color:#1F5F8B}
-
-.pv{display:flex;flex-direction:column;gap:18px;color:#13293D;font-variant-numeric:tabular-nums;text-align:left}
+/* Elolog — Centro de comando (v105), parte 1: base, estado do negócio, mapa e negócio no período.
+   Uma só linguagem de cor: superfícies claras, texto #13293D, ação #1F5F8B, concluído #1F7A5C, âmbar #C27A12 só para atrasos e risco. */
+.pa-centro.pv-ativo>:not(#pvPainel){display:none!important}.pa-centro.pv-ativo{padding-top:0!important;margin-top:0!important}
+.pv{display:flex;flex-direction:column;gap:20px;color:#13293D;font-variant-numeric:tabular-nums;text-align:left}
+.pv-corpo{display:flex;flex-direction:column;gap:20px;min-width:0}
+.pv-fim:empty{display:none}.pv-fim #paSimulacoes{margin:0}
 .pv button{font:inherit;color:inherit;cursor:pointer;text-align:left}
 .pv button:focus-visible,.pv input:focus-visible,.pv .pv-tr:focus-visible{outline:2px solid #1F5F8B;outline-offset:2px}
 .pv-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.pv-topo{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-.pv-vivo{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#1F6B50;background:#E6F2EC;border-radius:999px;padding:5px 11px}
+.pv-vazio{margin:0;padding:16px 4px;color:#4D6172;font-size:14px}
+
+/* painéis principais (a classe .pv-escuro mantém-se no HTML; o aspeto é claro como o resto) */
+.pv-escuro{position:relative;border-radius:22px;padding:22px 26px 26px;color:#13293D;background:#fff;border:1px solid #DCE4EA}
+.pv-escuro h3{margin:0;font-size:18px;font-weight:650;color:#13293D}.pv-escuro h4{margin:0 0 12px;font-size:14px;font-weight:600;color:#4D6172}
+.pv-barra-sup{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.pv-vivo{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1F6B50}
 .pv-vivo i{width:8px;height:8px;border-radius:50%;background:#1F7A5C}
 .pv-erro{font-size:13px;color:#A2392A}
-.pv-btn{min-height:34px;padding:0 12px;border-radius:9px;border:1px solid #1F5F8B;background:#fff;color:#1F5F8B!important;font-size:13px!important;font-weight:600;white-space:nowrap}
-.pv-topo .pv-btn{margin-left:auto}
-.pv-btn:hover{background:#EEF4F9}
+.pv-acoes{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.pv .pv-bt-i{width:40px;padding:0!important;justify-content:center}
+.pv-bt svg,.pv-btn-i svg{display:block;flex:0 0 auto;max-width:none}
 
-/* números do negócio */
-.pv-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.pv .pv-kpi{background:#fff;border:1px solid #DCE4EA;border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:10px}
-.pv-kpi:hover{border-color:#9FBCCD;box-shadow:0 6px 18px rgba(19,41,61,.06)}
-.pv-kpi-t{display:flex;align-items:center;gap:8px;font-size:14px;color:#4D6172}
-.pv-kpi strong{font-size:32px;line-height:1.05;font-weight:650;letter-spacing:-.01em}
-.pv-kpi-b{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px;font-size:13px;line-height:1.35;color:#5A6E7E;border-top:1px solid #EDF1F3;padding-top:10px;margin-top:auto}
-.pv-kpi-b>span{flex:1 1 150px}.pv-delta{flex:0 0 auto;font-size:12px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}
+/* números de agora: a receita em grande, os outros ao lado */
+.pv-heroi-n{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:36px;align-items:center;margin:26px 0 26px}
+.pv .pv-receita{display:flex;flex-direction:column;align-items:flex-start;gap:6px;background:none;border:0;padding:0;color:#13293D}
+.pv-rot{font-size:15px;color:#4D6172}
+.pv-receita strong{font-size:clamp(54px,6.2vw,92px);line-height:.95;font-weight:600;letter-spacing:-.035em;transition:color .2s}
+.pv .pv-receita:hover strong{color:#1F5F8B}
+.pv-rec-d{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:#4D6172;margin-top:6px}
+.pv-secs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-left:1px solid #E3EAF0}
+.pv .pv-sec{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"r r" "n d" "s s";align-items:end;gap:4px 10px;background:none;border:0;padding:12px 22px;color:#13293D;border-radius:0}
+.pv .pv-sec:nth-child(odd){border-right:1px solid #E3EAF0}.pv .pv-sec:nth-child(-n+2){border-bottom:1px solid #E3EAF0}
+.pv-sec>span{grid-area:r}.pv-sec>strong{grid-area:n}.pv-sec>small{grid-area:s}.pv-sec>.pv-delta{grid-area:d;justify-self:end;align-self:center}.pv .pv-sec:hover strong{color:#1F5F8B}
+.pv-sec span{font-size:13px;color:#4D6172}.pv-sec strong{font-size:clamp(26px,2.4vw,34px);line-height:1.05;font-weight:600;letter-spacing:-.02em;transition:color .2s}
+.pv-sec small{font-size:12.5px;color:#5A6E7E;line-height:1.35}
+.pv-delta{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}
 .pv-delta.pv-ok{background:#E6F2EC;color:#1F6B50}.pv-delta.pv-verm{background:#FCEFEC;color:#A2392A}.pv-delta.pv-amb{background:#FBEFD9;color:#8A5300}.pv-delta.pv-cinza{background:#F3F6F8;color:#4D6172}
-.pv-ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto}
-.pv-ic-ok{background:#E6F2EC;color:#1F7A5C}.pv-ic-azul{background:#E6EFF6;color:#1F5F8B}.pv-ic-mar{background:#E9EEF2;color:#13293D}.pv-ic-amb{background:#FBEFD9;color:#8A5300}
 
-/* cartões */
-.pv-linha{display:flex;flex-wrap:wrap;gap:18px;align-items:stretch}
-.pv-cartao{background:#fff;border:1px solid #DCE4EA;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
-.pv-meios-c{flex:999 1 560px}.pv-lado{flex:1 1 300px}
-.pv-cab{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;color:#5A6E7E}
-.pv-cab>span{white-space:nowrap}.pv-cab h3{margin:0;font-size:16px;font-weight:650;color:#13293D}
-
-/* mapa e acompanhamento lado a lado */
-.pv-mapa-g{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;align-items:stretch}
-.pv-mapa{position:relative;height:440px;border-radius:10px;overflow:hidden;background:#DCE8EF}.pv-mapa.grande{height:640px}
+/* mapa (terra em trama de pontos) e navios */
+.pv-mapa-g{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px}
+.pv-mapa{position:relative;height:440px;border-radius:16px;overflow:hidden;background:#EAF1F6;border:1px solid #DCE4EA}.pv-mapa.grande{height:640px}
 .pv .pv-svg{position:absolute;inset:0;width:100%;height:100%!important;max-width:none;font-family:inherit;display:block}
 .pv-zoom{position:absolute;left:12px;top:12px;display:flex;flex-direction:column;gap:6px}
-.pv .pv-btn-i{width:34px;height:34px;min-height:0;padding:0;border-radius:9px;border:1px solid #DCE4EA;background:#fff;font-size:18px!important;display:grid;place-items:center;text-align:center}
-.pv .pv-btn-i svg{display:block;width:15px;min-width:15px;max-width:none;height:15px}
-.pv-btn-i:hover{background:#EEF4F9}
-.pv-legenda{position:absolute;left:12px;bottom:12px;display:flex;flex-wrap:wrap;gap:12px;background:rgba(255,255,255,.92);border-radius:8px;padding:6px 10px;font-size:12px;color:#4D6172}
+.pv .pv-btn-i{width:34px;height:34px;min-height:0;padding:0;border-radius:9px;border:1px solid #C9D6E0;background:#fff;color:#13293D;font-size:18px!important;display:grid;place-items:center;text-align:center;transition:background-color .15s,color .15s,transform .15s}
+.pv .pv-btn-i:hover{background:#13293D;color:#fff}.pv .pv-btn-i:active{transform:scale(.94)}.pv .pv-btn-i svg{width:15px;height:15px}
+.pv-legenda{position:absolute;left:12px;bottom:12px;display:flex;flex-wrap:wrap;gap:12px;background:rgba(255,255,255,.92);border:1px solid #DCE4EA;border-radius:8px;padding:6px 10px;font-size:12px;color:#4D6172}
 .pv-legenda span{display:inline-flex;align-items:center;gap:6px}.pv-legenda i{width:9px;height:9px;border-radius:50%}
-.pv-acomp{display:flex;flex-direction:column;min-height:0;max-height:440px;border:1px solid #EDF1F3;border-radius:10px;overflow:hidden}
+.pv-mapa-t{position:absolute;right:14px;top:12px;font-size:12px;color:#5A6E7E}
+.pv-acomp{display:flex;flex-direction:column;min-height:0;max-height:440px;border-radius:16px;background:#F7FAFC;border:1px solid #DCE4EA;overflow:hidden}
 .pv-mapa.grande+.pv-acomp{max-height:640px}
-.pv-acomp>.pv-cab{padding:11px 14px;border-bottom:1px solid #EDF1F3;background:#F8FAFB}.pv-acomp>.pv-cab strong{color:#13293D;font-size:14px}
+.pv-acomp-c{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #E3EAF0;font-size:13px;color:#5A6E7E}.pv-acomp-c strong{color:#13293D;font-size:14px}
 .pv-acomp-l{padding:10px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
-.pv-viagem{border:1.5px solid #EDF1F3;border-radius:10px;flex-shrink:0}.pv-viagem.on{border-color:#1F5F8B;background:#FAFCFD}
-.pv .pv-viagem-b{display:flex;flex-direction:column;align-items:stretch;gap:8px;width:100%;background:none;border:0;padding:12px}
+.pv-viagem{border:1px solid #E3EAF0;border-radius:12px;flex-shrink:0;background:#fff;transition:border-color .15s,box-shadow .15s}.pv-viagem:hover{border-color:#A9C3D3}
+.pv-viagem.on{border-color:#1F5F8B;box-shadow:0 0 0 3px rgba(31,95,139,.12)}
+.pv .pv-viagem-b{display:flex;flex-direction:column;align-items:stretch;gap:8px;width:100%;background:none;border:0;padding:12px;color:#13293D}
 .pv-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.pv-row strong small{font-weight:500;color:#5A6E7E}
+.pv-viagem .pv-row strong small{font-weight:500;color:#5A6E7E}
 .pv-rota{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;font-size:13px}
-.pv-barra{position:relative;height:3px;background:#DCE4EA;border-radius:2px}.pv-barra i{position:absolute;left:0;top:0;height:3px;border-radius:2px}
+.pv-barra{position:relative;height:3px;background:#E3EAF0;border-radius:2px}.pv-barra i{position:absolute;left:0;top:0;height:3px;border-radius:2px}
 .pv-barra .pv-pt{top:-4px;width:10px;height:10px;border-radius:50%;background:#fff;border:2.5px solid;box-sizing:border-box}
-.pv-sub{font-size:12px;color:#5A6E7E}
+.pv-viagem .pv-sub{font-size:12px;color:#5A6E7E}
 .pv-1l{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pv-pos{font-size:11.5px;font-weight:600;border-radius:6px;padding:1px 6px}.pv-pos-ais{background:#E6F2EC;color:#1F6B50}.pv-pos-est{background:#F3F6F8;color:#4D6172}
+.pv-pos{font-size:11.5px;font-weight:600;border-radius:6px;padding:1px 6px}.pv-pos-ais{background:#E6F2EC;color:#1F6B50}.pv-pos-est{background:#F1F5F8;color:#4D6172}
 .pv-codigos{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 12px}
-.pv .pv-cod{min-height:0;line-height:1.3;border:1px solid #A9C3D3;border-radius:7px;background:#F3F7FA;padding:4px 8px;font-size:12px!important;font-weight:600;color:#1F5F8B!important}
-.pv-cod:hover{background:#E6EFF6}
+.pv .pv-cod{min-height:0;line-height:1.3;border:1px solid #A9C3D3;border-radius:7px;background:#F3F7FA;padding:4px 8px;font-size:12px!important;font-weight:600;color:#1F5F8B!important;transition:background-color .15s,color .15s}
+.pv .pv-cod:hover{background:#1F5F8B;color:#fff!important}
 
-/* meios em serviço: lista compacta em duas colunas */
-.pv-meios{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
-.pv .pv-meio{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;justify-content:stretch;border:1px solid #EDF1F3;border-radius:12px;padding:10px 12px;background:#fff}
-.pv-meio:hover{border-color:#9FBCCD}
-.pv-meio-ic{width:40px;height:40px;border-radius:10px;background:#EEF3F7;color:#1F5F8B;display:grid;place-items:center}
-.pv .pv-meio-t{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;font-size:13px;color:#4D6172}
-.pv-meio-t strong{font-size:15px;color:#13293D}
-.pv-meio-t span{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pv-meio-e{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:12px;color:#5A6E7E;white-space:nowrap}
-.pv-pill{display:inline-flex;align-items:center;font-size:12px;font-weight:600;border-radius:999px;padding:3px 9px;border:1px solid;white-space:nowrap}
-.pv-ok{color:#1F6B50;border-color:#9FD1BD;background:#EEF7F2}.pv-amb{color:#8A5300;border-color:#EBC27E;background:#FDF5E7}.pv-verm{color:#A2392A;border-color:#E9B1A6;background:#FCEFEC}
-.pv-cinza{color:#4D6172;border-color:#CFD8DF;background:#F3F6F8}.pv-azul{color:#1F5F8B;border-color:#A9C3D3;background:#EEF4F9}
-
-/* encomendas recentes: largura total */
-.pv-q{display:flex;align-items:center;gap:8px;border:1px solid #DCE4EA;border-radius:9px;padding:0 10px;min-height:36px;width:min(320px,100%)}
-.pv-q input{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:13px;outline:none;color:#13293D}
-.pv-tab-w{overflow-x:auto;margin:0 -16px -16px}
-.pv-tab{width:100%;min-width:760px;border-collapse:collapse;font-size:14px}
-.pv-tab th{text-align:left;padding:9px 16px;background:#F6F9FB;border-top:1px solid #EDF1F3;border-bottom:1px solid #DCE4EA;white-space:nowrap}
-.pv .pv-th{background:none;border:0;padding:0;min-height:0;display:inline-flex;gap:5px;align-items:center;font-size:13px!important;font-weight:600;color:#4D6172!important}
-.pv-th span{color:#9FB3C2}
-.pv-tab td{padding:11px 16px;border-bottom:1px solid #EDF1F3;vertical-align:middle}
-.pv-tab tr:last-child td{border-bottom:0}
-.pv-tab td small{display:block;color:#5A6E7E;font-size:12px;margin-top:2px}
-.pv-tab td:nth-child(4){white-space:nowrap}
-.pv-tr{cursor:pointer}.pv-tr:hover{background:#F6F9FB}
-.pv-tr-ic{display:inline-flex;align-items:center;gap:6px;color:#1F5F8B}
-.pv-pend{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#FBEFD9;color:#8A5300;font-size:11px;font-weight:700;margin-left:4px}
-
-/* armazéns */
-.pv .pv-arm{display:flex;flex-direction:column;align-items:stretch;gap:7px;background:none;border:0;padding:4px 0;font-size:14px}
-.pv-arm small{color:#5A6E7E;font-size:12px}
-.pv-arm-b{height:14px;border-radius:5px;overflow:hidden;background:repeating-linear-gradient(135deg,#EEF3F7 0 6px,#E3EAF0 6px 12px)}
-.pv-arm-b i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#13293D,#1F5F8B);transition:width .8s ease}
-.pv-vazio{margin:0;padding:16px 4px;color:#4D6172;font-size:14px}
+/* negócio no período */
+.pv-esc-cab{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px}
+.pv-pers{display:inline-flex;padding:3px;border-radius:11px;background:#F1F5F8;border:1px solid #DCE4EA}
+.pv .pv-per{min-height:30px;padding:0 12px;border:0;border-radius:8px;background:none;color:#4D6172;font-size:13px;font-weight:600;transition:background-color .2s,color .2s}
+.pv .pv-per:hover{color:#13293D}.pv .pv-per.on{background:#13293D;color:#fff}
+.pv-neg-n{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:22px 0 26px;border-top:1px solid #E3EAF0;border-bottom:1px solid #E3EAF0}
+.pv .pv-neg{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:16px 16px 16px 0;background:none;border:0;color:#13293D;border-radius:0}
+.pv .pv-neg+.pv-neg{padding-left:16px;border-left:1px solid #E3EAF0}
+.pv-neg span{font-size:13px;color:#4D6172}.pv-neg strong{font-size:clamp(22px,2.2vw,30px);font-weight:600;letter-spacing:-.02em;line-height:1.05;transition:color .2s}.pv .pv-neg:hover strong{color:#1F5F8B}
+.pv-neg-g{display:grid;grid-template-columns:minmax(0,1fr);gap:28px}
+.pv-serie{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(8,1fr);gap:14px;align-items:end;height:130px}
+.pv-serie li{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:100%}
+.pv-serie b{font-size:12px;font-weight:600;color:#4D6172}.pv-serie i{width:100%;max-width:64px;border-radius:6px 6px 2px 2px;background:#B9CEDD;transition:background-color .2s}
+.pv-serie li:hover i{background:#1F5F8B}
+.pv-serie li.atual i{background:repeating-linear-gradient(135deg,#1F5F8B 0 5px,#7FA9C6 5px 10px)}.pv-serie small{font-size:11px;color:#5A6E7E}
+.pv-nota{margin:10px 0 0;font-size:12px;color:#5A6E7E}
 
 @media (prefers-reduced-motion:no-preference){
 .pv-vivo i{animation:pvVivo 1.6s ease-out infinite}
 .pv-fluxo{stroke-dasharray:3 12;animation:pvFluxo 2.6s linear infinite}
 .pv-onda{animation:pvOnda 2.4s ease-out infinite;transform-box:fill-box;transform-origin:center}}
-@keyframes pvVivo{0%{box-shadow:0 0 0 0 rgba(31,122,92,.55)}100%{box-shadow:0 0 0 9px rgba(31,122,92,0)}}
+@keyframes pvVivo{0%{box-shadow:0 0 0 0 rgba(31,122,92,.5)}100%{box-shadow:0 0 0 9px rgba(31,122,92,0)}}
 @keyframes pvFluxo{to{stroke-dashoffset:-30}}
 @keyframes pvOnda{0%{transform:scale(.7);opacity:.5}100%{transform:scale(2.6);opacity:0}}
-
-@media(max-width:1180px){.pv-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.pv-mapa-g{grid-template-columns:minmax(0,1fr) 300px}}
-@media(max-width:900px){.pv-mapa-g{grid-template-columns:1fr}.pv-acomp,.pv-mapa.grande+.pv-acomp{max-height:none}.pv-mapa{height:340px}}
-@media(max-width:760px){.pv-kpis{gap:10px}.pv .pv-kpi{padding:12px}.pv-kpi strong{font-size:23px}.pv-kpi-b{flex-direction:column;align-items:flex-start}
-  .pv-mapa{height:280px}.pv-mapa.grande{height:420px}.pv-legenda{display:none}.pv-cartao{padding:14px}.pv-tab-w{margin:0 -14px -14px}
-  .pv-cab{flex-wrap:wrap}.pv-q{width:100%}.pv-meios{grid-template-columns:1fr}
-  /* em telemóvel a tabela passa a cartões (regra geral da plataforma); aqui só se ajusta ao painel */
-  .pv-tab-w{margin:0;overflow:visible}html body .pv table.pv-tab{min-width:0}html body .pv table.pv-tab tr{margin:0 0 10px;padding:10px 14px;border-color:#DCE4EA}
-  html body .pv table.pv-tab td{align-items:center;font-size:14px}html body .pv table.pv-tab td small{text-align:right}
-  html body .pv table.pv-tab td[data-label]::before{text-transform:none;letter-spacing:0;font-weight:600;font-size:12px}}

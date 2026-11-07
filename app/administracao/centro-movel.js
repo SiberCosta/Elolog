@@ -26,17 +26,17 @@ function painel(d){const{num,eur}=I(),n=v=>num?num(v):String(v),e=d.encomendas||
   const hoje=new Date().toLocaleDateString("pt-PT",{weekday:"long",day:"numeric",month:"long"});const hojeT=hoje.charAt(0).toUpperCase()+hoje.slice(1);
   const ops=(d.operacoes_recentes||[]).slice(0,5).map(o=>`<li><button type="button" data-ficha="${esc(o.ref)}"><span class="cm-ref">${esc(o.ref)}</span>
     <span class="cm-rota">${esc(o.origem)} <i aria-hidden="true">→</i> ${esc(o.destino)}</span><span class="work-status ct-est ${cor(o.estado)}">${esc(o.estado)}</span>
-    <small>${esc(o.cliente)} · ${esc(atras(o.quando))}</small></button></li>`).join("");
+    <small>${esc(o.cliente)}, ${esc(atras(o.quando))}</small></button></li>`).join("");
   return`<div class="cm-painel" aria-label="Resumo do centro de comando">
   <section class="cm-hero"><p class="cm-ola">Olá${nome?", "+esc(nome):""} <span>· ${esc(hojeT)}</span></p>
     <div class="cm-grande"><strong>${n(e.em_curso||0)}</strong><span>operações em curso<br><b>${eur?eur(e.valor_em_curso||0):""}</b></span></div>
     <div class="cm-barra" role="img" aria-label="Operações por etapa">${barra}</div><div class="cm-etapas">${legenda}</div></section>
   <div class="cm-estado">
-    <button type="button" class="cm-pill ${espera?"amb":"ok"}" onclick="document.getElementById('pw-alertas')?.scrollIntoView({behavior:'smooth'})">${espera?`<b>${n(espera)}</b> a aguardar ação`:"✓ Tudo em ordem"}</button>
+    <button type="button" class="cm-pill ${espera?"amb":"ok"}" onclick="document.getElementById('pw-alertas')?.scrollIntoView({behavior:'smooth'})">${espera?`<b>${n(espera)}</b> a aguardar ação`:"Tudo em ordem"}</button>
     ${urg?`<button type="button" class="cm-pill verm" onclick="document.getElementById('pw-alertas')?.scrollIntoView({behavior:'smooth'})"><b>${n(urg)}</b> ${urg===1?"assunto urgente":"assuntos urgentes"}</button>`:""}
     <button type="button" class="cm-pill" onclick="showAdminPage('adminBilling')"><b>${eur?eur(s.mrr||0):""}</b> / mês</button></div>
   <nav class="cm-atalhos" aria-label="Atalhos">${ATALHOS.map(([ic,t,acao,m])=>`<button type="button" onclick="${acao}"><span class="cm-ic">${icone(ic)}${marca[m]?`<em>${marca[m]>99?"99+":marca[m]}</em>`:""}</span>${esc(t)}</button>`).join("")}</nav>
-  ${ops?`<section class="cm-ops"><div class="cm-tit"><h4>Últimas operações</h4><button type="button" onclick="showAdminPage('adminOperations')">Ver todas →</button></div><ul>${ops}</ul></section>`:""}</div>`}
+  ${ops?`<section class="cm-ops"><div class="cm-tit"><h4>Últimas operações</h4><button type="button" onclick="showAdminPage('adminOperations')">Ver todas</button></div><ul>${ops}</ul></section>`:""}</div>`}
 
 function aplicar(){const alvo=document.getElementById("adminDashboardProviders"),sec=alvo?.querySelector(".pa-centro");
   document.body.classList.toggle("cm-movel",telemovel.matches);if(!sec)return;sec.querySelector(".cm-painel")?.remove();

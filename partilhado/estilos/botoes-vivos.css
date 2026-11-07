@@ -1,0 +1,64 @@
+/* Elolog — botões (v105). Camada final, carregada por último em todas as páginas: substitui o aspeto das camadas anteriores
+   (botoes-base, botoes, profissional, acabamento, identidade) sem mexer em tamanhos nem posições.
+   Linguagem única de contorno: o principal preenche-se da esquerda para a direita ao passar o rato; ao carregar, o botão cede
+   ligeiramente e uma onda nasce no ponto tocado (botoes-vivos.js). Os botões da capa do site (sobre fotografia) mantêm o seu efeito. */
+:root{--bv-tinta:#13293D;--bv-acao:#1F5F8B;--bv-acao-esc:#174B6E;--bv-fio:#C9D6E0;--bv-fundo:#F4F8FB;--bv-ok:#1F7A5C;--bv-perigo:#B83A3A;--bv-anel:rgba(31,95,139,.28);
+  --bv-curva:cubic-bezier(.2,.7,.2,1)}
+
+/* base comum a todos os botões de ação */
+html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.btn-register-profile,.sim-add-button,.employee-action,.pa-botao,.ct-btn,.btn-selecionar-prestador,.pv-btn):not(.hero .hero-btn){
+  border-radius:10px!important;font-weight:650!important;letter-spacing:0!important;text-transform:none!important;box-shadow:none!important;background-repeat:no-repeat!important;
+  background-position:0 0!important;background-size:0% 100%!important;
+  transition:background-size .3s var(--bv-curva),background-color .2s,color .14s linear .07s,border-color .2s,box-shadow .2s,transform .14s var(--bv-curva)!important}
+html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.btn-register-profile,.sim-add-button,.employee-action,.pa-botao,.ct-btn,.btn-selecionar-prestador,.pv-btn) :is(svg,i.ic){transition:transform .25s var(--bv-curva)}
+
+/* principal: contorno azul-escuro, preenche-se ao passar o rato */
+html:not(#bv) body :is(.btn-primary,.primary-btn,.btn-search,.btn-register-profile,.pa-botao-forte,.btn-selecionar-prestador,.btn-simulate:not(.hero *)){
+  color:var(--bv-tinta)!important;border:1.5px solid var(--bv-tinta)!important;background-color:#fff!important;background-image:linear-gradient(var(--bv-tinta),var(--bv-tinta))!important}
+/* secundário: contorno leve; ao passar o rato ganha o contorno escuro e um fundo suave */
+html:not(#bv) body :is(.btn-secondary,.btn-ghost,.pa-botao:not(.pa-botao-forte),.ct-btn,.employee-action,.pv-btn,.sim-add-button){
+  color:var(--bv-tinta)!important;border:1px solid var(--bv-fio)!important;background-color:#fff!important;background-image:linear-gradient(var(--bv-fundo),var(--bv-fundo))!important}
+/* confirmar e perigo: a mesma lógica, com a cor da intenção */
+html:not(#bv) body .btn-success{color:var(--bv-ok)!important;border:1.5px solid var(--bv-ok)!important;background-color:#fff!important;background-image:linear-gradient(var(--bv-ok),var(--bv-ok))!important}
+html:not(#bv) body .btn-danger{color:var(--bv-perigo)!important;border:1.5px solid #E2B4B4!important;background-color:#fff!important;background-image:linear-gradient(var(--bv-perigo),var(--bv-perigo))!important}
+
+@media (hover:hover){
+  html:not(#bv) body :is(.btn-primary,.primary-btn,.btn-search,.btn-register-profile,.pa-botao-forte,.btn-selecionar-prestador,.btn-simulate:not(.hero *),.btn-success,.btn-danger):not(:disabled):not([aria-disabled=true]):hover{
+    background-size:100% 100%!important;color:#fff!important}
+  html:not(#bv) body .btn-danger:not(:disabled):hover{border-color:var(--bv-perigo)!important}
+  html:not(#bv) body :is(.btn-secondary,.btn-ghost,.pa-botao:not(.pa-botao-forte),.ct-btn,.employee-action,.pv-btn,.sim-add-button):not(:disabled):not([aria-disabled=true]):hover{
+    background-size:100% 100%!important;border-color:var(--bv-tinta)!important;transform:translateY(-1px);box-shadow:0 6px 14px -8px rgba(19,41,61,.35)!important}
+  html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.primary-btn,.btn-search,.pa-botao,.ct-btn,.btn-selecionar-prestador):not(:disabled):hover>:is(svg,i.ic):last-child:not(:first-child){transform:translateX(3px)}
+}
+/* ao carregar: cede e mantém a cor de destino */
+html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.btn-register-profile,.sim-add-button,.employee-action,.pa-botao,.ct-btn,.btn-selecionar-prestador,.pv-btn):not(:disabled):active{
+  transform:translateY(0) scale(.97)!important;box-shadow:none!important}
+/* foco pelo teclado: anel visível e sem animação estranha */
+html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.btn-register-profile,.sim-add-button,.employee-action,.pa-botao,.ct-btn,.btn-selecionar-prestador,.pv-btn):focus-visible{
+  outline:3px solid var(--bv-anel)!important;outline-offset:2px!important}
+/* indisponível */
+html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.pa-botao,.ct-btn,.pv-btn):is(:disabled,[aria-disabled=true]){
+  color:#8A9AA6!important;border-color:#DCE4EA!important;background:#F3F6F8!important;transform:none!important;cursor:not-allowed!important}
+/* a trabalhar: o texto mantém-se e aparece um círculo a rodar à direita */
+html:not(#bv) body button[data-elo-busy=true]{color:inherit!important;padding-right:38px!important}
+html:not(#bv) body button[data-elo-busy=true]::after{right:14px!important;left:auto!important;width:14px!important;height:14px!important;color:currentColor!important}
+
+/* onda no ponto tocado (criada por botoes-vivos.js) */
+.bv-onda{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:0}
+.bv-onda i{position:absolute;border-radius:50%;background:currentColor;opacity:.18;transform:scale(0);animation:bvOnda .55s var(--bv-curva) forwards}
+@keyframes bvOnda{to{transform:scale(1);opacity:0}}
+
+/* ligações em forma de botão (ex.: «Ver todas as operações»): sublinhado que cresce */
+html:not(#bv) body .pv .pv-lig{border:0!important;padding:0 0 2px!important;min-height:0!important;background:linear-gradient(currentColor,currentColor) 0 100%/100% 1px no-repeat!important;
+  text-decoration:none!important;color:var(--bv-acao)!important;font-weight:650;transition:background-size .3s var(--bv-curva),color .2s}
+@media (hover:hover){html:not(#bv) body .pv .pv-lig:hover{background-size:100% 2px!important;color:var(--bv-tinta)!important}}
+
+@media (prefers-reduced-motion:reduce){
+  html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.pa-botao,.ct-btn,.pv-btn,.employee-action){transition:color .01s,background-size .01s!important;transform:none!important}
+  .bv-onda{display:none}}
+
+/* v105 — sem rótulos pequenos em maiúsculas por cima dos títulos: o título já diz o que a secção é */
+html:not(#bv) body :is(.section-eyebrow,.section-kicker,.simulator-kicker){display:none!important}
+/* v105 — menu do site em letra normal (sem máquina de escrever nem maiúsculas forçadas), em todas as páginas */
+html:is(.sim-capa,.dn-capa,*) body .navbar.navbar :is(.nav-links>a,.nav-dropdown-toggle,.btn-client,.elo-idioma-botao){text-transform:none!important;letter-spacing:0!important;font-family:"Work Sans",Arial,sans-serif!important}
+html:is(.sim-capa,.dn-capa,*) body .navbar.navbar :is(.nav-links>a,.nav-dropdown-toggle){font-size:.9rem!important;font-weight:500!important}

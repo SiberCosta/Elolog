@@ -32,7 +32,7 @@ async function atualizar(cod,id,f){if(online())return rpc("ocorrencia_atualizar"
   if(["resolvida","encerrada"].includes(f.estado)&&!(f.resolucao||"").trim()&&!((lerDemo()[cod]||[]).find(x=>x.id===id)?.resolucao))throw new Error("Descreva a resolução antes de resolver ou encerrar.");
   demoMudar(cod,l=>{const x=l.find(y=>y.id===id);if(!x)return;const resp=f.responsavel?(typeof getProviderEmployees==="function"?getProviderEmployees():[]).find(e=>e.id===f.responsavel)?.name:null;
     Object.assign(x,{estado:f.estado||x.estado,tipo:f.tipo||x.tipo,gravidade:f.gravidade||x.gravidade,resolucao:(f.resolucao||"").trim()||x.resolucao,visivel_cliente:x.visivel_cliente||!!f.comunicar},resp?{responsavel:resp,responsavel_id:f.responsavel}:{});
-    x.registos.push({acao:`Estado: ${EST[x.estado]}${f.comunicar?" · Comunicada ao cliente":""}`,nota:f.nota||"",quando:new Date().toISOString(),quem:eu()?.name||"—"})})}
+    x.registos.push({acao:`Estado: ${EST[x.estado]}${f.comunicar?", Comunicada ao cliente":""}`,nota:f.nota||"",quando:new Date().toISOString(),quem:eu()?.name||"—"})})}
 async function suspender(cod,motivo,on){if(online())return on?rpc("encomenda_suspender",{p_codigo:cod,p_motivo:motivo}):rpc("encomenda_retomar",{p_codigo:cod,p_nota:motivo||null});
   if(on&&(motivo||"").trim().length<3)throw new Error("Indique o motivo da suspensão.");demoSuspender(cod,motivo,on)}
 
@@ -44,9 +44,9 @@ async function pintar(){let d;try{d=await ler(codigo)}catch(e){j.mostrar(`<p>${e
   const topo=d.suspensa?`<div class="oc-suspensa"><strong>⏸ Encomenda suspensa</strong><span>${esc(d.motivo||"")}</span>${g?'<button type="button" class="btn-secondary" data-retomar>Retomar</button>':""}</div>`
     :g?`<div class="oc-barra"><button type="button" class="btn-secondary" data-suspender>⏸ Suspender encomenda</button><span class="oc-motivo" hidden><input data-motivo maxlength="300" placeholder="Motivo da suspensão (o cliente é avisado)" aria-label="Motivo da suspensão"><button type="button" class="btn-primary" data-suspender-ok>Suspender</button></span><label class="btn-secondary oc-ficheiro">📎 Juntar despacho / manifesto do despachante<input type="file" accept=".pdf,.jpg,.jpeg,.png" data-despacho hidden></label></div>`:"";
   const lista=d.lista.length?d.lista.map(o=>`<article class="oc-item oc-${o.gravidade}"><header><strong>${esc(o.codigo)}</strong><span class="oc-estado oc-e-${o.estado}">${EST[o.estado]||o.estado}</span>
-      ${cli?"":`<small>${esc(TIPO[o.tipo]||o.tipo)} · ${esc(GRAV[o.gravidade]||o.gravidade)}${o.responsavel?" · Responsável: "+esc(o.responsavel):""}${o.do_cliente?" · comunicada pelo cliente":""}${o.visivel_cliente?" · visível ao cliente":""}</small>`}</header>
+      ${cli?"":`<small>${esc(TIPO[o.tipo]||o.tipo)}, ${esc(GRAV[o.gravidade]||o.gravidade)}${o.responsavel?", Responsável: "+esc(o.responsavel):""}${o.do_cliente?", comunicada pelo cliente":""}${o.visivel_cliente?", visível ao cliente":""}</small>`}</header>
     <p>${esc(o.descricao)}</p>${o.resolucao?`<p class="oc-resolucao"><b>Resolução:</b> ${esc(o.resolucao)}</p>`:""}
-    ${(o.registos||[]).length?`<details><summary>Histórico (${o.registos.length})</summary><ol class="oc-hist">${o.registos.map(r=>`<li><time>${quando(r.quando)}</time> <b>${esc(r.quem)}</b> — ${esc(r.acao)}${r.nota?`: ${esc(r.nota)}`:""}</li>`).join("")}</ol></details>`:""}
+    ${(o.registos||[]).length?`<details><summary>Histórico (${o.registos.length})</summary><ol class="oc-hist">${o.registos.map(r=>`<li><time>${quando(r.quando)}</time> <b>${esc(r.quem)}</b>, ${esc(r.acao)}${r.nota?`: ${esc(r.nota)}`:""}</li>`).join("")}</ol></details>`:""}
     ${g&&o.estado!=="encerrada"?`<details class="oc-tratar"><summary>Tratar</summary><div class="oc-grelha" data-oc="${esc(o.id)}">
       <label>Estado<select data-f="estado">${opcoes(EST,o.estado)}</select></label><label>Tipo<select data-f="tipo">${opcoes(TIPO,o.tipo)}</select></label>
       <label>Gravidade<select data-f="gravidade">${opcoes(GRAV,o.gravidade)}</select></label><label>Responsável<select data-f="responsavel"><option value="">—</option>${d.equipa.map(e=>`<option value="${esc(e.id)}"${e.id===o.responsavel_id?" selected":""}>${esc(e.nome)}</option>`).join("")}</select></label>
@@ -73,7 +73,7 @@ async function enviarCliente(){const t=j.corpo.querySelector('[data-n="descricao
 function atualizarEcra(){try{window.renderEverything?.()}catch(_){}}
 
 /* ---- botões nas encomendas ---- */
-const botao=c=>`<button type="button" class="btn-secondary oc-abrir" data-oc-cod="${esc(c)}">⚠ Ocorrências</button>`;
+const botao=c=>`<button type="button" class="btn-secondary oc-abrir" data-oc-cod="${esc(c)}">Ocorrências</button>`;
 document.addEventListener("click",e=>{const b=e.target.closest?.(".oc-abrir");if(b){e.stopPropagation();abrir(b.dataset.ocCod)}},true);
 function porBotoes(){document.querySelectorAll(".client-order-card").forEach(card=>{const p=card.querySelector(".client-order-details-panel"),c=card.querySelector(".client-order-summary-item strong")?.textContent.trim();
     if(p&&c&&c!=="—"&&!p.querySelector(".oc-abrir")){const alvo=p.querySelector(".dc-acoes");alvo?alvo.insertAdjacentHTML("beforeend"," "+botao(c)):p.insertAdjacentHTML("beforeend",`<div class="dc-acoes">${botao(c)}</div>`)}});

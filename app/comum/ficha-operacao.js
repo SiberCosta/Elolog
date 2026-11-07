@@ -17,8 +17,8 @@ function percurso(){const{ETAPAS,RESP,ACAO}=F(),i=f.etapa_idx,fin=f.financeiro||
   const KEYS=[[],[],["aprovacao"],["agendamento","recolha"],[],["armazenamento"],["expedicao"],["em_transito"],["destino"],["disponivel"],["entregue"]];
   return`<ol class="fo-linha">${ETAPAS.map((n,k)=>{let st=k<i?"feito":k===i?"atual":"";if(k===0)st=f.simulacao||i>0?"feito":st;if(k===1)st=f.proposta||i>1?"feito":st;
     if(k===4)st=fin.preco>0&&fin.em_divida<=0?"feito":fin.pago>0?"parcial":fin.pendentes?"alerta":"";
-    const q=quando(KEYS[k]);return`<li class="${st}"><b>${k+1}</b><div><strong>${esc(n)}</strong><small>${esc(ACAO[k])} · ${esc(RESP[k])}</small>
-      ${q?`<small>${esc(dt(q))}${quem(KEYS[k][KEYS[k].length-1])?" · "+esc(quem(KEYS[k][KEYS[k].length-1])):""}</small>`:""}${k===4&&fin.preco?`<small>${eur(fin.pago)} pagos de ${eur(fin.preco)}</small>`:""}</div></li>`}).join("")}</ol>`}
+    const q=quando(KEYS[k]);return`<li class="${st}"><b>${k+1}</b><div><strong>${esc(n)}</strong><small>${esc(ACAO[k])}, ${esc(RESP[k])}</small>
+      ${q?`<small>${esc(dt(q))}${quem(KEYS[k][KEYS[k].length-1])?", "+esc(quem(KEYS[k][KEYS[k].length-1])):""}</small>`:""}${k===4&&fin.preco?`<small>${eur(fin.pago)} pagos de ${eur(fin.preco)}</small>`:""}</div></li>`}).join("")}</ol>`}
 
 function resumo(){const e=f.encomenda,c=f.cliente||{};return`${e.suspensa?`<p class="fo-alerta">Suspensa: ${esc(e.suspensa_motivo||"ocorrência")}</p>`:""}
   <dl class="fo-dl">${linha("Estado",F().nomeEstado(e.estado)||e.etapa)}${linha("Prestador",f.prestador)}${linha("Rota",`${e.origem||"—"} → ${e.destino||"—"}`)}${linha("Morada de recolha",e.morada_recolha)}
@@ -44,13 +44,13 @@ function financeiro(){const x=f.financeiro||{},pg=f.pagamentos||[];return`${x.pe
     <td><span class="fo-chip ${p.estado==="pago"?"ok":p.estado==="pendente"||p.estado==="parcial"?"amb":""}">${esc(p.estado)}</span></td><td>${esc(dt(p.pago_em||p.em))}</td></tr>`).join("")}</tbody></table>`:'<p class="fo-vazio">Sem pagamentos registados.</p>'}`}
 
 function historico(){const N=F().nomeEstado,h=f.historico||[],o=f.ocorrencias||[];return`${h.length?`<ol class="fo-hist">${h.slice().reverse().map(x=>`<li><div class="fo-h1"><strong>${x.de&&x.de!==x.para?`${esc(N(x.de))} → ${esc(N(x.para))}`:esc(x.de===x.para&&x.de?"Registo em "+N(x.para):N(x.para))}</strong><small>${esc(dt(x.em))}</small></div>
-    <small>${esc(x.responsavel||"—")}${x.prestador?" · "+esc(x.prestador):""} · ${esc(cod)}</small>${x.nota?`<p>${esc(x.nota)}</p>`:""}${x.motivo_excecao?`<p class="fo-exc"><b>Exceção:</b> ${esc(x.motivo_excecao)}</p>`:""}
+    <small>${esc(x.responsavel||"—")}${x.prestador?", "+esc(x.prestador):""}, ${esc(cod)}</small>${x.nota?`<p>${esc(x.nota)}</p>`:""}${x.motivo_excecao?`<p class="fo-exc"><b>Exceção:</b> ${esc(x.motivo_excecao)}</p>`:""}
     ${x.documentos?.length?`<p class="fo-docs-h">📎 ${x.documentos.map(esc).join(", ")}</p>`:""}</li>`).join("")}</ol>`:'<p class="fo-vazio">Sem alterações registadas.</p>'}
-  <h5>Ocorrências</h5>${o.length?`<ul class="fo-ocorr">${o.map(x=>`<li><b>${esc(x.codigo||x.tipo)}</b> · ${esc(x.gravidade||"")} · ${esc(x.estado||"")}<p>${esc(x.descricao||"")}</p>${x.resolucao?`<small>Resolução: ${esc(x.resolucao)}</small>`:""}</li>`).join("")}</ul>`:'<p class="fo-vazio">Sem ocorrências.</p>'}`}
+  <h5>Ocorrências</h5>${o.length?`<ul class="fo-ocorr">${o.map(x=>`<li><b>${esc(x.codigo||x.tipo)}</b>, ${esc(x.gravidade||"")}, ${esc(x.estado||"")}<p>${esc(x.descricao||"")}</p>${x.resolucao?`<small>Resolução: ${esc(x.resolucao)}</small>`:""}</li>`).join("")}</ul>`:'<p class="fo-vazio">Sem ocorrências.</p>'}`}
 
 const ABAS=[["resumo","Resumo",resumo],["percurso","Percurso",percurso],["carga","Carga",carga],["financeiro","Financeiro",financeiro],["historico","Histórico",historico]];
 function desenhar(){const p=document.getElementById("foPainel");if(!p||!f)return;const e=f.encomenda;
-  p.querySelector(".fo-topo").innerHTML=`<div><small>${f.demo?"DEMONSTRAÇÃO · ":""}FICHA DA OPERAÇÃO</small><h3>${esc(cod)}</h3><p>${esc(e.origem||"—")} → ${esc(e.destino||"—")} · ${esc(f.prestador||"—")}</p></div>
+  p.querySelector(".fo-topo").innerHTML=`<div><small>${f.demo?"DEMONSTRAÇÃO, ":""}FICHA DA OPERAÇÃO</small><h3>${esc(cod)}</h3><p>${esc(e.origem||"—")} → ${esc(e.destino||"—")}, ${esc(f.prestador||"—")}</p></div>
     <span class="fo-chip azul">${esc(F().nomeEstado(e.estado)||e.etapa)}</span><button type="button" class="fo-fechar" aria-label="Fechar a ficha">×</button>
     <div class="fo-barra" aria-hidden="true">${F().ETAPAS.map((_,k)=>`<i class="${k<f.etapa_idx?"feito":k===f.etapa_idx?"atual":""}"></i>`).join("")}</div>`;
   p.querySelector(".fo-abas").innerHTML=ABAS.map(([k,t])=>`<button type="button" role="tab" aria-selected="${k===aba}" class="${k===aba?"ativo":""}" data-aba="${k}">${t}</button>`).join("");

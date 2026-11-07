@@ -17,7 +17,7 @@ function passo(f){if(f.demo)return`<div class="fo-passo-in"><p class="fo-nota">D
   const prox=(f.proximos||[]).map(p=>{const falta=(p.falta||[]).filter(x=>!/motivo de exceção/.test(x));const ok=p.permitido&&!falta.length;
     const rot=p.excecao?"Entrada direta no armazém (dispensar aprovação)":`Avançar para ${N(p.para)}`;
     return`<div class="fo-prox ${ok?"ok":""}">${adm||!p.permitido?`<strong>${esc(rot)}</strong>`:B("avancar",rot,`data-para="${esc(p.para)}" data-exc="${p.excecao?1:""}" ${ok?"":"disabled"}`,ok&&!p.excecao)}
-      ${falta.length?`<small>Falta: ${falta.map(esc).join(" · ")}</small>`:`<small>${p.permitido||adm?"Requisitos cumpridos.":"A sua função não executa esta etapa."}</small>`}</div>`}).join("");
+      ${falta.length?`<small>Falta: ${falta.map(esc).join(", ")}</small>`:`<small>${p.permitido||adm?"Requisitos cumpridos.":"A sua função não executa esta etapa."}</small>`}</div>`}).join("");
   return`<div class="fo-passo-in"><h5>Próximo passo</h5>${adm?'<p class="fo-nota">Só a empresa prestadora executa as etapas; a administração acompanha.</p>':""}
     ${acoes.length?`<div class="fo-acoes">${acoes.join("")}</div>`:""}${prox||'<p class="fo-nota">Sem etapas seguintes.</p>'}
     ${f.pode_cancelar&&!adm?`<div class="fo-acoes">${B("avancar","Cancelar encomenda",'data-para="cancelada"')}</div>`:""}</div>`}
@@ -32,7 +32,7 @@ function clique(ev,f,depois){const b=ev.target.closest("[data-fa]");if(!b||b.dis
   const ok=t=>{aviso(t,"success");depois()};
   if(k==="avancar"){const para=b.dataset.para,exc=!!b.dataset.exc,canc=para==="cancelada";
     janela(canc?"Cancelar encomenda":exc?"Entrada direta no armazém":`Avançar para ${N(para)}`,f,
-      `<p class="ed-intro">${N(e.estado)} → <b>${N(para)}</b>. Fica no histórico com data, hora, responsável e prestador.</p>
+      `<p class="ed-intro">${N(e.estado)} <b>${N(para)}</b>. Fica no histórico com data, hora, responsável e prestador.</p>
       ${exc?`<div class="pc-campo"><label for="faExc">Motivo de exceção * <small>(dispensa a aprovação)</small></label><textarea id="faExc" rows="2" maxlength="300"></textarea></div>`:""}
       <div class="pc-campo"><label for="faNota">Observações${canc?" *":""}</label><textarea id="faNota" rows="2" maxlength="500"></textarea></div>
       <div class="pc-campo"><label for="faDoc">Documento ou comprovativo <small>(opcional)</small></label><input id="faDoc" type="file" accept=".pdf,.jpg,.jpeg,.png"></div>`,

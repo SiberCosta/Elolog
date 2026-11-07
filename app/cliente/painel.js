@@ -16,8 +16,8 @@ ${[[70,
 70],[370,90],[300,160],[420,60]].map(([x,y],i)=>`<circle class="cn-no" cx="${x}" cy="${y}" r="5"/><circle class="cn-onda" cx="${x}" cy="${y}" r="5" style="animation-delay:${i*.7}s"/>`).join("")}
 ${["cnr1","cnr2","cnr3"].map((r,
 i)=>`<circle class="cn-carga" r="3.5"><animateMotion dur="${5+i}s" begin="${i*.8}s" repeatCount="indefinite"><mpath href="#${r}"/></animateMotion></circle>`).join("")}</svg>`;function proximo(){const o=ativas()[0],
-paga=o&&(/pagamento/i.test(o.status||"")||porPagar().some(p2=>p2.operationId===o.id));const p=!o?{t:"Pronto para o seu próximo envio?",d:"Calcule o preço e compare os prestadores em poucos passos.",cta:"Nova simulação",ir:"showPage('clientSimulation')"}:{
-t:paga?`Falta pagar a encomenda ${o.id}`:`Encomenda ${o.id}: ${o.status||"Recebido"}`,d:`${o.origin||"—"} → ${o.destination||"—"}${o.date?" · previsão "+o.date:""}`,cta:paga?"Pagar":"Ver encomenda",
+paga=o&&(/pagamento/i.test(o.status||"")||porPagar().some(p2=>p2.operationId===o.id));const p=!o?{t:"Pronto para o seu próximo envio?",d:"Indique a rota e a carga; os prestadores respondem com preço e prazo.",cta:"Nova simulação",ir:"showPage('clientSimulation')"}:{
+t:paga?`Falta pagar a encomenda ${o.id}`:`Encomenda ${o.id}: ${o.status||"Recebido"}`,d:`${o.origin||"—"} → ${o.destination||"—"}${o.date?", previsão "+o.date:""}`,cta:paga?"Pagar":"Ver encomenda",
 ir:paga?"showPage('payments')":"openClientOrderSection('status')"};
 return`<section id="clientNextStep" class="client-next-step cn-v2"><div class="cn-texto"><span>Próximo passo</span><h2>${escapeHtml(p.t)}</h2><p>${escapeHtml(p.d)}</p><button type="button" class="btn-primary" onclick="${p.ir}">${p.cta}</button></div>${MAPA}</section>`}
 function serie(){const h=new Date,m=[];for(let i=5;i>=0;i--){const d=new Date(h.getFullYear(),h.getMonth()-i,1);m.push(d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"))}const c=m.map(k=>minhas().filter(o=>quando(o).slice(0,7)===k).length),
@@ -42,7 +42,7 @@ render:()=>ativas().length?`<div class="ca-lista">${ativas().slice(0,4).map(linh
 titulo:"Histórico recente",sub:"pesquise pelo código",span:12,
 render:()=>`<div class="pw-pesquisa ch-pesquisa"><label class="pw-oculto" for="clientHomeTrackingSearch">Código da encomenda</label><input id="clientHomeTrackingSearch" type="search" placeholder="Pesquisar encomenda, ex.: ELO_TRAN-000184" onkeydown="if(event.key==='Enter')searchClientHomeOrder()"><button type="button" class="btn-secondary" onclick="searchClientHomeOrder()">Pesquisar</button></div><div id="clientHomeSearchResult"></div>${tabela(minhas().slice(0,
 7))}`}];function desenhar(){const a=$("cdash");if(!a||currentUser?.role!=="cliente")return;
-a.innerHTML=`<section class="painel-admin pa-centro"><header class="pa-cabecalho"><div><span class="section-eyebrow">O seu painel</span><h3>Olá, ${escapeHtml(currentUser.name||"")}</h3><p>${new Date().toLocaleDateString("pt-PT",{weekday:"long",day:"numeric",
+a.innerHTML=`<section class="painel-admin pa-centro"><header class="pa-cabecalho"><div><h3>Olá, ${escapeHtml(currentUser.name||"")}</h3><p>${new Date().toLocaleDateString("pt-PT",{weekday:"long",day:"numeric",
 month:"long",year:"numeric"})}</p></div><div class="pa-acoes">${Painel.botao("cliente")}</div></header>${Painel.corpo("cliente")}</section>`}const casa=$("clientDashboardHome");if(casa){casa.classList.add("pnovo");const d=document.createElement("div");
 d.id="cdash";casa.prepend(d)}Painel.registar("cliente",{alvo:()=>$("cdash"),widgets,padrao:()=>widgets().map(w=>w.id),desenhar});const original=renderClientDashboard;renderClientDashboard=function(){const r=original.apply(this,arguments);desenhar();return r};
 Painel.vigiar("cliente",3e4)})();

@@ -22,7 +22,7 @@ const funcPag=$("providerFuncPage");
 empresaPag.insertAdjacentHTML("afterbegin",'<button type="button" class="func-voltar" data-func-voltar>← Entrar como funcionário</button>');
 $("providerEmployeePage")?.insertAdjacentHTML("afterbegin",'<button type="button" class="func-voltar" data-func-voltar>← Entrar como funcionário</button>');
 const rotulo=(pag,t)=>{const l=$(pag)?.querySelector(".auth-step-label");if(l)l.textContent=t};
-rotulo("providerCompanyPage","ADMINISTRADOR · PASSO 1 · EMPRESA");rotulo("providerEmployeePage","ADMINISTRADOR · PASSO 2 · A SUA CONTA");
+rotulo("providerCompanyPage","ADMINISTRADOR, PASSO 1: EMPRESA");rotulo("providerEmployeePage","ADMINISTRADOR, PASSO 2: A SUA CONTA");
 
 /* trocar entre funcionário e administrador */
 const orig=window.showAuthPage;

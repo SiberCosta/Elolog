@@ -31,7 +31,7 @@ function visiveisDemo(){const u=eu(),l=ler();if(u.role==="admin")return l;if(u.r
   return l.filter(e=>e.cliente_email===u.email)}
 function mudarDemo(id,estado,papel,nota,extra){const l=ler(),e=l.find(x=>x.id===id);if(!e)throw new Error("Encomenda direta não encontrada.");
   Object.assign(e,extra||{},{estado,updated_at:new Date().toISOString()});e.historico.push({estado,papel,nota:nota||null,em:new Date().toISOString()});gravar(l);
-  try{const aud=papel==="prestador"||papel==="cliente"?"admin":"client";window.addOperationNotification?.({title:"Encomenda direta "+e.codigo,message:rotulo(estado)+(nota?" — "+nota:""),
+  try{const aud=papel==="prestador"||papel==="cliente"?"admin":"client";window.addOperationNotification?.({title:"Encomenda direta "+e.codigo,message:rotulo(estado)+(nota?", "+nota:""),
     type:estado==="recusada"||estado==="nao_validada"?"warning":"info",audience:aud,to:aud==="client"?e.cliente_email:"",actor:PAPEL[papel]})}catch(_){}return e}
 const TRANS={admin:{analisar:[["pendente_validacao"],"em_analise_admin"],validar:[["pendente_validacao","em_analise_admin"],"validada"],
   nao_validar:[["pendente_validacao","em_analise_admin"],"nao_validada"],enviar:[["validada"],"enviada_prestador"],
@@ -75,7 +75,7 @@ const API={ESTADOS,MOTIVOS,PAPEL,rotulo,etiqueta,esc,data,quando,erro,online,
     const e=ler().find(x=>x.id===id);if(!e)throw new Error("Encomenda direta não encontrada.");if(!["pendente_validacao","em_analise_admin","validada"].includes(e.estado))throw new Error("Só pode corrigir antes de encaminhar ao prestador.");
     const dif=Object.keys(CAMPOS).filter(k=>k in dados&&String(dados[k]??"")!==String(e[k]??"")).map(k=>k==="mercadoria"||k==="observacoes"?CAMPOS[k]+" atualizada":`${CAMPOS[k]}: ${e[k]??"—"} → ${dados[k]??"—"}`);
     if(!dif.length)throw new Error("Não há alterações.");const nv={};Object.keys(CAMPOS).forEach(k=>{if(k in dados)nv[k]=dados[k]});
-    return mudarDemo(id,e.estado,"administracao","Dados corrigidos — "+dif.join("; ")+(nota?". "+nota:""),nv)},
+    return mudarDemo(id,e.estado,"administracao","Dados corrigidos, "+dif.join("; ")+(nota?". "+nota:""),nv)},
   async anexar(id,ficheiro,nota){if(!ficheiro)throw new Error("Escolha o ficheiro.");
     if(online()){const doc=await P().enviarDocumento(ficheiro,{categoria:"comprovativo",visibilidade:"cliente"});return rpc("cliente_anexo_encomenda_direta",{p_id:id,p_documento:doc.id,p_nota:nota||null})}
     const l=ler(),e=l.find(x=>x.id===id);if(!e)throw new Error("Encomenda direta não encontrada.");if(!["pendente_validacao","em_analise_admin","validada","nao_validada"].includes(e.estado))throw new Error("Já não é possível juntar documentos a esta encomenda.");
@@ -93,16 +93,16 @@ const API={ESTADOS,MOTIVOS,PAPEL,rotulo,etiqueta,esc,data,quando,erro,online,
     const e=ler().find(x=>x.id===id),t=TRANS.prestador[acao];if(!e||!t||!t[0].includes(e.estado))throw new Error("Esta ação não é possível no estado atual.");
     if(acao==="recusar"){if(!MOTIVOS[tipo])throw new Error("Escolha o motivo da recusa.");if(tipo==="outro"&&String(motivo||"").trim().length<5)throw new Error("Descreva o motivo da recusa.")}
     return mudarDemo(id,t[1],"prestador",acao==="recusar"?MOTIVOS[tipo]+(motivo?": "+motivo:""):null,acao==="recusar"?{motivo_tipo:tipo,motivo:motivo||null}:null)},
-  async comprovativo(e,i){const d=i==null?e?.documento:(e?.anexos||[])[i];if(!d)throw new Error("Sem documento.");return API.ver(d,i==null?"Comprovativo "+e.codigo:"Documento adicional — "+e.codigo)},
+  async comprovativo(e,i){const d=i==null?e?.documento:(e?.anexos||[])[i];if(!d)throw new Error("Sem documento.");return API.ver(d,i==null?"Comprovativo "+e.codigo:"Documento adicional, "+e.codigo)},
   /* cartão com o percurso (igual para os três perfis) */
-  cartao(e,acoes){const h=(e.historico||[]).map(x=>`<li><b>${esc(rotulo(x.estado))}</b> <small>${esc(PAPEL[x.papel]||x.papel)} · ${esc(quando(x.em))}</small>${x.nota?`<p>${esc(x.nota)}</p>`:""}</li>`).join("");
-    const mot=["recusada","nao_validada"].includes(e.estado)&&(e.motivo||e.motivo_tipo)?`<p class="ed-motivo"><b>Motivo:</b> ${esc(e.motivo_tipo?MOTIVOS[e.motivo_tipo]+(e.motivo?" — "+e.motivo:""):e.motivo)}</p>`:"";
+  cartao(e,acoes){const h=(e.historico||[]).map(x=>`<li><b>${esc(rotulo(x.estado))}</b> <small>${esc(PAPEL[x.papel]||x.papel)}, ${esc(quando(x.em))}</small>${x.nota?`<p>${esc(x.nota)}</p>`:""}</li>`).join("");
+    const mot=["recusada","nao_validada"].includes(e.estado)&&(e.motivo||e.motivo_tipo)?`<p class="ed-motivo"><b>Motivo:</b> ${esc(e.motivo_tipo?MOTIVOS[e.motivo_tipo]+(e.motivo?", "+e.motivo:""):e.motivo)}</p>`:"";
     return`<article class="ed-cartao" data-id="${esc(e.id)}"><header><div><strong>${esc(e.codigo)}</strong> ${etiqueta(e.estado,e)}</div><small>${esc(data(e.created_at))}</small></header>
       <p class="ed-rota">${esc(e.origem)} <i>→</i> ${esc(e.destino)}</p>
       <dl class="ed-dados"><div><dt>Prestador</dt><dd>${esc(e.prestador)}</dd></div><div><dt>Mercadoria</dt><dd>${esc(e.mercadoria)}</dd></div>
-        <div><dt>Volumes</dt><dd>${esc(e.volumes)}${e.peso_kg?` · ${esc(e.peso_kg)} kg`:""}${e.volume_m3?` · ${esc(e.volume_m3)} m³`:""}</dd></div>
+        <div><dt>Volumes</dt><dd>${esc(e.volumes)}${e.peso_kg?`, ${esc(e.peso_kg)} kg`:""}${e.volume_m3?`, ${esc(e.volume_m3)} m³`:""}</dd></div>
         <div><dt>Valor acordado</dt><dd>${Number(e.valor_acordado||0).toLocaleString("pt-PT",{style:"currency",currency:"EUR"})}</dd></div>
-        <div><dt>Data prevista</dt><dd>${esc(data(e.data_prevista))}</dd></div>${e.cliente_nome&&eu().role!=="cliente"?`<div><dt>Cliente</dt><dd>${esc(e.cliente_nome)}${e.cliente_email?` · ${esc(e.cliente_email)}`:""}${e.cliente_telefone?` · ${esc(e.cliente_telefone)}`:""}</dd></div>`:""}</dl>
+        <div><dt>Data prevista</dt><dd>${esc(data(e.data_prevista))}</dd></div>${e.cliente_nome&&eu().role!=="cliente"?`<div><dt>Cliente</dt><dd>${esc(e.cliente_nome)}${e.cliente_email?`, ${esc(e.cliente_email)}`:""}${e.cliente_telefone?`, ${esc(e.cliente_telefone)}`:""}</dd></div>`:""}</dl>
       ${e.observacoes?`<p class="ed-obs">${esc(e.observacoes)}</p>`:""}${mot}
       ${e.pedido_documentos?`<p class="ed-pedido"><b>Documentos pedidos pela administração:</b> ${esc(e.pedido_documentos)}</p>`:""}
       ${(e.anexos||[]).length?`<ul class="ed-anexos">${e.anexos.map((a,i)=>`<li><button type="button" class="ed-link" data-ed="anexo" data-i="${i}">📎 ${esc(a.nome)}</button>${a.nota?` <small>${esc(a.nota)}</small>`:""}</li>`).join("")}</ul>`:""}
