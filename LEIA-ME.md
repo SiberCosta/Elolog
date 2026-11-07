@@ -58,6 +58,33 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v102 (Painel ao vivo: apresentação dos conteúdos)
+
+- **Mapa sem nada por cima**: o acompanhamento das viagens passa para uma coluna ao lado do mapa (no telemóvel fica por baixo) e o mapa ganha uma legenda das cores (em rota, chega em breve, atrasado).
+- **Encomendas recentes em largura total**: todas as colunas visíveis sem cortes; no telemóvel cada encomenda é um cartão com «Código, Origem, Destino, Chegada, Transporte, Prestador, Estado».
+- **Meios em serviço** em lista compacta (duas colunas), uma linha por navio ou viatura, sem textos partidos.
+- **Números do negócio**: a variação aparece numa etiqueta de cor (verde melhora, vermelho piora, âmbar atrasos) e os valores redondos deixam de mostrar «,00».
+- **Viagens**: «Chega a …» e a origem da posição (AIS ou estimada) na mesma linha.
+- Só muda a apresentação (`painel-vivo.js` e `painel-vivo.css`); dados, ações e ligações são os mesmos da v101.
+
+## v101 (Centro de Controlo: «Painel ao vivo»)
+
+- **Novo ecrã inicial do Centro de Controlo** com o design escolhido («Painel ao vivo»). O separador **«Indicadores e simulações»** mantém o painel anterior completo (nada foi retirado).
+- **Quatro números de negócio, todos com dados reais**: receita da Elolog hoje (comissões pela regra ativa de cada empresa, ou a global, sobre os pagamentos confirmados hoje + planos pagos hoje, comparada com a média dos últimos 14 dias), encomendas em curso (e novas em 30 dias), levantadas no prazo (30 dias, comparado com os 30 anteriores) e dinheiro em risco (pagamentos pendentes e encomendas atrasadas). Cada número abre a página respetiva.
+- **Navios ao vivo**: mapa do corredor atlântico (sem serviços externos) com os portos e o número de encomendas em cada um, e os navios com carga Elolog agrupados por navio e viagem. Posição **AIS** quando o navio é seguido; senão posição **estimada** pelas datas de partida e chegada (sempre indicado). Aproximar, afastar e aumentar o mapa; clicar numa viagem centra o navio; os códigos abrem a ficha da operação.
+- **Meios em serviço** (navios e viaturas com serviços de hoje, filtro «Só em serviço»), **Encomendas recentes** (pesquisa, ordenação por coluna; cada linha abre a ficha da operação) e **Carga nos armazéns**.
+- Atualiza-se sozinho a cada 30 s enquanto está visível; botão «Atualizar agora».
+- Nada muda na ligação Supabase, nos dados, utilizadores, autenticação, permissões, fluxos de encomendas, comissões, planos ou fluxo marítimo: o painel só **lê**, através da função nova `painel_vivo` (apenas administração da plataforma).
+- Servidor: migração `00164_painel_vivo.sql` (aplicada). Testes: `testes/25_painel_vivo.sql` (12/12). Front: `app/administracao/painel-vivo.js`, `painel-vivo-mapa.js` e `painel-vivo.css`.
+
+## v100 (ficha da operação, regras automáticas e histórico obrigatório; funis retirados)
+
+- **Funis retirados do Centro de comando** (o ecrã volta a ser de trabalho diário). A função `painel_funis` fica no servidor sem uso; para a apagar: `drop function if exists public.painel_funis(integer);` no SQL Editor.
+- **Ficha da operação**: cada encomenda (linhas do Centro de comando, cartões do telemóvel e botão «Ficha» nos cartões do prestador) abre um painel lateral, sem sair do Centro. Separadores: **Resumo** (cliente, remetente, destinatário, rota, prestador, estado), **Percurso** (as 11 etapas com responsável, data e quem executou), **Carga** (volumes, peso, fotografias, documentos, armazém e expedição), **Financeiro** (preço, comissão Elolog, pagamentos, em dívida e alerta) e **Histórico** (todas as alterações e ocorrências). Em baixo, o **próximo passo** com o que falta e as ações da etapa.
+- **Regras automáticas (servidor, `avancar_encomenda`)**: só avança com os requisitos da etapa; aprovação dispensada apenas no fluxo autorizado direto para armazém e com motivo de exceção; pagamento pendente gera alerta financeiro; receção no armazém exige quantidade confirmada (e ocorrência se não bater certo); expedição exige navio, viagem e data prevista; a chegada cria a tarefa de processamento no destino; «Disponível» exige essa tarefa concluída e avisa o cliente; «Levantado» só a partir de «Disponível» e com confirmação do levantamento (identificação + comprovativo assinado). **Nunca «Em trânsito» → «Levantado»** (nem por `transitar_encomenda`, que passa a usar as mesmas regras).
+- **Histórico obrigatório** em cada mudança: número da encomenda, estado anterior e novo, data e hora, funcionário responsável, prestador, observações, documentos e motivo de exceção (também na auditoria).
+- Servidor: migrações `00162_etapas_operacao_a.sql`, `00162_etapas_operacao_b.sql` e `00163_ficha_operacao.sql` (aplicadas; só acrescentam colunas, transições, o estado «Disponível» e funções). Testes: `testes/24_regras_operacao.sql` (20/20); `02` (78/78), `14` (10/10), `22` (22/22) e `23` (16/16) continuam a passar. Front: `app/comum/ficha-operacao.js`, `ficha-operacao-dados.js`, `ficha-operacao-acoes.js` e `ficha-operacao.css`.
+
 ## v99 (encomendas diretas: revisão administrativa)
 
 - **Ver o comprovativo antes de validar**: «Analisar e validar» abre o comprovativo (PDF ou imagem) ao lado dos dados, com separadores para os documentos adicionais. A abertura fica registada no servidor e **só depois é possível validar**.

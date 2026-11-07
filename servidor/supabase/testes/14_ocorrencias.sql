@@ -22,7 +22,8 @@ do $$ begin perform public.transitar_encomenda((select id from encomendas), 'em_
 do $$ begin perform public.ocorrencia_atualizar((public.ocorrencias_da_encomenda('ELO_LUSO-000001')->'lista'->0->>'id')::uuid, 'resolvida'); insert into r values (5,false,'resolver exige resolução'); exception when others then insert into r values (5,true,'resolver exige resolução'); end $$;
 select public.ocorrencia_atualizar((public.ocorrencias_da_encomenda('ELO_LUSO-000001')->'lista'->0->>'id')::uuid, 'resolvida', null, null, '22222222-2222-2222-2222-222222222222', 'Cliente enviou a fatura', true, 'ok');
 select public.encomenda_retomar('ELO_LUSO-000001', 'Documentação completa');
-insert into r select 6, e = 'em_transito', 'retomada avança para trânsito sem manifesto' from (select (public.transitar_encomenda((select id from encomendas), 'em_transito')).estado e) t;
+select public.encomenda_expedicao((select id from encomendas), 'Navio Teste', 'V-1', current_date + 1);
+insert into r select 6, e = 'em_transito', 'retomada avança para trânsito (com navio, viagem e data)' from (select (public.transitar_encomenda((select id from encomendas), 'em_transito')).estado e) t;
 select set_config('request.jwt.claims', '{"aal":"aal2","sub":"55555555-5555-5555-5555-555555555555"}', true);
 insert into r select 7, jsonb_array_length(x->'lista') = 2 and x->'lista'->0->'registos' = '[]'::jsonb, 'cliente vê as comunicadas, sem notas internas' from (select public.ocorrencias_da_encomenda('ELO_LUSO-000001') x) t;
 select set_config('request.jwt.claims', '{"aal":"aal2","sub":"66666666-6666-6666-6666-666666666666"}', true);

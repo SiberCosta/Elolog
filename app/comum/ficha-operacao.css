@@ -1,0 +1,37 @@
+/* Elolog — Ficha da operação (v100): painel lateral sobre o Centro de comando / Centro Operacional. Cores: #13293D, #1F5F8B, #1F7A5C. */
+.fo-painel{position:fixed;top:0;right:0;bottom:0;width:min(720px,100vw);z-index:5000;background:#fff;box-shadow:-18px 0 40px rgba(19,41,61,.22);display:flex;flex-direction:column;animation:foEntra .2s ease}
+@keyframes foEntra{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.fo-topo{display:grid;grid-template-columns:1fr auto auto;gap:6px 12px;align-items:start;padding:16px 18px 10px;border-bottom:1px solid #e3eaf0;background:#f7fafc}
+.fo-topo small{font-size:11px;letter-spacing:.06em;color:#1F7A5C;font-weight:700}.fo-topo h3{margin:2px 0;color:#13293D;font-size:20px}.fo-topo p{margin:0;color:#5b6b7b;font-size:13px}
+.fo-fechar{width:36px;height:36px;border-radius:10px;border:1px solid #cfdbe4;background:#fff;font-size:20px;cursor:pointer;color:#13293D}
+.fo-barra{grid-column:1/-1;display:grid;grid-template-columns:repeat(11,1fr);gap:3px;margin-top:6px}.fo-barra i{height:5px;border-radius:3px;background:#e3eaf0}
+.fo-barra i.feito{background:#1F7A5C}.fo-barra i.atual{background:#1F5F8B}
+.fo-abas{display:flex;gap:2px;padding:0 12px;border-bottom:1px solid #e3eaf0;overflow-x:auto}
+.fo-abas button{background:none;border:0;border-bottom:3px solid transparent;padding:11px 12px;font:inherit;font-size:14px;font-weight:600;color:#5b6b7b;cursor:pointer;white-space:nowrap}
+.fo-abas button.ativo{color:#13293D;border-bottom-color:#1F5F8B}
+.fo-corpo{flex:1;overflow-y:auto;padding:16px 18px}.fo-corpo h5{margin:16px 0 6px;font-size:13px;color:#13293D;text-transform:uppercase;letter-spacing:.04em}
+.fo-dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;margin:0}.fo-dl dt{font-size:11px;color:#7c8da0}.fo-dl dd{margin:0;color:#13293D;font-size:14px;word-break:break-word}
+.fo-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}.fo-3 section{border:1px solid #e3eaf0;border-radius:10px;padding:10px}.fo-3 h5{margin:0 0 4px}.fo-3 p{margin:0;font-size:13px;color:#33475b}
+.fo-vazio{color:#7c8da0;font-size:13px;margin:0}.fo-nota{color:#5b6b7b;font-size:13px;margin:0 0 8px}
+.fo-alerta{margin:0 0 10px;padding:8px 10px;border-radius:8px;background:#fdf6ea;border:1px solid #f1d29b;color:#7a4f06;font-size:13px;font-weight:600}
+.fo-linha{list-style:none;margin:0;padding:0}.fo-linha li{display:grid;grid-template-columns:30px 1fr;gap:10px;position:relative;padding:0 0 14px}
+.fo-linha li::before{content:"";position:absolute;left:14px;top:28px;bottom:0;width:2px;background:#e3eaf0}.fo-linha li:last-child::before{display:none}
+.fo-linha b{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:12px;border:2px solid #cfdbe4;color:#7c8da0;background:#fff;z-index:1}
+.fo-linha li.feito b{background:#1F7A5C;border-color:#1F7A5C;color:#fff}.fo-linha li.atual b{background:#1F5F8B;border-color:#1F5F8B;color:#fff;box-shadow:0 0 0 4px rgba(31,95,139,.18)}
+.fo-linha li.parcial b{border-color:#e0951a;color:#9a6408}.fo-linha li.alerta b{border-color:#b0412e;color:#b0412e}
+.fo-linha strong{display:block;color:#13293D;font-size:14px}.fo-linha small{display:block;color:#7c8da0;font-size:12px}.fo-linha li:not(.feito):not(.atual) strong{color:#5b6b7b}
+.fo-tab{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}.fo-tab th{text-align:left;color:#7c8da0;font-weight:600;border-bottom:1px solid #e3eaf0;padding:6px}.fo-tab td{padding:6px;border-bottom:1px solid #f0f4f7}
+.fo-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}.fo-kpis div{border:1px solid #e3eaf0;border-radius:10px;padding:8px 10px}
+.fo-kpis span{display:block;font-size:11px;color:#7c8da0}.fo-kpis strong{color:#13293D;font-size:16px}.fo-kpis small{display:block;font-size:11px;color:#7c8da0}.fo-kpis .fo-divida{border-color:#ecb4a8;background:#fbefec}.fo-divida strong{color:#b0412e}
+.fo-chip{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid #cfd8df;color:#5b6b7b;background:#f4f6f8;white-space:nowrap}
+.fo-chip.azul{color:#1F5F8B;border-color:#9fbccd;background:#eef5fa}.fo-chip.ok{color:#1F7A5C;border-color:#9fd1bd;background:#edf7f2}.fo-chip.amb{color:#9a6408;border-color:#e0951a;background:#fdf6ea}
+.fo-hist{list-style:none;margin:0;padding:0 0 0 12px;border-left:2px solid #e3eaf0}.fo-hist li{padding:0 0 12px 10px;position:relative}.fo-hist li::before{content:"";position:absolute;left:-18px;top:5px;width:10px;height:10px;border-radius:50%;background:#1F5F8B}
+.fo-h1{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.fo-hist strong{color:#13293D;font-size:14px}.fo-hist small{color:#7c8da0;font-size:12px}.fo-hist p{margin:3px 0 0;font-size:13px;color:#33475b}
+.fo-exc{color:#7a4f06!important}.fo-docs,.fo-ocorr{margin:0;padding-left:18px;font-size:13px}.fo-ocorr p{margin:2px 0}
+.fo-fotos{display:flex;gap:8px;flex-wrap:wrap}.fo-fotos img{width:96px;height:72px;object-fit:cover;border-radius:8px;border:1px solid #e3eaf0}.fo-foto{border:1px solid #cfdbe4;border-radius:8px;background:#f7fafc;padding:8px;cursor:pointer;font-size:12px}
+.fo-passo{border-top:1px solid #e3eaf0;background:#f7fafc;max-height:42vh;overflow-y:auto}.fo-passo-in{padding:12px 18px}.fo-passo h5{margin:0 0 8px;font-size:13px;color:#13293D;text-transform:uppercase;letter-spacing:.04em}
+.fo-acoes{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 8px}.fo-prox{display:flex;flex-direction:column;gap:3px;padding:8px 10px;border:1px dashed #cfdbe4;border-radius:10px;margin:0 0 6px;background:#fff}
+.fo-prox.ok{border-style:solid;border-color:#9fd1bd}.fo-prox small{color:#7c8da0;font-size:12px}.fo-prox:not(.ok) small{color:#9a6408}.fo-prox button{align-self:flex-start}.fo-prox button:disabled{opacity:.55;cursor:not-allowed}
+.fo-abrir{margin-left:6px}
+@media(max-width:640px){.fo-painel{width:100vw}.fo-abas{padding:0 6px;gap:0;justify-content:space-between}.fo-abas button{padding:11px 6px;font-size:13px}.fo-dl,.fo-3{grid-template-columns:1fr}.fo-kpis{grid-template-columns:1fr 1fr}}
+body.fo-aberta .elo-assistant{display:none}

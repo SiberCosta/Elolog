@@ -24,7 +24,7 @@ function painel(d){const{num,eur}=I(),n=v=>num?num(v):String(v),e=d.encomendas||
   const espera=(p.pendentes||0)+(s.pagamentos_por_confirmar||0)+(e.paradas_mais_7d||0),urg=Math.min(3,[s.pagamentos_por_confirmar>0,p.pendentes_mais_48h>0,e.paradas_mais_7d>0,a.escalados>0].filter(Boolean).length);
   const marca={inscricoes:p.pendentes||0,apoio:(a.abertos||0)};const nome=String(window.currentUser?.name||(typeof currentUser!=="undefined"?currentUser?.name:"")||"").split(" ")[0];
   const hoje=new Date().toLocaleDateString("pt-PT",{weekday:"long",day:"numeric",month:"long"});const hojeT=hoje.charAt(0).toUpperCase()+hoje.slice(1);
-  const ops=(d.operacoes_recentes||[]).slice(0,5).map(o=>`<li><button type="button" onclick="showAdminPage('adminOperations')"><span class="cm-ref">${esc(o.ref)}</span>
+  const ops=(d.operacoes_recentes||[]).slice(0,5).map(o=>`<li><button type="button" data-ficha="${esc(o.ref)}"><span class="cm-ref">${esc(o.ref)}</span>
     <span class="cm-rota">${esc(o.origem)} <i aria-hidden="true">→</i> ${esc(o.destino)}</span><span class="work-status ct-est ${cor(o.estado)}">${esc(o.estado)}</span>
     <small>${esc(o.cliente)} · ${esc(atras(o.quando))}</small></button></li>`).join("");
   return`<div class="cm-painel" aria-label="Resumo do centro de comando">

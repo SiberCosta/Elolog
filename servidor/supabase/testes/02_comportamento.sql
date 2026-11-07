@@ -127,9 +127,9 @@ do $teste$ declare -- utilizadores
   perform pg_temp.t('4b.3 painel: período inválido (15 dias) é recusado', pa, 'select public.painel_administracao(15)', 'erro');
   perform pg_temp.t('4b.4 painel: 3 prestadores ativos e nenhum pendente', pa,
     $$select (public.painel_administracao(30) -> 'prestadores' ->> 'ativos')::int = 3 and (public.painel_administracao(30) -> 'prestadores' ->> 'pendentes')::int = 0$$, 'verdadeiro');
-  perform pg_temp.t('4b.5 painel: 1 encomenda em "agendamento" e todos os 9 estados presentes no pipeline', pa,
+  perform pg_temp.t('4b.5 painel: 1 encomenda em "agendamento" e todos os 10 estados presentes no pipeline', pa,
     $$select (public.painel_administracao(30) -> 'pipeline' ->> 'agendamento')::int = 1
-          and (select count(*) from jsonb_object_keys(public.painel_administracao(30) -> 'pipeline')) = 9$$, 'verdadeiro');
+          and (select count(*) from jsonb_object_keys(public.painel_administracao(30) -> 'pipeline')) = 10$$, 'verdadeiro');
   perform pg_temp.t('4b.6 painel: funil com 1 simulação, 1 aceite e 1 encomenda', pa, $$select (public.painel_administracao(30) -> 'funil' ->> 'simulacoes')::int = 1
           and (public.painel_administracao(30) -> 'funil' ->> 'aceites')::int = 1
           and (public.painel_administracao(30) -> 'funil' ->> 'encomendas')::int = 1$$, 'verdadeiro');

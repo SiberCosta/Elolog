@@ -2555,3 +2555,341 @@ revoke all on function public.admin_comprovativo_visto(uuid), public.admin_corri
 grant execute on function public.admin_comprovativo_visto(uuid), public.admin_corrigir_encomenda_direta(uuid, jsonb, text), public.cliente_anexo_encomenda_direta(uuid, uuid, text) to authenticated;
 
 commit;
+
+-- ===== 00162_etapas_operacao_a.sql (fora da transação: novos valores de tipo) =====
+-- v100 (parte A) — novas etapas: «Disponível» (aviso ao cliente) entre «Destino» e «Levantado», e a tarefa de processamento no destino.
+-- Só acrescenta valores aos tipos existentes (têm de ficar numa transação própria, antes da parte B).
+alter type estado_encomenda add value if not exists 'disponivel' after 'destino';
+alter type tipo_trabalho add value if not exists 'processamento_destino';
+
+begin;
+-- ===== 00162_etapas_operacao_b.sql =====
+-- v100 (parte B) — Regras automáticas de movimentação das encomendas, histórico obrigatório e ficha da operação.
+-- Só ACRESCENTA colunas, transições e funções; transitar_encomenda() continua a existir (passa a usar as novas regras).
+-- Regras: só avança com os requisitos da etapa; aprovação dispensada só no fluxo autorizado direto para armazém (com motivo de exceção);
+-- pagamento pendente gera alerta financeiro; receção no armazém exige quantidade (e ocorrências se não bater certo); expedição exige navio,
+-- viagem e data prevista; chegada cria tarefa de processamento no destino; Disponível exige essa tarefa concluída; Levantado só a partir de
+-- Disponível e com confirmação do levantamento. Nunca «Em trânsito» → «Levantado» diretamente.
+
+alter table encomendas add column if not exists navio text;
+alter table encomendas add column if not exists viagem text;
+alter table encomendas add column if not exists partida_prevista date;
+alter table encomendas add column if not exists chegada_prevista date;
+alter table recibos_armazem add column if not exists quantidade_recebida int check (quantidade_recebida is null or quantidade_recebida >= 0);
+alter table encomenda_historico add column if not exists codigo text;
+alter table encomenda_historico add column if not exists responsavel text;
+alter table encomenda_historico add column if not exists prestador text;
+alter table encomenda_historico add column if not exists documentos uuid[];
+alter table encomenda_historico add column if not exists motivo_excecao text;
+
+insert into encomenda_transicoes (de, para, papeis) select * from (values
+  ('destino'::estado_encomenda, 'disponivel'::estado_encomenda, '{admin_empresa,operador}'::papel_funcionario[]),
+  ('disponivel', 'entregue', '{admin_empresa,operador,operador_terreno}'),
+  ('aprovacao', 'armazenamento', '{admin_empresa,operador,armazem}')) v(de, para, papeis)
+ where not exists (select 1 from encomenda_transicoes t where t.de = v.de and t.para = v.para);
+
+-- Requisitos de cada etapa (usado ao avançar e na ficha)
+create or replace function private.encomenda_falta(e encomendas, p_para estado_encomenda, p_excecao text default null) returns text[]
+language plpgsql stable security definer set search_path = public as $$
+declare f text[] := '{}'; r recibos_armazem;
+begin
+  if e.estado = 'aprovacao' and p_para = 'armazenamento' then          -- aprovação dispensada (fluxo autorizado)
+    if not (e.criada_no_terreno or private.meu_papel() = 'admin_empresa') then f := f || text 'fluxo autorizado direto para armazém (registo no terreno ou administrador da empresa)'; end if;
+    if length(trim(coalesce(p_excecao, ''))) < 5 then f := f || text 'motivo de exceção para dispensar a aprovação'; end if;
+  end if;
+  if p_para = 'armazenamento' then
+    if e.criada_no_terreno then
+      if e.cliente_id is null and coalesce(e.cliente_nome, '') = '' then f := f || text 'cliente'; end if;
+      if coalesce(e.origem, '') = '' or coalesce(e.destino, '') = '' then f := f || text 'rota'; end if;
+      if not exists (select 1 from pagamentos pg where pg.encomenda_id = e.id and pg.tipo <> 'reembolso' and pg.estado in ('pendente','parcial','pago')) then f := f || text 'primeiro pagamento'; end if;
+      if e.assinatura_documento_id is null and e.pin_validacao_hash is null then f := f || text 'assinatura ou PIN do cliente'; end if;
+    end if;
+    select * into r from recibos_armazem where encomenda_id = e.id;
+    if r.encomenda_id is null or not r.confirmado or r.quantidade_recebida is null then f := f || text 'receção no armazém com quantidade confirmada';
+    elsif e.quantidade is not null and r.quantidade_recebida <> e.quantidade and coalesce(trim(r.ocorrencias), '') = '' then
+      f := f || ('ocorrência a explicar a diferença de quantidade (' || r.quantidade_recebida || ' de ' || e.quantidade || ')'); end if;
+  end if;
+  if p_para = 'expedicao' and not exists (select 1 from recibos_armazem ra where ra.encomenda_id = e.id and ra.confirmado and ra.carga_conferida) then
+    f := f || text 'receção confirmada e carga conferida pelo armazém'; end if;
+  if p_para = 'em_transito' and not (coalesce(e.navio, '') <> '' and coalesce(e.viagem, '') <> '' and e.partida_prevista is not null)
+     and not exists (select 1 from manifesto_encomendas me join manifestos m on m.id = me.manifesto_id where me.encomenda_id = e.id
+                      and coalesce(m.transportador, '') <> '' and coalesce(m.numero_viagem, '') <> '' and m.partida is not null) then
+    f := f || text 'navio, viagem e data prevista de partida'; end if;
+  if p_para = 'disponivel' and not exists (select 1 from trabalhos_terreno t where t.encomenda_id = e.id and t.tipo = 'processamento_destino' and t.estado = 'concluida') then
+    f := f || text 'processamento no destino concluído'; end if;
+  if p_para = 'entregue' then
+    if e.estado <> 'disponivel' then f := f || text 'passar por Destino e Disponível (chegada e aviso ao cliente)'; end if;
+    if not exists (select 1 from entregas en where en.encomenda_id = e.id and coalesce(en.identificacao, '') <> '' and (en.assinatura_documento_id is not null or en.pin_validado)) then
+      f := f || text 'confirmação do levantamento (identificação e assinatura/PIN)'; end if;
+  end if;
+  return f;
+end $$;
+
+-- Avançar uma encomenda (com histórico obrigatório)
+create or replace function public.avancar_encomenda(p_encomenda uuid, p_para estado_encomenda, p_nota text default null,
+  p_documentos uuid[] default null, p_excecao text default null) returns encomendas
+language plpgsql security definer set search_path = public as $$
+declare v_enc encomendas; v_papel papel_funcionario; v_falta text[]; v_resp text; v_prest text;
+begin
+  select * into v_enc from encomendas where id = p_encomenda for update;
+  if not found then raise exception 'Encomenda inexistente.'; end if;
+  if private.minha_empresa() is distinct from v_enc.empresa_id then raise exception 'Sem permissão para esta encomenda (inicie a sessão da empresa).'; end if;
+  v_papel := private.meu_papel();
+  if v_papel is null then raise exception 'Sem permissão para esta encomenda.'; end if;
+  if v_enc.suspensa and p_para <> 'cancelada' then raise exception 'A encomenda está suspensa (%). Retome-a antes de mudar o estado.', coalesce(v_enc.suspensa_motivo, 'ocorrência'); end if;
+  if not exists (select 1 from encomenda_transicoes t where t.de = v_enc.estado and t.para = p_para and v_papel = any (t.papeis)) then
+    raise exception 'Transição % → % não permitida para o papel %.', v_enc.estado, p_para, v_papel; end if;
+  if v_papel = 'operador_terreno' and not (coalesce(v_enc.criado_por = auth.uid(), false)
+       or exists (select 1 from trabalhos_terreno tt where tt.encomenda_id = v_enc.id and tt.operador_id = auth.uid())) then
+    raise exception 'Este serviço não está atribuído ao operador.'; end if;
+  if p_documentos is not null and exists (select 1 from unnest(p_documentos) d where not exists (select 1 from documentos x where x.id = d and (x.empresa_id = v_enc.empresa_id or x.encomenda_id = v_enc.id))) then
+    raise exception 'Documento inválido para esta encomenda.'; end if;
+  v_falta := private.encomenda_falta(v_enc, p_para, p_excecao);
+  if cardinality(v_falta) > 0 then raise exception 'Não é possível avançar. Complete: %.', array_to_string(v_falta, ', '); end if;
+  perform set_config('elolog.transicao', 'on', true);
+  update encomendas set estado = p_para where id = v_enc.id;
+  perform set_config('elolog.transicao', 'off', true);
+  select nome into v_resp from funcionarios where id = auth.uid();
+  select coalesce(nome_comercial, nome) into v_prest from empresas where id = v_enc.empresa_id;
+  insert into encomenda_historico (encomenda_id, empresa_id, de, para, nota, user_id, codigo, responsavel, prestador, documentos, motivo_excecao)
+    values (v_enc.id, v_enc.empresa_id, v_enc.estado, p_para, nullif(trim(p_nota), ''), auth.uid(), v_enc.codigo, v_resp, v_prest, p_documentos, nullif(trim(p_excecao), ''));
+  insert into auditoria (empresa_id, user_id, papel, acao, entidade, entidade_id, antes, depois, motivo)
+    values (v_enc.empresa_id, auth.uid(), v_papel::text, 'transicao_encomenda', 'encomendas', v_enc.id::text,
+            jsonb_build_object('estado', v_enc.estado), jsonb_build_object('estado', p_para), coalesce(nullif(trim(p_excecao), ''), p_nota));
+  if v_enc.cliente_id is not null then
+    insert into notificacoes (user_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+      values (v_enc.cliente_id, 'estado_encomenda', case when p_para = 'disponivel' then 'A sua encomenda ' || v_enc.codigo || ' está disponível para levantamento'
+              else 'A sua encomenda ' || v_enc.codigo || ' mudou de estado' end, p_para::text, 'encomendas', v_enc.id); end if;
+  if p_para = 'destino' then                                             -- chegada: tarefa de processamento no destino
+    insert into trabalhos_terreno (empresa_id, encomenda_id, tipo, data, notas) values (v_enc.empresa_id, v_enc.id, 'processamento_destino', current_date, 'Processar a chegada: conferir carga e preparar a disponibilização.');
+    insert into notificacoes (empresa_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+      values (v_enc.empresa_id, 'tarefa_destino', 'Chegada de ' || v_enc.codigo || ': processar no destino', v_enc.destino, 'encomendas', v_enc.id); end if;
+  select * into v_enc from encomendas where id = p_encomenda;
+  return v_enc;
+end $$;
+
+-- A função antiga mantém o nome e passa a usar as novas regras
+create or replace function public.transitar_encomenda(p_encomenda uuid, p_para estado_encomenda, p_nota text default null) returns encomendas
+language sql security definer set search_path = public as $$ select public.avancar_encomenda(p_encomenda, p_para, p_nota, null, null) $$;
+
+-- Ações de etapa (não mudam o estado; ficam no histórico)
+create or replace function private.encomenda_da_empresa(p_encomenda uuid, p_papeis text[]) returns encomendas language plpgsql security definer set search_path = public as $$
+declare e encomendas; begin
+  select * into e from encomendas where id = p_encomenda;
+  if not found or private.minha_empresa() is distinct from e.empresa_id then raise exception 'Sem permissão para esta encomenda.'; end if;
+  if not private.papel_em(p_papeis) then raise exception 'A sua função não permite esta ação.'; end if;
+  return e; end $$;
+create or replace function private.encomenda_nota(e encomendas, p_nota text) returns void language sql security definer set search_path = public as $$
+  insert into encomenda_historico (encomenda_id, empresa_id, de, para, nota, user_id, codigo, responsavel, prestador)
+  select e.id, e.empresa_id, e.estado, e.estado, p_nota, auth.uid(), e.codigo, (select nome from funcionarios where id = auth.uid()),
+         (select coalesce(nome_comercial, nome) from empresas where id = e.empresa_id) $$;
+
+create or replace function public.encomenda_rececao_armazem(p_encomenda uuid, p_quantidade int, p_conferida boolean, p_ocorrencias text default null,
+  p_localizacao text default null, p_armazem uuid default null) returns void language plpgsql security definer set search_path = public as $$
+declare e encomendas;
+begin
+  e := private.encomenda_da_empresa(p_encomenda, array['admin_empresa','operador','armazem']);
+  if p_quantidade is null or p_quantidade < 0 then raise exception 'Indique a quantidade recebida.'; end if;
+  if e.quantidade is not null and p_quantidade <> e.quantidade and length(trim(coalesce(p_ocorrencias, ''))) < 5 then
+    raise exception 'A quantidade recebida (%) é diferente da prevista (%). Descreva a ocorrência.', p_quantidade, e.quantidade; end if;
+  insert into recibos_armazem (encomenda_id, armazem_id, confirmado, carga_conferida, localizacao, ocorrencias, confirmado_por, confirmado_em, quantidade_recebida)
+    values (e.id, p_armazem, true, coalesce(p_conferida, false), nullif(trim(p_localizacao), ''), nullif(trim(p_ocorrencias), ''), auth.uid(), now(), p_quantidade)
+  on conflict (encomenda_id) do update set armazem_id = coalesce(excluded.armazem_id, recibos_armazem.armazem_id), confirmado = true, carga_conferida = excluded.carga_conferida,
+    localizacao = coalesce(excluded.localizacao, recibos_armazem.localizacao), ocorrencias = excluded.ocorrencias, confirmado_por = auth.uid(), confirmado_em = now(),
+    quantidade_recebida = excluded.quantidade_recebida, updated_at = now();
+  perform private.encomenda_nota(e, 'Receção no armazém: ' || p_quantidade || ' volume(s)' || case when p_conferida then ', carga conferida' else '' end ||
+    coalesce('. Ocorrências: ' || nullif(trim(p_ocorrencias), ''), ''));
+end $$;
+
+create or replace function public.encomenda_expedicao(p_encomenda uuid, p_navio text, p_viagem text, p_partida date, p_chegada date default null) returns void
+language plpgsql security definer set search_path = public as $$
+declare e encomendas;
+begin
+  e := private.encomenda_da_empresa(p_encomenda, array['admin_empresa','operador','armazem']);
+  if length(trim(coalesce(p_navio, ''))) < 2 or length(trim(coalesce(p_viagem, ''))) < 1 or p_partida is null then raise exception 'Indique o navio, a viagem e a data prevista de partida.'; end if;
+  if p_chegada is not null and p_chegada < p_partida then raise exception 'A chegada prevista não pode ser antes da partida.'; end if;
+  update encomendas set navio = trim(p_navio), viagem = trim(p_viagem), partida_prevista = p_partida, chegada_prevista = p_chegada where id = e.id;
+  perform private.encomenda_nota(e, 'Expedição: navio ' || trim(p_navio) || ', viagem ' || trim(p_viagem) || ', partida ' || to_char(p_partida, 'DD/MM/YYYY') ||
+    coalesce(', chegada ' || to_char(p_chegada, 'DD/MM/YYYY'), ''));
+end $$;
+
+create or replace function public.encomenda_processamento_destino(p_encomenda uuid, p_nota text default null) returns void
+language plpgsql security definer set search_path = public as $$
+declare e encomendas;
+begin
+  e := private.encomenda_da_empresa(p_encomenda, array['admin_empresa','operador','armazem']);
+  if e.estado <> 'destino' then raise exception 'O processamento no destino faz-se depois de confirmar a chegada.'; end if;
+  update trabalhos_terreno set estado = 'concluida', notas = coalesce(nullif(trim(p_nota), ''), notas) where encomenda_id = e.id and tipo = 'processamento_destino' and estado <> 'concluida';
+  if not found then raise exception 'Não há tarefa de processamento por concluir.'; end if;
+  perform private.encomenda_nota(e, 'Processamento no destino concluído' || coalesce(': ' || nullif(trim(p_nota), ''), '.'));
+end $$;
+
+create or replace function public.encomenda_levantamento(p_encomenda uuid, p_identificacao text, p_documento uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare e encomendas;
+begin
+  e := private.encomenda_da_empresa(p_encomenda, array['admin_empresa','operador','operador_terreno']);
+  if e.estado <> 'disponivel' then raise exception 'O levantamento só se confirma com a encomenda Disponível.'; end if;
+  if length(trim(coalesce(p_identificacao, ''))) < 3 then raise exception 'Indique a identificação de quem levanta.'; end if;
+  if p_documento is null or not exists (select 1 from documentos d where d.id = p_documento and d.empresa_id = e.empresa_id) then raise exception 'Anexe o comprovativo de entrega assinado.'; end if;
+  insert into entregas (encomenda_id, identificacao, assinatura_documento_id, entregue_por, entregue_em) values (e.id, trim(p_identificacao), p_documento, auth.uid(), now())
+  on conflict (encomenda_id) do update set identificacao = excluded.identificacao, assinatura_documento_id = excluded.assinatura_documento_id, entregue_por = auth.uid(), entregue_em = now(), updated_at = now();
+  perform private.encomenda_nota(e, 'Levantamento confirmado: ' || trim(p_identificacao));
+end $$;
+
+-- Pagamento pendente → alerta financeiro (uma vez por pagamento a cada 24 h)
+create or replace function private.alerta_pagamento_pendente() returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if new.tipo <> 'reembolso' and new.estado in ('pendente', 'parcial') and (tg_op = 'INSERT' or old.estado is distinct from new.estado)
+     and not exists (select 1 from notificacoes n where n.referencia_id = new.id and n.tipo = 'alerta_financeiro' and n.created_at > now() - interval '24 hours') then
+    insert into notificacoes (empresa_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+      select new.empresa_id, 'alerta_financeiro', 'Pagamento ' || new.estado || ' — ' || coalesce(e.codigo, ''), new.valor || ' ' || new.moeda, 'pagamentos', new.id
+        from encomendas e where e.id = new.encomenda_id;
+  end if;
+  return new;
+end $$;
+create or replace trigger alerta_pagamento_pendente after insert or update on pagamentos for each row execute function private.alerta_pagamento_pendente();
+
+revoke all on function public.avancar_encomenda(uuid, estado_encomenda, text, uuid[], text), public.encomenda_rececao_armazem(uuid, int, boolean, text, text, uuid),
+  public.encomenda_expedicao(uuid, text, text, date, date), public.encomenda_processamento_destino(uuid, text), public.encomenda_levantamento(uuid, text, uuid) from public, anon;
+grant execute on function public.avancar_encomenda(uuid, estado_encomenda, text, uuid[], text), public.encomenda_rececao_armazem(uuid, int, boolean, text, text, uuid),
+  public.encomenda_expedicao(uuid, text, text, date, date), public.encomenda_processamento_destino(uuid, text), public.encomenda_levantamento(uuid, text, uuid) to authenticated;
+revoke all on function private.encomenda_falta(encomendas, estado_encomenda, text), private.encomenda_da_empresa(uuid, text[]), private.encomenda_nota(encomendas, text) from public, anon, authenticated;
+
+-- ===== 00163_ficha_operacao.sql =====
+-- v100 — Ficha da operação: tudo o que é preciso para trabalhar uma encomenda (resumo, percurso de 11 etapas, carga, financeiro,
+-- histórico) e as próximas ações com os requisitos em falta. Só leitura; administração da plataforma ou a empresa da encomenda.
+
+create or replace function public.encomenda_ficha(p_codigo text) returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare e encomendas; adm boolean := private.e_admin_plataforma(); papel papel_funcionario := private.meu_papel(); r jsonb;
+  pago numeric; comissao numeric; regra regras_comissao; ordem text[] := array['aprovacao','agendamento','recolha','armazenamento','expedicao','em_transito','destino','disponivel','entregue'];
+begin
+  select * into e from encomendas where codigo = upper(trim(p_codigo)) or id::text = trim(p_codigo);
+  if not found then raise exception 'Encomenda não encontrada.'; end if;
+  if not adm and private.minha_empresa() is distinct from e.empresa_id then raise exception 'Sem permissão para esta encomenda.'; end if;
+  select coalesce(sum(case when tipo = 'reembolso' then -valor else valor end), 0) into pago from pagamentos where encomenda_id = e.id and estado = 'pago';
+  select * into regra from regras_comissao c where c.ativa and (c.empresa_id = e.empresa_id or c.empresa_id is null) order by (c.empresa_id is null), c.updated_at desc limit 1;
+  comissao := case when regra.id is null then null when regra.tipo_valor = 'percentagem' then round(e.preco_total * regra.valor / 100, 2) else regra.valor end;
+  r := jsonb_build_object(
+    'encomenda', to_jsonb(e) - 'pin_validacao_hash',
+    'prestador', (select coalesce(nome_comercial, nome) from empresas where id = e.empresa_id),
+    'cliente', (select jsonb_build_object('nome', coalesce(c.nome, e.cliente_nome), 'email', c.email, 'telefone', coalesce(c.telefone, e.cliente_telefone), 'nif', coalesce(c.nif, e.cliente_nif))
+                  from (select 1) x left join clientes c on c.id = e.cliente_id),
+    'simulacao', (select jsonb_build_object('codigo', s.codigo, 'em', s.created_at) from simulacoes s where s.id = e.simulacao_id),
+    'proposta', (select jsonb_build_object('preco', p.preco, 'estado', p.estado, 'em', p.respondida_em) from propostas p where p.id = e.proposta_id),
+    'chegou_em', (select jsonb_object_agg(para, em) from (select h.para::text para, min(h.created_at) em from encomenda_historico h where h.encomenda_id = e.id group by h.para) t),
+    'armazem', (select to_jsonb(ra) || jsonb_build_object('armazem', a.nome) from recibos_armazem ra left join armazens a on a.id = ra.armazem_id where ra.encomenda_id = e.id),
+    'entrega', (select to_jsonb(en) from entregas en where en.encomenda_id = e.id),
+    'tarefa_destino', (select jsonb_build_object('estado', t.estado, 'notas', t.notas, 'data', t.data) from trabalhos_terreno t where t.encomenda_id = e.id and t.tipo = 'processamento_destino' order by t.created_at desc limit 1),
+    'documentos', (select coalesce(jsonb_agg(jsonb_build_object('id', d.id, 'nome', d.nome, 'categoria', d.categoria, 'mime', d.mime, 'caminho', d.storage_path, 'em', d.created_at) order by d.created_at), '[]'::jsonb)
+                     from documentos d where d.encomenda_id = e.id and d.verificado),
+    'pagamentos', (select coalesce(jsonb_agg(jsonb_build_object('codigo', pg.codigo, 'tipo', pg.tipo, 'valor', pg.valor, 'estado', pg.estado, 'metodo', pg.metodo, 'pago_em', pg.pago_em, 'em', pg.created_at) order by pg.created_at), '[]'::jsonb)
+                     from pagamentos pg where pg.encomenda_id = e.id),
+    'financeiro', jsonb_build_object('preco', e.preco_total, 'pago', pago, 'em_divida', greatest(e.preco_total - pago, 0), 'comissao', comissao,
+                     'comissao_regra', case when regra.id is null then null when regra.tipo_valor = 'percentagem' then regra.valor || ' %' else regra.valor || ' € fixo' end,
+                     'pendentes', (select count(*) from pagamentos pg where pg.encomenda_id = e.id and pg.estado in ('pendente','parcial'))),
+    'historico', (select coalesce(jsonb_agg(jsonb_build_object('de', h.de, 'para', h.para, 'em', h.created_at, 'responsavel', coalesce(h.responsavel, f.nome), 'prestador', h.prestador,
+                     'nota', h.nota, 'motivo_excecao', h.motivo_excecao, 'documentos', (select jsonb_agg(d.nome) from documentos d where d.id = any (h.documentos))) order by h.id), '[]'::jsonb)
+                     from encomenda_historico h left join funcionarios f on f.id = h.user_id where h.encomenda_id = e.id),
+    'ocorrencias', (select coalesce(jsonb_agg(jsonb_build_object('codigo', o.codigo, 'tipo', o.tipo, 'gravidade', o.gravidade, 'estado', o.estado, 'descricao', o.descricao, 'resolucao', o.resolucao, 'em', o.created_at) order by o.created_at), '[]'::jsonb)
+                     from ocorrencias o where o.encomenda_id = e.id),
+    'proximos', (select coalesce(jsonb_agg(jsonb_build_object('para', t.para, 'permitido', papel is not null and papel = any (t.papeis) and not adm,
+                     'excecao', t.de = 'aprovacao' and t.para = 'armazenamento', 'falta', to_jsonb(private.encomenda_falta(e, t.para, case when t.de = 'aprovacao' and t.para = 'armazenamento' then 'motivo a indicar' end)))
+                     order by array_position(ordem, t.para::text) nulls last), '[]'::jsonb)
+                     from encomenda_transicoes t where t.de = e.estado and t.para <> 'cancelada' and not (t.de = 'destino' and t.para = 'entregue')),
+    'pode_cancelar', exists (select 1 from encomenda_transicoes t where t.de = e.estado and t.para = 'cancelada' and papel = any (t.papeis)),
+    'papel', coalesce(papel::text, case when adm then 'administracao' end));
+  return r;
+end $$;
+revoke all on function public.encomenda_ficha(text) from public, anon;
+grant execute on function public.encomenda_ficha(text) to authenticated;
+
+-- ===== 00164_painel_vivo.sql =====
+-- v101 — «Painel ao vivo» do Centro de Controlo (administração). Só ACRESCENTA uma função de leitura:
+-- não altera tabelas, dados, autenticação, permissões, fluxos de encomendas, comissões nem planos.
+-- Tudo vem dos dados reais: comissões pela regra ativa (da empresa ou global) sobre pagamentos confirmados hoje,
+-- planos pelos recibos pagos hoje, navios pelas encomendas expedidas (navio/viagem) e pela posição AIS quando existe.
+
+create or replace function public.painel_vivo() returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare
+  v_hoje date := current_date; r jsonb;
+  k_com numeric; k_planos numeric; k_media numeric; k_curso int; k_novas int; k_novas_ant int;
+  k_prazo_n int; k_prazo_ok int; k_prazo_ant_n int; k_prazo_ant_ok int; k_risco numeric; k_risco_n int; k_atras int;
+begin
+  if not private.e_admin_plataforma() then raise exception 'Apenas a administração da plataforma.'; end if;
+
+  -- receita da Elolog hoje: comissões (regra ativa da empresa, senão a global) sobre o recebido hoje + planos pagos hoje
+  with pg as (select p.empresa_id, p.pago_em::date d, sum(case when p.tipo = 'reembolso' then -p.valor else p.valor end) v
+                from pagamentos p where p.estado = 'pago' and p.pago_em >= v_hoje - 14 group by 1, 2),
+       c as (select pg.d, case when rc.tipo_valor = 'percentagem' then pg.v * rc.valor / 100 when rc.tipo_valor = 'fixo' then rc.valor else 0 end com
+               from pg left join lateral (select * from regras_comissao x where x.ativa and (x.empresa_id = pg.empresa_id or x.empresa_id is null)
+                                          order by (x.empresa_id is null), x.updated_at desc limit 1) rc on true)
+  select coalesce(sum(com) filter (where d = v_hoje), 0), coalesce(sum(com) filter (where d < v_hoje), 0) / 14 into k_com, k_media from c;
+  select coalesce(sum(valor), 0) into k_planos from faturas_plataforma where tipo = 'recibo' and estado = 'paga' and emitida_em::date = v_hoje;
+  k_media := k_media + coalesce((select sum(valor) from faturas_plataforma where tipo = 'recibo' and estado = 'paga'
+                                  and emitida_em::date >= v_hoje - 14 and emitida_em::date < v_hoje), 0) / 14;
+
+  select count(*) filter (where estado not in ('entregue', 'cancelada')),
+         count(*) filter (where created_at >= now() - interval '30 days'),
+         count(*) filter (where created_at >= now() - interval '60 days' and created_at < now() - interval '30 days'),
+         count(*) filter (where estado not in ('entregue', 'cancelada') and coalesce(chegada_prevista, data_prevista) < v_hoje)
+    into k_curso, k_novas, k_novas_ant, k_atras from encomendas;
+  select count(*) filter (where en.entregue_em >= now() - interval '30 days'),
+         count(*) filter (where en.entregue_em >= now() - interval '30 days' and en.entregue_em::date <= coalesce(e.chegada_prevista, e.data_prevista, en.entregue_em::date)),
+         count(*) filter (where en.entregue_em >= now() - interval '60 days' and en.entregue_em < now() - interval '30 days'),
+         count(*) filter (where en.entregue_em >= now() - interval '60 days' and en.entregue_em < now() - interval '30 days'
+                          and en.entregue_em::date <= coalesce(e.chegada_prevista, e.data_prevista, en.entregue_em::date))
+    into k_prazo_n, k_prazo_ok, k_prazo_ant_n, k_prazo_ant_ok
+    from entregas en join encomendas e on e.id = en.encomenda_id and e.estado = 'entregue';
+  select coalesce(sum(valor), 0), count(*) into k_risco, k_risco_n from pagamentos where estado in ('pendente', 'parcial') and tipo <> 'reembolso';
+
+  r := jsonb_build_object('gerado_em', now(),
+    'kpis', jsonb_build_object(
+      'receita_hoje', round(k_com + k_planos, 2), 'comissoes_hoje', round(k_com, 2), 'planos_hoje', k_planos, 'receita_media_14d', round(k_media, 2),
+      'em_curso', k_curso, 'novas_30d', k_novas, 'novas_30d_anteriores', k_novas_ant,
+      'prazo_pct', case when k_prazo_n > 0 then round(k_prazo_ok * 100.0 / k_prazo_n, 1) end,
+      'prazo_pct_anterior', case when k_prazo_ant_n > 0 then round(k_prazo_ant_ok * 100.0 / k_prazo_ant_n, 1) end,
+      'risco_valor', k_risco, 'risco_pagamentos', k_risco_n, 'atrasadas', k_atras),
+
+    -- viagens: encomendas expedidas ou em trânsito agrupadas por navio e viagem; posição AIS se o navio é seguido
+    'viagens', coalesce((select jsonb_agg(v order by v->>'partida') from (
+      select jsonb_build_object('navio', e.navio, 'viagem', e.viagem, 'origem', mode() within group (order by e.origem), 'destino', mode() within group (order by e.destino),
+        'encomendas', count(*), 'codigos', jsonb_agg(e.codigo order by e.codigo), 'partida', min(e.partida_prevista), 'chegada', max(e.chegada_prevista),
+        'em_transito', bool_or(e.estado = 'em_transito'), 'atrasada', bool_or(e.estado <> 'destino' and e.chegada_prevista < v_hoje),
+        'prestadores', (select jsonb_agg(distinct coalesce(em.nome_comercial, em.nome)) from encomendas e2 join empresas em on em.id = e2.empresa_id
+                         where e2.navio = e.navio and coalesce(e2.viagem, '') = coalesce(e.viagem, '') and e2.estado in ('expedicao', 'em_transito')),
+        'ais', (select jsonb_build_object('lat', p.latitude, 'lon', p.longitude, 'nos', p.velocidade_nos, 'eta', p.eta, 'em', p.posicao_em)
+                  from navios_posicoes p where lower(p.nome) = lower(e.navio) and p.latitude is not null order by p.posicao_em desc nulls last limit 1)) v
+        from encomendas e where e.estado in ('expedicao', 'em_transito') and coalesce(e.navio, '') <> ''
+       group by e.navio, e.viagem) x), '[]'::jsonb),
+
+    -- encomendas por porto: antes de embarcar contam na origem, depois na chegada
+    'portos', coalesce((select jsonb_agg(jsonb_build_object('cidade', cidade, 'n', n) order by n desc) from (
+      select case when estado in ('em_transito', 'destino', 'disponivel') then destino else origem end cidade, count(*) n
+        from encomendas where estado not in ('entregue', 'cancelada') group by 1) p where cidade is not null), '[]'::jsonb),
+
+    'veiculos', coalesce((select jsonb_agg(jsonb_build_object('matricula', v.matricula, 'descricao', v.descricao, 'empresa', coalesce(em.nome_comercial, em.nome),
+        'servicos_hoje', (select count(*) from trabalhos_terreno t where t.veiculo_id = v.id and t.data = v_hoje),
+        'por_fazer', (select count(*) from trabalhos_terreno t where t.veiculo_id = v.id and t.data = v_hoje and t.estado::text <> 'concluida'))
+        order by em.nome, v.matricula) from veiculos v join empresas em on em.id = v.empresa_id where v.ativo), '[]'::jsonb),
+
+    'armazens', coalesce((select jsonb_agg(jsonb_build_object('nome', a.nome, 'morada', a.morada, 'empresa', coalesce(em.nome_comercial, em.nome),
+        'encomendas', (select count(*) from recibos_armazem ra join encomendas e on e.id = ra.encomenda_id where ra.armazem_id = a.id and e.estado = 'armazenamento'),
+        'volumes', (select coalesce(sum(ra.quantidade_recebida), 0) from recibos_armazem ra join encomendas e on e.id = ra.encomenda_id where ra.armazem_id = a.id and e.estado = 'armazenamento'))
+        order by a.nome) from armazens a join empresas em on em.id = a.empresa_id where a.ativo), '[]'::jsonb),
+
+    'recentes', coalesce((select jsonb_agg(x order by x->>'atualizada' desc) from (
+      select jsonb_build_object('codigo', e.codigo, 'origem', e.origem, 'destino', e.destino, 'chegada', coalesce(e.chegada_prevista, e.data_prevista),
+        'transporte', case when coalesce(e.navio, '') <> '' then e.navio || coalesce(' ' || e.viagem, '') end, 'prestador', coalesce(em.nome_comercial, em.nome),
+        'cliente', coalesce(e.cliente_nome, c.nome), 'estado', e.estado, 'suspensa', e.suspensa,
+        'atrasada', e.estado not in ('entregue', 'cancelada') and coalesce(e.chegada_prevista, e.data_prevista) < v_hoje,
+        'pagamento_pendente', exists (select 1 from pagamentos p where p.encomenda_id = e.id and p.estado in ('pendente', 'parcial')), 'atualizada', e.updated_at) x
+        from encomendas e join empresas em on em.id = e.empresa_id left join clientes c on c.id = e.cliente_id
+       order by e.updated_at desc limit 20) t), '[]'::jsonb));
+  return r;
+end $$;
+revoke all on function public.painel_vivo() from public, anon;
+grant execute on function public.painel_vivo() to authenticated;
+
+commit;
