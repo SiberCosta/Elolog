@@ -28,7 +28,7 @@ async function carregar(){const f=M.f;M.carregando=true;M.erro="";desenhar();
         &&(!f.de||x[por]>=f.de)&&(!f.ate||x[por]<=f.ate)&&(!f.livre||(["aberta","planeada"].includes(x.estado)&&(x.cont20_livres+x.cont40_livres>0||x.grupagem_m3>0))));M.ais=[]}
     else{M.demo=false;const sb=await P().sb();const{data,error}=await sb.rpc("pesquisa_maritima",{p_texto:f.texto||null,p_sentido:f.sentido||null,p_de:f.de||null,
       p_ate:f.ate||null,p_porto:f.porto||null,p_so_disponivel:f.vista==="disponibilidade"||f.livre,p_por:f.vista==="chegadas"?"chegada":"partida"});if(error)throw error;M.lista=data||[];
-      const a=await sb.rpc("navios_sao_tome",{p_texto:f.texto||null});M.ais=(a.error?[]:a.data||[]).filter(x=>!f.sentido||x.estado==="no_porto"||x.sentido===f.sentido)}}
+      const a=await sb.rpc("navios_stp",{p_texto:f.texto||null});M.ais=(a.error?[]:a.data||[]).filter(x=>!f.sentido||x.estado==="no_porto"||x.sentido===f.sentido)}}
   catch(e){M.erro=window.ELOLogServidor?.mensagem?.(e)||e.message||"Não foi possível pesquisar.";M.lista=[];M.ais=[]}
   finally{M.carregando=false;desenhar()}}
 
@@ -55,21 +55,22 @@ function navios(){const g=new Map;M.lista.forEach(x=>{const k=x.navio.toLowerCas
 
 /** Navios REAIS detetados pelo AIS a caminho de São Tomé ou de Portugal (tabela navios_rota, migração 00154). */
 /** Navios reais em São Tomé (MyShipTracking, 3× por dia): a caminho, no porto e que partiram (função navios_sao_tome, migração 00156). */
-const GRUPOS=[["no_porto","No porto de São Tomé"],["a_caminho","A caminho de São Tomé"],["partiu","Partiram de São Tomé (últimos dias)"]];
+const GRUPOS=[["a_caminho","Com destino a São Tomé (ST TMS)"],["no_porto","No porto de São Tomé"],["partiu","Partidas de São Tomé (últimos 20 dias)"]];
 function aisSec(){const l=M.ais||[],dia=t=>t?new Date(t).toLocaleDateString("pt-PT",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):"";
   const navio=x=>{const lat=Number(x.latitude),lon=Number(x.longitude),mapa=x.latitude!=null&&Number.isFinite(lat)&&Number.isFinite(lon);
-    const quando=x.estado==="a_caminho"?(x.eta?`Chegada prevista <b>${esc(dia(x.eta))}</b>`:"Chegada prevista por confirmar"):x.estado==="no_porto"?`No porto desde <b>${esc(dia(x.evento_em))}</b>`:`Saiu a <b>${esc(dia(x.evento_em))}</b>`;
+    const dst=x.destino&&!/^(São Tomé|Saída de São Tomé)$/.test(x.destino)?` · destino declarado <b>${esc(x.destino)}</b>`:"",onde=x.local?` · visto em <b>${esc(x.local)}</b>`:"";
+    const quando=x.estado==="a_caminho"?(x.eta?`Chegada prevista <b>${esc(dia(x.eta))}</b>`:"Chegada prevista por confirmar")+dst+onde:x.estado==="no_porto"?`No porto desde <b>${esc(dia(x.evento_em))}</b>`+dst:`Saiu a <b>${esc(dia(x.evento_em))}</b>`+dst;
     return`<li class="mm-viagem mm-ais-navio ${esc(x.estado)}"><div class="mm-topo"><div><strong>🚢 ${esc(x.nome||"Navio "+x.mmsi)}</strong><small>${esc([x.tipo_txt,x.bandeira,x.gt&&Number(x.gt).toLocaleString("pt-PT")+" GT",x.imo&&"IMO "+x.imo].filter(Boolean).join(" · "))}</small></div></div>
       <p class="mm-ais-l">${quando}</p>${mapa?`<p class="mm-ais"><a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=6/${lat}/${lon}" target="_blank" rel="noopener">ver no mapa</a></p>`:""}</li>`};
   const blocos=GRUPOS.map(([k,t])=>{const g=l.filter(x=>x.estado===k);return g.length?`<h5 class="mm-grupo">${t} <span>${g.length}</span></h5><ul class="mm-lista">${g.map(navio).join("")}</ul>`:""}).join("");
-  return`<section class="mm-ais-sec"><h4>Navios em São Tomé <small>· dados reais, atualizados 3 vezes por dia</small></h4>${blocos}
-    <p class="mm-nota">Fonte: MyShipTracking (AIS). Mostra os navios no porto de São Tomé, os que estão previstos chegar e os que partiram. Para reservar espaço, use as viagens publicadas ou peça uma cotação.</p></section>`}
+  return`<section class="mm-ais-sec"><h4>Navios com destino a São Tomé e partidas de São Tomé <small>· dados reais, atualizados 1 vez por dia</small></h4>${blocos}
+    <p class="mm-nota">Fonte: MyShipTracking (AIS). Mostra os navios que declaram destino São Tomé (ST TMS) nos portos portugueses e a chegar, os que estão no porto e os que partiram. Para reservar espaço, use as viagens publicadas ou peça uma cotação.</p></section>`}
 
 function desenhar(){if(!M.j?.corpo?.isConnected)return;const f=M.f,c=M.j.corpo;
   const vistas=[["todos","Todos os navios"],["partidas","Partidas"],["chegadas","Chegadas"],["navios","Navios"],["disponibilidade","Com espaço"]].map(([k,t])=>`<button type="button" role="tab" aria-selected="${f.vista===k}" class="${f.vista===k?"ativo":""}" data-vista="${k}">${t}</button>`).join("");
   const sent=[["PT-STP","Portugal → São Tomé"],["STP-PT","São Tomé → Portugal"],["","Ambos"]].map(([k,t])=>`<option value="${k}" ${f.sentido===k?"selected":""}>${t}</option>`).join("");
   const portos=`<option value="">Todos os portos</option>`+[["Portugal",PORTOS.PT],["São Tomé e Príncipe",PORTOS.STP]].map(([g,l])=>`<optgroup label="${g}">${l.map(p=>`<option ${f.porto===p?"selected":""}>${p}</option>`).join("")}</optgroup>`).join("");
-  const corpo=M.carregando?'<p class="mm-vazio">A pesquisar…</p>':M.erro?`<p class="mm-vazio erro">⚠ ${esc(M.erro)}</p>`:(!M.lista.length?`<p class="mm-vazio">Nenhuma viagem publicada com estes filtros.${M.demo?"":" As viagens aparecem quando a equipa Elolog ou os prestadores as publicarem."}</p>`
+  const corpo=M.carregando?'<p class="mm-vazio">A pesquisar…</p>':M.erro?`<p class="mm-vazio erro">⚠ ${esc(M.erro)}</p>`:(!M.lista.length&&M.ais.length&&f.vista!=="disponibilidade"?"":!M.lista.length?`<p class="mm-vazio">Nenhuma viagem publicada com estes filtros.${M.demo?"":" As viagens aparecem quando a equipa Elolog ou os prestadores as publicarem."}</p>`
     :`<ul class="mm-lista">${f.vista==="navios"?navios():M.lista.map(cartao).join("")}</ul>`)+(f.vista==="disponibilidade"||!M.ais.length?"":aisSec());
   c.innerHTML=`<div class="mm">${M.demo?'<p class="mm-demo">Dados fictícios de demonstração</p>':""}<div class="mm-vistas" role="tablist">${vistas}</div>
     <form class="mm-filtros" role="search"><label class="mm-q"><span>Navio, linha ou viagem</span><input type="search" name="texto" maxlength="60" value="${esc(f.texto)}" placeholder="Ex.: nome do navio"></label>

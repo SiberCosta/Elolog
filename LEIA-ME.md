@@ -58,6 +58,14 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v93 (todos os navios com destino São Tomé e partidas de São Tomé)
+
+- `navios-mst` passa a procurar também, por zona, os navios que **declaram destino São Tomé (ST TMS / STTMS / SAO TOME)** nos portos de **Lisboa, Leixões, Setúbal e Sines**, e os navios **a sair de São Tomé** com o destino declarado. As saídas registadas no porto passam a 20 dias (limite das chaves de teste).
+- Na pesquisa: «Com destino a São Tomé (ST TMS)» (com chegada prevista, destino declarado e porto onde foi visto), «No porto de São Tomé» e «Partidas de São Tomé (últimos 20 dias)» com o destino declarado.
+- **Frequência: 1 vez por dia (06:23 UTC)**, escolhida pelo custo. Custo medido: ~480 créditos nas zonas + ~25 nas escalas por execução (~15 000/mês). A chave de **teste (2 000 créditos)** dura poucos dias; para uso contínuo é preciso o plano Basic (90 €/mês, 50 000 créditos).
+- Limite: a MyShipTracking só tem AIS terrestre, por isso navios em alto mar só aparecem se já tiverem sido vistos num porto.
+- Servidor: migração `00157_navios_stp_zonas.sql` (aplicada: coluna `local`, função `navios_stp`, tarefa diária). Testes: `mst.test.mts` (11/11).
+
 ## v92 (navios reais em São Tomé pela MyShipTracking)
 
 - Nova Edge Function **`navios-mst`** (publicada): 3 vezes por dia (05:23, 13:23, 21:23 UTC) consulta a API MyShipTracking para o porto de **São Tomé (port_id 5867 na MyShipTracking; o código STTMS não existe lá)**: navios **no porto**, **previstos chegar** (com data/hora) e que **partiram** nos últimos 7 dias.
