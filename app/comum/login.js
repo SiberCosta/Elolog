@@ -1,4 +1,4 @@
-/* Elolog — módulo 02/15: Autenticação, recuperação de senha, login de prestador e arranque da app
+/* Elolog — módulo 02/15: Autenticação, recuperação da palavra-passe, login de prestador e arranque da app
    Script clássico: partilha o âmbito global com os restantes módulos. Carregar pela ordem numérica. */
 let selectedLoginRole=null;let providerCompanyAuth=null;const ELOLOG_LOCAL_TEST_MODE=(()=>{try{const q=new URLSearchParams(location.search);if(q.has("demo"))sessionStorage.setItem("elolog_demo","1");
 if(q.get("demo")==="0")sessionStorage.removeItem("elolog_demo");return location.protocol==="file:"||sessionStorage.getItem("elolog_demo")==="1"}catch(e){return location.protocol==="file:"||new URLSearchParams(location.search).has("demo")}})();

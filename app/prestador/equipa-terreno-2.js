@@ -18,7 +18,7 @@ return`<div class="client-active-card">
             <div class="client-history-date">${o.date||o.created||"—"}</div>
             <div><span class="status ${statusClass(o.status)}">${o.status||"Recebido"}</span></div>
         </div>`).join(""):'<div class="client-home-empty">Ainda não existem encomendas registadas.</div>'}
-}function searchClientHomeOrder(){const input=document.getElementById("clientHomeTrackingSearch");const result=document.getElementById("clientHomeSearchResult");const code=input?.value.trim().toUpperCase();if(!result)return;if(!code){
+}function searchClientHomeOrder(){/* v119: o painel novo (cdash) tem campos próprios; o bloco antigo fica como alternativa */const input=document.getElementById("cdashPesquisa")||document.getElementById("clientHomeTrackingSearch");const result=document.getElementById("cdashResultado")||document.getElementById("clientHomeSearchResult");const code=input?.value.trim().toUpperCase();if(!result)return;if(!code){
 result.innerHTML='<div class="client-home-result-error">Indique o código da encomenda para pesquisar.</div>';return}const operation=operations.find(o=>String(o.id||"").toUpperCase()===code&&(!o.client||o.client===currentUser?.name||o.client==="João Silva"));
 if(!operation){result.innerHTML='<div class="client-home-result-error">Encomenda não encontrada no seu histórico.</div>';return}result.innerHTML=`
         <div class="client-home-result client-home-result-card">

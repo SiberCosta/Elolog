@@ -45,7 +45,7 @@ function abrir(tipo,id,cache,depois){const r=id?((tipo==="geral"?cache.gerais:ti
       return T().API.guardarComissao({nome:v("tfNome")||null,empresa_id:v("tfEmpresa")||null,metodo:v("tfMetodo")||null,tipo_valor:v("tfTipo"),valor:val,apresentacao:v("tfApres"),rota_origem:v("tfOrigem")||null,rota_destino:v("tfDestino")||null,
         inicio:v("tfIni")||null,fim:v("tfFim")||null,prioridade:Number(v("tfPrioridade"))||0,promocional:document.getElementById("tfPromo").checked,ativa:document.getElementById("tfAtiva").checked,...(id?{motivo_alteracao:v("tfMotivoAlt")||null}:{})},id)}}
   else if(tipo==="veiculo"){const prest=typeof currentUser!=="undefined"&&currentUser?.role==="prestador";titulo=id?"Alterar tarifa de veículo":prest?"Nova tarifa de veículo":"Nova tarifa geral de veículo";
-    html=`${prest?'<p class="nv-intro">Fica «por aprovar» até a Elolog a aprovar. Mudar o preço ou a capacidade de uma tarifa aprovada volta a pedir aprovação.</p>':""}<div class="pm-grelha">${campo("tfNome","Nome",`<input maxlength="120" value="${esc(r.nome||"")}" placeholder="Ex.: Carrinha até 1 200 kg">`)}
+    html=`${prest?'<p class="nv-intro">Entra logo em vigor nas simulações. Mudar o preço ou a capacidade cria uma nova versão (fica no histórico).</p>':""}<div class="pm-grelha">${campo("tfNome","Nome",`<input maxlength="120" value="${esc(r.nome||"")}" placeholder="Ex.: Carrinha até 1 200 kg">`)}
       ${campo("tfVeiculo","Veículo",`<select>${Object.entries(T().VEICULO).map(([k,n])=>`<option value="${k}" ${(r.veiculo||"carrinha")===k?"selected":""}>${n}</option>`).join("")}</select>`)}
       ${campo("tfCapKg","Capacidade (kg)",`<input inputmode="decimal" value="${esc(r.capacidade_kg??"")}" placeholder="Sem limite">`)}${campo("tfCapM3","Capacidade (m³)",`<input inputmode="decimal" value="${esc(r.capacidade_m3??"")}" placeholder="Sem limite">`)}
       ${campo("tfSaida","Preço de saída (€)",`<input inputmode="decimal" value="${esc(r.preco_saida??0)}">`)}${campo("tfValor","Preço por km (€)",`<input inputmode="decimal" value="${esc(r.preco_km??"")}">`)}
@@ -77,5 +77,9 @@ async function testar(){const out=document.getElementById("tsResultado");try{con
       <li><b>Comissão Elolog</b>${r.comissao_regra?`${esc(r.comissao_regra.nome||"regra")}: ${e(r.comissao,m)}, ${r.apresentacao==="separada"?"à parte":"incluída"}`:"sem regra: 0 €"}</li>
       <li class="final"><b>O cliente paga</b>${e(r.preco_final,m)}${r.apresentacao==="separada"?` (inclui taxa de serviço de ${e(r.comissao,m)})`:""}</li><li><b>O prestador recebe</b>${e(r.liquido_prestador,m)}</li></ol>`}
   catch(err){out.innerHTML=`<div class="vz-c" role="status"><span class="vz-ic"><i class="ic ic-warning"></i></span><div><strong>Não foi possível calcular</strong><span>${esc(err.message)}</span></div></div>`}}
-window.elologTarifariosForms={decidir,abrir,testarHtml,testar};
+/* eliminar uma tarifa de veículo (fica registado no histórico) */
+function eliminarVeiculo(id,v,depois){const j=J({eyebrow:"Tarifas de veículos",titulo:"Eliminar tarifa de veículo"});
+  j.mostrar(`<p class="nv-intro">Vai eliminar «${esc(v?.nome||"esta tarifa")}». Deixa de entrar no cálculo das recolhas. As encomendas já aceites mantêm o preço e a eliminação fica no histórico.</p>`,
+    [{texto:"Cancelar",acao:j.fechar},{texto:"Eliminar",principal:true,acao:async()=>{try{await T().API.eliminarVeiculo(id);j.fechar();aviso("Tarifa de veículo eliminada.","success");depois?.()}catch(e){aviso(e.message,"error")}}}])}
+window.elologTarifariosForms={decidir,abrir,testarHtml,testar,eliminarVeiculo};
 })();

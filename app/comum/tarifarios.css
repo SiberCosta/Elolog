@@ -100,3 +100,9 @@ html:not(#bv) body #rcCentro{display:grid;gap:14px}
 html:not(#bv) body .rc-pagina{margin-top:8px}
 html:not(#bv) body #providerDirectVolumes input[list]::-webkit-calendar-picker-indicator{display:none!important}
 @media (max-width:760px){html:not(#bv) body .tf-abas{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;padding-bottom:4px}html:not(#bv) body .tf-abas .fs-filtro{flex:none}}
+/* v116: som das notificações e limites de anexos */
+html:not(#bv) body .som-notif{padding:4px 10px;border:1px solid currentColor;border-radius:999px;background:transparent;font-size:.78rem;font-weight:600;cursor:pointer}
+html:not(#bv) body .som-notif[aria-pressed="false"]{opacity:.65}
+html:not(#bv) body .cfg-limites .provider-settings-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+/* v119: em ecrãs estreitos os separadores deslizam dentro da página, sem a alargar */
+html:not(#bv) body .tf-pagina,html:not(#bv) body .tf-pagina>*,html:not(#bv) body #adminTariffsContent,html:not(#bv) body #rcCentro,html:not(#bv) body .tf-corpo{min-width:0;max-width:100%}

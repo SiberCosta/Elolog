@@ -10,17 +10,17 @@ async function q(p){const{data,error}=await p;if(error)throw erro(error);return 
 /* exemplos da demonstração (só para ver o ecrã; não entram em nenhum cálculo) */
 const hoje=new Date(),d=n=>new Date(hoje-n*864e5).toISOString();
 const DEMO={empresas:[{id:"e1",nome:"Atlântico Cargo Lda"},{id:"e2",nome:"Rotas do Golfo"}],
-  tarifas:[{id:"t1",empresa_id:"e1",empresas:{nome:"Atlântico Cargo Lda"},nome:"Lisboa a São Tomé, por peso",versao:2,tarifa_pai_id:"t0",metodo:"peso",valor:2.4,moeda:"EUR",preco_minimo:60,limite_max:2000,origem:"Lisboa",destino:"São Tomé",estado:"pendente",submetida_em:d(1),regras:{}},
-    {id:"t0",empresa_id:"e1",empresas:{nome:"Atlântico Cargo Lda"},nome:"Lisboa a São Tomé, por peso",versao:1,metodo:"peso",valor:2.1,moeda:"EUR",preco_minimo:60,limite_max:2000,origem:"Lisboa",destino:"São Tomé",estado:"aprovada",decidida_em:d(40),regras:{}},
+  tarifas:[{id:"t1",empresa_id:"e1",empresas:{nome:"Atlântico Cargo Lda"},nome:"Lisboa a São Tomé, por peso",versao:2,tarifa_pai_id:"t0",metodo:"peso",valor:2.4,moeda:"EUR",preco_minimo:60,limite_max:2000,origem:"Lisboa",destino:"São Tomé",estado:"aprovada",created_at:d(1),regras:{}},
+    {id:"t0",empresa_id:"e1",empresas:{nome:"Atlântico Cargo Lda"},nome:"Lisboa a São Tomé, por peso",versao:1,metodo:"peso",valor:2.1,moeda:"EUR",preco_minimo:60,limite_max:2000,origem:"Lisboa",destino:"São Tomé",estado:"substituida",created_at:d(40),regras:{}},
     {id:"t3",empresa_id:"e2",empresas:{nome:"Rotas do Golfo"},nome:"Frigorífico",versao:1,metodo:"unidade",valor:75,moeda:"EUR",preco_minimo:0,estado:"aprovada",decidida_em:d(5),regras:{palavras:["arca congeladora","combinado"],so_descricao:true}},
     {id:"t2",empresa_id:"e2",empresas:{nome:"Rotas do Golfo"},nome:"Porto a Luanda, contentor",versao:1,metodo:"unidade",valor:1850,moeda:"EUR",preco_minimo:0,origem:"Porto",destino:"Luanda",estado:"aprovada",decidida_em:d(12),regras:{}}],
   gerais:[{id:"g1",codigo:"TG-0001",nome:"Referência Lisboa a São Tomé",uso:"referencia",metodo:"peso",valor:2.2,moeda:"EUR",preco_minimo:50,origem:"Lisboa",destino:"São Tomé",estado:"ativa",versao:3,prestadores:[]}],
   comissoes:[{id:"c1",nome:"Comissão geral",empresa_id:null,tipo_valor:"percentagem",valor:8,apresentacao:"incluida",ativa:true,promocional:false,prioridade:0},
     {id:"c2",nome:"Lançamento Bissau",empresa_id:null,rota_destino:"Bissau",tipo_valor:"percentagem",valor:4,apresentacao:"incluida",ativa:true,promocional:true,fim:new Date(Date.now()+30*864e5).toISOString().slice(0,10),prioridade:1}],
   veiculos:[{id:"v1",empresa_id:null,nome:"Carrinha Elolog",veiculo:"carrinha",capacidade_kg:1200,capacidade_m3:10,preco_saida:15,preco_km:0.6,preco_minimo:25,moeda:"EUR",versao:1,estado:"aprovado"},
-    {id:"v2",empresa_id:"e1",empresas:{nome:"Atlântico Cargo Lda"},nome:"Camião 7,5 t",veiculo:"camiao_pequeno",capacidade_kg:3500,capacidade_m3:30,preco_saida:40,preco_km:1.1,preco_minimo:60,moeda:"EUR",versao:1,estado:"pendente"}],
-  suplementos:[{id:"s1",empresa_id:null,nome:"Recolha na morada",chave:"recolha_km",tipo:"por_km",valor:1,estado:"aprovado"},{id:"s2",empresa_id:"e1",empresas:{nome:"Atlântico Cargo Lda"},nome:"Seguro da carga",chave:"seguro",tipo:"percentual",valor:1.5,estado:"pendente"}],
-  historico:[{id:1,entidade:"tarifas",estado_anterior:null,estado_novo:"pendente",motivo:"Subida do combustível",user_nome:"Rita Lopes",created_at:d(1),antes:null,depois:{nome:"Lisboa a São Tomé, por peso",valor:2.4,versao:2}},
+    {id:"v2",empresa_id:"e1",empresas:{nome:"Atlântico Cargo Lda"},nome:"Camião 7,5 t",veiculo:"camiao_pequeno",capacidade_kg:3500,capacidade_m3:30,preco_saida:40,preco_km:1.1,preco_minimo:60,moeda:"EUR",versao:1,estado:"aprovado",created_at:d(2)}],
+  suplementos:[{id:"s1",empresa_id:null,nome:"Recolha na morada",chave:"recolha_km",tipo:"por_km",valor:1,estado:"aprovado"},{id:"s2",empresa_id:"e1",empresas:{nome:"Atlântico Cargo Lda"},nome:"Seguro da carga",chave:"seguro",tipo:"percentual",valor:1.5,estado:"aprovado",created_at:d(3)}],
+  historico:[{id:1,entidade:"tarifas",estado_anterior:null,estado_novo:"aprovada",motivo:"Subida do combustível",user_nome:"Rita Lopes",created_at:d(1),antes:null,depois:{nome:"Lisboa a São Tomé, por peso",valor:2.4,versao:2}},
     {id:2,entidade:"tarifas_gerais",estado_anterior:"ativa",estado_novo:"ativa",motivo:"Atualização anual",user_nome:"Equipa Elolog",created_at:d(9),antes:{nome:"Referência Lisboa a São Tomé",valor:2.1},depois:{nome:"Referência Lisboa a São Tomé",valor:2.2,versao:3}}]};
 
 const API={
@@ -35,6 +35,7 @@ const API={
   async decidirVeiculo(id,decisao,motivo){exigir();return q((await sb()).rpc("veiculo_decidir",{p_veiculo:id,p_decisao:decisao,p_motivo:motivo||null}))},
   async guardarVeiculo(dados,id){exigir();const c=await sb();if(!id&&dados.empresa_id===undefined&&(typeof currentUser!=="undefined"&&currentUser?.role==="prestador")){const e=await P().minhaEmpresa?.();if(e?.empresa_id)dados={...dados,empresa_id:e.empresa_id}}
     return q(id?c.from("tarifas_veiculos").update(dados).eq("id",id).select().single():c.from("tarifas_veiculos").insert(dados).select().single())},
+  async eliminarVeiculo(id){exigir();const{error,count}=await (await sb()).from("tarifas_veiculos").delete({count:"exact"}).eq("id",id);if(error)throw erro(error);if(!count)throw new Error("Não foi possível eliminar: sem permissão ou a tarifa já não existe.");return true},
   async historico(){if(!online())return DEMO.historico;return q((await sb()).from("tarifas_historico").select("*").order("created_at",{ascending:false}).limit(200))},
   async decidir(id,decisao,motivo){exigir();return q((await sb()).rpc("tarifa_decidir",{p_tarifa:id,p_decisao:decisao,p_motivo:motivo||null}))},
   async decidirSuplemento(id,decisao,motivo){exigir();return q((await sb()).rpc("suplemento_decidir",{p_suplemento:id,p_decisao:decisao,p_motivo:motivo||null}))},

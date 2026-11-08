@@ -43,3 +43,9 @@ documentos 60 · mensagens de chat 150 · ocorrências 30 (+60 registos) · tick
 ## Testes
 
 `servidor/supabase/testes/17_regras_seguranca.sql` (12/12) e `functions/_testes/seguranca.test.mts`.
+
+## Navegador (v120)
+
+- Todas as páginas HTML têm `Content-Security-Policy` (só a Elolog, o Supabase do projeto e os CDN jsDelivr/cdnjs) e `referrer` `strict-origin-when-cross-origin`. Ao acrescentar um serviço externo, acrescentá-lo à política nas 14 páginas, senão o navegador bloqueia-o.
+- No front-end só existe a chave pública (anon). A chave `service_role` e as chaves de API ficam apenas nos segredos das Edge Functions. `node ferramentas/auditoria.cjs` falha se encontrar uma página sem CSP ou uma chave `service_role` no código.
+- Campos de palavra-passe nova com `autocomplete="new-password"`; nenhuma palavra-passe nem código é guardado no navegador.

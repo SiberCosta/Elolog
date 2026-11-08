@@ -1,5 +1,5 @@
 /* Elolog — tarifas do prestador no servidor (v114: Centro de Gestão de Tarifários).
-   Com servidor ligado, guardar submete a tarifa à Elolog (rpc tarifa_guardar, validado no servidor): só entra nas simulações
+   Com servidor ligado, guardar publica a tarifa (rpc tarifa_guardar, validado no servidor): entra logo nas simulações, sem esperar pela Elolog (v116)
    depois de aprovada. Uma alteração cria uma nova versão; a anterior continua em vigor até a nova ser aprovada.
    Sem servidor (modo de demonstração) fica tudo como antes, no navegador. */
 (function(){
@@ -38,19 +38,23 @@
       if(r.validade_inicio&&r.validade_fim&&r.validade_fim<r.validade_inicio)return aviso("A data «válida até» é anterior à data de início.","warning");
       const btn=event.submitter;window.elologBotao?.carregar(btn,true);
       try{const c=await P().sb();const antigo=serverId(id);const{estado,ativa,...dados}=r;
-        const{error}=await c.rpc("tarifa_guardar",{p_dados:dados,p_base:antigo||null,p_submeter:ativa,p_motivo:antigo?"Nova versão submetida pelo prestador":null});
+        const{error}=await c.rpc("tarifa_guardar",{p_dados:dados,p_base:antigo||null,p_submeter:ativa,p_motivo:antigo?"Nova versão publicada pelo prestador":null});
         if(error)throw new Error(error.code==="42501"?"Só o administrador ou o financeiro podem gravar tarifas.":"O servidor não aceitou a tarifa: "+String(error.message).replace(/^.*?ERROR:\s*/,""));
         document.getElementById("platformRecordDrawer")&&window.closeProviderDrawer?.("platformRecordDrawer");
-        aviso(ativa?"Tarifa submetida: entra nas simulações quando a Elolog a aprovar."+(antigo?" Até lá, a versão anterior continua em vigor.":""):"Tarifa guardada como rascunho. Submeta-a quando estiver pronta.","success");await sincronizar()}catch(e){aviso(e.message,"error")}finally{window.elologBotao?.carregar(btn,false)}};
+        aviso(ativa?"Tarifa em vigor: já entra nas simulações."+(antigo?" A versão anterior ficou guardada no histórico (as encomendas já aceites mantêm o preço).":""):"Tarifa guardada como rascunho: não entra nas simulações enquanto não a ativar.","success");await sincronizar()}catch(e){aviso(e.message,"error")}finally{window.elologBotao?.carregar(btn,false)}};
     window.toggleFinanceTariff=async function(id){const s=online()&&serverId(id);if(!s)return alternar.apply(this,arguments);
-      const e=ler().tariffs.find(t=>t.id===id)?.estado;if(["pendente","suspensa","substituida"].includes(e))return aviso(e==="pendente"?"Esta tarifa está à espera de aprovação da Elolog.":e==="suspensa"?"Esta tarifa foi suspensa pela Elolog. Fale com a equipa Elolog para a reativar.":"Esta versão já foi substituída por uma mais recente.","info");
-      const novo=e==="aprovada"?"inativa":"pendente";const c=await P().sb();const{error}=await c.from("tarifas").update({estado:novo}).eq("id",s);
-      if(error)return aviso("Não foi possível alterar a tarifa: "+String(error.message).replace(/^.*?ERROR:\s*/,""),"error");aviso(novo==="inativa"?"Tarifa desativada: deixa de entrar nas simulações.":"Tarifa submetida: entra nas simulações quando a Elolog a aprovar.","success");sincronizar()};
+      const e=ler().tariffs.find(t=>t.id===id)?.estado;if(["suspensa","substituida"].includes(e))return aviso(e==="suspensa"?"Esta tarifa foi suspensa pela Elolog. Fale com a equipa Elolog para a reativar.":"Esta versão já foi substituída por uma mais recente.","info");
+      const novo=e==="aprovada"?"inativa":"aprovada";const c=await P().sb();const{error}=await c.from("tarifas").update({estado:novo}).eq("id",s);
+      if(error)return aviso("Não foi possível alterar a tarifa: "+String(error.message).replace(/^.*?ERROR:\s*/,""),"error");aviso(novo==="inativa"?"Tarifa desativada: deixa de entrar nas simulações.":"Tarifa ativada: já entra nas simulações.","success");sincronizar()};
     window.deleteFinanceTariff=async function(id){const s=online()&&serverId(id);if(!s)return apagar.apply(this,arguments);
       if(!confirm("Apagar esta tarifa? Se já foi usada em propostas, fica apenas desativada."))return;const c=await P().sb();
       let{error}=await c.from("tarifas").delete().eq("id",s);if(error){({error}=await c.from("tarifas").update({estado:"inativa"}).eq("id",s));if(!error)aviso("A tarifa já foi usada: ficou desativada.","info")}
       else aviso("Tarifa apagada.","success");sincronizar()};
     if(typeof abrir==="function")window.showProviderFinanceTab=function(tab){const r=abrir.apply(this,arguments);if(tab==="prices"||tab==="overview")sincronizar();return r}}
+  /* toda a equipa (operadores, armazém, terreno) recebe as tarifas em vigor da empresa: ao entrar e ao abrir páginas (no máximo 1 vez por minuto) */
+  let ultima=0;const talvez=()=>{if(!online()||Date.now()-ultima<60000)return;ultima=Date.now();sincronizar()};
+  const ir=window.showProviderPage;if(typeof ir==="function"&&!ir.__tarifas){const n=function(){const r=ir.apply(this,arguments);talvez();return r};n.__tarifas=1;window.showProviderPage=n}
+  setTimeout(talvez,3000);
   window.elologTarifas={sincronizar};
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",ligar);else ligar();
 })();

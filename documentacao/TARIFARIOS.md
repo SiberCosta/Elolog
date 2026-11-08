@@ -41,7 +41,7 @@ Os dois ecrãs têm os mesmos separadores:
 - Simulador de preços
 - Histórico e auditoria
 
-A administração decide; o prestador vê e submete as suas tarifas.
+O prestador cria as suas tarifas, veículos e suplementos, que **entram logo em vigor** (v116). A administração define as regras gerais e as comissões e pode **suspender** uma regra de um prestador (só ela a reativa).
 
 ## Motor de busca pela descrição (v115)
 
@@ -58,11 +58,12 @@ Cada tarifa de veículo tem um tipo de veículo, uma capacidade em kg e em m³ e
 
 - Com recolha, o motor escolhe o veículo aprovado mais barato que leva o peso e o volume. Procura primeiro os do prestador e, se não houver, os gerais da Elolog.
 - Se não houver nenhum, a recolha calcula-se como antes: suplemento de recolha ou 1 € por km.
-- O prestador submete as suas tarifas de veículo, que ficam «por aprovar»; mudar o preço ou a capacidade volta a pedir aprovação. Só a administração cria as tarifas gerais.
+- O prestador cria as suas tarifas de veículo, que entram logo em vigor; mudar o preço ou a capacidade cria uma nova versão. Podem ser eliminadas (fica no histórico). Só a administração cria as tarifas gerais.
+- A distância é medida por estrada (OSRM) desde o armazém de cada prestador; o servidor confirma-a contra a linha reta (`private.km_recolha`): um valor impossível é substituído por linha reta × 1,3.
 
 ## Estados e versões
 
-- Tarifa do prestador: rascunho → por aprovar → aprovada. Também pode ficar rejeitada, com alterações pedidas, suspensa, desativada ou substituída.
+- Tarifa do prestador: rascunho ou em vigor (aprovada) ao guardar; desativada; substituída por uma nova versão; suspensa pela Elolog.
 - Uma tarifa aprovada **não muda de preço nem de condições**. Uma alteração cria uma nova versão (por aprovar), e a anterior continua em vigor até a nova ser aprovada; nessa altura fica «substituída».
 - Num tarifário geral em vigor, mudar o preço exige um motivo e aumenta a versão.
 - Uma tarifa ou um tarifário fora da validade deixam de entrar nos cálculos.
@@ -88,4 +89,4 @@ Quando uma proposta ou uma simulação é aceite, a encomenda guarda `preco_deta
 - O motor (`private.*`) não é chamável pelo navegador; o cliente usa `calcular_precos`, que devolve só o preço final.
 - A administração usa `testar_preco`, que mostra todos os passos.
 - O prestador vê as referências da Elolog, os comerciais a que está associado, as tarifas gerais de veículos e as comissões que se aplicam à sua empresa (`minhas_comissoes`). Não vê as regras de outros prestadores.
-- Migrações: 00167 a 00175. Testes: `servidor/supabase/testes/28_tarifarios.sql` e `29_regras_cobranca.sql`.
+- Migrações: 00167 a 00177. Testes: `servidor/supabase/testes/28_tarifarios.sql` e `29_regras_cobranca.sql`.

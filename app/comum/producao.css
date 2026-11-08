@@ -178,3 +178,8 @@ html body .func-voltar{display:inline-block;min-height:0;margin:0 0 10px;padding
 #providerMfaPage .mfa-alternativas{display:flex;flex-direction:column;align-items:center;gap:6px;margin:12px 0 4px}
 #providerMfaPage .mfa-lig{background:none!important;border:0!important;box-shadow:none!important;min-height:0!important;padding:2px 0!important;color:#1F5F8B!important;font-size:13.5px!important;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 #providerMfaPage .mfa-lig:hover{color:#13293D!important}#providerMfaPage .mfa-lig:disabled{color:#8A9AA6!important;text-decoration:none;cursor:default}
+#providerMfaPage .mfa-escolha{display:grid;gap:10px;margin:6px 0 14px}
+#providerMfaPage .mfa-canal{display:grid!important;gap:2px;justify-items:start;text-align:left!important;padding:14px 16px;border:1.5px solid #c9d6df;border-radius:12px;background:#fff;cursor:pointer;color:#13293D}
+#providerMfaPage .mfa-canal strong{font-size:15px}#providerMfaPage .mfa-canal span{font-size:13px;color:#5b6d7a}
+#providerMfaPage .mfa-canal:hover,#providerMfaPage .mfa-canal:focus-visible{border-color:#1F5F8B;outline:none;box-shadow:0 0 0 3px rgba(31,95,139,.15)}
+#providerMfaPage .mfa-canal.sugerido{border-color:#1F5F8B}

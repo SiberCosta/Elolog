@@ -8,7 +8,6 @@ Tudo o que falta ativar já está construído e testado. Esta página diz o que 
 | Documentos | Armazenamento privado por empresa e por cliente, 20 MB por ficheiro | Nada | Grátis até 1 GB |
 | Faturas certificadas | Leitura do QR da AT, validação e registo | Cada empresa usa o seu programa certificado | Grátis na Elolog |
 | Pagamentos | Multibanco e MB WAY pela ifthenpay, aviso automático e verificação a cada 10 min | Cada empresa pede chaves à ifthenpay e grava-as na Elolog | Comissão da ifthenpay por pagamento |
-| Navios (AIS) | Leitura a cada 30 minutos dos navios seguidos | Criar chave gratuita no aisstream.io | Grátis |
 | Cópias de segurança | Cópia diária cifrada no GitHub Actions | Definir 2 a 4 segredos no GitHub | Grátis |
 
 ## Pôr a funcionar no projeto «Elolog» (wcggcpdiswbzrdpwgdpb)
@@ -23,7 +22,7 @@ Já feito: tabelas base (00011–00013), as 7 Edge Functions publicadas e a apli
    ```
    Entre em `https://www.elolog.pt/app/area-cliente.html?acesso=administracao`. Para criar a equipa Elolog ative o código de autenticação (2.º fator) no seu perfil.
 3. **Endereços** — Authentication › URL Configuration: Site URL `https://www.elolog.pt/app/area-cliente.html`; Redirect URLs `https://www.elolog.pt/**`.
-4. **Segredos** — Edge Functions › Secrets: `BREVO_API_KEY`, `EMAIL_REMETENTE` (`notificacoes@elolog.pt`), `APP_URL` e `SITE_URL` (`https://www.elolog.pt/app/area-cliente.html`); opcional `AISSTREAM_API_KEY`.
+4. **Segredos** — Edge Functions › Secrets: `BREVO_API_KEY`, `EMAIL_REMETENTE` (`notificacoes@elolog.pt`), `APP_URL` e `SITE_URL` (`https://www.elolog.pt/app/area-cliente.html`).
 5. **Cópias de segurança** — no GitHub, atualizar `SUPABASE_DB_URL` (e `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`) para o projeto novo (ver `COPIAS_DE_SEGURANCA.md`).
 6. **Prestadores e pagamentos** — cada empresa regista-se em «Tornar-se prestador»; a administração aprova; a empresa cria tarifas e, se quiser pagamentos online, grava as chaves ifthenpay.
 
@@ -151,11 +150,9 @@ Para cada empresa prestadora:
 
 O cliente escolhe Multibanco (recebe entidade, referência e prazo de 3 dias) ou MB WAY (recebe o pedido na app e tem 4 minutos). O valor é sempre calculado no servidor (preço da encomenda menos o que já foi pago). Um aviso com chave ou valor errados é recusado e repetir o aviso não paga duas vezes. Se a ifthenpay mudar os endereços da API, defina `IFTHENPAY_MB_URL`, `IFTHENPAY_MB_SANDBOX_URL`, `IFTHENPAY_MBWAY_URL` ou `IFTHENPAY_MBWAY_ESTADO_URL` nos segredos das Edge Functions.
 
-## 5. Navios em tempo real (AIS)
+## 5. Navios em tempo real
 
-1. Crie conta gratuita em aisstream.io e gere uma chave.
-2. Supabase › Edge Functions › Secrets: `AISSTREAM_API_KEY`.
-3. Na Elolog: **Armazém › Navios em tempo real** → nome do navio e MMSI (9 dígitos). A cada 30 minutos aparecem posição, velocidade, destino e ETA declarados pelo navio, com ligação ao mapa.
+A integração AIS (aisstream.io) foi retirada na v120: não há chave `AISSTREAM_API_KEY`, nem função `navios-ais`, nem tarefa agendada. A ligação «Ver a posição real» abre o VesselFinder no navegador.
 
 ## 6. Cópias de segurança
 
@@ -164,6 +161,6 @@ Ver `COPIAS_DE_SEGURANCA.md`.
 ## Num projeto novo do Supabase
 
 1. Aplicar as migrações por ordem (`servidor/supabase/migrations`).
-2. Publicar as funções: `registar-prestador`, `gerir-funcionarios`, `gerir-equipa`, `enviar-emails`, `pagamentos`, `pagamentos-aviso`, `navios-ais` (todas com `--no-verify-jwt`; validam o acesso no código).
-3. SQL Editor: `select private.agendar_tarefas('https://<projeto>.supabase.co');` — cria o segredo do agendador no cofre e as 4 tarefas.
+2. Publicar as funções: `registar-prestador`, `gerir-funcionarios`, `gerir-equipa`, `enviar-emails`, `pagamentos`, `pagamentos-aviso` (todas com `--no-verify-jwt`; validam o acesso no código).
+3. SQL Editor: `select private.agendar_tarefas('https://<projeto>.supabase.co');` — cria o segredo do agendador no cofre e as 3 tarefas (emails, pagamentos e limpeza diária).
 4. Correr os testes `servidor/supabase/testes/01`, `02` e `05` (o 5 cobre faturas, pagamentos, navios e documentos: 39 verificações).

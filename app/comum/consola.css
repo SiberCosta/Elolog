@@ -1,0 +1,12 @@
+/* Elolog — Consola (v118): a entrada da equipa Elolog (www.elolog.pt/admin). Sem navegação do site, rodapé nem assistente de clientes.
+   Fundo escuro e calmo para se distinguir à primeira vista da área de cliente; o cartão de entrada fica ao centro. */
+html.porta-consola body .navbar,html.porta-consola body .footer.rodape,html.porta-consola body .elo-assistant,html.porta-consola body .porta-equipa{display:none!important}
+html.porta-consola body{background:#0B1C29!important}
+html.porta-consola body #loginScreen.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 16px;
+  background:radial-gradient(1200px 600px at 15% -10%,rgba(31,95,139,.35),transparent 60%),radial-gradient(900px 500px at 110% 110%,rgba(30,122,90,.22),transparent 60%),#0B1C29!important}
+html.porta-consola body #loginScreen .auth-shell{max-width:980px;width:100%;margin:0;box-shadow:0 30px 80px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.06)}
+html.porta-consola body #loginScreen .auth-brand-panel{background:linear-gradient(160deg,#10293B 0%,#0E2433 55%,#123A34 100%)!important}
+html.porta-consola body #loginScreen .auth-brand-panel::before,html.porta-consola body #loginScreen .auth-brand-panel::after{opacity:.18}
+html.porta-consola body #loginScreen .auth-brand-copy h2{letter-spacing:-.01em}
+html.porta-consola body #loginScreen .auth-welcome{color:#1E7A5A!important}
+@media (max-width:760px){html.porta-consola body #loginScreen.login-screen{align-items:flex-start;padding:16px}html.porta-consola body #loginScreen .auth-brand-panel{display:none}}
