@@ -1,0 +1,72 @@
+/* Elolog — Centro de Gestão de Tarifários (v114). Usa os tokens de vivo.css e da paleta (--elo-*). */
+html:not(#bv) body .tf-pagina{display:grid;gap:18px}
+html:not(#bv) body .tf-abas{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 2px}
+html:not(#bv) body .tf-abas .fs-filtro{display:inline-flex;align-items:center;gap:6px}
+html:not(#bv) body .tf-abas .fs-filtro b{min-width:20px;padding:1px 7px;border-radius:999px;background:var(--elo-superficie-2,#eef1f5);font-size:.78rem;text-align:center}
+html:not(#bv) body .tf-abas .fs-filtro.aviso b{background:var(--elo-aviso,#b45309);color:#fff}
+html:not(#bv) body .tf-corpo{display:grid;gap:14px}
+
+/* topo de cada separador: explicação curta + ação principal */
+html:not(#bv) body .tf-topo{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+html:not(#bv) body .tf-topo p{margin:0;max-width:68ch;color:var(--elo-texto-2,#4b5563);line-height:1.5}
+
+/* cartões de aprovação */
+html:not(#bv) body .tf-cartao{display:grid;gap:10px;padding:16px 18px;border:1px solid var(--elo-linha,#dfe3ea);border-left:4px solid var(--elo-aviso,#b45309);border-radius:var(--vv-r3,12px);background:var(--elo-superficie,#fff);box-shadow:var(--vv-sombra-1,none)}
+html:not(#bv) body .tf-cartao header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+html:not(#bv) body .tf-cartao header small{display:block;color:var(--elo-texto-2,#4b5563)}
+html:not(#bv) body .tf-cartao h4{margin:2px 0 0;font-size:1.02rem}
+html:not(#bv) body .tf-cartao p{margin:0;line-height:1.5}
+html:not(#bv) body .tf-cartao footer{display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}
+html:not(#bv) body .tf-mudanca{padding:8px 12px;border-radius:var(--vv-r2,8px);background:var(--elo-superficie-2,#f4f6f9)}
+html:not(#bv) body .tf-ref{font-size:.9rem;color:var(--elo-texto-2,#4b5563)}
+html:not(#bv) body .tf-ref.longe{color:var(--elo-aviso,#b45309);font-weight:600}
+html:not(#bv) body .tf-ref.longe::before{content:"Atenção: ";}
+
+/* estados */
+html:not(#bv) body .tf-estado{display:inline-block;padding:3px 10px;border-radius:999px;border:1px solid currentColor;font-size:.8rem;font-weight:600;white-space:nowrap;background:transparent}
+html:not(#bv) body .tf-estado.ok{color:var(--elo-ok,#15803d)}
+html:not(#bv) body .tf-estado.aviso{color:var(--elo-aviso,#b45309)}
+html:not(#bv) body .tf-estado.erro{color:var(--elo-erro,#b91c1c)}
+html:not(#bv) body .tf-estado.neutro{color:var(--elo-texto-2,#4b5563)}
+
+/* listas em grelha (passam a cartões no telemóvel) */
+html:not(#bv) body .tf-tabela{display:grid;border:1px solid var(--elo-linha,#dfe3ea);border-radius:var(--vv-r3,12px);overflow:hidden}
+html:not(#bv) body .tf-linha{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.6fr) auto auto;gap:14px;align-items:center;padding:12px 16px;border-top:1px solid var(--elo-linha,#dfe3ea);background:var(--elo-superficie,#fff)}
+html:not(#bv) body .tf-linha:first-child{border-top:0}
+html:not(#bv) body .tf-linha small{display:block;margin-top:2px;color:var(--elo-texto-2,#4b5563);font-size:.84rem}
+html:not(#bv) body .tf-acoes{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+html:not(#bv) body .tf-filtros{display:flex;gap:10px;flex-wrap:wrap}
+html:not(#bv) body .tf-filtros select{min-width:200px}
+@media (max-width:760px){
+  html:not(#bv) body .tf-linha{grid-template-columns:1fr auto;row-gap:6px}
+  html:not(#bv) body .tf-linha>div:nth-child(2){grid-column:1/-1}
+  html:not(#bv) body .tf-acoes{grid-column:1/-1;justify-content:flex-start}
+  html:not(#bv) body .tf-filtros select{flex:1 1 100%;min-width:0}
+}
+
+/* histórico */
+html:not(#bv) body .tf-hist{list-style:none;margin:0;padding:0;display:grid;gap:0;border-left:2px solid var(--elo-linha,#dfe3ea)}
+html:not(#bv) body .tf-hist li{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:10px 0 10px 16px;position:relative}
+html:not(#bv) body .tf-hist li::before{content:"";position:absolute;left:-6px;top:15px;width:10px;height:10px;border-radius:50%;background:var(--elo-superficie,#fff);border:2px solid var(--vv-acento,#1d4ed8)}
+html:not(#bv) body .tf-hist time{color:var(--elo-texto-2,#4b5563);font-size:.85rem}
+html:not(#bv) body .tf-hist small{display:block;color:var(--elo-texto-2,#4b5563)}
+html:not(#bv) body .tf-hist p{margin:4px 0 0;font-style:italic}
+@media (max-width:560px){html:not(#bv) body .tf-hist li{grid-template-columns:1fr;gap:2px}}
+
+/* ações que tiram algo das simulações: contorno vermelho */
+html:not(#bv) body .btn-secondary.tf-perigo{color:var(--elo-erro,#b91c1c)!important;border-color:currentColor!important}
+
+/* formulários e teste do motor */
+html:not(#bv) body .tf-checks{display:flex;flex-wrap:wrap;gap:6px 16px;max-height:160px;overflow:auto}
+html:not(#bv) body .tf-checks label,html:not(#bv) body .tf-check{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:8px;font-weight:500;align-self:end;min-height:44px}
+html:not(#bv) body :is(.tf-checks,.tf-check) input[type=checkbox]{width:18px!important;height:18px;min-height:0!important;flex:none;margin:0;padding:0}
+html:not(#bv) body .tf-teste{margin:4px 0 12px}
+html:not(#bv) body .tf-resultado:empty{display:none}
+html:not(#bv) body .tf-resultado{margin-top:14px}
+html:not(#bv) body .tf-passos{margin:0;padding:0;list-style:none;counter-reset:p;border:1px solid var(--elo-linha,#dfe3ea);border-radius:var(--vv-r3,12px);overflow:hidden}
+html:not(#bv) body .tf-passos li{counter-increment:p;display:grid;grid-template-columns:28px 190px 1fr;gap:10px;padding:10px 14px;border-top:1px solid var(--elo-linha,#dfe3ea)}
+html:not(#bv) body .tf-passos li:first-child{border-top:0}
+html:not(#bv) body .tf-passos li::before{content:counter(p);font-weight:700;color:var(--vv-acento,#1d4ed8)}
+html:not(#bv) body .tf-passos li.final{background:var(--elo-superficie-2,#f4f6f9);font-weight:700}
+@media (max-width:560px){html:not(#bv) body .tf-passos li{grid-template-columns:28px 1fr}html:not(#bv) body .tf-passos li>*:last-child{grid-column:2}}
+html:not(#bv) body .tf-aviso-comissoes{margin-bottom:14px;padding:12px 14px;border:1px solid var(--elo-linha,#dfe3ea);border-radius:var(--vv-r2,8px)}

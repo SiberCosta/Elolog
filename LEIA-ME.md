@@ -58,6 +58,16 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v114 (Centro de Gestão de Tarifários, distância da recolha, funcionários)
+
+- **Tarifários e comissões** (Administração › Subscrições e faturação): aprovar, rejeitar, suspender ou pedir alterações às tarifas e suplementos dos prestadores; tarifários gerais (referência e comerciais); regras de comissão (percentagem ou fixa, por prestador, modalidade, rota, período, promocional, incluída ou separada); histórico de alterações; teste do motor passo a passo. Ver `documentacao/TARIFARIOS.md`.
+- **Fonte única de preços**: `private.motor_preco` no servidor. O simulador do cliente chama `calcular_precos`; o navegador não calcula preços. Sem tarifa válida aparece «Não existe uma tarifa automática disponível. Solicite uma cotação personalizada.»
+- **Prestador**: guardar uma tarifa submete-a à Elolog (`tarifa_guardar`); só entra nas simulações depois de aprovada. Uma alteração é uma nova versão; a anterior continua em vigor até a nova ser aprovada.
+- **Preço congelado**: ao aceitar uma proposta ou simulação, a encomenda guarda a cópia dos valores (`preco_detalhe`); alterações posteriores às tarifas não mudam encomendas aprovadas.
+- **Distância da recolha**: tenta a morada completa, depois versões mais curtas (código postal, localidade); se não encontrar, deixa escrever os km à mão.
+- **Funcionários**: as ações passaram para um menu «Ações» (já não saem da coluna); ao criar, o aviso diz exatamente que campo falta.
+- Migrações 00167 a 00172 (já aplicadas no Supabase e acrescentadas aos instaladores). Testes: `testes/28_tarifarios.sql` (29/29) e `02` (78/78).
+
 ## v113 (acabamento: menu, etapas, Recolhas e Entregas)
 
 - **Menu lateral**:

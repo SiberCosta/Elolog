@@ -145,3 +145,16 @@ html:not(#bv) body .fs-v2 .field-service-toolbar h4{margin:0;font-size:17px;colo
 html:not(#bv) body .field-service-icon .ic,html:not(#bv) body .field-detail-icon .ic{font-size:16px}
 /* o título da página já está na barra de cima; no computador não se repete */
 @media(min-width:900px){html:not(#bv) body #providerFieldTitle{display:none}html:not(#bv) body #providerFieldSubtitle{margin-top:0;font-size:15px;max-width:70ch;color:var(--elo-texto,#4B5D6B)}}
+
+/* ---------- v114: km escritos à mão quando a morada não é encontrada ---------- */
+html:not(#bv) body #clientSimDistance.km-manual{background:#fff;border-color:var(--elo-azul,#1F5F8B);box-shadow:0 0 0 3px var(--elo-info-fundo,#EAF2F8)}
+html:not(#bv) body #clientSimDistanceStatus{display:block;margin-top:6px;font-size:13px;line-height:1.45;color:var(--elo-texto,#4B5D6B)}
+html:not(#bv) body #clientSimDistanceStatus.is-ready{color:var(--elo-ok,#1F7A5C)}
+html:not(#bv) body #clientSimDistanceStatus.is-error{color:#8A5A12}
+/* ---------- v114: funcionários (ações que cabem na coluna) e campos em falta ---------- */
+html:not(#bv) body .employee-row-actions.pr-acoes{flex-wrap:nowrap}
+html:not(#bv) body .employee-row:has(.pr-mais[open]),html:not(#bv) body [class*="employee-row"]:has(.pr-mais[open]){position:relative;z-index:40}
+html:not(#bv) body :is(.employee-table,.employee-list,.provider-employee-table):has(.pr-mais[open]){overflow:visible}
+html:not(#bv) body [aria-invalid="true"]{border-color:#B7791F!important;box-shadow:0 0 0 3px #FBE3B0!important}
+html:not(#bv) body input[type=file]{padding:8px;border:1px dashed var(--elo-fio,#C9D6E0);border-radius:var(--vv-r2);background:var(--elo-fundo,#F5F8FA);font-size:14px;cursor:pointer}
+html:not(#bv) body input[type=file]::file-selector-button{margin-right:12px;padding:8px 14px;border:1px solid var(--elo-mar,#13293D);border-radius:8px;background:#fff;color:var(--elo-mar,#13293D);font-weight:700;cursor:pointer}

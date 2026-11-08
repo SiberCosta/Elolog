@@ -1,0 +1,73 @@
+/* Elolog — Centro de Gestão de Tarifários: formulários e decisões da administração (v114).
+   Usa a janela da plataforma (elologProducao.janela). As validações finais são do servidor; aqui só se ajuda a preencher bem. */
+(function(){"use strict";
+const T=()=>window.elologTarifarios,J=o=>window.elologProducao.janela(o),aviso=(m,t)=>window.elologProducao?.aviso?.(m,t)||window.showPlatformNotice?.(m,t);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
+const v=id=>document.getElementById(id)?.value.trim()??"",num=id=>v(id)===""?null:Number(v(id).replace(",","."));
+const campo=(id,rot,html,dica)=>`<label>${rot}${html.replace("<input",`<input id="${id}"`).replace("<select",`<select id="${id}"`).replace("<textarea",`<textarea id="${id}"`)}${dica?`<small>${dica}</small>`:""}</label>`;
+const opMetodo=s=>Object.entries(T().METODO).map(([k,n])=>`<option value="${k}" ${s===k?"selected":""}>${n}</option>`).join("");
+
+/* decisões (aprovar, rejeitar, pedir alterações, suspender, reativar) com o motivo que o prestador vai ler */
+const TXT={aprovar:["Aprovar tarifa","Ao aprovar, a tarifa entra já nas simulações. Se for uma nova versão, a anterior deixa de ser usada (as cotações já aprovadas mantêm o preço).",false],
+  rejeitar:["Rejeitar","Diga ao prestador porquê. A tarifa não entra nas simulações.",true],pedir_alteracoes:["Pedir alterações","Diga o que deve mudar. O prestador corrige e volta a submeter.",true],
+  suspender:["Suspender","A tarifa deixa de entrar nas simulações até a reativar. Diga porquê.",true],reativar:["Reativar","Volta a entrar nas simulações.",false]};
+function decidir(tipo,id,dec,depois){const[t,d,obrig]=TXT[dec]||[dec,"",false];const j=J({eyebrow:tipo==="tarifa"?"Tarifa do prestador":"Suplemento",titulo:t});
+  j.mostrar(`<p class="nv-intro">${esc(d)}</p>${campo("tfMotivo",obrig?"Motivo":"Nota para o prestador (opcional)",'<textarea rows="3" maxlength="300" placeholder="Ex.: o mínimo está muito acima da referência para esta rota"></textarea>')}`,
+    [{texto:"Cancelar",acao:j.fechar},{texto:t,principal:true,acao:async()=>{const m=v("tfMotivo");if(obrig&&!m){document.getElementById("tfMotivo")?.setAttribute("aria-invalid","true");document.getElementById("tfMotivo")?.focus();return aviso("Escreva o motivo: o prestador vai lê-lo.","warning")}
+      try{tipo==="tarifa"?await T().API.decidir(id,dec,m):await T().API.decidirSuplemento(id,dec,m);j.fechar();aviso(dec==="aprovar"?"Aprovada. Já entra nas simulações.":"Decisão registada e enviada ao prestador.","success");depois?.()}catch(e){aviso(e.message,"error")}}}])}
+
+/* formulários de criação e alteração */
+function abrir(tipo,id,cache,depois){const r=id?((tipo==="geral"?cache.gerais:tipo==="comissao"?cache.comissoes:cache.suplementos)||[]).find(x=>x.id===id)||{}:{};const emp=cache.empresas||[];
+  const motivo=id?campo("tfMotivoAlt","Motivo da alteração",'<input maxlength="300" placeholder="Fica no histórico">',"Obrigatório quando muda o preço de algo em vigor."):"";
+  const datas=`${campo("tfIni","Válido desde",`<input type="date" value="${esc(r.validade_inicio||r.inicio||"")}">`)}${campo("tfFim","Válido até",`<input type="date" value="${esc(r.validade_fim||r.fim||"")}">`)}`;
+  let titulo,html,gravar;
+  if(tipo==="geral"){titulo=id?"Alterar tarifário geral":"Novo tarifário geral";
+    html=`<div class="pm-grelha">${campo("tfNome","Nome",`<input maxlength="120" value="${esc(r.nome||"")}" placeholder="Ex.: Referência Lisboa a São Tomé">`)}${campo("tfUso","Utilização",`<select><option value="referencia" ${r.uso!=="comercial"?"selected":""}>Referência (comparar)</option><option value="comercial" ${r.uso==="comercial"?"selected":""}>Comercial (usar nas simulações)</option></select>`)}
+      ${campo("tfServico","Serviço",`<input maxlength="40" value="${esc(r.servico||"")}" placeholder="Ex.: marítimo">`)}${campo("tfCarga","Categoria de carga",`<input maxlength="60" value="${esc(r.tipo_carga||"")}" placeholder="Todas">`)}
+      ${campo("tfMetodo","Modalidade",`<select>${opMetodo(r.metodo||"peso")}</select>`)}${campo("tfValor","Valor",`<input inputmode="decimal" value="${esc(r.valor??"")}">`)}
+      ${campo("tfMin","Preço mínimo",`<input inputmode="decimal" value="${esc(r.preco_minimo??0)}">`)}${campo("tfMax","Preço máximo",`<input inputmode="decimal" value="${esc(r.preco_maximo??"")}" placeholder="Sem máximo">`)}
+      ${campo("tfLimMin","Medida mínima",`<input inputmode="decimal" value="${esc(r.limite_min??"")}">`,"kg, m³ ou unidades, conforme a modalidade")}${campo("tfLimMax","Medida máxima",`<input inputmode="decimal" value="${esc(r.limite_max??"")}">`)}
+      ${campo("tfOrigem","Origem",`<input maxlength="80" value="${esc(r.origem||"")}" placeholder="Qualquer">`)}${campo("tfDestino","Destino",`<input maxlength="80" value="${esc(r.destino||"")}" placeholder="Qualquer">`)}${datas}
+      ${campo("tfEstado","Estado",`<select>${["rascunho","ativa","suspensa","inativa"].map(e=>`<option value="${e}" ${(r.estado||"rascunho")===e?"selected":""}>${T().ESTADO[e][0]}</option>`).join("")}</select>`)}</div>
+      <fieldset class="nv-seguir"><legend>Prestadores associados (só para «comercial»)</legend><div class="tf-checks">${emp.map(e=>`<label><input type="checkbox" class="tfEmp" value="${e.id}" ${(r.prestadores||[]).includes(e.id)?"checked":""}> ${esc(e.nome)}</label>`).join("")||"<small>Ainda não há prestadores aprovados.</small>"}</div></fieldset>
+      ${campo("tfCond","Condições gerais",`<textarea rows="2" maxlength="600">${esc(r.condicoes||"")}</textarea>`)}${motivo}`;
+    gravar=()=>T().API.guardarGeral({nome:v("tfNome"),uso:v("tfUso"),servico:v("tfServico")||null,tipo_carga:v("tfCarga")||null,metodo:v("tfMetodo"),valor:num("tfValor"),preco_minimo:num("tfMin")||0,preco_maximo:num("tfMax"),
+      limite_min:num("tfLimMin"),limite_max:num("tfLimMax"),origem:v("tfOrigem")||null,destino:v("tfDestino")||null,validade_inicio:v("tfIni")||null,validade_fim:v("tfFim")||null,estado:v("tfEstado"),condicoes:v("tfCond")||null,
+      prestadores:[...document.querySelectorAll(".tfEmp:checked")].map(x=>x.value),...(id?{motivo_alteracao:v("tfMotivoAlt")||null}:{})},id)}
+  else if(tipo==="comissao"){titulo=id?"Alterar regra de comissão":"Nova regra de comissão";
+    html=`<div class="pm-grelha">${campo("tfNome","Nome",`<input maxlength="80" value="${esc(r.nome||"")}" placeholder="Ex.: Comissão geral">`)}${campo("tfEmpresa","Prestador",`<select><option value="">Todos os prestadores</option>${emp.map(e=>`<option value="${e.id}" ${r.empresa_id===e.id?"selected":""}>${esc(e.nome)}</option>`).join("")}</select>`)}
+      ${campo("tfMetodo","Modalidade",`<select><option value="">Todas</option>${opMetodo(r.metodo)}</select>`)}${campo("tfTipo","Tipo",`<select><option value="percentagem" ${r.tipo_valor!=="fixo"?"selected":""}>Percentagem</option><option value="fixo" ${r.tipo_valor==="fixo"?"selected":""}>Valor fixo</option></select>`)}
+      ${campo("tfValor","Valor",`<input inputmode="decimal" value="${esc(r.valor??"")}">`,"Em % ou em euros por encomenda")}${campo("tfApres","Como o cliente vê",`<select><option value="incluida" ${r.apresentacao!=="separada"?"selected":""}>Incluída no preço</option><option value="separada" ${r.apresentacao==="separada"?"selected":""}>Taxa de serviço à parte</option></select>`)}
+      ${campo("tfOrigem","Rota: origem",`<input maxlength="80" value="${esc(r.rota_origem||"")}" placeholder="Qualquer">`)}${campo("tfDestino","Rota: destino",`<input maxlength="80" value="${esc(r.rota_destino||"")}" placeholder="Qualquer">`)}${datas}
+      ${campo("tfPrioridade","Prioridade",`<input inputmode="numeric" value="${esc(r.prioridade??0)}">`,"Desempata regras igualmente específicas")}
+      <label class="tf-check"><input type="checkbox" id="tfPromo" ${r.promocional?"checked":""}> Promocional ou experimental</label><label class="tf-check"><input type="checkbox" id="tfAtiva" ${r.ativa!==false?"checked":""}> Ativa</label></div>${motivo}`;
+    gravar=()=>{const val=num("tfValor");if(v("tfTipo")==="percentagem"&&val>100)throw new Error("Uma percentagem não pode passar de 100 %.");
+      return T().API.guardarComissao({nome:v("tfNome")||null,empresa_id:v("tfEmpresa")||null,metodo:v("tfMetodo")||null,tipo_valor:v("tfTipo"),valor:val,apresentacao:v("tfApres"),rota_origem:v("tfOrigem")||null,rota_destino:v("tfDestino")||null,
+        inicio:v("tfIni")||null,fim:v("tfFim")||null,prioridade:Number(v("tfPrioridade"))||0,promocional:document.getElementById("tfPromo").checked,ativa:document.getElementById("tfAtiva").checked,...(id?{motivo_alteracao:v("tfMotivoAlt")||null}:{})},id)}}
+  else{titulo=id?"Alterar suplemento":"Novo suplemento geral";
+    html=`<div class="pm-grelha">${campo("tfNome","Nome",`<input maxlength="80" value="${esc(r.nome||"")}" placeholder="Ex.: Taxa de combustível">`)}${campo("tfChave","Natureza",`<select>${[["recolha_km","Recolha na morada"],["combustivel","Combustível"],["seguro","Seguro"],["manuseamento","Manuseamento"],["urgente","Urgência"],["outro","Outro"]].map(([k,n])=>`<option value="${k}" ${r.chave===k?"selected":""}>${n}</option>`).join("")}</select>`)}
+      ${campo("tfTipo","Como se calcula",`<select><option value="fixo" ${r.tipo==="fixo"?"selected":""}>Valor fixo</option><option value="percentual" ${r.tipo==="percentual"?"selected":""}>Percentagem do preço</option><option value="por_km" ${r.tipo==="por_km"?"selected":""}>Por km de recolha</option></select>`)}
+      ${campo("tfValor","Valor",`<input inputmode="decimal" value="${esc(r.valor??"")}">`)}${campo("tfServico","Serviço",`<input maxlength="40" value="${esc(r.servico||"")}" placeholder="Todos">`)}${campo("tfCarga","Categoria de carga",`<input maxlength="60" value="${esc(r.tipo_carga||"")}" placeholder="Todas">`)}${datas}
+      <label class="tf-check"><input type="checkbox" id="tfAuto" ${r.automatico!==false?"checked":""}> Aplica-se sempre (senão, só quando pedido)</label></div>${motivo}`;
+    gravar=()=>T().API.guardarSuplemento({nome:v("tfNome"),chave:v("tfChave"),tipo:v("tfTipo"),valor:num("tfValor"),servico:v("tfServico")||null,tipo_carga:v("tfCarga")||null,validade_inicio:v("tfIni")||null,validade_fim:v("tfFim")||null,
+      automatico:document.getElementById("tfAuto").checked,...(id?{motivo_alteracao:v("tfMotivoAlt")||null}:{})},id)}
+  const j=J({eyebrow:"Tarifários e comissões",titulo});
+  j.mostrar(html,[{texto:"Cancelar",acao:j.fechar},{texto:id?"Guardar alterações":"Criar",principal:true,acao:async()=>{if(!v("tfNome")&&tipo!=="comissao"){document.getElementById("tfNome")?.focus();return aviso("Dê um nome para o reconhecer nas listas.","warning")}
+    if(num("tfValor")==null||!(num("tfValor")>=0)){document.getElementById("tfValor")?.setAttribute("aria-invalid","true");document.getElementById("tfValor")?.focus();return aviso("Indique um valor válido (0 ou mais).","warning")}
+    try{await gravar();j.fechar();aviso(id?"Alteração guardada. Ficou no histórico.":"Criado. Ficou no histórico.","success");depois?.()}catch(e){aviso(e.message,"error")}}}])}
+
+/* testar o motor com todos os passos (só a administração) */
+function testarHtml(emp){return`<div class="tf-topo"><p>Simule um pedido e veja o caminho completo do motor: tarifa escolhida, suplementos, comissão e o preço que o cliente vê. Nada fica gravado.</p></div>
+  <div class="pm-grelha tf-teste">${campo("tsEmp","Prestador",`<select>${emp.map(e=>`<option value="${e.id}">${esc(e.nome)}</option>`).join("")}</select>`)}${campo("tsOrigem","Origem",'<input value="Lisboa">')}${campo("tsDestino","Destino",'<input value="São Tomé">')}
+    ${campo("tsCarga","Categoria",'<input placeholder="Todas">')}${campo("tsQtd","Quantidade",'<input inputmode="numeric" value="1">')}${campo("tsPeso","Peso (kg)",'<input inputmode="decimal" value="100">')}${campo("tsVol","Volume (m³)",'<input inputmode="decimal" value="0,5">')}${campo("tsKm","Recolha (km)",'<input inputmode="decimal" value="0">')}</div>
+  <button type="button" class="btn-primary" data-testar="1">Calcular com o motor</button><div id="tsResultado" class="tf-resultado" aria-live="polite"></div>`}
+async function testar(){const out=document.getElementById("tsResultado");try{const r=await T().API.testar({p_empresa:v("tsEmp"),p_origem:v("tsOrigem"),p_destino:v("tsDestino"),p_tipo_carga:v("tsCarga")||null,
+    p_quantidade:Math.round(num("tsQtd")||0),p_peso_kg:num("tsPeso")||0,p_volume_m3:num("tsVol")||0,p_recolha_km:num("tsKm")||0});const e=T().eur,m=r.moeda;
+  out.innerHTML=!r.disponivel?`<div class="vz-c" role="status"><span class="vz-ic"><i class="ic ic-warning"></i></span><div><strong>Sem preço automático</strong><span>${esc(r.mensagem)}</span></div></div>`
+    :`<ol class="tf-passos"><li><b>Tarifa</b>${esc(r.tarifa?.nome)} (${r.origem_tarifa==="geral"?"tarifário geral":"do prestador"}, versão ${r.tarifa?.versao}): ${e(r.tarifa?.valor,m)} ${esc(T().METODO[r.tarifa?.metodo]||"")} × ${esc(r.pedido?.medida)}</li>
+      <li><b>Preço do prestador</b>${e(r.preco_prestador,m)}</li><li><b>Suplementos</b>${(r.suplementos||[]).map(s=>`${esc(s.nome)} ${e(s.montante,m)}`).join(", ")||"nenhum"} (${e(r.suplementos_total,m)})</li>
+      <li><b>Comissão Elolog</b>${r.comissao_regra?`${esc(r.comissao_regra.nome||"regra")}: ${e(r.comissao,m)}, ${r.apresentacao==="separada"?"à parte":"incluída"}`:"sem regra: 0 €"}</li>
+      <li class="final"><b>O cliente paga</b>${e(r.preco_final,m)}${r.apresentacao==="separada"?` (inclui taxa de serviço de ${e(r.comissao,m)})`:""}</li><li><b>O prestador recebe</b>${e(r.liquido_prestador,m)}</li></ol>`}
+  catch(err){out.innerHTML=`<div class="vz-c" role="status"><span class="vz-ic"><i class="ic ic-warning"></i></span><div><strong>Não foi possível calcular</strong><span>${esc(err.message)}</span></div></div>`}}
+window.elologTarifariosForms={decidir,abrir,testarHtml,testar};
+})();
