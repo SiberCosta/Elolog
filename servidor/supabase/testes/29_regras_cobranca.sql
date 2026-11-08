@@ -1,4 +1,4 @@
--- Testes da v115: regras de cobrança — motor de busca pela descrição, tarifas de veículos, referência visível, comissões e simulador do prestador.
+-- Testes da v115/v116: regras de cobrança — motor de busca pela descrição, tarifas de veículos, referência visível, comissões e simulador do prestador.
 -- Só em base de TESTES; tudo é desfeito.
 \set ON_ERROR_STOP 1
 begin;
@@ -33,7 +33,6 @@ select pg_temp.como('22222222-2222-2222-2222-222222222222');
 insert into v select 'peso', (public.tarifa_guardar('{"nome":"Carga geral","metodo":"peso","valor":2,"origem":"Lisboa","destino":"São Tomé"}'::jsonb)).id;
 insert into v select 'frigo', (public.tarifa_guardar('{"nome":"Frigorífico","metodo":"unidade","valor":75,"regras":{"so_descricao":true,"palavras":["arca congeladora"]}}'::jsonb)).id;
 select pg_temp.como('66666666-6666-6666-6666-666666666666');
-select public.tarifa_decidir(id, 'aprovar') from v where k in ('peso','frigo');
 select pg_temp.como('11111111-1111-1111-1111-111111111111');
 insert into r select 1, (pg_temp.preco(:A) ->> 'preco_final')::numeric = 200, 'sem descrição: tarifa de sempre (100 kg × 2 €)';
 insert into r select 2, (pg_temp.preco(:A, 'Roupa e calçado') ->> 'preco_final')::numeric = 200, 'descrição sem nome de tarifa: igual';
@@ -43,16 +42,19 @@ insert into r select 5, (pg_temp.preco(:A, 'frigideiras') ->> 'preco_final')::nu
 -- veículos: A submete; geral da Elolog; escolha pela capacidade e preço
 select pg_temp.como('22222222-2222-2222-2222-222222222222');
 insert into tarifas_veiculos (empresa_id, nome, veiculo, capacidade_kg, preco_saida, preco_km, preco_minimo, estado) values (:A, 'Carrinha A', 'carrinha', 1000, 10, 0.5, 15, 'aprovado');
-insert into r select 6, estado = 'pendente', 'veículo submetido pelo prestador fica pendente' from tarifas_veiculos where empresa_id = :A;
+insert into r select 6, estado = 'aprovado', 'veículo do prestador entra logo em vigor' from tarifas_veiculos where empresa_id = :A;
 select pg_temp.falha(7, 'o prestador não cria tarifas gerais de veículos', $q$insert into tarifas_veiculos (nome, preco_km) values ('Geral', 1)$q$);
-select pg_temp.falha(8, 'o prestador não se aprova a si próprio', $q$update tarifas_veiculos set estado = 'aprovado' where empresa_id = 'a0000000-0000-0000-0000-00000000000a'$q$);
+select pg_temp.falha(8, 'o prestador não se suspende (poder da Elolog)', $q$update tarifas_veiculos set estado = 'suspenso' where empresa_id = 'a0000000-0000-0000-0000-00000000000a'$q$);
 select pg_temp.como('11111111-1111-1111-1111-111111111111');
-insert into r select 9, (pg_temp.preco(:A, null, 40) ->> 'preco_final')::numeric = 240, 'veículo pendente não conta: recolha a 1 €/km (200 + 40)';
+insert into r select 9, (pg_temp.preco(:A, null, 40) ->> 'preco_final')::numeric = 230, 'veículo do prestador conta logo: 10 + 40 km × 0,5 = 30 € (200 + 30)';
 select pg_temp.como('66666666-6666-6666-6666-666666666666');
-select public.veiculo_decidir(id, 'aprovar') from tarifas_veiculos where empresa_id = :A;
+select public.veiculo_decidir(id, 'suspender', 'Confirmar capacidade') from tarifas_veiculos where empresa_id = :A;
+select pg_temp.como('11111111-1111-1111-1111-111111111111');
+insert into r select 10, (pg_temp.preco(:A, null, 40) ->> 'preco_final')::numeric = 240, 'veículo suspenso pela Elolog não conta (1 €/km: 200 + 40)';
+select pg_temp.como('66666666-6666-6666-6666-666666666666');
+select public.veiculo_decidir(id, 'reativar') from tarifas_veiculos where empresa_id = :A;
 insert into tarifas_veiculos (nome, veiculo, capacidade_kg, preco_saida, preco_km, estado) values ('Camião Elolog', 'camiao', 10000, 40, 1, 'aprovado');
 select pg_temp.como('11111111-1111-1111-1111-111111111111');
-insert into r select 10, (pg_temp.preco(:A, null, 40) ->> 'preco_final')::numeric = 230, 'veículo do prestador: 10 + 40 km × 0,5 = 30 € (200 + 30)';
 insert into r select 11, (pg_temp.preco(:A, null, 2) ->> 'preco_final')::numeric = 215, 'mínimo do veículo: 15 € (200 + 15)';
 insert into r select 12, (pg_temp.preco(:A, null, 20, 3000) ->> 'preco_final')::numeric = 6060, 'carga acima da capacidade: usa o camião geral (6000 + 40 + 20)';
 insert into r select 13, (pg_temp.preco(:A, null, 0) ->> 'preco_final')::numeric = 200, 'sem recolha: nenhum veículo';
@@ -70,7 +72,35 @@ insert into r select 18, (public.simular_preco(null, 'Lisboa', 'São Tomé', nul
 select pg_temp.como('11111111-1111-1111-1111-111111111111');
 select pg_temp.falha(19, 'o cliente não usa o simulador interno', $q$select public.simular_preco('a0000000-0000-0000-0000-00000000000a','Lisboa','São Tomé')$q$);
 reset role;
-insert into r select 20, exists (select 1 from tarifas_historico where entidade = 'tarifas_veiculos' and estado_anterior = 'pendente' and estado_novo = 'aprovado' and user_nome = 'Equipa Elolog'), 'histórico das tarifas de veículos';
+insert into r select 20, exists (select 1 from tarifas_historico where entidade = 'tarifas_veiculos' and estado_anterior = 'aprovado' and estado_novo = 'suspenso' and motivo = 'Confirmar capacidade' and user_nome = 'Equipa Elolog'), 'histórico das tarifas de veículos';
+set local role authenticated;
+-- eliminar tarifas de veículos: B não elimina as de A; A elimina a sua e fica no histórico
+select pg_temp.como('22222222-2222-2222-2222-222222222222');
+insert into tarifas_veiculos (empresa_id, nome, veiculo, preco_km) values (:A, 'Mota A', 'mota', 0.3);
+select pg_temp.como('33333333-3333-3333-3333-333333333333');
+delete from tarifas_veiculos where nome = 'Mota A';
+select pg_temp.como('22222222-2222-2222-2222-222222222222');
+insert into r select 21, count(*) = 1, 'B não elimina a tarifa de veículo de A' from tarifas_veiculos where nome = 'Mota A';
+delete from tarifas_veiculos where nome = 'Mota A';
+insert into r select 22, count(*) = 0, 'A elimina a sua tarifa de veículo' from tarifas_veiculos where nome = 'Mota A';
+reset role;
+insert into r select 23, exists (select 1 from tarifas_historico where entidade = 'tarifas_veiculos' and estado_novo = 'eliminada' and antes ->> 'nome' = 'Mota A' and user_nome = 'Rita (A)'), 'a eliminação fica no histórico';
+set local role authenticated;
+-- limites de anexos definidos pelo prestador (vazio = sem limite)
+select pg_temp.como('22222222-2222-2222-2222-222222222222');
+select public.definir_limites_anexos(8, null);
+select pg_temp.como('11111111-1111-1111-1111-111111111111');
+insert into r select 24, (public.limites_anexos(:A) ->> 'fotos')::int = 8 and public.limites_anexos(:A) ->> 'documentos' is null and public.limites_anexos(:B) ->> 'fotos' is null, 'o cliente lê os limites do prestador (A: 8 fotos, documentos sem limite)';
+select pg_temp.falha(25, 'o cliente não define limites', $q$select public.definir_limites_anexos(1, 1)$q$);
+-- distância da recolha a partir do armazém do prestador (Lisboa) até Sintra (~22 km em linha reta)
+select pg_temp.como('22222222-2222-2222-2222-222222222222');
+select public.guardar_armazens('[{"nome":"Armazém Lisboa","morada":"Rua X, Lisboa","lat":38.7223,"lon":-9.1393}]');
+select pg_temp.como('11111111-1111-1111-1111-111111111111');
+insert into r select 26, count(*) = 1 and bool_and(lat is not null), 'o cliente vê o ponto de partida do armazém (sem morada)' from public.pontos_recolha() where empresa_id = :A;
+insert into r select 27, (select recolha_km from public.precos_simulacao(jsonb_build_object('origem','Lisboa','destino','São Tomé','quantidade',2,'peso_kg',100,'volume_m3',0.5,'recolha',true,'lat',38.8029,'lon',-9.3817,'kms',jsonb_build_object(:A,28.4))) where prestador_id = :A) = 28.4, 'km por estrada indicado e plausível: usa 28,4 km';
+insert into r select 28, (select recolha_km from public.precos_simulacao(jsonb_build_object('origem','Lisboa','destino','São Tomé','quantidade',2,'peso_kg',100,'volume_m3',0.5,'recolha',true,'lat',38.8029,'lon',-9.3817,'kms',jsonb_build_object(:A,2))) where prestador_id = :A) between 26 and 30, 'km impossível (2 km): o servidor usa a linha reta × 1,3';
+insert into r select 29, (select recolha_km from public.precos_simulacao(jsonb_build_object('origem','Lisboa','destino','São Tomé','recolha',true,'lat',38.8029,'lon',-9.3817,'km',15)) where prestador_id = :B) = 15, 'prestador sem armazém: usa o km indicado';
+reset role;
 select n, case when ok then 'OK' else 'FALHOU' end as resultado, nome from r order by n;
 select count(*) filter (where ok) || '/' || count(*) as total from r;
 rollback;

@@ -1,7 +1,9 @@
 // Edge Function «recuperar-acesso»: recuperar palavras-passe esquecidas, sem passar pelos emails padrão do Supabase.
 // Sem sessão:  pedir {email} → email com ligação (?repor=…) e código de 6 dígitos (contas de cliente, funcionários e equipa Elolog)
 //              empresa_pedir {nome, nif} → código para o email oficial da empresa · empresa_confirmar {id | nome+nif, codigo, senha}
-// Com sessão:  alterada → email «a sua palavra-passe foi alterada» · codigo_entrada → código de 6 dígitos (2.º passo do administrador da empresa).
+// Com sessão:  alterada → email «a sua palavra-passe foi alterada» · codigo_entrada {canal: email|sms} → código de 6 dígitos (2.º passo do administrador da empresa)
+//              canais_codigo → para onde pode ir o código (email e, se configurado, SMS para o telemóvel registado).
+// SMS (opcional, cada SMS gasta créditos pagos da Brevo): SMS_REMETENTE (nome do remetente, até 11 caracteres, ex.: Elolog) + BREVO_API_KEY.
 // A resposta a «pedir» é sempre a mesma, exista ou não a conta (não revela quem está registado).
 // Segredos usados: BREVO_API_KEY, EMAIL_REMETENTE, EMAIL_NOME (opcional), SITE_URL (opcional, por omissão https://www.elolog.pt).
 // Deploy: supabase functions deploy recuperar-acesso --no-verify-jwt
@@ -12,7 +14,7 @@ import { seguro } from '../_shared/seguranca.ts';
 
 const env = (k: string) => Deno.env.get(k) ?? '';
 const admin = createClient(env('SUPABASE_URL'), env('SUPABASE_SERVICE_ROLE_KEY'), { auth: { persistSession: false, autoRefreshToken: false } });
-const SITE = (env('SITE_URL') || 'https://www.elolog.pt').replace(/\/(app|site)\/.*$/, '').replace(/\/+$/, '');
+const SITE = (env('SITE_URL') || 'https://elolog.pt').replace(/\/(app|site)\/.*$/, '').replace(/\/+$/, '').replace('://www.elolog.pt', '://elolog.pt');   // www.elolog.pt não tem certificado válido
 const APP = SITE + '/app/area-cliente.html';
 const EMAIL = /^[^\s@<>"]{1,64}@[^\s@<>"]+\.[a-z]{2,}$/i;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -53,6 +55,21 @@ function sessaoDoToken(jwt: string): string {
     return String(JSON.parse(atob(b + '==='.slice((b.length + 3) % 4))).session_id ?? '');
   } catch { return ''; }
 }
+/* SMS: número em formato internacional só com dígitos (9 dígitos começados por 9 → Portugal, +351) */
+const telefoneIntl = (t: string | null | undefined) => { let d = String(t ?? '').replace(/\D/g, '').replace(/^00/, ''); if (/^9\d{8}$/.test(d)) d = '351' + d; return d.length >= 9 && d.length <= 15 ? d : ''; };
+const smsPronto = () => !!(env('BREVO_API_KEY') && env('SMS_REMETENTE'));
+const mascaraTel = (d: string) => `+${d.slice(0, d.length - 9)} ${d.slice(-9, -8)}•• ••• ${d.slice(-2)}`;
+const mascaraEmail = (e: string) => { const [n, d] = e.split('@'); return `${n.slice(0, 2)}•••@${d}`; };
+/** Envia o código por SMS (Brevo, SMS transacional; cada SMS gasta créditos pagos da conta Brevo). */
+async function enviarSms(para: string, codigo: string): Promise<boolean> {
+  const r = await fetch('https://api.brevo.com/v3/transactionalSMS/sms', { method: 'POST', signal: AbortSignal.timeout(10_000),
+    headers: { 'api-key': env('BREVO_API_KEY'), 'content-type': 'application/json', accept: 'application/json' },
+    body: JSON.stringify({ sender: env('SMS_REMETENTE').slice(0, 11), recipient: para, type: 'transactional', tag: 'codigo-entrada',
+      content: `Elolog: o seu código de entrada é ${codigo}. Vale 10 minutos. Não o partilhe com ninguém.` }) }).catch(() => null);
+  if (!r?.ok) { console.error('recuperar-acesso: SMS recusado', r?.status ?? 'rede', r ? (await r.text().catch(() => '')).replace(/\d{6,}/g, '[n]').slice(0, 200) : ''); return false; }
+  console.log('recuperar-acesso: código enviado por SMS');
+  return true;
+}
 const senhaFraca = (s: string) => s.length < 8 || s.length > 72 || !/[a-zA-Z]/.test(s) || !/\d/.test(s);
 
 Deno.serve(seguro('recuperar-acesso', async (req: Request) => {
@@ -82,22 +99,33 @@ Deno.serve(seguro('recuperar-acesso', async (req: Request) => {
         await enviar(u.user.email, emailAlterada(SITE, new Date().toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' })), 'senha-alterada');
       return resposta(200, { ok: true });
     }
-    if (acao === 'codigo_entrada') {
-      // 2.º passo do administrador da empresa: código de 6 dígitos para o email pessoal (alternativa à aplicação de autenticação)
+    if (acao === 'canais_codigo' || acao === 'codigo_entrada') {
+      // 2.º passo do administrador da empresa: código de 6 dígitos por email ou SMS (alternativa à aplicação de autenticação)
       const jwt = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
       const { data: u } = jwt ? await admin.auth.getUser(jwt) : { data: null };
       const sessao = jwt ? sessaoDoToken(jwt) : '';
       if (!u?.user || !UUID.test(sessao)) return erro(401, 'sessao', 'A sessão expirou. Volte a entrar.');
+      const { data: f } = await admin.from('funcionarios').select('email,telefone,ativo').eq('id', u.user.id).maybeSingle();
+      const tel = telefoneIntl(f?.telefone);
+      if (acao === 'canais_codigo') {
+        return resposta(200, { ok: true, email: f?.email ? mascaraEmail(f.email) : null, sms: tel ? mascaraTel(tel) : null, smsDisponivel: !!tel && smsPronto(),
+          motivo: !smsPronto() ? 'O envio por SMS ainda não está ativo na Elolog.' : !tel ? 'Não tem telemóvel registado: peça a quem gere a equipa para o acrescentar em Funcionários e acessos.' : null });
+      }
+      const canal = txt(c.canal, 10) === 'sms' ? 'sms' : 'email';
+      if (canal === 'sms' && (!tel || !smsPronto())) return erro(400, 'canal', tel ? 'O envio por SMS ainda não está ativo. Receba o código por email.' : 'Não tem telemóvel registado. Receba o código por email.');
       if (!(await limite('cod-ent:' + u.user.id, 4, 10)) || !(await limite('cod-ent-ip:' + (await hash(ip)), 20, 60)))
         return erro(429, 'limite', 'Já enviámos vários códigos. Aguarde 10 minutos e veja também a pasta de spam.');
       const { data, error } = await admin.rpc('servico_codigo_email_criar', { p_user: u.user.id, p_sessao: sessao });
       if (error) { console.error('recuperar-acesso: servico_codigo_email_criar falhou', error.code); return erro(500, 'interno', 'Não foi possível criar o código. Tente novamente.'); }
       const linha = (Array.isArray(data) ? data[0] : data) as { codigo?: string; email?: string; nome?: string } | undefined;
       if (!linha?.codigo || !linha.email) return erro(403, 'conta', 'Esta conta não recebe códigos de entrada.');
+      if (canal === 'sms') {
+        if (!(await enviarSms(tel, linha.codigo))) return erro(502, 'envio', 'Não foi possível enviar o SMS agora. Receba o código por email.');
+        return resposta(200, { ok: true, canal, para: mascaraTel(tel) });
+      }
       if (!(await enviar(linha.email, emailCodigoEntrada(SITE, linha.nome ?? '', linha.codigo), 'codigo-entrada')))
         return erro(502, 'envio', 'Não foi possível enviar o email agora. Tente daqui a pouco ou use a aplicação de autenticação.');
-      const [n, d] = linha.email.split('@');
-      return resposta(200, { ok: true, para: `${n.slice(0, 2)}•••@${d}` });
+      return resposta(200, { ok: true, canal, para: mascaraEmail(linha.email) });
     }
     if (acao === 'empresa_pedir' || acao === 'empresa_confirmar') {
       const id = UUID.test(txt(c.id, 40)) ? txt(c.id, 40) : null, nome = txt(c.nome, 200), nif = txt(c.nif, 30);

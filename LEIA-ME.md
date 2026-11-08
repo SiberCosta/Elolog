@@ -1,6 +1,6 @@
 # Elolog
 
-**Versão de 29/10/2026 (v82).** Se esta pasta tem este ficheiro, é a versão nova.
+**Versão de 08/11/2026 (v120).** Se esta pasta tem este ficheiro, é a versão nova.
 
 Plataforma de intermediação logística: clientes simulam e comparam propostas; transitárias gerem encomendas, equipa e cobranças; a administração Elolog valida e acompanha a rede.
 
@@ -57,6 +57,43 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Código de confirmação ao ligar uma caixa:** ao ligar uma caixa nova (ou mudar o endereço), a plataforma envia um código de 6 dígitos para essa caixa e só guarda depois de o escrever (válido 10 minutos, máx. 8 tentativas por 10 min).
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
+
+## v120 (proteção contra fuga de informação, AIS retirado, só pt-PT)
+
+- **Política de conteúdo (CSP)** em todas as páginas HTML: o navegador só carrega scripts, estilos e ligações da própria Elolog, do Supabase do projeto e dos CDN usados (jsDelivr, cdnjs); bloqueia `<object>`, `<base>` alheio e formulários enviados para fora. Junta-se `referrer` restrito: os endereços internos (com ids de encomendas) não passam para sites externos.
+- **Palavras-passe**: os campos de nova palavra-passe (funcionários e prestadores) têm `autocomplete="new-password"`, sem correção ortográfica nem maiúsculas automáticas. Nenhuma palavra-passe é guardada no navegador; os códigos dos links de email saem do endereço logo que são lidos.
+- **Servidor** (migrações `00178` e `00179`, aplicadas): caminho de pesquisa fixo nas 4 funções internas que ainda não o tinham; a tarefa agendada dos navios foi retirada e `agendar_tarefas` deixou de a criar.
+- **AIS retirado**: sai a função `navios-ais` (pasta apagada), a chave `AISSTREAM_API_KEY` deixa de existir na documentação e nos testes. Em «Navios em tempo real», cada navio guardado tem «Ver a posição real» (abre o VesselFinder pelo MMSI); deixou de se prometer atualização a cada 30 minutos.
+- **Auditoria**: `ferramentas/auditoria.cjs` passa a verificar que todas as páginas têm CSP e referrer e que não há chave `service_role` no front-end.
+- **pt-PT**: o último comentário com «senha» passou a «palavra-passe». Ficam só nomes internos da API (`p_senha`), que não se mudam para não quebrar o servidor.
+
+## v119 (regra de trabalho e auditoria completa)
+
+- **Regra de trabalho**: identificar → analisar → alterar → verificar → validar a página completa (`documentacao/REGRA_DE_TRABALHO.md`).
+- **Auditoria automática**: `node ferramentas/auditoria.cjs` verifica a sintaxe de todo o JavaScript, ficheiros e scripts em falta, a cache do service worker, versões `?v=` misturadas, ficheiros com mais de 200 linhas e palavras do português do Brasil. Não altera nada.
+- **Corrigido**: no painel do cliente, a pesquisa de encomenda tinha campos com ids repetidos (o bloco novo e o antigo usavam os mesmos); agora tem ids próprios (`cdashPesquisa`, `cdashResultado`). Em «Regras de cobrança», no telemóvel, os separadores alargavam a página para 932 px; agora deslizam dentro da página e o separador ativo fica à vista.
+
+## v118 (Consola Elolog e código por SMS)
+
+- **Consola Elolog**: a equipa Elolog entra em **www.elolog.pt/admin** (ou `app/area-cliente.html?acesso=administracao`). Ecrã próprio, escuro e sóbrio, sem a navegação do site, rodapé, assistente nem textos para clientes. A área de cliente deixou de mostrar a ligação «Equipa Elolog» e o aparelho já não volta sozinho ao acesso da equipa.
+- **Código de entrada por SMS** (em vez de WhatsApp): o administrador da empresa escolhe email ou SMS para o número da sua ficha. O SMS usa créditos pagos da Brevo e só aparece depois de definido `SMS_REMETENTE` (ver `documentacao/CODIGO_SMS.md`).
+
+## v117 (código de entrada por email ou WhatsApp, à escolha; substituído na v118 por SMS)
+
+- No 3.º passo da entrada, o administrador da empresa escolhe receber o código **por email** ou **por WhatsApp** (telemóvel da ficha do funcionário). A escolha fica lembrada neste aparelho.
+- O WhatsApp só aparece depois de criado o modelo de autenticação na Meta e definidos os segredos (ver `documentacao/CODIGO_WHATSAPP.md`). Cada mensagem é paga à Meta; sem isso, tudo continua por email, sem custo.
+- Edge Function `recuperar-acesso` atualizada (ações `canais_codigo` e `codigo_entrada` com `canal`).
+
+## v116 (tarifas do prestador sem aprovação, km por estrada, som, anexos, logótipo nos emails)
+
+- **Tarifas do prestador**: as tarifas, veículos e suplementos que o prestador guarda entram logo em vigor (não dependem da administração). A Elolog continua a poder **suspender**; só ela levanta a suspensão. Alterar uma tarifa cria uma nova versão; as encomendas aceites mantêm o preço.
+- **Operadores**: toda a equipa do prestador recebe as tarifas em vigor da empresa (servidor: `tarifas_ver_equipa`; aplicação: sincroniza ao entrar e ao abrir páginas).
+- **Distância da recolha**: medida **por estrada** (OSRM, gratuito) desde o armazém de cada prestador. Os armazéns das Configurações são localizados no mapa e gravados no servidor (`guardar_armazens`); o simulador do cliente usa `precos_simulacao` com os km de cada prestador, validados no servidor (`km_recolha`). Armazém sem nome já não é ignorado.
+- **Anexos**: sem limite fixo de fotografias e documentos; cada prestador define os seus em Configurações (vazio = sem limite).
+- **Som das notificações**: aviso sonoro quando chega uma notificação nova; liga/desliga no painel de notificações.
+- **Tarifas de veículos**: podem ser eliminadas (prestador as suas, administração qualquer uma); fica no histórico.
+- **Emails**: logótipo servido pela função `logo-email` (PNG). As ligações dos emails passam a usar `https://elolog.pt` (o `www.elolog.pt` não tem certificado válido).
+- Migrações 00176 e 00177 (aplicadas no Supabase e nos instaladores). Testes: 28 (30/30), 29 (29/29), 02 (78/78).
 
 ## v115 (Regras de cobrança no painel do prestador, motor de busca, veículos)
 

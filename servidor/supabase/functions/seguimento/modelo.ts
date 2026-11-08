@@ -5,6 +5,8 @@ export interface Dados {
   nome: string; fluxo: string; passo: number; codigo: string; origem: string; destino: string;
   propostas: number; encomenda: string | null;
 }
+// logótipo em PNG servido pela função «logo-email» (endereço público estável: o Gmail não mostra SVG nem imagens embutidas)
+const LOGO = `${(Deno.env.get('SUPABASE_URL') ?? 'https://wcggcpdiswbzrdpwgdpb.supabase.co').replace(/\/+$/, '')}/functions/v1/logo-email`;
 const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 function base(site: string, o: { titulo: string; paragrafos: string[]; lista?: string[]; fim?: string; botao: { texto: string; url: string }; sair?: string }): string {
@@ -14,7 +16,7 @@ function base(site: string, o: { titulo: string; paragrafos: string[]; lista?: s
   return `<!doctype html><html lang="pt"><body style="margin:0;padding:24px;background:#f3f6f8;font-family:Arial,Helvetica,sans-serif">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
   <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;border:1px solid #e1e9ef">
-  <tr><td style="padding:26px 32px 6px"><img src="${esc(site)}/partilhado/imagens/elolog-logo-600.png" width="80" height="80" alt="Elolog" style="display:block"></td></tr>
+  <tr><td style="padding:26px 32px 6px"><img src="${LOGO}" width="120" height="91" alt="Elolog" style="display:block;border:0;outline:none;text-decoration:none;height:91px;width:120px"></td></tr>
   <tr><td style="padding:6px 32px 26px"><h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;color:#13293D">${esc(o.titulo)}</h1>${p}${l}${o.fim ? `<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#3e5263">${esc(o.fim)}</p>` : ''}
   <p style="margin:22px 0"><a href="${esc(o.botao.url)}" style="display:inline-block;padding:13px 22px;border-radius:10px;border:2px solid #13293D;color:#13293D;font-weight:700;font-size:15px;text-decoration:none">${esc(o.botao.texto)}</a></p>
   <p style="margin:18px 0 0;padding-top:14px;border-top:1px solid #e1e9ef;font-size:12px;line-height:1.6;color:#6b7d89">A equipa Elolog. Pode responder a este email se tiver alguma dúvida.${sair}</p></td></tr></table>

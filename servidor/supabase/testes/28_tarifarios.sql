@@ -1,4 +1,4 @@
--- Testes da v114: Centro de Gestão de Tarifários (aprovação, versões, limites, gerais, suplementos, comissões, motor, cópia na aprovação,
+-- Testes da v114/v116: Centro de Gestão de Tarifários (publicação pelo prestador, suspensão pela Elolog, versões, limites, gerais, suplementos, comissões, motor, cópia na aprovação,
 -- histórico e privacidade). Só em base de TESTES; tudo é desfeito.
 \set ON_ERROR_STOP 1
 begin;
@@ -28,32 +28,33 @@ set local role authenticated;
 \set A '''a0000000-0000-0000-0000-00000000000a'''
 \set B '''b0000000-0000-0000-0000-00000000000b'''
 
--- prestador A cria e submete; tenta forçar «aprovada»
+-- prestador A publica: a tarifa entra logo em vigor, sem esperar pela Elolog
 select pg_temp.como('22222222-2222-2222-2222-222222222222');
 insert into v select 't1', (public.tarifa_guardar('{"nome":"LIS-STP peso","metodo":"peso","valor":2,"origem":"Lisboa","destino":"São Tomé","preco_minimo":50,"limite_max":500}'::jsonb)).id;
-insert into r select 1, estado = 'pendente' and not ativa, 'submetida: pendente e fora das simulações' from tarifas where id = (select id from v where k = 't1');
-select pg_temp.falha(2, 'o prestador não se aprova a si próprio', $q$update tarifas set estado = 'aprovada' where id = (select id from v where k = 't1')$q$);
-insert into tarifas (empresa_id, nome, metodo, valor, estado) values (:A, 'Atalho', 'fixo', 10, 'aprovada');
-insert into r select 3, estado = 'pendente' and not ativa, 'inserir «aprovada» diretamente também fica pendente' from tarifas where nome = 'Atalho';
--- cliente: sem tarifa aprovada
+insert into r select 1, estado = 'aprovada' and ativa, 'publicada pelo prestador: em vigor de imediato' from tarifas where id = (select id from v where k = 't1');
+select pg_temp.falha(2, 'o prestador não se suspende nem se rejeita (é poder da Elolog)', $q$update tarifas set estado = 'suspensa' where id = (select id from v where k = 't1')$q$);
+insert into tarifas (empresa_id, nome, metodo, valor, estado) values (:A, 'Atalho', 'fixo', 10, 'rascunho');
+insert into r select 3, estado = 'rascunho' and not ativa, 'rascunho fica fora das simulações' from tarifas where nome = 'Atalho';
+-- cliente: B não tem tarifas; A já tem
 select pg_temp.como('11111111-1111-1111-1111-111111111111');
-insert into r select 4, not (pg_temp.preco(:A) ->> 'disponivel')::boolean and pg_temp.preco(:A) ->> 'mensagem' = 'Não existe uma tarifa automática disponível. Solicite uma cotação personalizada.', 'sem tarifa aprovada: mensagem de cotação personalizada';
+insert into r select 4, not (pg_temp.preco(:B) ->> 'disponivel')::boolean and pg_temp.preco(:B) ->> 'mensagem' = 'Não existe uma tarifa automática disponível. Solicite uma cotação personalizada.', 'sem tarifa aprovada: mensagem de cotação personalizada';
 insert into r select 5, count(*) = 0, 'o cliente não lê tarifas internas' from tarifas;
 select pg_temp.falha(6, 'o cliente não testa o motor (margens)', $q$select public.testar_preco('a0000000-0000-0000-0000-00000000000a','Lisboa','São Tomé')$q$);
--- administração aprova
+-- a Elolog pode suspender (com motivo); só ela reativa
 select pg_temp.como('66666666-6666-6666-6666-666666666666');
-select pg_temp.falha(7, 'rejeitar exige motivo', $q$select public.tarifa_decidir((select id from v where k = 't1'), 'rejeitar', '')$q$);
-select public.tarifa_decidir((select id from v where k = 't1'), 'aprovar');
-insert into r select 8, estado = 'aprovada' and ativa and decidida_por is not null, 'aprovada pela administração: ativa' from tarifas where id = (select id from v where k = 't1');
+select pg_temp.falha(7, 'suspender exige motivo', $q$select public.tarifa_decidir((select id from v where k = 't1'), 'suspender', '')$q$);
+select public.tarifa_decidir((select id from v where k = 't1'), 'suspender', 'Verificação de preços');
+insert into r select 8, estado = 'suspensa' and not ativa, 'suspensa pela Elolog: fora das simulações' from tarifas where id = (select id from v where k = 't1');
+select pg_temp.como('22222222-2222-2222-2222-222222222222');
+select pg_temp.falha(30, 'o prestador não levanta a suspensão', $q$update tarifas set estado = 'aprovada' where id = (select id from v where k = 't1')$q$);
+select pg_temp.como('66666666-6666-6666-6666-666666666666');
+select public.tarifa_decidir((select id from v where k = 't1'), 'reativar');
 select pg_temp.como('11111111-1111-1111-1111-111111111111');
 insert into r select 9, (pg_temp.preco(:A) ->> 'preco_final')::numeric = 200 and pg_temp.preco(:A) ->> 'taxa_servico' is null, 'preço: 100 kg × 2 € = 200 €' ;
 insert into r select 10, (select (x ->> 'disponivel')::boolean = false from (select to_jsonb(y) x from public.calcular_precos('Lisboa','São Tomé','Roupa',3,900,0.5,0) y where y.prestador_id = :A) z), 'fora do limite (900 kg > 500): incompatível';
 -- prestador: tarifa aprovada não muda; nova versão
 select pg_temp.como('22222222-2222-2222-2222-222222222222');
 select pg_temp.falha(11, 'mudar o valor de uma aprovada é recusado', $q$update tarifas set valor = 3 where id = (select id from v where k = 't1')$q$);
-insert into v select 't2', (public.tarifa_guardar('{"nome":"LIS-STP peso","metodo":"peso","valor":3,"origem":"Lisboa","destino":"São Tomé","preco_minimo":50,"limite_max":500}'::jsonb, (select id from v where k = 't1'), true, 'Subida do combustível')).id;
-select pg_temp.como('11111111-1111-1111-1111-111111111111');
-insert into r select 12, (pg_temp.preco(:A) ->> 'preco_final')::numeric = 200, 'enquanto a nova versão espera, vale a aprovada';
 -- simulação enviada e aceite ao preço de então (cópia congelada)
 select pg_temp.como('11111111-1111-1111-1111-111111111111');
 reset role;
@@ -67,20 +68,22 @@ reset role;
 insert into r select 13, e.preco_total = 200 and (e.preco_detalhe ->> 'preco_prestador')::numeric = 200 and e.preco_detalhe -> 'tarifa' ->> 'versao' = '1' and e.preco_detalhe ? 'congelado_em',
   'a encomenda guarda a cópia (tarifa versão 1, 200 €)' from encomendas e where id = (select id from v where k = 'enc');
 set local role authenticated;
-select pg_temp.como('66666666-6666-6666-6666-666666666666');
-select public.tarifa_decidir((select id from v where k = 't2'), 'aprovar');
-insert into r select 14, (select estado from tarifas where id = (select id from v where k = 't1')) = 'substituida' and (select estado from tarifas where id = (select id from v where k = 't2')) = 'aprovada', 'aprovar a v2 substitui a v1';
+select pg_temp.como('22222222-2222-2222-2222-222222222222');
+insert into v select 't2', (public.tarifa_guardar('{"nome":"LIS-STP peso","metodo":"peso","valor":3,"origem":"Lisboa","destino":"São Tomé","preco_minimo":50,"limite_max":500}'::jsonb, (select id from v where k = 't1'), true, 'Subida do combustível')).id;
+select pg_temp.como('11111111-1111-1111-1111-111111111111');
+insert into r select 12, (pg_temp.preco(:A) ->> 'preco_final')::numeric = 300, 'a nova versão entra logo em vigor (100 × 3 = 300)';
+select pg_temp.como('22222222-2222-2222-2222-222222222222');
+insert into r select 14, (select estado from tarifas where id = (select id from v where k = 't1')) = 'substituida' and (select estado from tarifas where id = (select id from v where k = 't2')) = 'aprovada', 'a v2 substitui a v1';
 reset role;
 insert into r select 15, preco_total = 200 and (preco_detalhe ->> 'preco_prestador')::numeric = 200, 'a nova versão não muda o preço já acordado' from encomendas where id = (select id from v where k = 'enc');
 set local role authenticated;
 select pg_temp.como('22222222-2222-2222-2222-222222222222');
 select pg_temp.falha(16, 'o prestador não altera a cópia congelada', $q$update encomendas set preco_detalhe = '{}' where id = (select id from v where k = 'enc')$q$);
--- suplementos: pendente não conta; aprovado conta
+-- suplementos do prestador: entram logo
 insert into tarifa_suplementos (empresa_id, nome, chave, tipo, valor) values (:A, 'Seguro', 'seguro', 'percentual', 10);
 select pg_temp.como('11111111-1111-1111-1111-111111111111');
-insert into r select 17, (pg_temp.preco(:A) ->> 'preco_final')::numeric = 300, 'suplemento pendente não entra (v2: 100 × 3 = 300)';
+insert into r select 17, (pg_temp.preco(:A) ->> 'preco_final')::numeric = 330, 'suplemento do prestador entra logo (300 + 10 %)';
 select pg_temp.como('66666666-6666-6666-6666-666666666666');
-select public.suplemento_decidir((select id from tarifa_suplementos where nome = 'Seguro'), 'aprovar');
 -- comissões: global 10 % incluída; Lisboa→São Tomé 5 % separada (mais específica)
 insert into regras_comissao (escopo, evento, tipo_valor, valor, nome) values ('encomenda','aprovacao','percentagem',10,'Geral');
 select pg_temp.como('11111111-1111-1111-1111-111111111111');
@@ -114,8 +117,8 @@ select pg_temp.como('11111111-1111-1111-1111-111111111111');
 insert into r select 27, not (pg_temp.preco(:A) ->> 'disponivel')::boolean, 'tarifa expirada não é usada';
 -- histórico
 reset role;
-insert into r select 28, exists (select 1 from tarifas_historico where entidade = 'tarifas' and motivo = 'Subida do combustível' and estado_novo = 'pendente' and user_nome = 'Rita (A)')
-  and exists (select 1 from tarifas_historico where entidade = 'tarifas' and estado_anterior = 'pendente' and estado_novo = 'aprovada' and user_nome = 'Equipa Elolog')
+insert into r select 28, exists (select 1 from tarifas_historico where entidade = 'tarifas' and motivo = 'Subida do combustível' and estado_novo = 'aprovada' and user_nome = 'Rita (A)')
+  and exists (select 1 from tarifas_historico where entidade = 'tarifas' and estado_anterior = 'aprovada' and estado_novo = 'suspensa' and motivo = 'Verificação de preços' and user_nome = 'Equipa Elolog')
   and exists (select 1 from tarifas_historico where entidade = 'tarifas_gerais' and motivo = 'Atualização anual' and (antes ->> 'valor')::numeric = 120 and (depois ->> 'valor')::numeric = 130),
   'histórico: quem, quando, motivo, estado e valor anterior/novo';
 set local role authenticated;

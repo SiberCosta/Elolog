@@ -1,8 +1,7 @@
-// Testes das funções de produção (pagamentos ifthenpay, aviso, AIS). Sem rede: a API e a base de dados são simuladas.
+// Testes das funções de produção (pagamentos ifthenpay, aviso). Sem rede: a API e a base de dados são simuladas.
 import { tratar, type DepsPag, type Pedido } from '../pagamentos/handler.ts';
 import { criarIfthenpay, dataIso, estadoPedidoMbway } from '../pagamentos/ifthenpay.ts';
 import { avisar } from '../pagamentos-aviso/aviso.ts';
-import { etaIso, juntar, subscricao, type Posicao } from '../navios-ais/ais.ts';
 
 let falhas = 0;
 const ok = (c: unknown, m: string) => { console.log((c ? '✔ ' : '✘ ') + m); if (!c) falhas++; };
@@ -68,18 +67,6 @@ ok((await avisar(new URL('https://x/?key=antiphishing-123&orderId=EL1234567890AB
 ok((await avisar(new URL('https://x/?key=errada&orderId=EL1234567890AB&amount=120'), conf)).status === 403, 'aviso com chave errada: 403');
 ok((await avisar(new URL('https://x/?key=antiphishing-123&orderId=EL1234567890AB&amount=1'), conf)).status === 400, 'aviso com valor diferente: recusado');
 ok((await avisar(new URL('https://x/?key=a&orderId=<x>&amount=1'), conf)).status === 400, 'aviso com dados estranhos: recusado');
-
-// ---------- AIS
-const est = new Map<string, Posicao>();
-juntar(est, { MessageType: 'PositionReport', MetaData: { MMSI: 255806000, ShipName: 'SAO TOME@@', latitude: 38.7, longitude: -9.1, time_utc: '2026-10-25 18:00:00.0 +0000 UTC' },
-  Message: { PositionReport: { Latitude: 38.69, Longitude: -9.14, Sog: 12.3, Cog: 190 } } });
-juntar(est, { MessageType: 'ShipStaticData', MetaData: { MMSI: 255806000 }, Message: { ShipStaticData: { Name: 'SAO TOME', Destination: 'STP SAO TOME', ImoNumber: 9123456, Eta: { Month: 11, Day: 3, Hour: 8, Minute: 0 } } } });
-juntar(est, { MessageType: 'PositionReport', MetaData: { MMSI: 'abc' } });
-const n = est.get('255806000');
-ok(n?.latitude === 38.69 && n?.velocidade_nos === 12.3 && n?.nome === 'SAO TOME' && n?.destino === 'STP SAO TOME' && est.size === 1, 'AIS: posição e dados de viagem juntos por MMSI');
-ok(etaIso({ Month: 11, Day: 3, Hour: 8, Minute: 0 }, new Date('2026-10-25T00:00:00Z')) === '2026-11-03T08:00:00.000Z', 'ETA no próprio ano');
-ok(etaIso({ Month: 1, Day: 5, Hour: 24, Minute: 60 }, new Date('2026-12-20T00:00:00Z')) === '2027-01-05T00:00:00.000Z' && etaIso({ Month: 0, Day: 0 }) === null, 'ETA passa de ano; ETA vazia ignorada');
-ok(subscricao('k', ['255806000']).FiltersShipMMSI[0] === '255806000', 'subscrição filtra pelos navios seguidos');
 
 console.log(falhas ? `\n${falhas} FALHA(S)` : '\nTodos os testes passaram.');
 if (falhas) (globalThis as { process?: { exit(c: number): void } }).process?.exit(1);

@@ -12,7 +12,7 @@ import { type Dados, type Email, emailSeguimento } from './modelo.ts';
 
 const env = (k: string) => Deno.env.get(k) ?? '';
 const admin = createClient(env('SUPABASE_URL'), env('SUPABASE_SERVICE_ROLE_KEY'), { auth: { persistSession: false, autoRefreshToken: false } });
-const SITE = (env('SITE_URL') || 'https://www.elolog.pt').replace(/\/(app|site)\/.*$/, '').replace(/\/+$/, '');
+const SITE = (env('SITE_URL') || 'https://elolog.pt').replace(/\/(app|site)\/.*$/, '').replace(/\/+$/, '').replace('://www.elolog.pt', '://elolog.pt');   // www.elolog.pt não tem certificado válido
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LOTE = Math.min(100, Math.max(1, Number.parseInt(env('SEGUIMENTO_LOTE'), 10) || 20));
 
