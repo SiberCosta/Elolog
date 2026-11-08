@@ -45,7 +45,7 @@ function terreno(tipo,filtro,operador){var t=String(tipo||"serviço").toLowerCas
   M={scheduled:["Nenhuma "+t+" agendada","As "+pl+" que agendar aparecem aqui por ordem de data."],active:["Nenhuma "+t+" em curso","Quando alguém começar uma "+t+" no terreno, acompanha-a aqui em tempo real."],
   done:["Ainda sem "+pl+" concluídas","Cada "+t+" fechada com assinatura e fotografias fica guardada aqui."],issues:["Sem ocorrências","Nenhuma "+t+" teve problemas registados."]},
   m=M[filtro]||["Ainda não há "+pl,"Agende a primeira "+t+" e escolha quem a faz e em que viatura."];
-  return'<div class="provider-order-empty vz vz2" data-vz="1" role="status"><span class="vz-ic" aria-hidden="true"><i class="ic ic-truck"></i></span>'+bloco(m[0],m[1],operador?"":"Agendar "+t,operador?"":"openFieldAssignment('','"+String(tipo).replace(/'/g,"")+"')")+"</div>"}
+  return'<div class="provider-order-empty vz vz2" data-vz="1" role="status"><span class="vz-ic" aria-hidden="true"><i class="ic ic-truck"></i></span>'+bloco(m[0],m[1],operador?"":"Agendar "+t,operador?"":"openFieldAssignment('','"+String(tipo).replace(/'/g,"")+"')").replace(SVG,"")+"</div>"}
 function limparFiltros(){[].forEach.call(arguments,function(id){var c=document.getElementById(id);if(c){c.value="";c.dispatchEvent(new Event("input",{bubbles:true}));c.dispatchEvent(new Event("change",{bubbles:true}))}})}
 
 /* Ícone acolhedor escolhido pelo assunto do vazio (biblioteca de ícones da plataforma) */

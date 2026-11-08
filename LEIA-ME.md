@@ -58,6 +58,21 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v113 (acabamento: menu, etapas, Recolhas e Entregas)
+
+- **Menu lateral**:
+  - o cartão «O seu próximo passo» deixa espaço para a aba do item ativo (deixou de encostar);
+  - quando está tudo bem passa a um estado calmo, só com um visto («Tudo em dia», «Tudo em ordem. Nada à espera de si agora»), em vez de chamar a atenção;
+  - as etapas sem encomendas deixaram de ficar a cinzento (pareciam desativadas); só as que têm trabalho mostram o número.
+- **Cartão de etapa**: passou a ter superfície própria (fundo branco, cantos e sombra iguais aos outros cartões), sem o rebordo curvo, e com «Etapa 6 de 11» numa etiqueta.
+- **Recolhas e Entregas**:
+  - os números passaram a ser os próprios filtros («Todas as recolhas 2», «Agendadas 1», «Em curso», «Concluídas» e «Com ocorrência», que só aparece quando há ocorrências);
+  - sem serviços, a página vai direta ao convite para agendar, sem zeros;
+  - os símbolos soltos (◷ ▶ ✓ ! ↙ ⌖ ●) foram trocados pelos ícones da plataforma;
+  - o título já não se repete no computador e a descrição diz quem faz o quê;
+  - um serviço sem responsável mostra «Escolha quem vai» e o botão «Escolher responsável»;
+  - o estado vazio deixou de ter duas ilustrações.
+
 ## v112 (o que faltava da especificação)
 
 - **Modo suporte a sério** (`app/administracao/modo-suporte.js`):

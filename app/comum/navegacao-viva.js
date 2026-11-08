@@ -31,7 +31,7 @@ function proximo(papel){
     if(minhas.length){const o=minhas[0];return{t:`Acompanhar ${o.id}`,d:F()?F().saude(o,F().indice(o)).t:(o.status||""),js:"openClientOrderSection('status')",nivel:"normal"}}
     return{t:"Simular um envio",d:"Preço e prazo das transportadoras",js:"showPage('clientSimulation')",nivel:"normal"}}
   if(papel==="prestador"){const c=contagem(doPrestador());for(const [i,v,um,pg] of PRIORIDADE)if(c[i])return{t:`${c[i]} ${c[i]===1?"encomenda "+um:"encomendas "+v}`,d:"Abrir e tratar",js:`showProviderPage('${pg}')`,nivel:i===2||i===4?"agora":"normal"};
-    return{t:"Tudo em dia",d:"Veja se chegaram novas simulações",js:"document.querySelector('#sidebar [onclick*=showProviderProposalTab]')?.click()",nivel:"normal"}}
+    return{t:"Tudo em dia",d:"Veja se chegaram novas simulações",js:"document.querySelector('#sidebar [onclick*=showProviderProposalTab]')?.click()",nivel:"calmo"}}
   if(papel==="admin"){/* v112: as mesmas regras do Centro de comando, do mais urgente para o menos urgente */
     const P=(()=>{try{return window.__ELOLOG_INTERNO?.painelDados?.()||null}catch(_){return null}})()||{},sub=P.subscricoes||{},pr=P.prestadores||{},ap=P.apoio||{},en=P.encomendas||{};
     let pend=0;try{pend=(typeof getProviderProfiles==="function"?getProviderProfiles():[]).filter(p=>/pending|review/i.test(p.validationStatus||"")||/pendente|avalia/i.test(p.status||"")).length}catch(_){}
@@ -43,7 +43,7 @@ function proximo(papel){
       [en.paradas_mais_7d,n=>`${pl(n,"encomenda parada","encomendas paradas")} há mais de uma semana`,"Ver o que está parado","showAdminPage('adminOperations')","normal"],
       [ap.abertos,n=>`${pl(n,"pedido de apoio","pedidos de apoio")} por responder`,"Responder aos pedidos","showAdminPage('adminSupport')","normal"]];
     const h=R.find(r=>Number(r[0])>0);if(h)return{t:h[1](Number(h[0])),d:h[2],js:h[3],nivel:h[4]};
-    return{t:"Tudo em ordem",d:"Ver o Centro de comando",js:"showPage('dashboard')",nivel:"normal"}}
+    return{t:"Tudo em ordem",d:"Nada à espera de si agora",js:"showPage('dashboard')",nivel:"calmo"}}
   return null}
 
 function desenhar(){const u=eu(),papel=u?.role==="admin"?"admin":u?.role==="prestador"?"prestador":u?.role==="cliente"?"cliente":"";const sb=document.getElementById("sidebar");
@@ -51,9 +51,9 @@ function desenhar(){const u=eu(),papel=u?.role==="admin"?"admin":u?.role==="pres
   const p=proximo(papel);let el=sb.querySelector(".nv-proximo");if(!p){el?.remove();return}
   if(!el){el=document.createElement("button");el.type="button";el.className="nv-proximo";const ub=sb.querySelector(".user-box");(ub||sb.firstElementChild)?.after(el)}
   el.dataset.nivel=p.nivel;el.setAttribute("onclick",p.js+";if(window.innerWidth<900&&typeof toggleSidebar==='function'&&document.getElementById('sidebar')?.classList.contains('open'))toggleSidebar()");
-  el.innerHTML=`<small>O seu próximo passo</small><strong>${esc(p.t)}</strong><span>${esc(p.d)}</span>`;
+  el.innerHTML=p.nivel==="calmo"?`<strong><i class="ic ic-check" aria-hidden="true"></i>${esc(p.t)}</strong><span>${esc(p.d)}</span>`:`<small>O seu próximo passo</small><strong>${esc(p.t)}</strong><span>${esc(p.d)}</span>`;
   if(papel==="prestador"){const c=contagem(doPrestador());Object.entries(ETAPA_PAG).forEach(([pg,i])=>sb.querySelectorAll(`button[onclick*="'${pg}'"]:not(.nv-proximo)`).forEach(b=>{
-    let s=b.querySelector(".nv-conta");if(!s){s=document.createElement("span");s.className="nv-conta";b.appendChild(s)}const n=c[i]||0;s.textContent=n?String(n):"";b.classList.toggle("nv-zero",!n);
+    let s=b.querySelector(".nv-conta");if(!s){s=document.createElement("span");s.className="nv-conta";b.appendChild(s)}const n=c[i]||0;s.textContent=n?String(n):"";b.classList.remove("nv-zero");
     b.setAttribute("aria-label",`${b.textContent.replace(/\d+$/,"").trim()}: ${n?pl(n,"encomenda","encomendas"):"sem encomendas"}`)}))}}
 
 let t=null;const agendar=()=>{clearTimeout(t);t=setTimeout(desenhar,250)};
