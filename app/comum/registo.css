@@ -46,3 +46,7 @@ stroke-linejoin:round}.password-recovery-dialog .auth-password-toggle.is-visible
 .reg-corpo .profile-form-grid .reg-via label{flex-direction:row;align-items:center;gap:10px;padding:10px 16px;border:1px solid #b9c7d1;border-radius:4px;background:#fff;cursor:pointer;font-size:14px}
 .reg-corpo .profile-form-grid .reg-via label:has(input:checked){border-color:#1F5F8B;box-shadow:inset 0 0 0 1px #1F5F8B;background:#f6fafc}
 .reg-corpo .profile-form-grid .reg-via input{width:18px;height:18px;min-height:0;margin:0;padding:0;flex:0 0 18px;accent-color:#1F5F8B;box-shadow:none}
+/* v107 — recuperação: ligação para reenviar o código */
+.password-recovery-dialog .rec-reenviar{align-self:flex-start;background:none!important;border:0!important;padding:0!important;min-height:0!important;margin:-6px 0 4px;color:#1F5F8B!important;font-size:13px!important;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;box-shadow:none!important}
+.password-recovery-dialog .rec-reenviar:disabled{color:#8A9AA6!important;cursor:default}
+.provider-registration-voltar{margin-top:14px;justify-content:flex-start}

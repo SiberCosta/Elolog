@@ -14,7 +14,7 @@ const IC={euro:"M17 6.5A7 7 0 1 0 17 17.5M4 10h9M4 14h9",caixa:"M3.5 7.5 12 3l8.
   armazem:"M3 10l9-6 9 6v10H3zM8 20v-6h8v6"};
 const ico=(p,s)=>`<svg width="${s||18}" height="${s||18}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${p}"/></svg>`;
 const pill=(t,c)=>`<span class="pv-pill pv-${c}">${esc(t)}</span>`;
-let dados=null,erro="",ed=0,sel=0,zoom=1,ecra=false,q="",ord="atualizada",dir=-1,carregando=false,temp=null;
+let dados=null,erro="",ed=0,sel=0,mapa=false,zoom=1,ecra=false,q="",ord="atualizada",dir=-1,carregando=false,temp=null;
 
 function demo(){const h=new Date(),d=n=>new Date(h.getTime()+n*864e5).toISOString().slice(0,10);return{demo:true,gerado_em:h.toISOString(),
   kpis:{receita_hoje:1284,comissoes_hoje:1046,planos_hoje:238,receita_media_14d:1088,em_curso:156,novas_30d:142,novas_30d_anteriores:131,prazo_pct:94.8,prazo_pct_anterior:96,risco_valor:3140,risco_pagamentos:4,atrasadas:2},
@@ -34,17 +34,29 @@ async function carregar(){const i=I();contarDiretas().then(()=>{if(dados)desenha
   try{const sb=await window.ELOLogServidor.cliente();const{data,error}=await sb.rpc("painel_vivo");if(error)throw error;dados=data;erro=""}
   catch(e){erro=window.ELOLogServidor?.mensagem?.(e)||e.message}finally{carregando=false;desenhar()}}
 
-function receita(k){const m=k.receita_media_14d,p=m?Math.round((k.receita_hoje-m)*1000/m)/10:null;
-  return`<button type="button" class="pv-receita" data-pv-ir="adminCommissions"><span class="pv-rot">Receita da Elolog hoje</span><strong>${eur(k.receita_hoje)}</strong>
-    <span class="pv-rec-d">${eur(k.comissoes_hoje)} em comissões e ${eur(k.planos_hoje)} em planos${p==null?"":` <b class="pv-delta pv-${p>=0?"ok":"verm"}">${p>=0?"↑":"↓"} ${String(Math.abs(p)).replace(".",",")} % face à média de 14 dias</b>`}</span></button>`}
+/* Frase grande do painel principal: muda sozinha de 7 em 7 s (pára com o rato ou o foco em cima, e não muda com «reduzir movimento») */
+let fi=0,fT=null;
+function frase(k,p,d){const F=S().frases(k,p,d,ed);if(fi>=F.length)fi=0;
+  return`<div class="pv-frases" aria-roledescription="carrossel" aria-label="Estado da plataforma"><ul class="pv-frases-l">${F.map((x,i)=>`<li class="${i===fi?"on":""}" aria-hidden="${i!==fi}">
+    <button type="button" class="pv-frase" ${x.i?`data-pv-ir="${x.i}"`:`data-pv-rolar="${x.r}"`} tabindex="${i===fi?0:-1}">${esc(x.t)}</button></li>`).join("")}</ul>
+    <div class="pv-frases-p">${F.map((x,i)=>`<button type="button" class="${i===fi?"on":""}" data-pv-frase="${i}" aria-label="Frase ${i+1} de ${F.length}" aria-pressed="${i===fi}"></button>`).join("")}<span class="pv-frases-t" aria-hidden="true"><i></i></span></div></div>`}
+function mostrarFrase(n){const c=document.querySelector("#pvPainel .pv-frases");if(!c)return;const L=[...c.querySelectorAll(".pv-frases-l li")],B=[...c.querySelectorAll("[data-pv-frase]")];if(!L.length)return;
+  const velho=L[fi];fi=(n+L.length)%L.length;if(velho&&velho!==L[fi]){velho.classList.add("sai");setTimeout(()=>velho.classList.remove("sai"),650)}L.forEach((li,i)=>{li.classList.toggle("on",i===fi);li.setAttribute("aria-hidden",String(i!==fi));li.querySelector("button").tabIndex=i===fi?0:-1});
+  B.forEach((b,i)=>{b.classList.toggle("on",i===fi);b.setAttribute("aria-pressed",String(i===fi))});const t=c.querySelector(".pv-frases-t i");if(t){t.style.animation="none";void t.offsetWidth;t.style.animation=""}}
+function rodarFrases(){clearInterval(fT);if(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
+  fT=setInterval(()=>{const c=document.querySelector("#pvPainel .pv-frases");if(!c||document.hidden||c.matches(":hover,:focus-within"))return;mostrarFrase(fi+1)},7000)}
 
-function viagens(vs){if(!vs.length)return'<p class="pv-vazio">Sem navios com carga Elolog neste momento.</p>';return vs.map((v,i)=>{const p=Math.round(M().progresso(v)*100),c=M().corViagem(v),pos=M().posicao(v);
-  return`<div class="pv-viagem ${i===sel?"on":""}"><button type="button" class="pv-viagem-b" data-pv-viagem="${i}" aria-pressed="${i===sel}">
+/** Posição real sem ligação nossa: com IMO (vem do AIS) abre a página do navio no VesselFinder; sem IMO, pesquisa pelo nome. */
+const real=v=>v.ais?.imo&&/^\d{7}$/.test(String(v.ais.imo))?`https://www.vesselfinder.com/vessels/details/${v.ais.imo}`:`https://www.google.com/search?q=${encodeURIComponent(`"${v.navio}" vessel position AIS`)}`;
+function viagens(vs){if(!vs.length)return'<div class="pv-vazio-n"><strong>Nenhum navio com carga Elolog.</strong><span>Quando um prestador expedir uma encomenda, o navio aparece aqui com a rota e a data de chegada.</span></div>';return vs.map((v,i)=>{const p=Math.round(M().progresso(v)*100),c=M().corViagem(v),pos=M().posicao(v);
+  const on=mapa&&i===sel;
+  return`<div class="pv-viagem ${on?"on":""}"><button type="button" class="pv-viagem-b" data-pv-viagem="${i}" aria-pressed="${on}" title="${on?"Navio no mapa":"Ver este navio no mapa"}">
     <span class="pv-row"><strong>${esc(v.navio)}${v.viagem?` <small>viagem ${esc(v.viagem)}</small>`:""}</strong>${pill(v.atrasada?"Atrasada":v.em_transito?"Em rota":"No porto",v.atrasada?"verm":v.em_transito?"azul":"cinza")}</span>
     <span class="pv-rota"><span><b>${esc((v.origem||"").split(",")[0])}</b></span><span class="pv-barra"><i style="width:${p}%;background:${c}"></i><i class="pv-pt" style="left:calc(${p}% - 5px);border-color:${c}"></i></span><span><b>${esc((v.destino||"").split(",")[0])}</b></span></span>
-    <span class="pv-sub pv-1l">${num(v.encomendas)} encomenda(s), ${esc((v.prestadores||[]).join(", "))}</span>
+    <span class="pv-sub pv-1l">${num(v.encomendas)} ${v.encomendas==1?"encomenda":"encomendas"}, ${esc((v.prestadores||[]).join(", "))}</span>
     <span class="pv-row pv-sub"><span>Chega a ${dia(v.chegada)}</span><span class="pv-pos pv-pos-${pos[2]==="AIS"?"ais":"est"}">Posição ${pos[2]}${v.ais?.nos!=null?`, ${String(v.ais.nos).replace(".",",")} nós`:""}</span></span></button>
-    ${i===sel?`<div class="pv-codigos">${(v.codigos||[]).slice(0,8).map(c=>`<button type="button" class="pv-cod" data-ficha="${esc(c)}">${esc(c)}</button>`).join("")}</div>`:""}</div>`}).join("")}
+    ${on?`<div class="pv-codigos">${(v.codigos||[]).slice(0,8).map(c=>`<button type="button" class="pv-cod" data-ficha="${esc(c)}">${esc(c)}</button>`).join("")}
+      <a class="pv-real" href="${real(v)}" target="_blank" rel="noopener noreferrer">${v.ais?.imo?"Ver a posição real (VesselFinder)":"Procurar a posição real deste navio"}</a></div>`:""}</div>`}).join("")}
 
 const COL=[["codigo","Código"],["origem","Origem"],["destino","Destino"],["chegada","Chegada prevista"],["transporte","Transporte"],["prestador","Prestador"],["estado","Estado"]];
 function tabela(rs){const f=q.trim().toLowerCase();let l=rs.filter(r=>!f||[r.codigo,r.origem,r.destino,r.cliente,r.prestador,r.transporte].join(" ").toLowerCase().includes(f));
@@ -52,7 +64,7 @@ function tabela(rs){const f=q.trim().toLowerCase();let l=rs.filter(r=>!f||[r.cod
   const th=COL.map(([k,t])=>`<th scope="col" aria-sort="${ord===k?(dir>0?"ascending":"descending"):"none"}"><button type="button" class="pv-th" data-pv-ord="${k}">${t}<span aria-hidden="true">${ord===k?(dir>0?"▲":"▼"):"↕"}</span></button></th>`).join("");
   const tr=l.map(r=>{const e=ESTADO[r.estado]||[r.estado,"cinza"],est=r.suspensa?pill("Suspensa","verm"):r.atrasada?pill("Atrasada","verm"):pill(e[0],e[1]);
     return`<tr class="pv-tr" data-ficha="${esc(r.codigo)}" tabindex="0" title="Abrir a ficha da operação"><td data-label="Código"><span><strong>${esc(r.codigo)}</strong><small>${esc(r.cliente||"")}</small></span></td><td data-label="Origem">${esc(r.origem||"—")}</td><td data-label="Destino">${esc(r.destino||"—")}</td>
-      <td data-label="Chegada">${dia(r.chegada)}</td><td data-label="Transporte">${r.transporte?`<span class="pv-tr-ic">${ico(IC.navio,16)}${esc(r.transporte)}</span>`:"—"}</td><td data-label="Prestador">${esc(r.prestador||"—")}</td><td data-label="Estado">${est}${r.pagamento_pendente?' <span class="pv-pend" title="Pagamento pendente">€</span>':""}</td></tr>`}).join("");
+      <td data-label="Chegada">${dia(r.chegada)}</td><td data-label="Transporte">${r.transporte?`<span class="pv-tr-ic">${ico(IC.navio,16)}${esc(r.transporte)}</span>`:"—"}</td><td data-label="Prestador">${esc(r.prestador||"—")}</td><td data-label="Estado">${est}${r.pagamento_pendente?' <span class="pv-pill pv-amb pv-pend-t" title="Há um pagamento por confirmar (ver Faturação)">Pagamento</span>':""}</td></tr>`}).join("");
   return`<table class="pv-tab"><thead><tr>${th}</tr></thead><tbody>${tr||`<tr><td colspan="7" class="pv-vazio">Nenhuma encomenda corresponde à procura.</td></tr>`}</tbody></table>`}
 
 
@@ -62,13 +74,15 @@ function html(){const d=dados,k=d.kpis||{},p=P(),hora=new Date(d.gerado_em||Date
     <div class="pv-barra-sup"><span class="pv-vivo"><i></i>${d.demo?"Demonstração":"Ao vivo"}, ${hora}</span>${erro?`<span class="pv-erro">Não foi possível atualizar (${esc(erro)}).</span>`:""}
       <div class="pv-acoes"><button type="button" class="btn-primary pv-bt" data-pv-acao="contacto">${ico("M12 5v14M5 12h14",15)}Pedido por contacto</button><button type="button" class="btn-secondary pv-bt" data-pv-acao="auditoria">${ico("M9 4h6v3H9zM7 5H5v16h14V5h-2M9 13l2 2 4-4",15)}Auditoria de prestador</button>
         <button type="button" class="btn-secondary pv-bt pv-bt-i" data-pv-acao="ecra" aria-label="Ecrã inteiro (modo apresentação)" title="Ecrã inteiro">${ico("M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",16)}</button><button type="button" class="btn-secondary pv-bt pv-bt-i" data-pv-acao="atualizar" aria-label="Atualizar agora" title="Atualizar agora">${ico("M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7",16)}</button></div></div>
-    <div class="pv-heroi-n">${receita(k)}<div class="pv-secs">${S().numeros(k,p)}</div></div>
-    <div class="pv-mapa-g"><div class="pv-mapa ${ecra?"grande":""}">${M().svg(d,sel,zoom)}
+    <div class="pv-heroi-n pv-heroi-so">${frase(k,p,d)}</div>
+    ${mapa?"":`<div class="pv-mapa-g pv-sem-mapa" id="pvMapa"><div class="pv-acomp pv-acomp-larga"><div class="pv-acomp-c"><strong>Navios com carga Elolog</strong><span>${(d.viagens||[]).length?"Escolha um navio para o ver no mapa do corredor atlântico.":""}</span></div><div class="pv-acomp-l">${viagens(d.viagens||[])}</div></div></div>`}
+    ${!mapa?"":`<div class="pv-mapa-g" id="pvMapa"><div class="pv-mapa ${ecra?"grande":""}">${M().svg(d,sel,zoom)}
         <div class="pv-zoom"><button type="button" class="pv-btn-i" data-pv-zoom="1" aria-label="Aproximar o mapa">+</button><button type="button" class="pv-btn-i" data-pv-zoom="-1" aria-label="Afastar o mapa">−</button>
           <button type="button" class="pv-btn-i" data-pv-ecra aria-label="${ecra?"Reduzir":"Aumentar"} o mapa">${ico("M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",15)}</button></div>
+        <button type="button" class="btn-secondary pv-fechar-mapa" data-pv-fechar-mapa>Fechar o mapa</button>
         <div class="pv-legenda" aria-hidden="true"><span><i style="background:#1F5F8B"></i>Em rota</span><span><i style="background:#1F7A5C"></i>Chega em breve</span><span><i style="background:#C27A12"></i>Atrasado</span></div>
         <span class="pv-mapa-t">${zoom>1?`Aproximado ${zoom.toFixed(1).replace(".",",")}×`:"Corredor atlântico"}</span></div>
-      <div class="pv-acomp"><div class="pv-acomp-c"><strong>Navios com carga Elolog</strong><span>${num((d.viagens||[]).length)} viagem(ns)</span></div><div class="pv-acomp-l">${viagens(d.viagens||[])}</div></div></div></section>
+      <div class="pv-acomp"><div class="pv-acomp-c"><strong>Navios com carga Elolog</strong><span>Toque noutro navio para o ver</span></div><div class="pv-acomp-l">${viagens(d.viagens||[])}</div></div></div>`}</section>
   ${S().atencao(p,ed)}
   <section class="pv-cartao pv-tab-c" aria-labelledby="pvEnc"><div class="pv-cab"><div><h3 id="pvEnc">Encomendas a acompanhar</h3><p class="pv-cab-p">Com atraso, pagamento pendente ou suspensas, entre as atualizadas mais recentemente</p></div>
       <button type="button" class="pv-lig" data-pv-ir="adminOperations">Ver todas as operações</button></div>
@@ -88,11 +102,14 @@ function nomeMenu(){const b=document.getElementById("menuDashboard");if(!b||type
   b.querySelectorAll(".mi-l,span").forEach(x=>{if(x.childElementCount===0&&x.textContent.trim()==="Dashboard")x.textContent="Centro de comando"});
   const pm=document.getElementById("menuPersonalizar");if(pm&&pm.style.display!=="none")pm.style.display="none"/* o ecrã único tem composição fixa */}
 function desenhar(){const p=seccao();nomeMenu();if(!p)return;const c=p.querySelector(".pv-corpo");if(!dados){c.innerHTML=`<p class="pv-vazio">${erro?esc(erro):"A carregar o centro de comando…"}</p>`;return}
-  c.innerHTML=html();simulacoes()}
-function clique(ev){const b=ev.target.closest("[data-pv-ir],[data-pv-viagem],[data-pv-zoom],[data-pv-ecra],[data-pv-acao],[data-pv-ord],[data-pv-periodo]");if(!b)return;
+  c.innerHTML=html();simulacoes();if(!fT)rodarFrases()}
+function clique(ev){const b=ev.target.closest("[data-pv-ir],[data-pv-viagem],[data-pv-zoom],[data-pv-ecra],[data-pv-acao],[data-pv-ord],[data-pv-periodo],[data-pv-frase],[data-pv-rolar],[data-pv-fechar-mapa]");if(!b)return;
+  if(b.hasAttribute("data-pv-fechar-mapa")){mapa=false;zoom=1;ecra=false;desenhar();return document.getElementById("pvMapa")?.scrollIntoView({behavior:"smooth",block:"nearest"})}
   if(b.dataset.pvIr==="adminDirectOrders")return window.elologEncDiretasGestao?.abrir(document.querySelector("#sidebar [data-ed-menu]"));
   if(b.dataset.pvIr){const pg=b.dataset.pvIr;try{showAdminPage(pg,document.querySelector(`#sidebar [onclick*="'${pg}'"],#sidebar [onclick*='"${pg}"']`))}catch(_){}return}
-  if(b.dataset.pvViagem!=null){sel=+b.dataset.pvViagem;zoom=Math.max(zoom,1.8);return desenhar()}
+  if(b.dataset.pvFrase!=null)return mostrarFrase(+b.dataset.pvFrase);
+  if(b.dataset.pvRolar){const alvo=document.getElementById(b.dataset.pvRolar);alvo?.scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(b.dataset.pvViagem!=null){const abrir=!mapa;sel=+b.dataset.pvViagem;mapa=true;zoom=Math.max(zoom,1.8);desenhar();if(abrir)document.getElementById("pvMapa")?.scrollIntoView({behavior:"smooth",block:"center"});return}
   if(b.dataset.pvZoom){zoom=Math.max(1,Math.min(3.2,zoom+(+b.dataset.pvZoom)*.6));return desenhar()}
   if(b.hasAttribute("data-pv-ecra")){ecra=!ecra;return desenhar()}
   if(b.dataset.pvPeriodo)return window.painelAdminPeriodo?.(+b.dataset.pvPeriodo);

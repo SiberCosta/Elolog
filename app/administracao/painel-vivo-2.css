@@ -54,7 +54,7 @@
 @media(max-width:900px){.pv-mapa-g,.pv-neg-g{grid-template-columns:1fr}.pv-acomp,.pv-mapa.grande+.pv-acomp{max-height:none}.pv-mapa{height:340px}}
 @media(max-width:760px){.pv,.pv-corpo{gap:14px}.pv-serie{gap:5px}.pv-serie small{font-size:10px}.pv-escuro{border-radius:18px;padding:16px 16px 18px}.pv-faixa{padding:16px}.pv-cartao{padding:14px}
   .pv-acoes{margin-left:0;width:100%}.pv .pv-bt{flex:1 1 auto;justify-content:center}.pv .pv-bt-i{flex:0 0 36px}
-  .pv .pv-sec{padding:10px 12px;grid-template-areas:"r" "n" "d" "s";grid-template-columns:1fr}.pv .pv-sec>.pv-delta{justify-self:start}.pv-receita strong{font-size:52px}
+  .pv .pv-sec{padding:10px 12px;grid-template-areas:"r" "n" "d" "s";grid-template-columns:1fr}.pv .pv-sec>.pv-delta{justify-self:start}.pv-frases-l{font-size:28px;min-height:4.6em}
   .pv-mapa{height:280px}.pv-mapa.grande{height:420px}.pv-legenda,.pv-mapa-t{display:none}
   .pv-neg-n{grid-template-columns:1fr 1fr}.pv .pv-neg{padding:12px 10px 12px 0!important;border-left:0!important}.pv-etapas{grid-template-columns:repeat(2,minmax(0,1fr))}
   .pv-faixa-tot strong{font-size:22px}.pv-q{width:100%}.pv-cab{flex-wrap:wrap}
@@ -66,3 +66,25 @@
 .pv-fim .sa-filtros{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:11px;background:#F1F5F8;border:1px solid #DCE4EA}
 .pv-fim .sa-filtros .pa-periodo{min-height:30px!important;padding:0 12px!important;border:0!important;border-radius:8px!important;background:none!important;box-shadow:none!important;color:#4D6172!important;font-size:13px!important;font-weight:600!important}
 .pv-fim .sa-filtros .pa-periodo.ativo{background:#13293D!important;color:#fff!important}
+/* gráfico sem dados: uma frase em vez de barras a zero */
+.pv-vazio-g{display:grid;place-items:center;min-height:130px;border:1px dashed #D5DFE7;border-radius:14px;background:#F8FAFC;text-align:center;padding:16px}
+.pv-vazio-g p{margin:0;font-size:14px;line-height:1.55;color:#5A6E7E}.pv-vazio-g strong{color:#13293D;font-weight:600}
+.pv-vazio-n{display:flex;flex-direction:column;gap:6px;padding:18px 8px;font-size:13.5px;line-height:1.5;color:#5A6E7E}.pv-vazio-n strong{color:#13293D;font-size:14.5px}
+
+/* v108 — paleta: cada secção tem a marca da sua área (partilhado/estilos/paleta.css) */
+.pv :is(.pv-atencao h3,.pv-tab-c h3,.pv-corrente h3,.pv-negocio h3,.pv-acomp-c strong),.pv-fim #paSimulacoes h4{display:inline-flex;align-items:center;gap:10px}
+.pv :is(.pv-atencao h3,.pv-tab-c h3,.pv-corrente h3,.pv-negocio h3,.pv-acomp-c strong)::before,.pv-fim #paSimulacoes h4::before{content:"";width:10px;height:10px;border-radius:3px;flex:0 0 10px;background:var(--elo-area-operacao,#1F5F8B)}
+.pv .pv-atencao h3::before{background:var(--elo-area-decisoes,#C27A12)}
+.pv .pv-acomp-c strong::before{background:var(--elo-area-mar,#13293D)}
+.pv .pv-negocio h3::before{background:var(--elo-area-rede,#1F7A5C)}
+.pv-fim #paSimulacoes h4::before{background:var(--elo-area-clientes,#5A6E7E)}
+/* frase grande sozinha no topo (sem a grelha de números, que repetia os blocos de baixo) */
+.pv-heroi-n.pv-heroi-so{grid-template-columns:1fr;margin:22px 0 20px}.pv-heroi-so .pv-frases-l{font-size:clamp(30px,3.6vw,52px);min-height:2.5em}
+.pv-heroi-so .pv-frase{max-width:24ch}
+/* posição real do navio escolhido */
+.pv .pv-real{flex-basis:100%;margin-top:4px;font-size:12.5px;font-weight:600;color:var(--elo-azul,#1F5F8B);text-decoration:underline;text-underline-offset:3px}
+.pv .pv-real:hover{color:var(--elo-mar,#13293D)}
+.pv .pv-pend-t{margin-left:6px;font-size:11px;padding:2px 8px}
+/* v108 — decisões em âmbar (o vermelho fica só para erros, como manda a paleta) */
+.pv-atencao .ct-alertas li,.pv-atencao .ct-alertas li.alta{border-color:#EBDDC2;border-left-color:var(--elo-area-decisoes,#C27A12);background:#FFFBF3}
+.pv-atencao .ct-alertas li.alta{background:var(--elo-aviso-fundo,#FBEFD9)}

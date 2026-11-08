@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paleta Elolog</title>
+<link rel="stylesheet" href="../partilhado/estilos/paleta.css">
+<style>
+  body{margin:0;padding:40px 24px;background:var(--elo-fundo);color:var(--elo-tinta);font:15px/1.5 "Work Sans",Arial,sans-serif}
+  main{max-width:980px;margin:0 auto}
+  h1{margin:0 0 6px;font-size:30px}h2{margin:34px 0 12px;font-size:18px}
+  p{margin:0;color:var(--elo-texto);max-width:70ch}
+  .grelha{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+  .cor{background:var(--elo-cartao);border:1px solid var(--elo-fio);border-radius:14px;overflow:hidden}
+  .cor i{display:block;height:74px}.cor div{padding:10px 12px}.cor strong{display:block;font-size:14px}.cor code{font-size:12px;color:var(--elo-suave)}
+  .cor small{display:block;margin-top:4px;color:var(--elo-texto);font-size:12.5px;line-height:1.4}
+  .estado{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;font-weight:600}
+  .regras li{margin:6px 0;color:var(--elo-texto)}
+</style></head>
+<body><main>
+  <h1>Paleta de cores da Elolog</h1>
+  <p>Fonte única: <code>partilhado/estilos/paleta.css</code>. Poucas cores, cada uma com um só significado, para que a cor diga sempre a mesma coisa em todo o lado.</p>
+
+  <h2>Marca</h2>
+  <div class="grelha">
+    <div class="cor"><i style="background:var(--elo-mar)"></i><div><strong>Azul-escuro</strong><code>--elo-mar #13293D</code><small>Texto principal, botão principal e menu.</small></div></div>
+    <div class="cor"><i style="background:var(--elo-azul)"></i><div><strong>Azul</strong><code>--elo-azul #1F5F8B</code><small>Ligações, seleção e ações secundárias.</small></div></div>
+    <div class="cor"><i style="background:var(--elo-azul-claro)"></i><div><strong>Azul-claro</strong><code>--elo-azul-claro #7FA9C6</code><small>Gráficos e etapas iniciais.</small></div></div>
+    <div class="cor"><i style="background:var(--elo-verde)"></i><div><strong>Verde Elolog</strong><code>--elo-verde #1F7A5C</code><small>Concluído e «ao vivo».</small></div></div>
+  </div>
+
+  <h2>Estados</h2>
+  <div class="grelha">
+    <div class="estado" style="background:var(--elo-ok-fundo);color:var(--elo-ok)">Correu bem</div>
+    <div class="estado" style="background:var(--elo-aviso-fundo);color:var(--elo-aviso)">Precisa de decisão ou está atrasado</div>
+    <div class="estado" style="background:var(--elo-erro-fundo);color:var(--elo-erro)">Erro ou perigo</div>
+    <div class="estado" style="background:var(--elo-info-fundo);color:var(--elo-info)">Informação</div>
+  </div>
+
+  <h2>Áreas (marca do título de cada secção)</h2>
+  <div class="grelha">
+    <div class="cor"><i style="background:var(--elo-area-decisoes)"></i><div><strong>Decisões</strong><code>--elo-area-decisoes</code><small>Atenção necessária.</small></div></div>
+    <div class="cor"><i style="background:var(--elo-area-operacao)"></i><div><strong>Operação</strong><code>--elo-area-operacao</code><small>Encomendas e etapas.</small></div></div>
+    <div class="cor"><i style="background:var(--elo-area-mar)"></i><div><strong>Mar</strong><code>--elo-area-mar</code><small>Navios e rotas.</small></div></div>
+    <div class="cor"><i style="background:var(--elo-area-rede)"></i><div><strong>Rede e negócio</strong><code>--elo-area-rede</code><small>Prestadores, clientes, período.</small></div></div>
+    <div class="cor"><i style="background:var(--elo-area-clientes)"></i><div><strong>Clientes</strong><code>--elo-area-clientes</code><small>Simulações dos clientes.</small></div></div>
+    <div class="cor"><i style="background:var(--elo-area-financeiro)"></i><div><strong>Financeiro</strong><code>--elo-area-financeiro</code><small>Pagamentos, faturação, comissões.</small></div></div>
+  </div>
+
+  <h2>Regras</h2>
+  <ul class="regras">
+    <li>O âmbar só aparece quando alguém tem de decidir ou algo está atrasado; o vermelho só para erros.</li>
+    <li>Valores em euros só na área financeira (Faturação, Comissões, Pagamentos e o separador Financeiro da ficha da operação).</li>
+    <li>Cada facto aparece num só bloco do ecrã; a frase grande do Centro de comando só diz o que não está escrito noutro bloco.</li>
+    <li>Fundos claros; o azul-escuro fica para o texto, os botões principais e o menu.</li>
+  </ul>
+</main></body></html>

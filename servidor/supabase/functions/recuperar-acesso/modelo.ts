@@ -47,3 +47,12 @@ export function emailPrimeiroAcesso(site: string, o: { empresa: string; nif: str
       .replace('Ou use este código na mesma página:', 'Código de acesso temporário:'),
     texto: `A empresa ${o.empresa} (NIF ${o.nif}) já está na Elolog.\n\nEntre em ${url}\n1.º passo: nome da empresa, NIF e o código ${o.codigo}\n2.º passo: ${o.adminEmail} e o mesmo código.\nNo primeiro acesso cria as palavras-passe definitivas. Válido até ${o.expira}.` };
 }
+
+export function emailCodigoEntrada(site: string, nome: string, codigo: string): Email {
+  return { assunto: `Código de entrada na Elolog: ${codigo}`,
+    html: base({ site, titulo: 'Código de entrada', paragrafos: [`Olá${nome ? ' ' + nome : ''}, use o código abaixo para confirmar a entrada como administrador da empresa.`,
+      'Vale 10 minutos e só funciona no aparelho onde pediu a entrada.'], codigo,
+      nota: 'Se não foi você a tentar entrar, mude já a palavra-passe e avise contacto@elolog.pt. Nunca partilhe este código.' })
+      .replace('Ou use este código na mesma página:', 'O seu código:'),
+    texto: `Código de entrada na Elolog: ${codigo}\n\nVale 10 minutos e só funciona no aparelho onde pediu a entrada.\nSe não foi você, mude já a palavra-passe e avise contacto@elolog.pt.` };
+}

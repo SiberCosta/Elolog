@@ -58,6 +58,69 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v109 (tom humano, simulação rápida, seguimento por email com consentimento)
+
+- **Textos e ações mais humanos** (guia em `documentacao/TOM_DE_VOZ.md`):
+  - avisos do administrador em três partes: o que se passa, porque importa e uma ação concreta («Confirmar pagamentos agora», «Rever pedidos de inscrição», «Responder aos pedidos»);
+  - na Área de Cliente, «Ver detalhes» passa a «Ver estado do pedido», «Pagar» a «Pagar agora» e o cartão do início fala com o cliente.
+- **Simulação rápida no início da Área de Cliente**: origem, destino e «Simular agora», visíveis sem descer a página no computador e no telemóvel; leva os dois campos para o simulador completo.
+- **Telemóvel**: teclado certo nos campos (código de rastreio em maiúsculas sem correção automática, valores com teclado decimal, botão «seguinte» entre campos); no site, o assistente e as traduções carregam depois da página (o simulador fica utilizável mais cedo).
+- **ELO mais atento**: atalhos conforme o ecrã (no simulador: prazos e documentos; nas encomendas: desalfandegamento e «quando chega»). Respostas sobre desalfandegamento e prazos sem inventar datas nem prazos.
+- **Seguimento por email (nutrição), só com consentimento**:
+  - caixa «Avisar-me por email sobre este pedido» no Criar encomenda, desmarcada por omissão;
+  - até 3 emails: dia 1 (propostas recebidas ou simulação guardada), dia 3 (documentos da alfândega), dia 7 (último lembrete);
+  - **regra de saída automática**: ao aprovar uma cotação a pessoa sai da nutrição e recebe o email de boas-vindas e acompanhamento da carga; cancelar a simulação também a tira do fluxo;
+  - «Deixar de receber» em todos os emails do seguimento (página `site/seguimento.html`);
+  - base de dados: migração `00166_seguimento_simulacoes.sql` (já aplicada no servidor; teste `testes/27_seguimento.sql`, 18/18);
+  - envio: Edge Function `seguimento` (já publicada), chamada de hora a hora pela tarefa `elolog-seguimento`; usa o Brevo já configurado, sem custos novos. Pausa: segredo `SEGUIMENTO_ATIVO=false`.
+
+## v108 (Centro de comando sem repetições, sem euros, paleta de cores, posição real dos navios)
+
+- **Cada facto aparece uma só vez no Centro de comando**:
+  - frase grande: decisões à espera, navios no mar, prazo de levantamento e prestadores ativos;
+  - «Atenção necessária»: a lista das decisões (sem repetir o total);
+  - «Encomendas a acompanhar»: atrasos, pagamentos por confirmar e suspensões (saiu o alerta repetido «Encomendas em atraso»);
+  - «Onde estão as encomendas»: o único sítio com as encomendas em curso.
+  Saiu a grelha de quatro números, que repetia os blocos de baixo.
+- **Sem valores em euros no Centro de comando**: saíram «Dinheiro em risco», o valor das subscrições por confirmar e os preços das simulações (passa a mostrar o volume). Os valores ficam só na área financeira (Faturação, Comissões, Pagamentos e o separador Financeiro da ficha).
+- **Paleta de cores** (`partilhado/estilos/paleta.css`) e página de referência (`documentacao/paleta.html`):
+  - marca, estados e neutros;
+  - uma cor por área (decisões, operação, mar, rede e negócio, clientes, financeiro);
+  - cada secção do Centro de comando tem a marca da sua área;
+  - as decisões passam a âmbar e o vermelho fica só para erros.
+- **Posição real dos navios**: no navio escolhido há a ligação «Ver a posição real»: abre a página do navio no VesselFinder quando o IMO é conhecido (vem do AIS); sem IMO, pesquisa a posição pelo nome do navio. A posição dentro da Elolog continua estimada pelas datas até ser configurada a chave gratuita do aisstream.io (`AISSTREAM_API_KEY`).
+
+## v107 (código por email na entrada da empresa, notificações, recuperação, registo e mapa)
+
+- **Código de 6 dígitos por email no passo de verificação do administrador da empresa**: depois do nome da empresa, NIF e palavra-passe, o administrador recebe logo um código no seu email (vale 10 minutos, só neste aparelho, máx. 5 tentativas, uso único) e entra com ele. A aplicação de autenticação continua disponível («Prefiro usar uma aplicação de autenticação»), tal como o código de reserva. Servidor: migração `00165_codigo_email_notificacoes.sql` (aplicada) e Edge Function `recuperar-acesso` (publicada, versão 20, ação nova `codigo_entrada`). Testes: `testes/26_codigo_email.sql` (13/13).
+- **Erro «permission denied for table notificacoes» corrigido**: quem pode ver uma notificação já a pode marcar como lida (só a coluna `lida_em`; as regras de acesso já existiam).
+- **Segurança**: retirada a permissão TRUNCATE (esvaziar tabelas) aos utilizadores com sessão e anónimos em todas as tabelas. Passava por cima das regras de acesso e a aplicação nunca a usa.
+- **Recuperar a palavra-passe da empresa**:
+  - «Voltar» no passo do código;
+  - «Não recebeu? Enviar outro código»;
+  - aviso para procurar na pasta de spam ou de promoções.
+  A função passa a registar se o Brevo aceitou ou recusou cada email, e quando o nome e o NIF não coincidem com o registo (sem guardar endereços).
+- **Criar perfil (prestador)**: botão «Voltar ao administrador» no passo 3 (planos), que mantém o que já foi escrito.
+- **Mapa do corredor atlântico só depois de escolher um navio**: primeiro aparece a lista dos navios com carga; ao escolher um, o mapa abre centrado nele, com «Fechar o mapa».
+- **Botões**: com o rato por cima, o fundo do botão principal passa também a azul-escuro (além do preenchimento), para o texto branco nunca ficar sobre branco; deixou de haver duas ondas ao clicar.
+
+## v106 (frases no painel principal, sem receita, correções)
+
+- **Painel principal sem valores de receita**: saíram «Receita da Elolog hoje», «Subscrições por mês» e «Recibos de subscrição». No lugar do número grande aparece uma **frase grande que muda sozinha de 7 em 7 segundos**, feita com os dados reais:
+  - assuntos à espera de decisão;
+  - encomendas atrasadas;
+  - navios com carga Elolog;
+  - encomendas em curso;
+  - percentagem levantada no prazo;
+  - subscrições por confirmar.
+
+  Cada frase leva ao sítio certo. Os traços por baixo escolhem a frase. Pára com o rato ou o teclado em cima e não roda com «reduzir movimento».
+- **Números ao lado**: encomendas em curso, levantadas no prazo, dinheiro em risco e prestadores ativos (com os pedidos de inscrição à espera).
+- **Negócio no período**: simulações feitas, encomendas criadas, novos prestadores, novos clientes e cancelamentos. Sem «sem alteração» quando tudo está a zero, e com uma mensagem clara em vez de barras vazias quando ainda não há encomendas.
+- **Erro corrigido** «invalid input syntax for type uuid: "NOT-…"»: os avisos criados no próprio navegador deixam de ser enviados ao servidor quando são marcados como lidos (só as notificações do servidor são).
+- **Menu corrigido**: já não ficam duas opções ativas ao mesmo tempo (ex.: voltar ao Centro de comando deixava «Apoio e reclamações» marcado). As setas dos grupos passam a ser desenhadas (já não são «^» e «v»).
+- **Apoio e reclamações**: a ilustração de «Sem pedidos em aberto» deixou de aparecer partida.
+
 ## v105 (uma só linguagem de cor, botões novos e auditoria de texto)
 
 - **Centro de comando numa só linguagem de cor**: acabaram os painéis escuros. Tudo em superfícies claras, com o azul-escuro da Elolog para texto e ações, verde para o que está concluído e âmbar só para atrasos e risco. O mapa passou a claro (terra em trama de pontos, rotas e navios em azul).

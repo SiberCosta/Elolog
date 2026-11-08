@@ -1,0 +1,28 @@
+/* Elolog — paleta de cores (v108). Fonte única das cores da plataforma; os outros estilos usam estas variáveis.
+   Regras: o azul-escuro é a tinta e a ação; o verde é só para o que correu bem; o âmbar só para o que precisa de decisão ou está
+   atrasado; o vermelho só para erros e perigo. Cada área tem uma cor fixa, usada apenas na marca do título da sua secção. */
+:root{
+  /* marca */
+  --elo-mar:#13293D;          /* azul-escuro: texto principal, botão principal, menu */
+  --elo-azul:#1F5F8B;         /* azul: ligações, seleção, ação secundária */
+  --elo-azul-claro:#7FA9C6;   /* azul-claro: gráficos e etapas iniciais */
+  --elo-verde:#1F7A5C;        /* verde Elolog: concluído, ao vivo */
+
+  /* estados (texto / fundo) */
+  --elo-ok:#1F6B50;      --elo-ok-fundo:#E6F2EC;
+  --elo-aviso:#8A5300;   --elo-aviso-fundo:#FBEFD9;   --elo-aviso-forte:#C27A12;
+  --elo-erro:#A2392A;    --elo-erro-fundo:#FCEFEC;
+  --elo-info:#1F5F8B;    --elo-info-fundo:#EAF1F7;
+
+  /* neutros */
+  --elo-tinta:#13293D; --elo-texto:#4D6172; --elo-suave:#5A6E7E; --elo-fio:#DCE4EA; --elo-fio-leve:#EDF1F3;
+  --elo-fundo:#F1F5F8; --elo-cartao:#FFFFFF;
+
+  /* áreas: uma cor por assunto (marca do título de cada secção) */
+  --elo-area-decisoes:#C27A12;   /* o que precisa de decisão */
+  --elo-area-operacao:#1F5F8B;   /* encomendas e etapas */
+  --elo-area-mar:#13293D;        /* navios e rotas */
+  --elo-area-rede:#1F7A5C;       /* prestadores, clientes e negócio */
+  --elo-area-clientes:#5A6E7E;   /* simulações dos clientes */
+  --elo-area-financeiro:#2F6F8F; /* pagamentos, faturação e comissões (únicos sítios com valores em euros) */
+}

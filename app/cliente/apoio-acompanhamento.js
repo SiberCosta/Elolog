@@ -14,7 +14,7 @@ const subject=document.getElementById("supportSubject");if(subject){subject.addE
 document.getElementById("clientProfileName").textContent=currentUser.name||"João Silva";document.getElementById("clientProfileEmail").textContent=currentUser.email||"—";const profile=currentUser.profile||{};
 document.getElementById("clientProfileNif").textContent=profile.nif||"—";document.getElementById("clientProfilePhone").textContent=profile.phone||"—";document.getElementById("clientProfileAddress").textContent=profile.address||"—"}
 function renderClientTracking(){if(!currentUser||currentUser.role!=="cliente")return;window.toggleClientOrderDetails=function(target){const card=target?.classList?.contains("client-order-card")?target:target?.closest?.(".client-order-card");if(!card)return;
-card.classList.toggle("expanded");const expanded=card.classList.contains("expanded");const button=card.querySelector(".client-order-toggle");if(button){button.textContent=expanded?"Ocultar detalhes":"Ver detalhes";button.setAttribute("aria-expanded",
+card.classList.toggle("expanded");const expanded=card.classList.contains("expanded");const button=card.querySelector(".client-order-toggle");if(button){button.textContent=expanded?"Fechar":"Ver estado do pedido";button.setAttribute("aria-expanded",
 expanded?"true":"false")}};window.clientOrderStageIndex=function(order){const stages=["Simulação","Cotação","Aprovação","Recolha","Pagamento","Armazenamento","Expedição","Em trânsito","Destino","Disponível","Levantado"];
 const raw=String(order?.stage||order?.status||"Simulação").trim().toLowerCase();const aliases={"recebido":"Simulação","propostas":"Cotação","proposta":"Cotação","aprovado":"Aprovação","aprovada":"Aprovação","recolhido":"Recolha","pago":"Pagamento",
 "armazenado":"Armazenamento","expedido":"Expedição","destino":"Destino","disponivel":"Disponível","disponível":"Disponível","levantado":"Levantado","entregue":"Levantado","concluída":"Levantado","concluída":"Levantado","concluido":"Levantado",
@@ -40,7 +40,7 @@ index)=>`
                             <strong>${o.date||"—"}</strong>
                         </div>
                         <div class="client-order-summary-action">
-                            <button type="button" class="client-order-toggle" onclick="event.stopPropagation(); toggleClientOrderDetails(this.closest('.client-order-card'))">Ver detalhes</button>
+                            <button type="button" class="client-order-toggle" onclick="event.stopPropagation(); toggleClientOrderDetails(this.closest('.client-order-card'))">Ver estado do pedido</button>
                         </div>
                     </div>
 

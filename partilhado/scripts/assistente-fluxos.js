@@ -12,7 +12,12 @@
   window.eloChips={
     admin:["Pedido por contacto","Pedidos de inscrição","Resumo"],
     prestador:["Pedidos de cotação","Nova tarifa","Resumo"],
-    cliente:["Nova simulação","Última encomenda","Pagar encomenda"]};
+    cliente:["Nova simulação","Última encomenda","Pagar encomenda"],
+    visitante:["Nova simulação","Que documentos preciso?","Quanto tempo demora?"]};
+  /* v109: atalhos que antecipam a dúvida do momento (simulador: prazos e documentos; encomendas: desalfandegamento) */
+  const visivel=id=>{const e=document.getElementById(id);return !!e&&e.classList.contains("active")};
+  Object.defineProperty(window.eloChips,"cliente",{enumerable:true,get:()=>visivel("clientSimulation")?["Quanto tempo demora?","Que documentos preciso?","Pedir cotação"]
+    :visivel("operations")?["Última encomenda","Preparar o desalfandegamento","Quando chega a minha encomenda?"]:["Nova simulação","Última encomenda","Preparar o desalfandegamento"]});
 
   window.eloFluxos=[
     /* ---------- administração ---------- */

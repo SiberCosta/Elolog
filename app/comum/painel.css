@@ -104,3 +104,10 @@ color:var(--tinta)}::view-transition-old(root){animation:vt-sai .16s ease both}:
 .est-i{width:14px;height:14px;margin-right:6px;vertical-align:-2px;display:inline-block}.est-ok{animation:est-pop .5s cubic-bezier(.3,1.6,.5,1) both}@keyframes est-pop{from{transform:scale(0) rotate(-40deg)}}
 .est-mov{animation:est-anda 1.6s ease-in-out infinite}@keyframes est-anda{50%{transform:translateX(4px)}}.est-pul{animation:est-pul 1.8s ease-in-out infinite}@keyframes est-pul{50%{transform:scale(1.2);opacity:.6}}.est-al{animation:est-treme .6s ease 2}
 @keyframes est-treme{25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}@media(prefers-reduced-motion:reduce){.est-i{animation:none!important}::view-transition-old(root),::view-transition-new(root){animation:none}}
+/* v106 — estados vazios: cores com valor de recurso (algumas páginas não definem as variáveis) e disposição fixa, centrada */
+html body .vz{display:grid!important;justify-items:center!important;align-content:center;gap:6px;padding:28px 16px 32px!important;text-align:center;color:var(--sec,#5A6E7E)}
+html body .vz svg{width:220px!important;height:46px!important;max-width:100%;margin:0 0 8px!important;overflow:visible}
+html body .vz .vz-l{stroke:var(--fio,#C9D6E0)!important;stroke-width:2;fill:none!important;stroke-dasharray:6 6}
+html body .vz .vz-p{fill:#fff!important;stroke:var(--azul,#1F5F8B)!important;stroke-width:2.5}
+html body .vz .vz-v{fill:var(--azul,#1F5F8B)!important}
+html body .vz strong{font-size:17px;color:var(--tinta,#13293D)}

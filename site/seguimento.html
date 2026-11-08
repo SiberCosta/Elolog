@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deixar de receber o seguimento | Elolog</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#13293D">
+  <link rel="icon" type="image/png" sizes="48x48" href="../partilhado/imagens/favicon-48.png">
+  <link rel="stylesheet" href="../partilhado/estilos/paleta.css?v=109">
+  <link rel="stylesheet" href="../partilhado/estilos/botoes-vivos.css?v=109">
+  <style>
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px 16px;box-sizing:border-box;background:var(--elo-fundo);color:var(--elo-tinta);font:16px/1.55 "Work Sans",Arial,sans-serif}
+    main{width:100%;max-width:460px;box-sizing:border-box;background:var(--elo-cartao);border:1px solid var(--elo-fio);border-radius:18px;padding:30px 28px}
+    img{display:block;width:64px;height:64px;margin-bottom:18px}
+    h1{margin:0 0 10px;font-size:23px;line-height:1.3}
+    p{margin:0 0 14px;color:var(--elo-texto)}
+    .acoes{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+    .bt{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 20px;border-radius:11px;border:2px solid var(--elo-mar);background:transparent;color:var(--elo-mar);font-family:inherit;font-weight:700;font-size:15px;line-height:1;text-decoration:none;cursor:pointer}
+    .bt:hover,.bt:focus-visible{background:var(--elo-mar);color:#fff}
+    .bt.leve{border-color:var(--elo-fio);color:var(--elo-texto)}
+    .bt[disabled]{opacity:.6;cursor:wait}
+    .msg{margin-top:18px;padding:12px 14px;border-radius:12px;font-weight:600}
+    .msg.ok{background:var(--elo-ok-fundo);color:var(--elo-ok)}.msg.erro{background:var(--elo-erro-fundo);color:var(--elo-erro)}
+  </style>
+</head>
+<body>
+<main>
+  <img src="../partilhado/imagens/elolog-logo-600.png" alt="Elolog" width="64" height="64">
+  <h1 id="segTitulo">Deixar de receber emails sobre esta simulação?</h1>
+  <p id="segTexto">Deixamos de lhe escrever sobre esta simulação. A simulação continua guardada na sua Área de Cliente e os avisos das encomendas que aprovar continuam a chegar.</p>
+  <div class="acoes" id="segAcoes">
+    <button type="button" class="bt" id="segSair">Sim, deixar de receber</button>
+    <a class="bt leve" href="../app/area-cliente.html">Ir para a Área de Cliente</a>
+  </div>
+  <div id="segMsg" role="status" aria-live="polite"></div>
+</main>
+<script src="../app/comum/servidor-config.js?v=109"></script>
+<script src="scripts/seguimento.js?v=109"></script>
+</body>
+</html>

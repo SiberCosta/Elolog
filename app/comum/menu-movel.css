@@ -124,3 +124,11 @@
   html body.modo-lat #sidebar#sidebar#sidebar :is(.menu,.provider-menu-structure)>button:not(.active):not(.client-menu-active):not([aria-current="page"]):hover,
   html body.modo-lat #sidebar#sidebar#sidebar .provider-menu-main:hover{background:rgba(255,255,255,.07)!important}
 }
+
+/* v106 — setas dos grupos desenhadas em CSS (o carácter «⌄» aparecia como «v» e «^» no Windows) */
+@media all{
+  html body.modo-lat #sidebar#sidebar#sidebar .provider-menu-main>span:last-child:not(:first-child){font-size:0!important;width:18px;height:18px;flex:0 0 18px;display:inline-grid!important;place-items:center;transition:transform .25s cubic-bezier(.2,.7,.2,1)}
+  html body.modo-lat #sidebar#sidebar#sidebar .provider-menu-main>span:last-child:not(:first-child)::before{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);border-radius:1px}
+  html body.modo-lat #sidebar#sidebar#sidebar .menu>button.client-group::after{content:""!important;width:7px;height:7px;flex:0 0 7px;margin-left:auto;margin-right:5px;border-right:2px solid #9fbccd;border-bottom:2px solid #9fbccd;transform:translateY(-2px) rotate(45deg);font-size:0}
+  html body.modo-lat #sidebar#sidebar#sidebar .menu>button.client-group[aria-expanded="true"]::after{transform:translateY(2px) rotate(225deg)}
+}

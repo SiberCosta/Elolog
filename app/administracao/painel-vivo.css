@@ -21,12 +21,23 @@
 .pv-bt svg,.pv-btn-i svg{display:block;flex:0 0 auto;max-width:none}
 
 /* números de agora: a receita em grande, os outros ao lado */
-.pv-heroi-n{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:36px;align-items:center;margin:26px 0 26px}
-.pv .pv-receita{display:flex;flex-direction:column;align-items:flex-start;gap:6px;background:none;border:0;padding:0;color:#13293D}
-.pv-rot{font-size:15px;color:#4D6172}
-.pv-receita strong{font-size:clamp(54px,6.2vw,92px);line-height:.95;font-weight:600;letter-spacing:-.035em;transition:color .2s}
-.pv .pv-receita:hover strong{color:#1F5F8B}
-.pv-rec-d{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:#4D6172;margin-top:6px}
+.pv-heroi-n{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:40px;align-items:center;margin:30px 0 30px}
+/* frase grande: o estado da plataforma por extenso, uma de cada vez */
+.pv-frases{display:flex;flex-direction:column;gap:18px;min-width:0}
+.pv-frases-l{list-style:none;margin:0;padding:0;display:grid;min-height:3.5em;font-size:clamp(30px,3.3vw,48px)}
+.pv-frases-l li{grid-area:1/1;align-self:center;opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .45s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+.pv-frases-l li.on{opacity:1;transform:none;pointer-events:auto}.pv-frases-l li.sai{opacity:0;transform:translateY(-16px)}
+.pv .pv-frase{display:block;background:none;border:0;padding:0;font-size:1em!important;line-height:1.12;font-weight:600;letter-spacing:-.022em;color:#13293D;text-wrap:balance;
+  text-decoration:underline;text-decoration-color:transparent;text-decoration-thickness:2px;text-underline-offset:.14em;transition:text-decoration-color .25s,color .25s}
+.pv .pv-frase:hover{color:#1F5F8B;text-decoration-color:rgba(31,95,139,.35)}
+.pv-frases-p{display:flex;align-items:center;gap:6px}
+.pv .pv-frases-p button{width:22px;height:4px;min-height:0;padding:0;border:0;border-radius:2px;background:#D5DFE7;transition:background-color .2s,width .25s}
+.pv .pv-frases-p button.on{width:34px;background:#13293D}.pv .pv-frases-p button:hover{background:#7FA9C6}
+.pv-frases-t{margin-left:10px;width:90px;height:2px;border-radius:1px;background:#E3EAF0;overflow:hidden}
+.pv-frases-t i{display:block;height:100%;width:100%;background:#1F5F8B;transform-origin:left;animation:pvTempo 7s linear infinite}
+.pv-frases:is(:hover,:focus-within) .pv-frases-t i{animation-play-state:paused}
+@keyframes pvTempo{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (prefers-reduced-motion:reduce){.pv-frases-t{display:none}.pv-frases-l li{transition:none}}
 .pv-secs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-left:1px solid #E3EAF0}
 .pv .pv-sec{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"r r" "n d" "s s";align-items:end;gap:4px 10px;background:none;border:0;padding:12px 22px;color:#13293D;border-radius:0}
 .pv .pv-sec:nth-child(odd){border-right:1px solid #E3EAF0}.pv .pv-sec:nth-child(-n+2){border-bottom:1px solid #E3EAF0}
@@ -89,3 +100,8 @@
 @keyframes pvVivo{0%{box-shadow:0 0 0 0 rgba(31,122,92,.5)}100%{box-shadow:0 0 0 9px rgba(31,122,92,0)}}
 @keyframes pvFluxo{to{stroke-dashoffset:-30}}
 @keyframes pvOnda{0%{transform:scale(.7);opacity:.5}100%{transform:scale(2.6);opacity:0}}
+/* v107 — o mapa só aparece depois de escolher um navio; antes, a lista ocupa a largura toda */
+.pv-mapa-g.pv-sem-mapa{grid-template-columns:1fr}
+.pv-acomp-larga{max-height:none}.pv-acomp-larga .pv-acomp-l{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+.pv-acomp-larga .pv-viagem:hover{border-color:#1F5F8B;box-shadow:0 8px 18px -12px rgba(19,41,61,.4)}
+.pv .pv-fechar-mapa{position:absolute;right:12px;bottom:12px;min-height:34px!important;padding:0 12px!important;font-size:13px!important}

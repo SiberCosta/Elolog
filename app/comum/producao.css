@@ -173,3 +173,8 @@ html body .func-voltar{display:inline-block;min-height:0;margin:0 0 10px;padding
 @keyframes emEntra{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 @media(max-width:600px){.em-avisos{top:auto;bottom:84px;right:16px;left:16px;width:auto}}
 @media(prefers-reduced-motion:reduce){.em-aviso{animation:none}}
+/* v107 — 2.º passo do administrador: código por email e alternativas em forma de ligação */
+#providerMfaPage .mfa-info{margin:-4px 0 10px;font-size:13px;color:#4D6172}
+#providerMfaPage .mfa-alternativas{display:flex;flex-direction:column;align-items:center;gap:6px;margin:12px 0 4px}
+#providerMfaPage .mfa-lig{background:none!important;border:0!important;box-shadow:none!important;min-height:0!important;padding:2px 0!important;color:#1F5F8B!important;font-size:13.5px!important;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+#providerMfaPage .mfa-lig:hover{color:#13293D!important}#providerMfaPage .mfa-lig:disabled{color:#8A9AA6!important;text-decoration:none;cursor:default}

@@ -24,8 +24,10 @@ html:not(#bv) body .btn-danger{color:var(--bv-perigo)!important;border:1.5px sol
 
 @media (hover:hover){
   html:not(#bv) body :is(.btn-primary,.primary-btn,.btn-search,.btn-register-profile,.pa-botao-forte,.btn-selecionar-prestador,.btn-simulate:not(.hero *),.btn-success,.btn-danger):not(:disabled):not([aria-disabled=true]):hover{
-    background-size:100% 100%!important;color:#fff!important}
-  html:not(#bv) body .btn-danger:not(:disabled):hover{border-color:var(--bv-perigo)!important}
+    background-size:100% 100%!important;color:#fff!important;background-color:var(--bv-tinta)!important;transition-delay:0s,.12s,.07s,0s,0s,0s!important}
+  /* o fundo também muda de cor (além do preenchimento): o texto branco nunca fica sobre branco */
+  html:not(#bv) body .btn-success:not(:disabled):hover{background-color:var(--bv-ok)!important}
+  html:not(#bv) body .btn-danger:not(:disabled):hover{border-color:var(--bv-perigo)!important;background-color:var(--bv-perigo)!important}
   html:not(#bv) body :is(.btn-secondary,.btn-ghost,.pa-botao:not(.pa-botao-forte),.ct-btn,.employee-action,.pv-btn,.sim-add-button):not(:disabled):not([aria-disabled=true]):hover{
     background-size:100% 100%!important;border-color:var(--bv-tinta)!important;transform:translateY(-1px);box-shadow:0 6px 14px -8px rgba(19,41,61,.35)!important}
   html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.primary-btn,.btn-search,.pa-botao,.ct-btn,.btn-selecionar-prestador):not(:disabled):hover>:is(svg,i.ic):last-child:not(:first-child){transform:translateX(3px)}

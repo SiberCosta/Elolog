@@ -1,13 +1,13 @@
 // Edge Function «recuperar-acesso»: recuperar palavras-passe esquecidas, sem passar pelos emails padrão do Supabase.
 // Sem sessão:  pedir {email} → email com ligação (?repor=…) e código de 6 dígitos (contas de cliente, funcionários e equipa Elolog)
 //              empresa_pedir {nome, nif} → código para o email oficial da empresa · empresa_confirmar {id | nome+nif, codigo, senha}
-// Com sessão:  alterada → email «a sua palavra-passe foi alterada».
+// Com sessão:  alterada → email «a sua palavra-passe foi alterada» · codigo_entrada → código de 6 dígitos (2.º passo do administrador da empresa).
 // A resposta a «pedir» é sempre a mesma, exista ou não a conta (não revela quem está registado).
 // Segredos usados: BREVO_API_KEY, EMAIL_REMETENTE, EMAIL_NOME (opcional), SITE_URL (opcional, por omissão https://www.elolog.pt).
 // Deploy: supabase functions deploy recuperar-acesso --no-verify-jwt
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { erro, lerJson, preflight, resposta } from '../_shared/http.ts';
-import { type Email, emailAlterada, emailEmpresa, emailRecuperacao } from './modelo.ts';
+import { type Email, emailAlterada, emailCodigoEntrada, emailEmpresa, emailRecuperacao } from './modelo.ts';
 import { seguro } from '../_shared/seguranca.ts';
 
 const env = (k: string) => Deno.env.get(k) ?? '';
@@ -37,8 +37,21 @@ async function enviar(para: string, e: Email, etiqueta: string): Promise<boolean
     headers: { 'api-key': env('BREVO_API_KEY'), 'content-type': 'application/json', accept: 'application/json' },
     body: JSON.stringify({ sender: { name: env('EMAIL_NOME') || 'Elolog', email: env('EMAIL_REMETENTE') }, to: [{ email: para }],
       subject: e.assunto, htmlContent: e.html, textContent: e.texto, tags: ['elolog', etiqueta] }) }).catch(() => null);
-  if (!r?.ok) console.error('recuperar-acesso: envio recusado', r?.status ?? 'rede');
-  return !!r?.ok;
+  if (!r?.ok) {
+    const corpo = r ? (await r.text().catch(() => '')).replace(/[^\s@]+@[^\s@]+/g, '[email]').slice(0, 200) : '';
+    console.error('recuperar-acesso: envio recusado', etiqueta, r?.status ?? 'rede', corpo);
+    return false;
+  }
+  const j = (await r.json().catch(() => ({}))) as { messageId?: string };
+  console.log('recuperar-acesso: email aceite pelo Brevo', etiqueta, j.messageId ?? '');   // sem o endereço
+  return true;
+}
+/** session_id do token (o token já foi validado por admin.auth.getUser). */
+function sessaoDoToken(jwt: string): string {
+  try {
+    const b = jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return String(JSON.parse(atob(b + '==='.slice((b.length + 3) % 4))).session_id ?? '');
+  } catch { return ''; }
 }
 const senhaFraca = (s: string) => s.length < 8 || s.length > 72 || !/[a-zA-Z]/.test(s) || !/\d/.test(s);
 
@@ -69,6 +82,23 @@ Deno.serve(seguro('recuperar-acesso', async (req: Request) => {
         await enviar(u.user.email, emailAlterada(SITE, new Date().toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' })), 'senha-alterada');
       return resposta(200, { ok: true });
     }
+    if (acao === 'codigo_entrada') {
+      // 2.º passo do administrador da empresa: código de 6 dígitos para o email pessoal (alternativa à aplicação de autenticação)
+      const jwt = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
+      const { data: u } = jwt ? await admin.auth.getUser(jwt) : { data: null };
+      const sessao = jwt ? sessaoDoToken(jwt) : '';
+      if (!u?.user || !UUID.test(sessao)) return erro(401, 'sessao', 'A sessão expirou. Volte a entrar.');
+      if (!(await limite('cod-ent:' + u.user.id, 4, 10)) || !(await limite('cod-ent-ip:' + (await hash(ip)), 20, 60)))
+        return erro(429, 'limite', 'Já enviámos vários códigos. Aguarde 10 minutos e veja também a pasta de spam.');
+      const { data, error } = await admin.rpc('servico_codigo_email_criar', { p_user: u.user.id, p_sessao: sessao });
+      if (error) { console.error('recuperar-acesso: servico_codigo_email_criar falhou', error.code); return erro(500, 'interno', 'Não foi possível criar o código. Tente novamente.'); }
+      const linha = (Array.isArray(data) ? data[0] : data) as { codigo?: string; email?: string; nome?: string } | undefined;
+      if (!linha?.codigo || !linha.email) return erro(403, 'conta', 'Esta conta não recebe códigos de entrada.');
+      if (!(await enviar(linha.email, emailCodigoEntrada(SITE, linha.nome ?? '', linha.codigo), 'codigo-entrada')))
+        return erro(502, 'envio', 'Não foi possível enviar o email agora. Tente daqui a pouco ou use a aplicação de autenticação.');
+      const [n, d] = linha.email.split('@');
+      return resposta(200, { ok: true, para: `${n.slice(0, 2)}•••@${d}` });
+    }
     if (acao === 'empresa_pedir' || acao === 'empresa_confirmar') {
       const id = UUID.test(txt(c.id, 40)) ? txt(c.id, 40) : null, nome = txt(c.nome, 200), nif = txt(c.nif, 30);
       if (!id && (!nome || !nif)) return erro(400, 'dados', 'Indique o nome da empresa e o NIF.');
@@ -79,6 +109,9 @@ Deno.serve(seguro('recuperar-acesso', async (req: Request) => {
       if (acao === 'empresa_pedir') {
         if (!(await limite('rece-ip:' + (await hash(ip)), 20, 60)) || !(await limite('rece:' + chave, 3, 15)))
           return erro(429, 'limite', 'Já pediu várias recuperações. Aguarde 15 minutos.');
+        if (!emp) console.log('recuperar-acesso: empresa não encontrada (o nome e o NIF não coincidem com o registo)');
+        else if (emp.estado !== 'aprovada') console.log('recuperar-acesso: empresa ainda não aprovada', emp.estado);
+        else if (!EMAIL.test(emp.email)) console.log('recuperar-acesso: empresa sem email oficial válido');
         if (emp && emp.estado === 'aprovada' && EMAIL.test(emp.email)) {
           const cod = await codigoEmpresa(emp.id, emp.impressao, janela);
           await enviar(emp.email, emailEmpresa(SITE, emp.nome, `${APP}?acesso=prestador&repor-empresa=${emp.id}.${cod}`, cod), 'senha-empresa');

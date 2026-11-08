@@ -1,0 +1,20 @@
+/* Elolog v109 — tom humano: consentimento do seguimento, cartões de aviso com uma ação clara e atalhos do simulador. */
+
+/* Consentimento do seguimento por email (Criar encomenda), desmarcado por omissão */
+html:not(#bv) body .seg-consent{display:flex;gap:12px;align-items:flex-start;margin:18px 0 0;padding:14px 16px;border:1px solid var(--elo-fio,#DCE4EA);border-radius:12px;background:var(--elo-cartao,#fff);cursor:pointer;line-height:1.45}
+html:not(#bv) body .seg-consent input{width:20px;height:20px;margin:1px 0 0;flex:none;accent-color:var(--elo-mar,#13293D)}
+html:not(#bv) body .seg-consent span{font-weight:600;color:var(--elo-tinta,#13293D);font-size:14.5px}
+html:not(#bv) body .seg-consent small{display:block;margin-top:3px;font-weight:400;color:var(--elo-texto,#4B5D6B);font-size:13px}
+html:not(#bv) body .seg-consent:has(input:checked){border-color:var(--elo-azul,#1F5F8B);background:var(--elo-info-fundo,#EAF2F8)}
+
+/* Simulação rápida no início da Área de Cliente: dois campos e um botão, visíveis sem descer a página */
+html:not(#bv) body .sim-rapida{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-top:16px;padding:14px;border:1px solid var(--elo-fio,#DCE4EA);border-radius:14px;background:var(--elo-fundo,#F5F8FA);max-width:640px}
+html:not(#bv) body .sim-rapida>b{grid-column:1/-1;font-size:14px;color:var(--elo-tinta,#13293D)}
+html:not(#bv) body .sim-rapida label{display:grid;gap:4px;margin:0}
+html:not(#bv) body .cn-v2 .sim-rapida label span{color:var(--elo-texto,#4B5D6B)!important;font-size:13px!important;font-weight:600;letter-spacing:0!important;text-transform:none}
+html:not(#bv) body .sim-rapida input{min-height:46px;padding:0 12px;border:1px solid var(--elo-fio,#C9D5DE);border-radius:10px;background:#fff;font-size:16px;font-family:inherit;color:var(--elo-tinta,#13293D);width:100%;box-sizing:border-box}
+html:not(#bv) body .sim-rapida input:focus{outline:2px solid var(--elo-azul,#1F5F8B);outline-offset:1px;border-color:transparent}
+html:not(#bv) body .sim-rapida button{min-height:46px;white-space:nowrap}
+@media(max-width:620px){html:not(#bv) body .sim-rapida{grid-template-columns:1fr}html:not(#bv) body .sim-rapida button{width:100%}}
+html:not(#bv) body .shipment-create-actions{flex-wrap:wrap}
+html:not(#bv) body .shipment-create-actions button{flex:1 1 140px;white-space:normal;line-height:1.25;padding-left:12px;padding-right:12px}

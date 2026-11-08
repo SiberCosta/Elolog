@@ -14,8 +14,8 @@ function fechar(){document.getElementById("recModal")?.remove();document.body.st
 /** Abre a janela com um ou mais passos (formulários); só o primeiro fica visível. */
 function janela(etiqueta,titulo,texto,passos){fechar();const m=document.createElement("div");m.id="recModal";m.className="password-recovery-modal";
 m.innerHTML=`<section class="password-recovery-dialog" role="dialog" aria-modal="true" aria-labelledby="recTitulo"><header><div><small>${esc(etiqueta)}</small><h2 id="recTitulo">${esc(titulo)}</h2><p id="recTexto">${texto}</p></div><button type="button" aria-label="Fechar" data-fechar>×</button></header>
-${passos.map((p,i)=>`<form id="recPasso${i}" ${i?"hidden":""} novalidate>${p.html}<div class="password-recovery-feedback" id="recAviso${i}" role="status"></div><div class="password-recovery-actions"><button type="button" class="btn-secondary" data-fechar>Cancelar</button><button type="submit" class="btn-primary">${esc(p.botao)}</button></div></form>`).join("")}</section>`;
-m.addEventListener("click",e=>{if(e.target===m||e.target.closest("[data-fechar]"))fechar()});
+${passos.map((p,i)=>`<form id="recPasso${i}" ${i?"hidden":""} novalidate>${p.html}<div class="password-recovery-feedback" id="recAviso${i}" role="status"></div><div class="password-recovery-actions">${i?`<button type="button" class="btn-secondary" data-voltar="${i-1}">Voltar</button>`:`<button type="button" class="btn-secondary" data-fechar>Cancelar</button>`}<button type="submit" class="btn-primary">${esc(p.botao)}</button></div></form>`).join("")}</section>`;
+m.addEventListener("click",e=>{if(e.target===m||e.target.closest("[data-fechar]"))return fechar();const v=e.target.closest("[data-voltar]");if(v)mostrarPasso(+v.dataset.voltar,passos[+v.dataset.voltar].texto)});
 passos.forEach((p,i)=>m.querySelector("#recPasso"+i).addEventListener("submit",async e=>{e.preventDefault();const f=e.currentTarget,b=f.querySelector("[type=submit]"),a=f.querySelector(".password-recovery-feedback");
 a.className="password-recovery-feedback";a.textContent="A processar…";b.disabled=true;try{const r=await p.acao();if(r===false){a.textContent="";return}if(typeof r==="string"){a.className="password-recovery-feedback success";a.textContent=r}}
 catch(x){a.className="password-recovery-feedback error";a.textContent=x?.message||"Não foi possível concluir. Tente novamente."}finally{b.disabled=false}}));
@@ -54,12 +54,14 @@ function linkConta(hash){janela("ACESSO À CONTA","Criar nova palavra-passe","Es
 const{data,error}=await sb.auth.verifyOtp({token_hash:hash,type:"recovery"});if(error)throw traduzir(error);return concluir(sb,s,data?.user?.email||"")}},passoMfa])}
 
 /* ---- Palavra-passe da empresa (1.º passo do prestador) ---- */
-function recuperarEmpresa(){let dados=null;
+function recuperarEmpresa(){let dados=null;setTimeout(()=>{const r=document.querySelector("#recModal [data-reenviar]");if(!r)return;r.onclick=async()=>{const a=document.getElementById("recAviso1");if(!dados)return;r.disabled=true;
+  try{await S().chamarFuncao("recuperar-acesso",{acao:"empresa_pedir",...dados});a.className="password-recovery-feedback success";a.textContent="Enviámos outro código. Use o mais recente; veja também a pasta de spam."}
+  catch(x){a.className="password-recovery-feedback error";a.textContent=x?.message||"Não foi possível enviar outro código."}finally{setTimeout(()=>{r.disabled=false},30000)}}},0);
 janela("ACESSO DA EMPRESA","Recuperar palavra-passe da empresa","Indique o nome e o NIF da empresa. O código vai para o email oficial da empresa registado na Elolog.",[
-{botao:"Enviar código",html:'<label>Nome da empresa<input id="recEmpNome" maxlength="200" autocomplete="organization" required></label><label>NIF<input id="recEmpNif" inputmode="numeric" maxlength="30" required></label>',
+{texto:"Indique o nome e o NIF da empresa. O código vai para o email oficial da empresa registado na Elolog.",botao:"Enviar código",html:'<label>Nome da empresa<input id="recEmpNome" maxlength="200" autocomplete="organization" required></label><label>NIF<input id="recEmpNif" inputmode="numeric" maxlength="30" required></label>',
 acao:async()=>{const nome=val("recEmpNome").trim(),nif=val("recEmpNif").trim();if(!nome||!nif)throw new Error("Indique o nome da empresa e o NIF.");
-await S().chamarFuncao("recuperar-acesso",{acao:"empresa_pedir",nome,nif});dados={nome,nif};mostrarPasso(1,"Se os dados estiverem certos, o email oficial da empresa recebe um código de 6 dígitos (válido 30 minutos).");return false}},
-{botao:"Guardar nova palavra-passe",html:`<label>Código de 6 dígitos<input id="recEmpCodigo" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required></label>${senhas("recEmpNova")}`,
+await S().chamarFuncao("recuperar-acesso",{acao:"empresa_pedir",nome,nif});dados={nome,nif};mostrarPasso(1,"Se o nome e o NIF forem iguais aos do registo, o email oficial da empresa recebe um código de 6 dígitos (válido 30 minutos). Pode demorar 1 a 2 minutos; veja também a pasta de spam ou de promoções.");return false}},
+{botao:"Guardar nova palavra-passe",html:`<label>Código de 6 dígitos<input id="recEmpCodigo" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required></label><button type="button" class="rec-reenviar" data-reenviar>Não recebeu? Enviar outro código</button>${senhas("recEmpNova")}`,
 acao:async()=>{const codigo=val("recEmpCodigo").trim(),senha=lerSenhas("recEmpNova");if(!/^\d{6}$/.test(codigo))throw new Error("Indique os 6 dígitos do email.");
 await S().chamarFuncao("recuperar-acesso",{acao:"empresa_confirmar",...dados,codigo,senha});empresaOk();return false}}])}
 function linkEmpresa(id,codigo){janela("ACESSO DA EMPRESA","Nova palavra-passe da empresa","Escolha a nova palavra-passe de acesso da empresa (1.º passo do login do prestador).",[

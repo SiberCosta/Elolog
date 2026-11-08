@@ -35,7 +35,10 @@ pt:{eu:"Sou o ELO, o assistente virtual da Elolog: um programa automático, não
  fim:"Conversa terminada e apagada deste dispositivo. Se precisar de uma pessoa da equipa: contacto@elolog.pt.",
  lingua:"Em que língua prefere? / Which language? / Quelle langue ?",ok:"Muito bem, continuamos em português.",
  ola:n=>`Olá${n}! Sou o ELO, o assistente virtual da Elolog. Em que posso ajudar?`,
- opcoes:"Claro. Escolha uma opção ou escreva o seu pedido."},
+ opcoes:"Claro. Escolha uma opção ou escreva o seu pedido.",
+ alfandega:"Para o desalfandegamento costumam pedir: fatura comercial ou lista de bens com o valor de cada um, lista de volumes (o que vai em cada caixa) e identificação e NIF de quem envia e de quem recebe. As regras mudam de país para país: a transportadora da sua encomenda confirma a lista certa.",
+ alfandegaConta:"Abro os seus documentos para juntar o que já tem à encomenda.",
+ prazo:"Não dou prazos de cabeça. O prazo de cada envio é o que a transportadora indica na proposta e, depois de aprovar, a previsão aparece na encomenda e muda se a transportadora a atualizar."},
 en:{eu:"I'm ELO, Elolog's virtual assistant: an automated program, not a person. If you prefer, type “talk to a person” and I'll pass it to the team.",
  humano:"Of course. I've prepared a summary (without personal data) for the Elolog team. Tap “Write to the team”, a person will reply.",
  pagar:"For security, I don't take payments or payment details. Pay only on the “Payments” page of your account, for the amount calculated by the platform.",
@@ -59,7 +62,10 @@ en:{eu:"I'm ELO, Elolog's virtual assistant: an automated program, not a person.
  lingua:"Which language? / Em que língua? / Quelle langue ?",ok:"Great, we'll continue in English.",
  ajuda:"I can: open a simulation, check an order status (signed in), take you to Payments, or pass you to a person. What do you need?",
  ola:n=>`Hello${n}! I'm ELO, Elolog's virtual assistant. How can I help?`,
- opcoes:"Sure. Choose an option or type your request."},
+ opcoes:"Sure. Choose an option or type your request.",
+ alfandega:"For customs clearance you are usually asked for: a commercial invoice or list of goods with values, a packing list and the ID and tax number of sender and receiver. Rules change by country: the carrier of your order confirms the exact list.",
+ alfandegaConta:"I'll open your documents so you can add what you already have.",
+ prazo:"I don't guess transit times. Each carrier states its time in the quote; once you approve, the forecast shows on the order and changes if the carrier updates it."},
 fr:{eu:"Je suis ELO, l'assistant virtuel d'Elolog : un programme automatique, pas une personne. Si vous préférez, écrivez « parler à une personne ».",
  humano:"Bien sûr. J'ai préparé un résumé (sans données personnelles) pour l'équipe Elolog. Touchez « Écrire à l'équipe », une personne vous répondra.",
  pagar:"Par sécurité, je ne reçois ni paiements ni données de paiement. Payez uniquement sur la page « Paiements » de votre compte, au montant calculé par la plateforme.",
@@ -83,7 +89,10 @@ fr:{eu:"Je suis ELO, l'assistant virtuel d'Elolog : un programme automatique, pa
  lingua:"Quelle langue ? / Em que língua? / Which language?",ok:"Très bien, nous continuons en français.",
  ajuda:"Je peux : ouvrir une simulation, consulter une commande (connecté), vous guider vers les Paiements ou vous passer à une personne. Que souhaitez-vous ?",
  ola:n=>`Bonjour${n} ! Je suis ELO, l'assistant virtuel d'Elolog. Comment puis-je vous aider ?`,
- opcoes:"Bien sûr. Choisissez une option ou écrivez votre demande."}};
+ opcoes:"Bien sûr. Choisissez une option ou écrivez votre demande.",
+ alfandega:"Pour le dédouanement on demande souvent : facture commerciale ou liste des biens avec leur valeur, liste de colisage et identité et numéro fiscal de l'expéditeur et du destinataire. Les règles changent selon le pays : le transporteur de votre commande confirme la liste exacte.",
+ alfandegaConta:"J'ouvre vos documents pour ajouter ce que vous avez déjà.",
+ prazo:"Je ne donne pas de délais au hasard. Chaque transporteur indique son délai dans l'offre ; après approbation, la prévision apparaît sur la commande."}};
 const t=k=>T[L][k]??T.pt[k];
 const ESTADOS={pt:{aprovacao:"a aguardar aprovação",agendamento:"agendamento",recolha:"recolha",armazenamento:"em armazém",expedicao:"expedição",em_transito:"em trânsito",destino:"no destino",entregue:"entregue",cancelada:"cancelada"},
  en:{aprovacao:"awaiting approval",agendamento:"scheduling",recolha:"pickup",armazenamento:"in warehouse",expedicao:"dispatch",em_transito:"in transit",destino:"at destination",entregue:"delivered",cancelada:"cancelled"},
@@ -139,6 +148,10 @@ const REGRAS=[
  regra(n=>fora()&&/\b(pay|payment|card|paid|payer|paiement|carte|regler)\b/.test(n),()=>R(t("pagar"),papel()==="visitante"?null:irPara("pagamentos"))),
  regra(n=>fora()&&/\b(price|prices|cost|how much|quote|rate|rates|prix|combien|tarifs?|devis|cout)\b/.test(n),()=>R(t("preco"),simulador)),
  regra(n=>fora()&&/\b(simulat\w*|send|ship from|from .+ to |envoyer|expedier|de .+ (a|vers) )/.test(n),()=>R(t("simular"),simulador)),
+ regra(n=>/\b(desalfandeg\w*|alfandeg\w*|aduan\w*|despacho aduaneiro|customs|clearance|douane|dedouan\w*)\b|que documentos|documentos (preciso|necessarios|para enviar)|which documents|quels documents/.test(n),
+   ()=>papel()==="cliente"?R(t("alfandega")+" "+t("alfandegaConta"),abrir("documents"),["Quanto tempo demora?","Estado da encomenda","Falar com uma pessoa"]):R(t("alfandega"),null,["Quanto tempo demora?","Nova simulação","Falar com uma pessoa"])),
+ regra(n=>/\b(quanto tempo|prazos?|demora|tempo de (transito|viagem|entrega)|quando chega|how long|transit time|delivery time|combien de temps|delais?)\b/.test(n),
+   ()=>R(t("prazo"),["cliente","prestador","admin"].includes(papel())?irPara("operacoes"):null,["Que documentos preciso?","Nova simulação","Falar com uma pessoa"])),
  regra((n,raw)=>CODIGO.test(raw)&&(servidor()||papel()==="visitante")&&!/simul/.test(n),x=>{const c=x.match(CODIGO)[0].toUpperCase();
    if(papel()==="visitante")return R(t("login"));setTimeout(()=>consultar(c),250);return R(t("consultar")(c))}),
  regra(n=>(servidor()||papel()==="visitante")&&!/inscric|cotac|\b(price|prix|cost|combien|how much|quote|devis|preco|quanto custa)\b/.test(n)&&/\b(encomendas?|estado|rastre\w*|onde (esta|anda)|order|track\w*|parcel|shipment|commande|suivi|colis)\b/.test(n),(x,n)=>{
