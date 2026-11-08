@@ -5725,4 +5725,304 @@ do $$ begin
   end if;
 end $$;
 
+-- ===== 00173_tarifas_veiculos.sql =====
+-- v115 — Regras de cobrança (1/2): tarifários de veículos, referência visível aos prestadores e acessos do prestador ao centro.
+-- Tarifa de veículo: custo da recolha/entrega por tipo de veículo (saída + km, com mínimo), escolhida pela capacidade que o pedido precisa.
+-- Mesmo circuito das outras tarifas: o prestador submete, a administração aprova; tudo fica no histórico.
+
+create table if not exists public.tarifas_veiculos (
+  id uuid primary key default gen_random_uuid(), empresa_id uuid references public.empresas(id) on delete cascade,   -- null = tarifa geral da Elolog
+  nome text not null check (length(trim(nome)) between 1 and 120), veiculo text not null default 'carrinha'
+    check (veiculo in ('mota','ligeiro','carrinha','camiao_pequeno','camiao','pesado','outro')),
+  capacidade_kg numeric check (capacidade_kg is null or capacidade_kg > 0), capacidade_m3 numeric check (capacidade_m3 is null or capacidade_m3 > 0),
+  preco_saida numeric not null default 0 check (preco_saida >= 0 and preco_saida <= 1000000),
+  preco_km numeric not null default 0 check (preco_km >= 0 and preco_km <= 100000),
+  preco_minimo numeric not null default 0 check (preco_minimo >= 0 and preco_minimo <= 1000000),
+  moeda text not null default 'EUR', servico text, versao int not null default 1,
+  estado text not null default 'pendente' check (estado in ('pendente','aprovado','rejeitado','suspenso','inativo')),
+  validade_inicio date, validade_fim date, motivo_decisao text, motivo_alteracao text, criado_por uuid references auth.users(id),
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
+  constraint tarifas_veiculos_validade check (validade_fim is null or validade_inicio is null or validade_fim >= validade_inicio));
+create index if not exists tarifas_veiculos_empresa on public.tarifas_veiculos (empresa_id, estado);
+alter table public.tarifas_veiculos enable row level security;
+revoke all on public.tarifas_veiculos from anon;
+grant select, insert, update on public.tarifas_veiculos to authenticated;
+do $$ begin if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'tarifas_veiculos' and policyname = 'tv_admin') then
+  create policy tv_admin on public.tarifas_veiculos for all to authenticated using (private.e_admin_plataforma()) with check (private.e_admin_plataforma());
+end if; end $$;
+do $$ begin if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'tarifas_veiculos' and policyname = 'tv_empresa') then
+  create policy tv_empresa on public.tarifas_veiculos for all to authenticated
+  using (empresa_id = private.minha_empresa() and private.papel_em(array['admin_empresa','financeiro']))
+  with check (empresa_id = private.minha_empresa() and private.papel_em(array['admin_empresa','financeiro']));
+end if; end $$;
+-- os prestadores veem as tarifas gerais de veículos em vigor (para comparar), sem as poder mudar
+do $$ begin if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'tarifas_veiculos' and policyname = 'tv_geral_ve') then
+  create policy tv_geral_ve on public.tarifas_veiculos for select to authenticated
+  using (empresa_id is null and estado = 'aprovado' and private.minha_empresa() is not null);
+end if; end $$;
+
+-- guarda: o prestador só cria «pendente»; mudar preço ou capacidade de uma tarifa aprovada volta a «pendente» e sobe a versão
+create or replace function private.veiculo_guarda() returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  new.updated_at := now();
+  if auth.uid() is not null and not private.e_admin_plataforma() then
+    if new.empresa_id is null then raise exception 'As tarifas gerais de veículos são da administração Elolog.' using errcode = '42501'; end if;
+    if tg_op = 'INSERT' then new.estado := 'pendente'; new.motivo_decisao := null; new.versao := 1;
+    else
+      new.motivo_decisao := old.motivo_decisao; new.empresa_id := old.empresa_id;
+      if (new.veiculo, new.capacidade_kg, new.capacidade_m3, new.preco_saida, new.preco_km, new.preco_minimo, new.moeda, new.servico, new.validade_inicio, new.validade_fim)
+         is distinct from (old.veiculo, old.capacidade_kg, old.capacidade_m3, old.preco_saida, old.preco_km, old.preco_minimo, old.moeda, old.servico, old.validade_inicio, old.validade_fim) then
+        new.estado := 'pendente'; new.versao := old.versao + 1;
+      elsif new.estado not in ('pendente', 'inativo') and new.estado is distinct from old.estado then
+        raise exception 'Só a administração Elolog pode aprovar ou suspender tarifas de veículos.' using errcode = '42501';
+      end if;
+    end if;
+  elsif tg_op = 'UPDATE' and (new.preco_saida, new.preco_km, new.preco_minimo, new.capacidade_kg, new.capacidade_m3)
+        is distinct from (old.preco_saida, old.preco_km, old.preco_minimo, old.capacidade_kg, old.capacidade_m3) then
+    new.versao := old.versao + 1;
+  end if;
+  return new;
+end $$;
+create or replace trigger tarifas_veiculos_guarda before insert or update on public.tarifas_veiculos for each row execute function private.veiculo_guarda();
+create or replace trigger tarifas_veiculos_registo after insert or update on public.tarifas_veiculos for each row execute function private.tarifa_registo();
+
+create or replace function public.veiculo_decidir(p_veiculo uuid, p_decisao text, p_motivo text default null)
+returns public.tarifas_veiculos language plpgsql security definer set search_path = public as $$
+declare v tarifas_veiculos; v_para text := case p_decisao when 'aprovar' then 'aprovado' when 'rejeitar' then 'rejeitado' when 'suspender' then 'suspenso' when 'reativar' then 'aprovado' end;
+begin
+  if not private.e_admin_plataforma() then raise exception 'Só a administração Elolog decide sobre tarifas de veículos.' using errcode = '42501'; end if;
+  if v_para is null then raise exception 'Decisão desconhecida.'; end if;
+  if p_decisao in ('rejeitar', 'suspender') and coalesce(trim(p_motivo), '') = '' then raise exception 'Indique o motivo: o prestador vai lê-lo.'; end if;
+  perform set_config('elolog.motivo', coalesce(nullif(trim(p_motivo), ''), initcap(p_decisao)), true);
+  update tarifas_veiculos set estado = v_para, motivo_decisao = nullif(trim(p_motivo), '') where id = p_veiculo returning * into v;
+  if not found then raise exception 'Tarifa de veículo inexistente.'; end if;
+  if v.empresa_id is not null then
+    insert into notificacoes (empresa_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+    values (v.empresa_id, 'veiculo_decisao', 'Tarifa de veículo ' || v_para, '«' || v.nome || '»' || coalesce('. ' || nullif(trim(p_motivo), ''), '.'), 'tarifas_veiculos', v.id);
+  end if;
+  perform set_config('elolog.motivo', '', true);
+  return v;
+end $$;
+revoke all on function public.veiculo_decidir(uuid, text, text) from public, anon;
+grant execute on function public.veiculo_decidir(uuid, text, text) to authenticated;
+
+-- avisar a Elolog quando um prestador submete uma tarifa de veículo
+create or replace function private.veiculo_aviso() returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if new.empresa_id is not null and new.estado = 'pendente' and (tg_op = 'INSERT' or old.estado is distinct from 'pendente') then
+    insert into notificacoes (para_plataforma, tipo, titulo, corpo, referencia_tabela, referencia_id)
+    values (true, 'veiculo_submetido', 'Uma tarifa de veículo espera aprovação',
+            coalesce((select nome from empresas where id = new.empresa_id), 'Um prestador') || ' submeteu «' || new.nome || '».', 'tarifas_veiculos', new.id);
+  end if;
+  return new;
+end $$;
+create or replace trigger tarifas_veiculos_aviso after insert or update of estado on public.tarifas_veiculos for each row execute function private.veiculo_aviso();
+
+-- os prestadores aprovados veem os tarifários gerais de REFERÊNCIA em vigor (para alinharem os preços); os comerciais só se estiverem associados
+do $$ begin if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'tarifas_gerais' and policyname = 'tg_prestador_ref') then
+  create policy tg_prestador_ref on public.tarifas_gerais for select to authenticated
+  using (uso = 'referencia' and estado = 'ativa' and private.minha_empresa() is not null);
+end if; end $$;
+
+-- comissões que se aplicam à empresa do prestador (só leitura, só as ativas, sem as regras de outros prestadores)
+create or replace function public.minhas_comissoes()
+returns table (nome text, tipo_valor text, valor numeric, metodo text, rota_origem text, rota_destino text, inicio date, fim date, promocional boolean, apresentacao text, geral boolean)
+language sql stable security definer set search_path = public as $$
+  select c.nome, c.tipo_valor::text, c.valor, c.metodo::text, c.rota_origem, c.rota_destino, c.inicio, c.fim, c.promocional, c.apresentacao, c.empresa_id is null
+    from regras_comissao c
+   where private.minha_empresa() is not null and private.papel_em(array['admin_empresa','financeiro'])
+     and c.ativa and (c.fim is null or c.fim >= current_date) and (c.empresa_id is null or c.empresa_id = private.minha_empresa())
+   order by (c.empresa_id is not null) desc, c.prioridade desc $$;
+revoke all on function public.minhas_comissoes() from public, anon;
+grant execute on function public.minhas_comissoes() to authenticated;
+
+-- ===== 00174_motor_descricao_veiculos.sql =====
+-- v115 — Regras de cobrança (2/2): o motor de preços passa a procurar pela DESCRIÇÃO da carga e a usar as tarifas de veículos.
+-- Motor de busca: quando a descrição do pedido contém o nome de uma tarifa (ou uma das suas palavras-chave), essa tarifa ganha.
+--   Ex.: tarifa «Frigorífico» (por unidade) e descrição «2 frigoríficos combinados» → usa a tarifa «Frigorífico».
+--   Uma tarifa marcada «só pela descrição» (regras.so_descricao) só entra quando a descrição coincide.
+-- Recolha: com km pedidos, usa a tarifa de veículo aprovada mais barata que leva o peso e o volume (do prestador; senão, a geral da Elolog);
+--   sem tarifa de veículo, fica tudo como antes (suplemento de recolha ou 1 € por km).
+-- As funções antigas continuam (mesmas assinaturas) e passam pelo motor novo, sem descrição: o resultado é o de sempre.
+
+-- palavras da descrição comparadas por início de palavra, sem acentos nem maiúsculas (aceita plurais: «frigorífico» ↔ «frigoríficos»)
+create or replace function private.descricao_bate(p_desc text, p_nome text, p_regras jsonb) returns boolean
+language sql stable set search_path = public, extensions as $$
+  select coalesce(trim(p_desc), '') <> '' and exists (
+    select 1 from (select p_nome as w union all
+                   select jsonb_array_elements_text(case when jsonb_typeof(p_regras -> 'palavras') = 'array' then p_regras -> 'palavras' else '[]'::jsonb end)) x,
+                  lateral (select trim(regexp_replace(private.norm(x.w), '[^a-z0-9]+', ' ', 'g')) as p) n
+     where length(n.p) >= 3
+       and strpos(' ' || regexp_replace(private.norm(p_desc), '[^a-z0-9]+', ' ', 'g') || ' ', ' ' || n.p) > 0) $$;
+
+create or replace function private.tarifa_escolhida_d(p_empresa uuid, p_servico text, p_origem text, p_destino text, p_tipo_carga text, q int, peso numeric, vol numeric, p_descricao text)
+returns public.tarifas language sql stable security definer set search_path = public, extensions as $$
+  select t.* from tarifas t
+   where t.empresa_id = p_empresa and t.estado = 'aprovada' and t.aplicacao = 'carga'
+     and (t.validade_inicio is null or t.validade_inicio <= current_date) and (t.validade_fim is null or t.validade_fim >= current_date)
+     and private.rota_bate(t.origem, p_origem) and private.rota_bate(t.destino, p_destino)
+     and (coalesce(t.transporte, '') = '' or coalesce(p_servico, '') = '' or private.norm(t.transporte) = private.norm(p_servico))
+     and (coalesce(t.tipo_carga, '') = '' or coalesce(p_tipo_carga, '') = '' or strpos(private.norm(p_tipo_carga), private.norm(t.tipo_carga)) > 0)
+     and (coalesce(t.regras ->> 'so_descricao', '') <> 'true' or private.descricao_bate(p_descricao, t.nome, t.regras))
+     and private.tarifa_compativel(t.metodo, t.regras, t.limite_min, t.limite_max, q, peso, vol)
+   order by private.descricao_bate(p_descricao, t.nome, t.regras) desc,
+            ((coalesce(t.origem, '') <> '')::int + (coalesce(t.destino, '') <> '')::int + (coalesce(t.tipo_carga, '') <> '')::int + (coalesce(t.transporte, '') <> '')::int) desc,
+            t.versao desc, t.created_at desc limit 1 $$;
+create or replace function private.tarifa_escolhida(p_empresa uuid, p_servico text, p_origem text, p_destino text, p_tipo_carga text, q int, peso numeric, vol numeric)
+returns public.tarifas language sql stable security definer set search_path = public, extensions as $$
+  select * from private.tarifa_escolhida_d(p_empresa, p_servico, p_origem, p_destino, p_tipo_carga, q, peso, vol, null) $$;
+
+create or replace function private.tarifa_geral_escolhida_d(p_empresa uuid, p_servico text, p_origem text, p_destino text, p_tipo_carga text, q int, peso numeric, vol numeric, p_descricao text)
+returns public.tarifas_gerais language sql stable security definer set search_path = public, extensions as $$
+  select g.* from tarifas_gerais g
+   where g.uso = 'comercial' and g.estado = 'ativa' and p_empresa = any (g.prestadores)
+     and (g.validade_inicio is null or g.validade_inicio <= current_date) and (g.validade_fim is null or g.validade_fim >= current_date)
+     and private.rota_bate(g.origem, p_origem) and private.rota_bate(g.destino, p_destino)
+     and (coalesce(g.servico, '') = '' or coalesce(p_servico, '') = '' or private.norm(g.servico) = private.norm(p_servico))
+     and (coalesce(g.tipo_carga, '') = '' or coalesce(p_tipo_carga, '') = '' or strpos(private.norm(p_tipo_carga), private.norm(g.tipo_carga)) > 0)
+     and (coalesce(g.regras ->> 'so_descricao', '') <> 'true' or private.descricao_bate(p_descricao, g.nome, g.regras))
+     and private.tarifa_compativel(g.metodo, g.regras, g.limite_min, g.limite_max, q, peso, vol)
+   order by private.descricao_bate(p_descricao, g.nome, g.regras) desc,
+            ((coalesce(g.origem, '') <> '')::int + (coalesce(g.destino, '') <> '')::int + (coalesce(g.tipo_carga, '') <> '')::int) desc, g.versao desc limit 1 $$;
+create or replace function private.tarifa_geral_escolhida(p_empresa uuid, p_servico text, p_origem text, p_destino text, p_tipo_carga text, q int, peso numeric, vol numeric)
+returns public.tarifas_gerais language sql stable security definer set search_path = public, extensions as $$
+  select * from private.tarifa_geral_escolhida_d(p_empresa, p_servico, p_origem, p_destino, p_tipo_carga, q, peso, vol, null) $$;
+
+-- o veículo aprovado mais barato que leva a carga (primeiro os do prestador, depois os gerais da Elolog)
+create or replace function private.veiculo_escolhido(p_empresa uuid, p_servico text, peso numeric, vol numeric, km numeric) returns jsonb
+language sql stable security definer set search_path = public, extensions as $$
+  select jsonb_build_object('id', v.id, 'nome', v.nome, 'chave', 'recolha_km', 'tipo', 'veiculo', 'veiculo', v.veiculo, 'valor', v.preco_km,
+           'montante', round(greatest(v.preco_minimo, v.preco_saida + coalesce(km, 0) * v.preco_km), 2), 'origem', case when v.empresa_id is null then 'elolog' else 'prestador' end, 'versao', v.versao)
+    from tarifas_veiculos v
+   where v.estado = 'aprovado' and (v.empresa_id = p_empresa or v.empresa_id is null)
+     and (v.validade_inicio is null or v.validade_inicio <= current_date) and (v.validade_fim is null or v.validade_fim >= current_date)
+     and (coalesce(v.servico, '') = '' or coalesce(p_servico, '') = '' or private.norm(v.servico) = private.norm(p_servico))
+     and (v.capacidade_kg is null or coalesce(peso, 0) <= v.capacidade_kg) and (v.capacidade_m3 is null or coalesce(vol, 0) <= v.capacidade_m3)
+   order by (v.empresa_id is null), greatest(v.preco_minimo, v.preco_saida + coalesce(km, 0) * v.preco_km), v.updated_at desc limit 1 $$;
+
+create or replace function private.suplementos_calc_d(p_empresa uuid, p_servico text, p_tipo_carga text, p_km numeric, p_base numeric, peso numeric, vol numeric)
+returns jsonb language plpgsql stable security definer set search_path = public, extensions as $$
+declare r record; itens jsonb := '[]'; total numeric := 0; m numeric; tem_recolha boolean := false; vei jsonb;
+begin
+  if coalesce(p_km, 0) > 0 then
+    vei := private.veiculo_escolhido(p_empresa, p_servico, peso, vol, p_km);
+    if vei is not null then tem_recolha := true; total := (vei ->> 'montante')::numeric; itens := jsonb_build_array(vei); end if;
+  end if;
+  for r in select distinct on (s.chave, case when s.chave = 'outro' then s.id end) s.* from tarifa_suplementos s
+            where s.estado = 'aprovado' and (s.empresa_id = p_empresa or s.empresa_id is null)
+              and (s.validade_inicio is null or s.validade_inicio <= current_date) and (s.validade_fim is null or s.validade_fim >= current_date)
+              and (coalesce(s.servico, '') = '' or coalesce(p_servico, '') = '' or private.norm(s.servico) = private.norm(p_servico))
+              and (coalesce(s.tipo_carga, '') = '' or coalesce(p_tipo_carga, '') = '' or strpos(private.norm(p_tipo_carga), private.norm(s.tipo_carga)) > 0)
+            order by s.chave, case when s.chave = 'outro' then s.id end, (s.empresa_id is null), s.updated_at desc loop
+    if r.chave = 'recolha_km' then
+      if coalesce(p_km, 0) <= 0 or vei is not null then continue; end if; tem_recolha := true;
+    elsif not r.automatico then continue; end if;
+    m := round(case r.tipo when 'fixo' then r.valor when 'percentual' then p_base * r.valor / 100 else coalesce(p_km, 0) * r.valor end, 2);
+    total := total + m;
+    itens := itens || jsonb_build_object('id', r.id, 'nome', r.nome, 'chave', r.chave, 'tipo', r.tipo, 'valor', r.valor, 'montante', m, 'origem', case when r.empresa_id is null then 'elolog' else 'prestador' end);
+  end loop;
+  if coalesce(p_km, 0) > 0 and not tem_recolha then
+    m := round(p_km * private.custo_recolha_por_km(), 2); total := total + m;
+    itens := itens || jsonb_build_object('nome', 'Recolha na morada', 'chave', 'recolha_km', 'tipo', 'por_km', 'valor', private.custo_recolha_por_km(), 'montante', m, 'origem', 'elolog');
+  end if;
+  return jsonb_build_object('total', total, 'itens', itens);
+end $$;
+create or replace function private.suplementos_calc(p_empresa uuid, p_servico text, p_tipo_carga text, p_km numeric, p_base numeric)
+returns jsonb language sql stable security definer set search_path = public, extensions as $$
+  select private.suplementos_calc_d(p_empresa, p_servico, p_tipo_carga, p_km, p_base, null, null) $$;
+
+-- ===== 00175_motor_v2.sql =====
+-- v115 — o motor de preços com a descrição da carga e os veículos (continua a ser a fonte única de preços).
+-- private.motor_preco (assinatura antiga) passa a chamar private.motor_preco_d sem descrição: o resultado não muda.
+
+create or replace function private.motor_preco_d(p_empresa uuid, p_servico text, p_origem text, p_destino text, p_tipo_carga text, q int, peso numeric, vol numeric, km numeric, p_descricao text)
+returns jsonb language plpgsql stable security definer set search_path = public, extensions as $$
+declare t tarifas; g tarifas_gerais; c regras_comissao; base numeric; sup jsonb; com numeric; ap text; met metodo_cobranca; tj jsonb; orig text; moeda text; achou boolean := false;
+begin
+  t := private.tarifa_escolhida_d(p_empresa, p_servico, p_origem, p_destino, p_tipo_carga, q, peso, vol, p_descricao);
+  if t.id is not null then
+    met := t.metodo; orig := 'prestador'; moeda := t.moeda; achou := private.descricao_bate(p_descricao, t.nome, t.regras);
+    base := private.tarifa_preco(t.metodo, t.valor, t.preco_minimo, t.preco_maximo, t.regras, q, peso, vol);
+    tj := jsonb_build_object('id', t.id, 'nome', t.nome, 'versao', t.versao, 'metodo', t.metodo, 'valor', t.valor, 'moeda', t.moeda, 'preco_minimo', t.preco_minimo,
+          'preco_maximo', t.preco_maximo, 'limite_min', t.limite_min, 'limite_max', t.limite_max, 'regras', t.regras, 'validade_inicio', t.validade_inicio, 'validade_fim', t.validade_fim, 'notas', t.notas);
+  else
+    g := private.tarifa_geral_escolhida_d(p_empresa, p_servico, p_origem, p_destino, p_tipo_carga, q, peso, vol, p_descricao);
+    if g.id is null then
+      return jsonb_build_object('disponivel', false, 'mensagem', 'Não existe uma tarifa automática disponível. Solicite uma cotação personalizada.');
+    end if;
+    met := g.metodo; orig := 'geral'; moeda := g.moeda; achou := private.descricao_bate(p_descricao, g.nome, g.regras);
+    base := private.tarifa_preco(g.metodo, g.valor, g.preco_minimo, g.preco_maximo, g.regras, q, peso, vol);
+    tj := jsonb_build_object('id', g.id, 'codigo', g.codigo, 'nome', g.nome, 'versao', g.versao, 'metodo', g.metodo, 'valor', g.valor, 'moeda', g.moeda, 'preco_minimo', g.preco_minimo,
+          'preco_maximo', g.preco_maximo, 'limite_min', g.limite_min, 'limite_max', g.limite_max, 'regras', g.regras, 'validade_inicio', g.validade_inicio, 'validade_fim', g.validade_fim, 'condicoes', g.condicoes);
+  end if;
+  sup := private.suplementos_calc_d(p_empresa, p_servico, p_tipo_carga, km, base, peso, vol);
+  c := private.comissao_escolhida(p_empresa, met, p_origem, p_destino);
+  com := private.comissao_valor(c, base + (sup ->> 'total')::numeric); ap := coalesce(c.apresentacao, 'incluida');
+  return jsonb_build_object('disponivel', true, 'origem_tarifa', orig, 'tarifa_id', case when orig = 'prestador' then t.id end, 'tarifa', tj, 'moeda', moeda,
+    'pela_descricao', achou,
+    'pedido', jsonb_build_object('servico', p_servico, 'origem', p_origem, 'destino', p_destino, 'tipo_carga', p_tipo_carga, 'descricao', p_descricao, 'quantidade', q, 'peso_kg', peso,
+                                 'volume_m3', vol, 'recolha_km', km, 'medida', private.tarifa_medida(met, tj -> 'regras', q, peso, vol)),
+    'preco_prestador', base, 'suplementos', sup -> 'itens', 'suplementos_total', (sup ->> 'total')::numeric,
+    'comissao', com, 'apresentacao', ap,
+    'comissao_regra', case when c.id is null then null else jsonb_build_object('id', c.id, 'nome', c.nome, 'tipo_valor', c.tipo_valor, 'valor', c.valor, 'promocional', c.promocional) end,
+    'preco_final', base + (sup ->> 'total')::numeric + case when ap = 'separada' then com else 0 end,
+    'liquido_prestador', base + (sup ->> 'total')::numeric - case when ap = 'incluida' then com else 0 end, 'calculado_em', now());
+end $$;
+revoke all on function private.motor_preco_d(uuid, text, text, text, text, int, numeric, numeric, numeric, text) from public, anon, authenticated;
+
+create or replace function private.motor_preco(p_empresa uuid, p_servico text, p_origem text, p_destino text, p_tipo_carga text, q int, peso numeric, vol numeric, km numeric)
+returns jsonb language sql stable security definer set search_path = public, extensions as $$
+  select private.motor_preco_d(p_empresa, p_servico, p_origem, p_destino, p_tipo_carga, q, peso, vol, km, null) $$;
+
+-- simulador do cliente: igual a calcular_precos, com a descrição da carga (o cliente só recebe o preço final)
+create or replace function public.precos_automaticos(p_origem text, p_destino text, p_tipo_carga text default null, p_quantidade int default 0, p_peso_kg numeric default 0,
+  p_volume_m3 numeric default 0, p_recolha_km numeric default 0, p_servico text default null, p_descricao text default null)
+returns table (prestador_id uuid, prestador_nome text, disponivel boolean, preco_final numeric, taxa_servico numeric, moeda char(3), mensagem text)
+language plpgsql stable security definer set search_path = public as $$
+declare r record; m jsonb;
+begin
+  if not exists (select 1 from clientes c where c.id = auth.uid()) and not private.e_admin_plataforma() then raise exception 'Apenas clientes autenticados.'; end if;
+  if coalesce(trim(p_origem), '') = '' or coalesce(trim(p_destino), '') = '' then raise exception 'Indique origem e destino.'; end if;
+  if least(coalesce(p_quantidade, 0), coalesce(p_peso_kg, 0), coalesce(p_volume_m3, 0), coalesce(p_recolha_km, 0)) < 0 then raise exception 'Valores negativos não são permitidos.'; end if;
+  if length(coalesce(p_descricao, '')) > 1000 then raise exception 'A descrição é demasiado longa.'; end if;
+  for r in select e.id, e.nome from empresas_disponiveis e order by e.nome loop
+    m := private.motor_preco_d(r.id, p_servico, p_origem, p_destino, p_tipo_carga, p_quantidade, p_peso_kg, p_volume_m3, p_recolha_km, p_descricao);
+    prestador_id := r.id; prestador_nome := r.nome; disponivel := (m ->> 'disponivel')::boolean;
+    preco_final := (m ->> 'preco_final')::numeric; moeda := m ->> 'moeda'; mensagem := m ->> 'mensagem';
+    taxa_servico := case when m ->> 'apresentacao' = 'separada' then (m ->> 'comissao')::numeric end;
+    return next;
+  end loop;
+end $$;
+revoke all on function public.precos_automaticos(text, text, text, int, numeric, numeric, numeric, text, text) from public, anon;
+grant execute on function public.precos_automaticos(text, text, text, int, numeric, numeric, numeric, text, text) to authenticated;
+
+-- simulador de preços do centro: a administração testa qualquer prestador; o prestador (administrador ou financeiro) só a sua empresa
+create or replace function public.simular_preco(p_empresa uuid, p_origem text, p_destino text, p_tipo_carga text default null, p_quantidade int default 0, p_peso_kg numeric default 0,
+  p_volume_m3 numeric default 0, p_recolha_km numeric default 0, p_servico text default null, p_descricao text default null)
+returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare v_emp uuid := p_empresa;
+begin
+  if not private.e_admin_plataforma() then
+    if private.minha_empresa() is null or not private.papel_em(array['admin_empresa','financeiro']) then
+      raise exception 'Só a administração Elolog ou o financeiro da empresa podem simular preços.' using errcode = '42501'; end if;
+    v_emp := private.minha_empresa();
+  end if;
+  if v_emp is null then raise exception 'Escolha o prestador.'; end if;
+  if least(coalesce(p_quantidade, 0), coalesce(p_peso_kg, 0), coalesce(p_volume_m3, 0), coalesce(p_recolha_km, 0)) < 0 then raise exception 'Valores negativos não são permitidos.'; end if;
+  return private.motor_preco_d(v_emp, p_servico, p_origem, p_destino, p_tipo_carga, p_quantidade, p_peso_kg, p_volume_m3, p_recolha_km, p_descricao);
+end $$;
+revoke all on function public.simular_preco(uuid, text, text, text, int, numeric, numeric, numeric, text, text) from public, anon;
+grant execute on function public.simular_preco(uuid, text, text, text, int, numeric, numeric, numeric, text, text) to authenticated;
+
+-- o envio ao prestador usa a descrição guardada na simulação (mesmo preço que o cliente viu)
+do $$ declare d text := pg_get_functiondef('public.enviar_simulacao(uuid, uuid)'::regprocedure); n text; begin
+  n := replace(d, 'm := private.motor_preco(p_empresa, null, v_sim.origem, v_sim.destino, v_sim.tipo_carga, v_sim.quantidade, v_sim.peso_kg, v_sim.volume_m3,
+                           case when v_sim.recolha_na_morada then coalesce(v_sim.recolha_distancia_km, 0) else 0 end);',
+                  'm := private.motor_preco_d(p_empresa, null, v_sim.origem, v_sim.destino, v_sim.tipo_carga, v_sim.quantidade, v_sim.peso_kg, v_sim.volume_m3,
+                           case when v_sim.recolha_na_morada then coalesce(v_sim.recolha_distancia_km, 0) else 0 end, v_sim.descricao);');
+  if n = d then raise exception 'enviar_simulacao: não encontrei a chamada ao motor para atualizar.'; end if;
+  execute n;
+end $$;
+
+
 commit;

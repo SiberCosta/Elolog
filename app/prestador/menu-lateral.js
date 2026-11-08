@@ -21,7 +21,7 @@
     ["eq","Equipa e transportes","truck",[["Agenda de serviços","showProviderFieldPage('planning',this)","providerFieldTeam","field_work"],["Painel do terreno","showProviderFieldPage('dashboard',this)","providerFieldTeam","field_work"],
       ["Motoristas e operadores","showProviderFieldPage('operators',this)","providerFieldTeam","field_work"],["Viaturas","showProviderFieldPage('vehicles',this)","providerFieldTeam","field_work"],
       ["Recolhas","showProviderFieldPage('pickups',this)","providerFieldTeam","field_work"],["Entregas","showProviderFieldPage('deliveries',this)","providerFieldTeam","field_work"]]],
-    ["fin","Financeiro","euro",[["Resumo","showProviderFinanceTab('overview',this)","providerFinanceiro","manage_payments"],["Tabela de preços","showProviderFinanceTab('prices',this)","providerFinanceiro","manage_payments"],
+    ["fin","Financeiro","euro",[["Resumo","showProviderFinanceTab('overview',this)","providerFinanceiro","manage_payments"],["Regras de cobrança","showProviderFinanceTab('prices',this)","providerFinanceiro","manage_payments"],
       ["Faturação","showProviderFinanceTab('billing',this)","providerFinanceiro","manage_payments"],["Recebimentos","showProviderFinanceTab('receipts',this)","providerFinanceiro","manage_payments"],
       ["Movimentos e reconciliação","showProviderFinanceTab('history',this)","providerFinanceiro","manage_payments"],["Registar fatura certificada","elologFaturas.abrir(this)","","manage_payments"]]],
     ["doc","Documentos","file",[["Documentos","showProviderPage('providerDocumentos',this)","providerDocumentos","download_manifest"]]],

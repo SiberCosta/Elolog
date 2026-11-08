@@ -58,6 +58,13 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v115 (Regras de cobrança no painel do prestador, motor de busca, veículos)
+
+- **Prestador › Financeiro › Regras de cobrança**: centro de controlo comercial e tarifário com os separadores Visão geral, Tarifários gerais ELOLog, Tarifários dos prestadores, Tarifários de veículos, Comissões, Simulador de preços e Histórico e auditoria. A administração tem os mesmos separadores (Subscrições e faturação › Regras de cobrança).
+- **Motor de busca**: quando a descrição da carga tem o nome de uma tarifa (ou uma «palavra da descrição»), o preço usa essa tarifa, tanto no simulador do cliente (servidor) como na simulação direta do prestador, onde a linha se preenche sozinha. Há também uma caixa de pesquisa no centro.
+- **Tarifários de veículos**: custo da recolha por veículo (saída + km, mínimo, capacidade), com aprovação da Elolog.
+- Migrações 00173 a 00175 (já aplicadas no Supabase e acrescentadas aos instaladores). Teste `29_regras_cobranca.sql` (20/20).
+
 ## v114 (Centro de Gestão de Tarifários, distância da recolha, funcionários)
 
 - **Tarifários e comissões** (Administração › Subscrições e faturação): aprovar, rejeitar, suspender ou pedir alterações às tarifas e suplementos dos prestadores; tarifários gerais (referência e comerciais); regras de comissão (percentagem ou fixa, por prestador, modalidade, rota, período, promocional, incluída ou separada); histórico de alterações; teste do motor passo a passo. Ver `documentacao/TARIFARIOS.md`.

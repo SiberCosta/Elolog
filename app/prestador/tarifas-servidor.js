@@ -19,7 +19,7 @@
       metodo:METODO[norm(v("finTariffMethod")).replace("preco","preço")]||METODO[v("finTariffMethod").toLowerCase()]||"volume",valor:Number(v("finTariffValue")),
       moeda:v("finTariffCurrency")||"EUR",quantidade_minima:Number(v("finTariffMinQty"))||0,preco_minimo:Number(v("finTariffMinPrice"))||0,
       origem:v("finTariffOrigin").trim()||null,destino:v("finTariffDestination").trim()||null,validade_inicio:v("finTariffStart")||null,validade_fim:v("finTariffEnd")||null,
-      ativa:v("finTariffStatus")!=="Inativa",regras:{volumetricFactor:Number(v("finTariffVolumetricFactor"))||167,unitLabel:v("finTariffUnitLabel")||null},notas:v("finTariffNotes").trim()||null}}
+      ativa:v("finTariffStatus")!=="Inativa",regras:{volumetricFactor:Number(v("finTariffVolumetricFactor"))||167,unitLabel:v("finTariffUnitLabel")||null,palavras:v("finTariffKeywords").split(",").map(x=>x.trim()).filter(Boolean).slice(0,12),so_descricao:!!document.getElementById("finTariffOnlyDesc")?.checked},notas:v("finTariffNotes").trim()||null}}
 
   /** Traz as tarifas do servidor para a lista do Financeiro (o servidor manda). */
   async function sincronizar(){if(!online())return;try{const c=await P().sb(),emp=await P().minhaEmpresa();if(!emp)return;
