@@ -1,6 +1,6 @@
 # Elolog
 
-**Versão de 08/11/2026 (v120).** Se esta pasta tem este ficheiro, é a versão nova.
+**Versão de 08/11/2026 (v121).** Se esta pasta tem este ficheiro, é a versão nova.
 
 Plataforma de intermediação logística: clientes simulam e comparam propostas; transitárias gerem encomendas, equipa e cobranças; a administração Elolog valida e acompanha a rede.
 
@@ -57,6 +57,14 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Código de confirmação ao ligar uma caixa:** ao ligar uma caixa nova (ou mudar o endereço), a plataforma envia um código de 6 dígitos para essa caixa e só guarda depois de o escrever (válido 10 minutos, máx. 8 tentativas por 10 min).
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
+
+## v121 (distância da recolha e validação dos armazéns)
+
+- **Causa do «0 km»**: os armazéns só existiam no navegador onde foram escritos; noutro navegador, ou para outro funcionário, a simulação direta não encontrava nenhum e deixava 0 km. No servidor a Soim lda não tinha nenhum armazém gravado.
+- **Corrigido**: a simulação direta e as Configurações leem os armazéns guardados no servidor (qualquer funcionário da empresa, em qualquer navegador). Se este navegador tiver armazéns que o servidor não tem, e o utilizador os puder gerir, são enviados automaticamente.
+- **Sem armazém**: a distância passa a ser medida por estrada até à origem do envio, e a página diz isso («Sem armazém configurado: distância medida até à origem do envio…»), em vez de ficar em 0 km.
+- **Botão «Validar morada»** em cada armazém (Configurações): procura a morada no mapa, mostra as coordenadas e a ligação «Confirmar no mapa», ou explica como corrigir. Ao alterar a morada, volta a «por validar».
+- Ficheiros: `app/prestador/armazens-servidor.js`, `app/prestador/simulacao-direta.js` (texto do estado), `app/comum/tarifarios.css`. Sem migrações.
 
 ## v120 (proteção contra fuga de informação, AIS retirado, só pt-PT)
 
