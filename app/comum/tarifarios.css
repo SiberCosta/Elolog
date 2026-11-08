@@ -106,3 +106,11 @@ html:not(#bv) body .som-notif[aria-pressed="false"]{opacity:.65}
 html:not(#bv) body .cfg-limites .provider-settings-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 /* v119: em ecrãs estreitos os separadores deslizam dentro da página, sem a alargar */
 html:not(#bv) body .tf-pagina,html:not(#bv) body .tf-pagina>*,html:not(#bv) body #adminTariffsContent,html:not(#bv) body #rcCentro,html:not(#bv) body .tf-corpo{min-width:0;max-width:100%}
+
+/* v121: validar a morada de cada armazém nas Configurações */
+.provider-warehouse-row{grid-template-columns:minmax(170px,.55fr) minmax(280px,1.45fr) auto auto}
+.provider-warehouse-row .arm-validar{white-space:nowrap}
+.provider-warehouse-row .arm-estado{grid-column:1/-1;margin:0;font-size:13px;color:#5b6b76}
+.provider-warehouse-row .arm-estado.ok{color:#1d6b45}.provider-warehouse-row .arm-estado.erro{color:#a33a2a}
+.provider-warehouse-row .arm-estado a{color:inherit;font-weight:600}
+@media(max-width:720px){.provider-warehouse-row{grid-template-columns:1fr}.provider-warehouse-row .arm-validar{width:100%}}
