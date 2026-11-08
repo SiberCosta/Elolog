@@ -20,7 +20,12 @@ function percurso(){const{ETAPAS,RESP,ACAO}=F(),i=f.etapa_idx,fin=f.financeiro||
     const q=quando(KEYS[k]);return`<li class="${st}"><b>${k+1}</b><div><strong>${esc(n)}</strong><small>${esc(ACAO[k])}, ${esc(RESP[k])}</small>
       ${q?`<small>${esc(dt(q))}${quem(KEYS[k][KEYS[k].length-1])?", "+esc(quem(KEYS[k][KEYS[k].length-1])):""}</small>`:""}${k===4&&fin.preco?`<small>${eur(fin.pago)} pagos de ${eur(fin.preco)}</small>`:""}</div></li>`}).join("")}</ol>`}
 
-function resumo(){const e=f.encomenda,c=f.cliente||{};return`${e.suspensa?`<p class="fo-alerta">Suspensa: ${esc(e.suspensa_motivo||"ocorrência")}</p>`:""}
+/* v112: o Fluxo Vivo no topo da ficha, com a última mudança registada (quem, quando) do histórico da plataforma */
+function fluxoVivo(){const FV=window.elologFluxo;if(!FV)return"";const e=f.encomenda,h=[...(f.historico||[])].filter(x=>x.em).sort((a,b)=>new Date(b.em)-new Date(a.em))[0],
+  u=(()=>{try{return typeof currentUser!=="undefined"?currentUser:null}catch(_){return null}})(),papel=u?.role==="prestador"?"prestador":u?.role==="cliente"?"cliente":"admin";
+  return FV.render({id:cod,stage:F().ETAPAS[f.etapa_idx]||e.etapa,status:e.suspensa?"Suspensa":(F().ETAPAS[f.etapa_idx]||e.etapa),date:e.data_prevista,destination:e.destino,
+    lastStatusChange:h?{datetime:h.em,employee:h.responsavel||"",previous:h.de?F().nomeEstado?.(h.de)||h.de:"",next:F().nomeEstado?.(h.para)||h.para||""}:null},papel).replace(/(<div class="fv-rodape">[\s\S]*?onclick=")/,"$1elologFicha.fechar();")}
+function resumo(){const e=f.encomenda,c=f.cliente||{};return`${fluxoVivo()}${e.suspensa?`<p class="fo-alerta">Suspensa: ${esc(e.suspensa_motivo||"ocorrência")}</p>`:""}
   <dl class="fo-dl">${linha("Estado",F().nomeEstado(e.estado)||e.etapa)}${linha("Prestador",f.prestador)}${linha("Rota",`${e.origem||"—"} → ${e.destino||"—"}`)}${linha("Morada de recolha",e.morada_recolha)}
     ${linha("Data prevista",e.data_prevista?dia(e.data_prevista):"")}${linha("Simulação",f.simulacao?.codigo)}${linha("Proposta aceite",f.proposta?eur(f.proposta.preco):"")}</dl>
   <div class="fo-3"><section><h5>Cliente</h5><p>${pessoa({nome:c.nome,telefone:c.telefone,email:c.email})}${c.nif?`<br>NIF ${esc(c.nif)}`:""}</p></section>
@@ -50,9 +55,8 @@ function historico(){const N=F().nomeEstado,h=f.historico||[],o=f.ocorrencias||[
 
 const ABAS=[["resumo","Resumo",resumo],["percurso","Percurso",percurso],["carga","Carga",carga],["financeiro","Financeiro",financeiro],["historico","Histórico",historico]];
 function desenhar(){const p=document.getElementById("foPainel");if(!p||!f)return;const e=f.encomenda;
-  p.querySelector(".fo-topo").innerHTML=`<div><small>${f.demo?"DEMONSTRAÇÃO, ":""}FICHA DA OPERAÇÃO</small><h3>${esc(cod)}</h3><p>${esc(e.origem||"—")} → ${esc(e.destino||"—")}, ${esc(f.prestador||"—")}</p></div>
-    <span class="fo-chip azul">${esc(F().nomeEstado(e.estado)||e.etapa)}</span><button type="button" class="fo-fechar" aria-label="Fechar a ficha">×</button>
-    <div class="fo-barra" aria-hidden="true">${F().ETAPAS.map((_,k)=>`<i class="${k<f.etapa_idx?"feito":k===f.etapa_idx?"atual":""}"></i>`).join("")}</div>`;
+  p.querySelector(".fo-topo").innerHTML=`<div><small>Ficha da operação${f.demo?" (demonstração)":""}</small><h3>${esc(cod)}</h3><p>${esc(e.origem||"—")} → ${esc(e.destino||"—")}, ${esc(f.prestador||"—")}</p></div>
+    <span class="fo-chip azul">${esc(F().nomeEstado(e.estado)||e.etapa)}</span><button type="button" class="fo-fechar" aria-label="Fechar a ficha">×</button>`;
   p.querySelector(".fo-abas").innerHTML=ABAS.map(([k,t])=>`<button type="button" role="tab" aria-selected="${k===aba}" class="${k===aba?"ativo":""}" data-aba="${k}">${t}</button>`).join("");
   p.querySelector(".fo-corpo").innerHTML=(ABAS.find(x=>x[0]===aba)||ABAS[0])[2]();p.querySelector(".fo-passo").innerHTML=window.elologFichaAcoes?.passo(f)||""}
 

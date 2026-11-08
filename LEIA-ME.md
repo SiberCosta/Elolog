@@ -58,6 +58,55 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v112 (o que faltava da especificação)
+
+- **Modo suporte a sério** (`app/administracao/modo-suporte.js`):
+  - «Entrar como suporte» pede confirmação, mostra a Elolog como a empresa a vê e põe uma faixa fixa no topo com «Voltar à administração»;
+  - o início e o fim ficam na auditoria;
+  - com o servidor, abre em leitura com caminhos reais, porque a base de dados não deixa a administração entrar nos dados internos de uma empresa.
+- **Painel do prestador**: «Como estão as encomendas» mostra as encomendas em curso ordenadas pela saúde, com as atrasadas primeiro.
+- **Próximo passo da administração** com as regras do Centro de comando: apoio escalado, inscrições há mais de 48 h, pagamentos de subscrição, encomendas diretas, encomendas paradas.
+- **Notificações**:
+  - cada uma termina numa ação com verbo;
+  - um alerta urgente por tratar há 48 h ou mais fica âmbar, com «há N dias»;
+  - os títulos foram reescritos em tom humano.
+- **Servidor**:
+  - a sincronização do cliente lê o histórico de cada encomenda (quem mudou a etapa e quando) e a última atualização, para o Fluxo Vivo funcionar com dados reais;
+  - a ficha da operação mostra o Fluxo Vivo e deixa de ter a barra repetida.
+
+## v111 (sistema vivo: Fluxo Vivo, próximo passo, botões com urgência, zero becos sem saída)
+
+Especificação completa por painel, com os princípios, as regras exatas e os textos antes e depois: `documentacao/ESPECIFICACAO_UX.md`.
+
+- **Fluxo Vivo de Operação** (`app/comum/fluxo-vivo.js`), em vez das barras de 11 etapas, nas Encomendas do cliente, na ficha da encomenda do prestador e no rastreio:
+  - uma frase do que está a acontecer, com quem tratou quando está registado;
+  - a «saúde» calculada com a previsão, o último movimento e os pagamentos reais;
+  - 4 fases com o passo atual a pulsar;
+  - a ação certa.
+  No início do cliente aparece a versão compacta.
+- **O seu próximo passo** no topo do menu, para os três papéis (`app/comum/navegacao-viva.js`). No prestador, cada etapa do menu mostra quantas encomendas tem; as vazias ficam discretas.
+- **Botões que mudam com a urgência**: um pagamento em aberto há 48 h ou mais passa de «Pagar agora» a «Regularizar agora», com «há N dias» e uma dica.
+- **Zero becos sem saída**: cerca de 100 estados vazios reescritos (`app/comum/vazios-textos.js`), em dois tamanhos e com ícone, e com ação quando existe uma.
+- **Tokens** de raio, sombra, movimento e acento por papel (`app/comum/vivo.css`). Com «movimento reduzido» no sistema, tudo fica parado.
+
+## v110 (operação clara: etapas com nome, estados vazios com ação, automações, navios e prestadores)
+
+Diretriz completa, com textos antes e depois, padrões e regras de código: `documentacao/OPERACAO_CLARA.md`.
+
+- **Etapas do percurso**: «Etapa 4 de 11», o nome de cada etapa numa barra e «A seguir: …», em vez de 11 pontos sem nome. Os títulos das etapas dizem o que fazer («Recolher a carga no cliente», «Receber a carga no armazém»…).
+- **Estados vazios**: dizem o que se passa, quando muda e levam ao passo onde está o trabalho («Não há recolhas por fazer», com o botão «Ver pedidos por aprovar»). Na equipa no terreno, o texto muda com o separador escolhido.
+- **Esperas sem fim**: uma mensagem «A carregar…» parada mais de 15 s passa a «Está a demorar mais do que o costume», com o botão «Tentar outra vez».
+- **Automação** («O que a Elolog faz por si»):
+  - regras agrupadas (Dinheiro, Encomendas e terreno, Navios), com ícones e frases de operação;
+  - o interruptor diz «Ligada» ou «Desligada»;
+  - os avisos criados pelas regras falam como a equipa.
+- **Navios em tempo real**: um cartão por navio (estado do sinal, destino, chegada prevista, velocidade, última posição), «Deixar de seguir» com confirmação e «Tentar outra vez» quando a leitura falha.
+- **Prestadores**:
+  - em cada linha só ficam à vista «Ver empresa» e «Suspender prestador»; o resto passa para «Mais ações»;
+  - suspender pede confirmação e explica o efeito;
+  - o prazo de validação tem rótulo próprio;
+  - as janelas deixam de repetir o título e de mostrar o subtítulo em maiúsculas.
+
 ## v109 (tom humano, simulação rápida, seguimento por email com consentimento)
 
 - **Textos e ações mais humanos** (guia em `documentacao/TOM_DE_VOZ.md`):

@@ -15,11 +15,12 @@ const MAPA=`<svg class="cn-mapa" viewBox="0 0 460 220" aria-hidden="true"><defs>
 ${[[70,
 70],[370,90],[300,160],[420,60]].map(([x,y],i)=>`<circle class="cn-no" cx="${x}" cy="${y}" r="5"/><circle class="cn-onda" cx="${x}" cy="${y}" r="5" style="animation-delay:${i*.7}s"/>`).join("")}
 ${["cnr1","cnr2","cnr3"].map((r,
-i)=>`<circle class="cn-carga" r="3.5"><animateMotion dur="${5+i}s" begin="${i*.8}s" repeatCount="indefinite"><mpath href="#${r}"/></animateMotion></circle>`).join("")}</svg>`;function proximo(){const o=ativas()[0],
-paga=o&&(/pagamento/i.test(o.status||"")||porPagar().some(p2=>p2.operationId===o.id));const p=!o?{t:"Para onde vai a sua próxima carga?",d:"Diga-nos a origem e o destino. As transportadoras respondem com preço e prazo, e só paga se aprovar.",cta:"",ir:""}:{
-t:paga?`Só falta o pagamento da encomenda ${o.id}`:`Encomenda ${o.id}, ${o.status||"Recebido"}`,d:`De ${o.origin||"origem por indicar"} para ${o.destination||"destino por indicar"}${o.date?", previsão "+o.date:""}`,cta:paga?"Pagar agora":"Ver estado da encomenda",
+i)=>`<circle class="cn-carga" r="3.5"><animateMotion dur="${5+i}s" begin="${i*.8}s" repeatCount="indefinite"><mpath href="#${r}"/></animateMotion></circle>`).join("")}</svg>`;function proximo(){/* v111: a encomenda com pagamento em aberto passa à frente (igual ao «O seu próximo passo» do menu) */const comPag=ativas().find(x=>porPagar().some(p2=>p2.operationId===x.id)),o=comPag||ativas()[0],
+pg=o&&porPagar().find(p2=>p2.operationId===o.id),diasPg=pg?Math.floor((Date.now()-new Date(pg.createdAt||pg.date||Date.now()))/864e5):0,
+paga=o&&(/pagamento/i.test(o.status||"")||!!pg);const p=!o?{t:"Para onde vai a sua próxima carga?",d:"Diga-nos a origem e o destino. As transportadoras respondem com preço e prazo, e só paga se aprovar.",cta:"",ir:""}:{
+t:paga?`Só falta o pagamento da encomenda ${o.id}`:`Encomenda ${o.id}, ${o.status||"Recebido"}`,d:`De ${o.origin||"origem por indicar"} para ${o.destination||"destino por indicar"}${paga&&diasPg>=2?`. O pagamento está por fazer há ${diasPg} dias`:o.date?", previsão "+o.date:""}`,cta:paga?(diasPg>=2?"Regularizar agora":"Pagar agora"):"Ver estado da encomenda",
 ir:paga?"showPage('payments')":"openClientOrderSection('status')"};
-return`<section id="clientNextStep" class="client-next-step cn-v2"><div class="cn-texto"><span>Próximo passo</span><h2>${escapeHtml(p.t)}</h2><p>${escapeHtml(p.d)}</p>${p.cta?`<button type="button" class="btn-primary" onclick="${p.ir}">${p.cta}</button>`:""}${simRapida(!!o)}</div>${MAPA}</section>`}
+return`<section id="clientNextStep" class="client-next-step cn-v2"><div class="cn-texto"><span>Próximo passo</span><h2>${escapeHtml(p.t)}</h2><p>${escapeHtml(p.d)}</p>${p.cta?`<button type="button" class="${p.cta==="Regularizar agora"?"bt-ctx bt-urgente":"btn-primary"}" onclick="${p.ir}">${p.cta}</button>`:""}${simRapida(!!o)}</div>${MAPA}</section>`}
 /* v109: simulação rápida logo no início (acima da dobra): leva a origem e o destino para o simulador completo */
 const simRapida=outro=>`<form class="sim-rapida" onsubmit="return elologSimRapida(this)" aria-label="Simulação rápida">${outro?"<b>Simular outro envio</b>":""}<label><span>Origem</span><input name="o" placeholder="Ex.: Lisboa" autocomplete="address-level2" enterkeyhint="next" required></label><label><span>Destino</span><input name="d" placeholder="Ex.: São Tomé" autocomplete="off" enterkeyhint="go" required></label><button type="submit" class="btn-primary">Simular agora</button></form>`;
 window.elologSimRapida=function(f){const v=k=>f.elements[k].value.trim();showPage("clientSimulation");const po=(id,x)=>{const c=document.getElementById(id);if(c&&x){c.value=x;c.dispatchEvent(new Event("input",{bubbles:true}));c.dispatchEvent(new Event("change",{bubbles:true}))}};
@@ -32,8 +33,8 @@ tr=m.filter(o=>/trânsito|transito/i.test(o.status||"")).length,fim=m.filter(o=>
 fim,"Entregues","openClientOrderSection('history')")}${kpi("vermelho","card","Por pagar",pp,"Pagamentos pendentes","showPage('payments')",`<span class="ck-progresso" title="${pago}% pago"><i style="width:${pago}%"></i></span>`)}</div>`}const ETAPAS=["Recolha",
 "Armazém","Trânsito","Destino"];function linha(o){const pct=clientDashboardProgress(o.status),aereo=/a[ée]re|air/i.test(String(o.mode||o.transport||o.type||"")),n=Math.round(pct/25);
 return`<div class="ca-linha"><div class="ca-id"><span class="ca-modo">${SVG(aereo?IC.aviao:IC.navio)}</span><div><b>${escapeHtml(o.id||"—")}</b><small>${rota(o)}</small></div></div>
-<ol class="ca-etapas" aria-label="Progresso ${pct}%">${ETAPAS.map((e,
-i)=>`<li class="${i<n?"feito":""}${i===n?" atual":""}"><i></i><span>${e}</span></li>`).join("")}</ol>
+${window.elologFluxo?elologFluxo.compacto(o,"cliente"):`<ol class="ca-etapas" aria-label="Progresso ${pct}%">${ETAPAS.map((e,
+i)=>`<li class="${i<n?"feito":""}${i===n?" atual":""}"><i></i><span>${e}</span></li>`).join("")}</ol>`}
 <div class="ca-estado"><span class="pf-pill">${escapeHtml(o.status||"Recebido")}</span><small>${escapeHtml(o.date?"Previsão "+o.date:"")}</small></div></div>`}
 const vazio=`<div class="ca-vazio"><span>${SVG(IC.box)}</span><div><b>Sem encomendas ativas</b></div><button type="button" class="btn-secondary" onclick="showPage('clientSimulation')">Fazer uma simulação</button></div>`;
 const tile=(i,t,s,ir)=>`<button type="button" class="cr-tile" onclick="${ir}"><span class="cr-ic">${SVG(IC[i])}</span><span class="cr-txt"><b>${t}</b><small>${s}</small></span>${SVG('<path d="m9 6 6 6-6 6"/>',"cr-seta")}</button>`;

@@ -10,7 +10,7 @@
   function janela({eyebrow,titulo,passos}){
     document.getElementById("pmJanela")?.remove();
     const f=document.createElement("div");f.id="pmJanela";f.className="pm-fundo";
-    f.innerHTML=`<div class="pm-caixa" role="dialog" aria-modal="true" aria-labelledby="pmTitulo"><header class="pm-topo"><div><small>${esc(eyebrow)}</small><h3 id="pmTitulo" tabindex="-1">${esc(titulo)}</h3></div><button type="button" class="pm-fechar" aria-label="Fechar">×</button></header>${passos?`<ol class="pm-passos">${passos.map((p,i)=>`<li data-i="${i}"><b>${i+1}</b>${esc(p)}</li>`).join("")}</ol>`:""}<div class="pm-corpo"></div><footer class="pm-rodape"></footer></div>`;
+    f.innerHTML=`<div class="pm-caixa" role="dialog" aria-modal="true" aria-labelledby="pmTitulo"><header class="pm-topo"><div>${eyebrow?`<small>${esc(/[a-zà-ú]/.test(eyebrow)?eyebrow:eyebrow.charAt(0)+eyebrow.slice(1).toLocaleLowerCase("pt-PT"))}</small>`:""}<h3 id="pmTitulo" tabindex="-1">${esc(titulo)}</h3></div><button type="button" class="pm-fechar" aria-label="Fechar">×</button></header>${passos?`<ol class="pm-passos">${passos.map((p,i)=>`<li data-i="${i}"><b>${i+1}</b>${esc(p)}</li>`).join("")}</ol>`:""}<div class="pm-corpo"></div><footer class="pm-rodape"></footer></div>`;
     document.body.appendChild(f);const antes=document.activeElement;
     const fechar=()=>{f.remove();document.removeEventListener("keydown",tecla);antes?.focus?.()};
     const tecla=e=>{if(e.key==="Escape")fechar();if(e.key==="Tab"){const it=[...f.querySelectorAll("button,input,select,textarea,a[href]")].filter(x=>!x.disabled&&x.offsetParent);if(!it.length)return;
@@ -69,21 +69,30 @@
       box.querySelectorAll("[data-caminho]").forEach(b=>b.onclick=()=>abrirDocumento(b.dataset.caminho,b.dataset.nome).catch(e=>aviso(e.message,"error")))}catch(e){}}
 
   /* ---------- navios em tempo real ---------- */
-  async function navios(){const j=janela({eyebrow:"ARMAZÉM, TRANSPORTE MARÍTIMO",titulo:"Navios em tempo real"});
-    if(!online()){j.mostrar('<p>Os navios em tempo real precisam do servidor. No modo de demonstração use o <b>Mapa marítimo</b>.</p>',[{texto:"Fechar",acao:j.fechar}]);return}
-    const c=await sb(),emp=await minhaEmpresa();
-    const desenhar=async()=>{const[{data:seg},{data:pos}]=await Promise.all([c.from("navios_seguidos").select("*").order("nome"),c.from("navios_posicoes").select("*")]);const P=Object.fromEntries((pos||[]).map(p=>[p.mmsi,p]));
-      const lin=(seg||[]).map(s=>{const p=P[s.mmsi]||{},mapa=p.latitude!=null?`https://www.openstreetmap.org/?mlat=${p.latitude}&mlon=${p.longitude}#map=7/${p.latitude}/${p.longitude}`:"";
-        return`<tr><td data-label="Navio"><strong>${esc(s.nome)}</strong><small>MMSI ${esc(s.mmsi)}${s.viagem?", "+esc(s.viagem):""}</small></td><td data-label="Posição">${p.latitude!=null?`${p.latitude.toFixed(3)}, ${p.longitude.toFixed(3)}`:"à espera do 1.º sinal"}</td><td data-label="Velocidade">${p.velocidade_nos!=null?p.velocidade_nos+" nós":"—"}</td><td data-label="Destino">${esc(p.destino||"—")}</td><td data-label="ETA">${p.eta?new Date(p.eta).toLocaleString("pt-PT",{dateStyle:"short",timeStyle:"short"}):"—"}</td><td data-label="Atualizado">${p.atualizado_em?new Date(p.atualizado_em).toLocaleString("pt-PT",{dateStyle:"short",timeStyle:"short"}):"—"}</td><td>${mapa?`<a class="btn-secondary" href="${mapa}" target="_blank" rel="noopener">Ver no mapa</a>`:""} <button type="button" class="btn-secondary" data-tirar="${esc(s.mmsi)}">Deixar de seguir</button></td></tr>`}).join("");
-      j.mostrar(`<p class="pm-nota">Dados AIS do aisstream.io, atualizados a cada 30 minutos. O MMSI (9 dígitos) está no certificado do navio ou em sites de rastreio.</p>
-        <div class="pm-grelha"><label>Nome do navio<input id="pmNavNome" maxlength="80" placeholder="Ex.: Sao Tome Express"></label><label>MMSI<input id="pmNavMmsi" inputmode="numeric" maxlength="9" placeholder="9 dígitos"></label><label>Viagem (opcional)<input id="pmNavViagem" maxlength="40"></label></div>
-        ${lin?`<table class="pm-tabela"><thead><tr><th>Navio</th><th>Posição</th><th>Velocidade</th><th>Destino</th><th>ETA</th><th>Atualizado</th><th></th></tr></thead><tbody>${lin}</tbody></table>`:'<p class="pm-vazio">Ainda não segue nenhum navio.</p>'}`,
+  /* v110: janela com uma frase que explica, os navios seguidos em cartões alinhados e ações com nome claro */
+  async function navios(){const j=janela({eyebrow:"Navios",titulo:"Navios em tempo real"});
+    const irMapa=()=>{j.fechar();try{showProviderPage("providerMapa")}catch(_){}};
+    if(!online()){j.mostrar('<p class="nv-intro">Aqui acompanha os navios que levam a sua carga: onde estão, a que velocidade seguem e quando devem chegar.</p><p class="nv-nota">Esta é uma versão de demonstração, sem ligação aos navios reais. As viagens planeadas estão no Mapa marítimo.</p>',[{texto:"Fechar",acao:j.fechar},{texto:"Abrir mapa marítimo",principal:true,acao:irMapa}]);return}
+    const c=await sb(),emp=await minhaEmpresa(),dt=v=>v?new Date(v).toLocaleString("pt-PT",{dateStyle:"short",timeStyle:"short"}):"";
+    const desenhar=async()=>{const[{data:seg,error:e1},{data:pos,error:e2}]=await Promise.all([c.from("navios_seguidos").select("*").order("nome"),c.from("navios_posicoes").select("*")]);if(e1||e2)throw e1||e2;const P=Object.fromEntries((pos||[]).map(p=>[p.mmsi,p]));
+      const cartao=s=>{const p=P[s.mmsi]||{},tem=p.latitude!=null,mapa=tem?`https://www.openstreetmap.org/?mlat=${p.latitude}&mlon=${p.longitude}#map=7/${p.latitude}/${p.longitude}`:"";
+        return`<article class="nv-cartao"><header><div><strong>${esc(s.nome)}</strong><small>MMSI ${esc(s.mmsi)}${s.viagem?`, viagem ${esc(s.viagem)}`:""}</small></div><span class="nv-estado ${tem?"ok":"espera"}">${tem?"Com sinal":"À espera do primeiro sinal"}</span></header>
+          ${tem?`<dl><div><dt>Destino</dt><dd>${esc(p.destino||"Por indicar")}</dd></div><div><dt>Chegada prevista</dt><dd>${dt(p.eta)||"Por indicar"}</dd></div><div><dt>Velocidade</dt><dd>${p.velocidade_nos!=null?esc(p.velocidade_nos)+" nós":"Parado ou sem dado"}</dd></div><div><dt>Última posição</dt><dd>${dt(p.atualizado_em)}</dd></div></dl>`
+            :'<p class="nv-nota">O primeiro sinal pode demorar até 30 minutos. Se passar mais tempo, confirme o MMSI.</p>'}
+          <footer>${mapa?`<a class="btn-secondary" href="${mapa}" target="_blank" rel="noopener">Ver no mapa</a>`:""}<button type="button" class="btn-secondary nv-tirar" data-tirar="${esc(s.mmsi)}" data-nome="${esc(s.nome)}">Deixar de seguir</button></footer></article>`};
+      const lista=(seg||[]).map(cartao).join("");
+      j.mostrar(`<p class="nv-intro">Siga um navio pelo MMSI e veja onde está, a que velocidade segue e quando deve chegar. A posição atualiza a cada 30 minutos.</p>
+        <fieldset class="nv-seguir"><legend>Seguir um navio</legend><div class="pm-grelha"><label>Nome do navio<input id="pmNavNome" maxlength="80" placeholder="Ex.: Sao Tome Express"></label><label>MMSI<input id="pmNavMmsi" inputmode="numeric" maxlength="9" placeholder="9 dígitos" autocomplete="off"></label><label>Viagem (opcional)<input id="pmNavViagem" maxlength="40"></label></div><small>O MMSI tem 9 dígitos e está no certificado do navio ou em sites de rastreio.</small></fieldset>
+        <h4 class="nv-tit">${(seg||[]).length?`${(seg||[]).length===1?"O navio que segue":"Os "+(seg||[]).length+" navios que segue"}`:"Ainda não segue nenhum navio"}</h4>
+        ${lista?`<div class="nv-lista">${lista}</div>`:'<p class="nv-nota">Escreva o nome e o MMSI acima e carregue em «Seguir navio». Aparece aqui logo a seguir.</p>'}`,
         [{texto:"Fechar",acao:j.fechar},{texto:"Seguir navio",principal:true,acao:async()=>{const nome=document.getElementById("pmNavNome").value.trim(),mmsi=document.getElementById("pmNavMmsi").value.replace(/\D/g,"");
-          if(!window.eloValidar(["pmNavNome","pmNavMmsi"]))return;if(!/^\d{9}$/.test(mmsi))return aviso("O MMSI tem 9 dígitos.","warning");
+          if(!window.eloValidar(["pmNavNome","pmNavMmsi"]))return;if(!/^\d{9}$/.test(mmsi))return aviso("O MMSI tem 9 dígitos. Confirme o número no certificado do navio.","warning");
           const{error}=await c.from("navios_seguidos").insert({empresa_id:emp?.empresa_id,mmsi,nome,viagem:document.getElementById("pmNavViagem").value.trim()||null});
-          if(error)return aviso(error.code==="23505"?"Este navio já está a ser seguido.":"Não foi possível seguir o navio.","error");aviso("Navio adicionado. A posição aparece na próxima atualização.","success");desenhar()}}]);
-      j.corpo.querySelectorAll("[data-tirar]").forEach(b=>b.onclick=async()=>{await c.from("navios_seguidos").delete().eq("mmsi",b.dataset.tirar);desenhar()})};
-    try{await desenhar()}catch(e){j.mostrar('<p>Não foi possível ler os navios.</p>',[{texto:"Fechar",acao:j.fechar}])}}
+          if(error)return aviso(error.code==="23505"?"Já está a seguir este navio.":"Não conseguimos adicionar o navio. Tente outra vez daqui a pouco.","error");aviso(`A seguir o ${nome}. A posição aparece na próxima atualização.`,"success");desenhar()}}]);
+      j.corpo.querySelectorAll("[data-tirar]").forEach(b=>b.onclick=async()=>{if(b.dataset.certo!=="1"){b.dataset.certo="1";b.textContent="Confirmar: deixar de seguir";b.classList.add("nv-confirmar");setTimeout(()=>{if(b.isConnected){b.dataset.certo="";b.textContent="Deixar de seguir";b.classList.remove("nv-confirmar")}},5000);return}
+        const{error}=await c.from("navios_seguidos").delete().eq("mmsi",b.dataset.tirar);if(error)return aviso("Não conseguimos deixar de seguir este navio. Tente outra vez.","error");aviso(`Deixou de seguir o ${b.dataset.nome}.`,"success");desenhar()})};
+    const tentar=async()=>{j.mostrar('<p class="nv-nota" role="status">A carregar os navios…</p>',[{texto:"Fechar",acao:j.fechar}]);try{await desenhar()}catch(e){j.mostrar('<p class="nv-intro">Não conseguimos ler os navios agora.</p><p class="nv-nota">Pode ser a ligação à internet. Os navios que segue continuam guardados.</p>',[{texto:"Fechar",acao:j.fechar},{texto:"Tentar outra vez",principal:true,acao:tentar}])}};
+    tentar()}
   window.elologNavios={abrir:navios};
   /* ---------- regresso do email de confirmação da conta ---------- */
   function confirmacao(){const r=window.ELOLOG_RETORNO||location,h=new URLSearchParams(String(r.hash||"").replace(/^#/,"")),q=new URLSearchParams(r.search||"");

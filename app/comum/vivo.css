@@ -1,0 +1,116 @@
+/* Elolog v111 — sistema vivo: Fluxo Vivo, botões contextuais, próximo passo no menu, estados vazios com ícone, dicas.
+   Tokens partilhados pelos três papéis; o acento muda com o papel (body[data-papel]). Movimento só onde explica algo,
+   e nenhum quando o sistema pede movimento reduzido. */
+:root{--vv-r1:8px;--vv-r2:12px;--vv-r3:16px;--vv-r4:22px;
+  --vv-sombra-1:0 1px 2px rgba(19,41,61,.06),0 2px 6px -2px rgba(19,41,61,.08);
+  --vv-sombra-2:0 1px 2px rgba(19,41,61,.06),0 10px 28px -10px rgba(19,41,61,.22);
+  --vv-sombra-3:0 2px 4px rgba(19,41,61,.06),0 24px 56px -16px rgba(19,41,61,.32);
+  --vv-acento:var(--elo-azul,#1F5F8B);--vv-mov:.32s cubic-bezier(.2,.7,.2,1)}
+body[data-papel="cliente"]{--vv-acento:var(--elo-verde,#1F7A5C)}
+body[data-papel="prestador"]{--vv-acento:var(--elo-azul,#1F5F8B)}
+body[data-papel="admin"]{--vv-acento:var(--elo-azul-claro,#7FA9C6)}
+
+/* ---------- Fluxo Vivo ---------- */
+html:not(#bv) body .fv{display:grid;gap:16px;width:100%;box-sizing:border-box;padding:18px 20px;border:1px solid var(--elo-fio,#DCE4EA);border-radius:var(--vv-r3);background:var(--elo-cartao,#fff);box-shadow:var(--vv-sombra-1)}
+html:not(#bv) body .fv-topo{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px 16px}
+html:not(#bv) body .fv-frase{flex:1 1 280px;margin:0;color:var(--elo-tinta,#13293D);font-size:17px;font-weight:600;line-height:1.4}
+html:not(#bv) body .fv-saude{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:700;white-space:nowrap}
+html:not(#bv) body .fv-saude i{width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 0 0 currentColor}
+html:not(#bv) body .fv-ok .fv-saude{background:var(--elo-ok-fundo,#E7F4EE);color:var(--elo-ok,#1F7A5C)}
+html:not(#bv) body .fv-ok .fv-saude i{animation:fv-respira 2.4s ease-out infinite}
+html:not(#bv) body .fv-aviso .fv-saude{background:var(--elo-aviso-fundo,#FBF3E4);color:#8A5A12}
+html:not(#bv) body .fv-erro .fv-saude{background:var(--elo-erro-fundo,#FDECEA);color:var(--elo-erro,#B42318)}
+html:not(#bv) body .fv-neutro .fv-saude{background:#EEF2F5;color:var(--elo-texto,#4B5D6B)}
+html:not(#bv) body .fv-fases{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0;padding:0;list-style:none}
+html:not(#bv) body .fv-fases li{display:grid;gap:6px;min-width:0}
+html:not(#bv) body .fv-fases b{color:var(--elo-suave,#6B7D89);font-size:13px}
+html:not(#bv) body .fv-fases li.feito b,html:not(#bv) body .fv-fases li.atual b{color:var(--elo-tinta,#13293D)}
+html:not(#bv) body .fv-pista{position:relative;display:block;height:8px;border-radius:999px;background:#E6ECF1}
+html:not(#bv) body .fv-pista i{position:absolute;inset:0 auto 0 0;width:var(--p);border-radius:inherit;background:linear-gradient(90deg,var(--elo-azul-claro,#7FA9C6),var(--elo-mar,#13293D));animation:fv-enche .9s var(--vv-mov) both}
+html:not(#bv) body .fv-fases li.feito .fv-pista i{background:var(--elo-azul-claro,#7FA9C6)}
+html:not(#bv) body .fv-fases li.atual .fv-pista i::after{content:"";position:absolute;right:-7px;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:50%;background:#fff;border:3px solid var(--elo-mar,#13293D);box-sizing:border-box;animation:fv-pulsa 2.4s ease-out infinite}
+html:not(#bv) body .fv-fases small{overflow:hidden;color:var(--elo-texto,#4B5D6B);font-size:12.5px;line-height:1.35;text-overflow:ellipsis}
+html:not(#bv) body .fv-fases li:not(.atual):not(.feito) small{color:var(--elo-suave,#8A99A6)}
+html:not(#bv) body .fv-rodape{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+html:not(#bv) body .fv-rodape small{color:var(--elo-texto,#4B5D6B);font-size:13px}
+html:not(#bv) body .client-order-progress-track:has(.fv){display:block;overflow:visible;padding:0;background:none;border:0}
+@media(max-width:640px){html:not(#bv) body .fv-fases{grid-template-columns:1fr 1fr}html:not(#bv) body .fv{padding:16px}}
+/* versão compacta (listas) */
+html:not(#bv) body .fv-mini{display:flex;align-items:center;gap:12px;min-width:0}
+html:not(#bv) body .fv-fio{display:grid;grid-template-columns:repeat(4,22px);gap:3px;flex:none}
+html:not(#bv) body .fv-fio i{height:6px;border-radius:3px;background:#E6ECF1}
+html:not(#bv) body .fv-fio i.feito{background:var(--elo-azul-claro,#7FA9C6)}
+html:not(#bv) body .fv-fio i.atual{background:var(--elo-mar,#13293D)}
+html:not(#bv) body .fv-mini b{display:block;color:var(--elo-tinta,#13293D);font-size:13.5px}
+html:not(#bv) body .fv-mini small{display:flex;align-items:center;gap:6px;color:var(--elo-texto,#4B5D6B);font-size:12.5px}
+html:not(#bv) body .fv-mini small i{width:7px;height:7px;border-radius:50%;background:var(--elo-suave,#8A99A6)}
+html:not(#bv) body .fv-mini.fv-ok small i{background:var(--elo-ok,#1F7A5C)}
+html:not(#bv) body .fv-mini.fv-aviso small i{background:#B7791F}
+html:not(#bv) body .fv-mini.fv-erro small i{background:var(--elo-erro,#B42318)}
+@keyframes fv-enche{from{width:0}}
+@keyframes fv-respira{0%{box-shadow:0 0 0 0 color-mix(in srgb,currentColor 45%,transparent)}70%,100%{box-shadow:0 0 0 7px transparent}}
+@keyframes fv-pulsa{0%{box-shadow:0 0 0 0 rgba(19,41,61,.35)}70%,100%{box-shadow:0 0 0 8px rgba(19,41,61,0)}}
+
+/* ---------- Botões contextuais ---------- */
+html:not(#bv) body .bt-ctx{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px}
+html:not(#bv) body .bt-urgente{padding:0 18px;border:2px solid #B7791F;border-radius:var(--vv-r2);background:#FBE3B0;color:#4A2E04;font-weight:700;font-size:14.5px;cursor:pointer;
+  box-shadow:var(--vv-sombra-1);animation:bt-chama 1.6s ease-out 2;transition:background var(--vv-mov),transform var(--vv-mov)}
+html:not(#bv) body .bt-urgente:hover{background:#F7D28A;transform:translateY(-1px)}
+html:not(#bv) body .bt-urgente small{padding:2px 8px;border-radius:999px;background:rgba(74,46,4,.12);font-size:12px;font-weight:700}
+@keyframes bt-chama{0%{box-shadow:0 0 0 0 rgba(183,121,31,.5)}80%,100%{box-shadow:0 0 0 10px rgba(183,121,31,0)}}
+
+/* ---------- O seu próximo passo (menu lateral, os três papéis) ---------- */
+html:not(#bv) body #sidebar .nv-proximo{flex:none;display:grid;gap:2px;width:calc(100% - 28px);margin:12px 14px 6px;padding:12px 14px;border:1px solid rgba(255,255,255,.16);border-left:4px solid var(--vv-acento);
+  border-radius:var(--vv-r2);background:rgba(255,255,255,.07);color:#fff;text-align:left;cursor:pointer;transition:background var(--vv-mov),transform var(--vv-mov)}
+html:not(#bv) body #sidebar .nv-proximo:hover{background:rgba(255,255,255,.13);transform:translateX(2px)}
+html:not(#bv) body #sidebar .nv-proximo small{color:rgba(255,255,255,.72);font-size:12px;font-weight:600;letter-spacing:0;text-transform:none}
+html:not(#bv) body #sidebar .nv-proximo strong{color:#fff;font-size:14.5px;line-height:1.3}
+html:not(#bv) body #sidebar .nv-proximo span{color:rgba(255,255,255,.78);font-size:12.5px}
+html:not(#bv) body #sidebar .nv-proximo[data-nivel="urgente"]{border-left-color:#F2B544;background:rgba(242,181,68,.16)}
+html:not(#bv) body #sidebar .nv-proximo[data-nivel="agora"]{border-left-color:#6FD3A8}
+html:not(#bv) body #sidebar .nv-conta{margin-left:auto;min-width:22px;padding:1px 7px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font-size:12px;font-weight:700;text-align:center}
+html:not(#bv) body #sidebar .nv-conta:empty{display:none}
+html:not(#bv) body #sidebar button.nv-zero{opacity:.62}
+html:not(#bv) body #sidebar button:has(>.nv-conta){display:flex;align-items:center;gap:8px}
+
+/* ---------- Estados vazios com ícone acolhedor ---------- */
+html:not(#bv) body .vz.vz2 .vz-ic{position:relative;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:var(--elo-info-fundo,#EAF2F8);color:var(--elo-azul,#1F5F8B);font-size:24px}
+html:not(#bv) body .vz.vz2 .vz-ic::before{content:"";position:absolute;inset:-8px;border:1.5px dashed var(--elo-fio,#C9D6E0);border-radius:50%;animation:vz-orbita 24s linear infinite}
+html:not(#bv) body .vz-c{display:flex!important;align-items:flex-start;gap:12px;padding:14px 4px!important;text-align:left!important;background:none!important;border:0!important}
+html:not(#bv) body .vz-c .vz-ic{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:50%;background:var(--elo-info-fundo,#EAF2F8);color:var(--elo-azul,#1F5F8B)}
+html:not(#bv) body .vz-c strong{display:block;color:var(--elo-tinta,#13293D);font-size:14.5px}
+html:not(#bv) body .vz-c span{display:block;margin-top:2px;color:var(--elo-texto,#4B5D6B);font-size:13px;line-height:1.5}
+html:not(#bv) body .vz-c .vz-ligacao{margin-top:6px;padding:0;border:0;background:none;color:var(--elo-azul,#1F5F8B);font-weight:700;font-size:13.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+@keyframes vz-orbita{to{transform:rotate(360deg)}}
+
+/* ---------- Dicas (tooltips) e profundidade das janelas ---------- */
+html:not(#bv) body [data-dica]{position:relative}
+html:not(#bv) body [data-dica]:is(:hover,:focus-visible)::after{content:attr(data-dica);position:absolute;left:50%;bottom:calc(100% + 8px);z-index:50;width:max-content;max-width:240px;padding:8px 10px;
+  transform:translateX(-50%);border-radius:var(--vv-r1);background:var(--elo-mar,#13293D);color:#fff;font-size:12.5px;font-weight:500;line-height:1.4;text-align:left;box-shadow:var(--vv-sombra-2);pointer-events:none}
+html:not(#bv) body .pm-caixa{border-radius:var(--vv-r4)!important;box-shadow:var(--vv-sombra-3)!important}
+html:not(#bv) body .pm-rodape{gap:10px}
+
+@media (prefers-reduced-motion:reduce){html:not(#bv) body :is(.fv-pista i,.fv-pista i::after,.fv-saude i,.bt-urgente,.vz-ic::before){animation:none!important}}
+
+/* ---------- Modo suporte: faixa fixa enquanto a administração vê como uma empresa ---------- */
+html:not(#bv) body .faixa-suporte{position:fixed;inset:0 0 auto 0;z-index:9000;display:flex;align-items:center;gap:14px;min-height:56px;padding:8px 16px;box-sizing:border-box;
+  background:var(--elo-azul,#1F5F8B);color:#fff;box-shadow:var(--vv-sombra-2)}
+html:not(#bv) body .faixa-suporte .fs-ic{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.16)}
+html:not(#bv) body .faixa-suporte p{flex:1;margin:0;display:grid;gap:1px;line-height:1.35}
+html:not(#bv) body .faixa-suporte strong{font-size:14.5px}
+html:not(#bv) body .faixa-suporte span{font-size:12.5px;opacity:.85}
+html:not(#bv) body .faixa-suporte button{flex:none;min-height:40px;padding:0 16px;border:2px solid #fff;border-radius:var(--vv-r2);background:#fff;color:var(--elo-mar,#13293D);font-weight:700;font-size:14px;cursor:pointer}
+html:not(#bv) body .faixa-suporte button:hover{background:transparent;color:#fff}
+html:not(#bv) body.em-suporte #app{padding-top:56px}
+html:not(#bv) body.em-suporte #sidebar{top:56px;height:calc(100% - 56px)}
+@media(max-width:620px){html:not(#bv) body .faixa-suporte span{display:none}html:not(#bv) body .faixa-suporte button{padding:0 10px;font-size:13px}}
+html:not(#bv) body .suporte-caminhos{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:6px}
+html:not(#bv) body .pd-saude{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:12px}
+html:not(#bv) body .pd-saude .fv-mini{justify-self:end}
+@media(max-width:620px){html:not(#bv) body .pd-saude{grid-template-columns:1fr auto}html:not(#bv) body .pd-saude .fv-mini{grid-column:1/-1;justify-self:start}}
+
+/* ---------- Notificações: ação com verbo e o mesmo âmbar «há N dias» dos botões ---------- */
+html:not(#bv) body .notification-item .nt-acao{display:inline-flex;align-items:center;gap:8px;margin-top:6px;color:var(--elo-azul,#1F5F8B);font-size:13px;font-weight:700}
+html:not(#bv) body .notification-item.urgente .nt-acao{color:#8A5A12}
+html:not(#bv) body .notification-item .nt-acao small{padding:2px 8px;border-radius:999px;background:#FBE3B0;color:#4A2E04;font-size:11.5px;font-weight:700}
+html:not(#bv) body .notification-item.nt-parada{box-shadow:inset 3px 0 0 #B7791F;background:#FFFAF0}

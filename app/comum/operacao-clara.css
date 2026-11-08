@@ -1,0 +1,87 @@
+/* Elolog v110 — operação clara: etapas com nome, estados vazios com ação, automações, prestadores e janela dos navios.
+   Mesma camada final das outras folhas (html:not(#bv) body …) para não perder para regras antigas. */
+
+/* ---------- Etapas do percurso (stepper) ---------- */
+html:not(#bv) body .provider-page:has(.et-cartao)>.card>.card-title:has(>h3:only-child){display:none}
+html:not(#bv) body .et-cartao{display:grid;gap:6px;padding:18px 20px;border:1px solid var(--elo-fio,#DCE4EA);border-left:4px solid var(--elo-area-operacao,#1F5F8B);border-radius:14px;background:var(--elo-cartao,#fff)}
+html:not(#bv) body .et-cartao .et-num{color:var(--elo-azul,#1F5F8B);font-size:13px;font-weight:700;letter-spacing:0;text-transform:none}
+html:not(#bv) body .et-cartao strong{font-size:21px;line-height:1.25;color:var(--elo-tinta,#13293D)}
+html:not(#bv) body .et-cartao p{margin:0;max-width:68ch;color:var(--elo-texto,#4B5D6B);font-size:15px;line-height:1.55}
+html:not(#bv) body .et-barra{display:grid;grid-template-columns:repeat(11,1fr);gap:4px;margin:12px 0 0;padding:0;list-style:none}
+html:not(#bv) body .et-barra li{display:grid;gap:6px;min-width:0}
+html:not(#bv) body .et-barra i{display:block;height:6px;border-radius:3px;background:var(--elo-fio,#DCE4EA)}
+html:not(#bv) body .et-barra li.feito i{background:var(--elo-azul-claro,#7FA9C6)}
+html:not(#bv) body .et-barra li.atual i{background:var(--elo-mar,#13293D)}
+html:not(#bv) body .et-barra span{overflow:hidden;color:var(--elo-suave,#6B7D89);font-size:11.5px;line-height:1.2;text-overflow:ellipsis;white-space:nowrap}
+html:not(#bv) body .et-barra li.atual span{color:var(--elo-tinta,#13293D);font-weight:700;overflow:visible}
+html:not(#bv) body .et-seguinte{margin:2px 0 0!important;color:var(--elo-texto,#4B5D6B)!important;font-size:13.5px!important;font-weight:600}
+@media(max-width:760px){html:not(#bv) body .et-barra span,html:not(#bv) body .et-barra li.atual span{display:none}}
+
+/* ---------- Estados vazios: título, explicação e uma ação ---------- */
+html:not(#bv) body .vz.vz2{display:grid!important;justify-items:center!important;gap:8px;max-width:520px;margin:12px auto!important;padding:30px 20px 34px!important;text-align:center;border:1px dashed var(--elo-fio,#C9D6E0)!important;border-radius:14px;background:var(--elo-cartao,#fff)!important}
+html:not(#bv) body .vz.vz2 svg{width:180px;height:38px}
+html:not(#bv) body .vz.vz2 strong{color:var(--elo-tinta,#13293D);font-size:16.5px;line-height:1.35}
+html:not(#bv) body .vz.vz2 p{margin:0;color:var(--elo-texto,#4B5D6B);font-size:14px;line-height:1.55}
+html:not(#bv) body .vz.vz2 .vz-acao{margin-top:8px;min-height:42px}
+html:not(#bv) body .vz-orfa{border-color:var(--elo-aviso,#B7791F)!important;background:var(--elo-aviso-fundo,#FBF3E4)!important}
+
+/* ---------- Automação: grupos, regras com estado escrito ---------- */
+html:not(#bv) body .automation-grupo{margin-top:22px}
+html:not(#bv) body .automation-grupo>h4{margin:0 0 10px;color:var(--elo-tinta,#13293D);font-size:15px}
+html:not(#bv) body .automation-grupo .automation-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin:0}
+html:not(#bv) body .automation-rule{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:14px;padding:16px;border:1px solid var(--elo-fio,#DCE4EA);border-radius:14px;background:var(--elo-cartao,#fff)}
+html:not(#bv) body .automation-rule.off{background:var(--elo-fundo,#F5F8FA)}
+html:not(#bv) body .automation-rule .ar-ic{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--elo-info-fundo,#EAF2F8);color:var(--elo-azul,#1F5F8B)}
+html:not(#bv) body .automation-rule.off .ar-ic{background:#EDF1F4;color:var(--elo-suave,#6B7D89)}
+html:not(#bv) body .automation-rule strong{display:block;color:var(--elo-tinta,#13293D);font-size:15px;line-height:1.3}
+html:not(#bv) body .automation-rule small{display:block;margin-top:4px;color:var(--elo-texto,#4B5D6B);font-size:13.5px;line-height:1.5}
+html:not(#bv) body .automation-switch{display:grid;justify-items:center;gap:4px}
+html:not(#bv) body .automation-switch em{font-style:normal;font-size:12px;font-weight:600;color:var(--elo-suave,#6B7D89)}
+html:not(#bv) body .automation-rule.on .automation-switch em{color:var(--elo-ok,#1F7A5C)}
+html:not(#bv) body .automation-kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))!important}
+html:not(#bv) body .automation-log header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+html:not(#bv) body .automation-log header h4{margin:0}
+html:not(#bv) body .automation-log header small{display:block;margin-top:2px;color:var(--elo-texto,#4B5D6B);font-size:13px;letter-spacing:0;text-transform:none}
+
+/* ---------- Prestadores: duas ações à vista e o resto em «Mais ações» ---------- */
+html:not(#bv) body .pr-acoes{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}
+html:not(#bv) body .pr-suspender{border-color:var(--elo-aviso,#B7791F)!important;color:#8A5A12!important}
+html:not(#bv) body .pr-mais{position:relative}
+html:not(#bv) body .admin-record-row:has(.pr-mais[open]){position:relative;z-index:40}
+html:not(#bv) body .pr-mais>summary{list-style:none;cursor:pointer}
+html:not(#bv) body .pr-mais>summary::-webkit-details-marker{display:none}
+html:not(#bv) body .pr-mais>div{position:absolute;right:0;top:calc(100% + 6px);z-index:30;display:grid;min-width:240px;padding:6px;border:1px solid var(--elo-fio,#DCE4EA);border-radius:12px;background:#fff;box-shadow:0 14px 34px rgba(19,41,61,.16)}
+html:not(#bv) body .pr-mais>div button{all:unset;box-sizing:border-box;padding:10px 12px;border-radius:8px;color:var(--elo-tinta,#13293D);font-size:14px;cursor:pointer}
+html:not(#bv) body .pr-mais>div button:hover,html:not(#bv) body .pr-mais>div button:focus-visible{background:var(--elo-fundo,#F5F8FA)}
+html:not(#bv) body .pr-mais>div .pr-perigo{color:var(--elo-erro,#B42318);border-top:1px solid var(--elo-fio,#DCE4EA);border-radius:0 0 8px 8px;margin-top:4px}
+html:not(#bv) body #adminActiveProvidersPageList .admin-record-row{display:grid;grid-template-columns:minmax(200px,1.2fr) minmax(180px,1fr) auto;align-items:center;gap:16px}
+@media(max-width:900px){html:not(#bv) body #adminActiveProvidersPageList .admin-record-row{grid-template-columns:1fr}html:not(#bv) body .pr-acoes{justify-content:flex-start}}
+html:not(#bv) body .pr-prazo{display:grid;gap:3px}
+html:not(#bv) body .pr-prazo>span{color:var(--elo-texto,#4B5D6B);font-size:12px;font-weight:600}
+html:not(#bv) body .pv-tit{margin:0 0 4px;color:var(--elo-tinta,#13293D)}
+html:not(#bv) body .pv-sub{margin:0 0 12px;color:var(--elo-texto,#4B5D6B);font-size:13.5px}
+html:not(#bv) body .pc-confirmar p{margin:0 0 12px;color:var(--elo-texto,#4B5D6B);font-size:15px;line-height:1.55}
+html:not(#bv) body .pc-detalhe{padding:12px 14px;border-radius:10px;background:var(--elo-fundo,#F5F8FA);color:var(--elo-tinta,#13293D);font-weight:600}
+
+/* ---------- Janelas: título sem rebordo de foco, subtítulo em letra normal ---------- */
+html:not(#bv) body #pmTitulo:focus{outline:0!important;box-shadow:none!important}
+html:not(#bv) body .pm-topo small{letter-spacing:0;text-transform:none;font-size:13px}
+html:not(#bv) body .nv-intro{margin:0;color:var(--elo-tinta,#13293D);font-size:15.5px;line-height:1.55}
+html:not(#bv) body .nv-nota{margin:0;color:var(--elo-texto,#4B5D6B);font-size:14px;line-height:1.55}
+html:not(#bv) body .nv-seguir{margin:0;padding:14px;border:1px solid var(--elo-fio,#DCE4EA);border-radius:12px}
+html:not(#bv) body .nv-seguir legend{padding:0 6px;color:var(--elo-tinta,#13293D);font-weight:700}
+html:not(#bv) body .nv-seguir>small{display:block;margin-top:8px;color:var(--elo-suave,#6B7D89);font-size:12.5px}
+html:not(#bv) body .nv-tit{margin:4px 0 0;color:var(--elo-tinta,#13293D);font-size:15px}
+html:not(#bv) body .nv-lista{display:grid;gap:10px}
+html:not(#bv) body .nv-cartao{display:grid;gap:12px;padding:14px 16px;border:1px solid var(--elo-fio,#DCE4EA);border-radius:12px}
+html:not(#bv) body .nv-cartao header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+html:not(#bv) body .nv-cartao header strong{display:block;color:var(--elo-tinta,#13293D);font-size:16px}
+html:not(#bv) body .nv-cartao header small{color:var(--elo-suave,#6B7D89);font-size:12.5px}
+html:not(#bv) body .nv-estado{flex:none;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700}
+html:not(#bv) body .nv-estado.ok{background:var(--elo-ok-fundo,#E7F4EE);color:var(--elo-ok,#1F7A5C)}
+html:not(#bv) body .nv-estado.espera{background:var(--elo-aviso-fundo,#FBF3E4);color:#8A5A12}
+html:not(#bv) body .nv-cartao dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:0}
+html:not(#bv) body .nv-cartao dt{color:var(--elo-suave,#6B7D89);font-size:12px}
+html:not(#bv) body .nv-cartao dd{margin:2px 0 0;color:var(--elo-tinta,#13293D);font-weight:600;font-size:14px}
+html:not(#bv) body .nv-cartao footer{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
+html:not(#bv) body .nv-confirmar{border-color:var(--elo-erro,#B42318)!important;color:var(--elo-erro,#B42318)!important}
