@@ -7,7 +7,7 @@ const eu=()=>{try{return typeof currentUser!=="undefined"?currentUser:null}catch
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);
 const ETAPAS=["Simulação","Cotação","Aprovação","Recolha","Pagamento","Armazenamento","Expedição","Em trânsito","Destino","Disponível","Levantado"];
 const FASES=[["Acordo",[0,1,2]],["Origem",[3,4,5]],["No mar",[6,7]],["Chegada",[8,9,10]]];
-const FINAIS=/levantad|entregue|conclu/i,CANCEL=/cancel/i;
+const FINAIS=/levantad|entregue|conclu/i,CANCEL=/cancel|rejeit|anulad/i;
 
 function indice(o){const v=String(o?.stage||o?.status||"").toLowerCase();if(FINAIS.test(v))return 10;
   const P=[["dispon",9],["destino",8],["trânsito",7],["transito",7],["expedi",6],["armazen",5],["pag",4],["recol",3],["aprova",2],["cota",1],["propost",1]];

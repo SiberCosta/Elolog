@@ -58,6 +58,13 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v129 (rejeitadas fecham, encomendas em todos os aparelhos, distância corrigida)
+
+- **Encomenda rejeitada fecha mesmo**: o pagamento pendente sai de «Por receber» (fica guardado em `elolog_pagamentos_anulados`), deixa de contar em pendentes e alertas, e o Fluxo mostra «Encomenda cancelada». Corrige também as rejeitadas antes desta versão. Com servidor, rejeitar também cancela no servidor (`transitar_encomenda`).
+- **Todos os aparelhos**: as encomendas da empresa no servidor aparecem no painel, nas listas e no quadro de qualquer aparelho e funcionário (telemóvel incluído), atualizadas de minuto a minuto e ao voltar à aplicação.
+- **Distância da recolha**: uma morada com código postal português (0000-000) só é procurada em Portugal (antes «Campo Grande…» podia cair no Brasil: 9694 km). Se a recolha ficar a mais de 400 km do armazém mais próximo, não se cobra e pede-se a localidade e o país. A memória de moradas foi renovada para esquecer as posições erradas.
+- Ficheiros: `app/prestador/encomendas-sincronizar.js` (novo); `cliente/simulacao.js`, `prestador/armazens-servidor.js`, `prestador/painel.js`, `comum/fluxo-vivo.js`. Sem migrações.
+
 ## v128 (encomendas do prestador no servidor e recolha por km)
 
 - **Encomendas visíveis a todos**: a encomenda criada em «Simular e criar encomenda» (ou ao aceitar uma simulação revista) é gravada no servidor (`criar_encomenda_prestador`) e entra em «Aprovar pedidos» para todos os funcionários da empresa, com aviso «Nova encomenda para aprovar». Antes ficava só no navegador de quem a criou.

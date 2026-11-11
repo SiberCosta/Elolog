@@ -29,7 +29,7 @@ async function carregarDoServidor(forcar){if(!P()?.online?.()||(!forcar&&Date.no
     localStorage.setItem(chave(),JSON.stringify(s));D()?.limparCache?.();return true}catch(_){return false}}
 
 /* simulação direta: armazém mais próximo por estrada; sem armazéns, mede até à origem do envio (e diz isso) */
-let pedido=0;
+let pedido=0;const LONGE=400;   // v129: recolha a mais de 400 km do armazém mais próximo = morada encontrada no sítio errado
 window.updateProviderDirectNearestWarehouse=async function(){const pickup=providerDirectValue("providerDirectPickup")==="yes",morada=providerDirectValue("providerDirectPickupAddress"),
   input=document.getElementById("providerDirectDistance"),status=document.getElementById("providerDirectPickupPricingStatus");let ws=getProviderWarehouses();
   const limpar=()=>{if(input){input.value="0";delete input.dataset.warehouseId;delete input.dataset.warehouseName;delete input.dataset.semArmazem}updateProviderDirectPickupStatus();updateProviderDirectTotals()};
@@ -43,6 +43,7 @@ window.updateProviderDirectNearestWarehouse=async function(){const pickup=provid
     const pts=[];for(const w of ws){let c=w.lat!=null?{lat:+w.lat,lon:+w.lon}:null;if(!c){try{c=await obterCoordenadas(w.address)}catch(_){}}if(c)pts.push({w,...c})}
     if(id!==pedido)return;if(!pts.length)throw new Error("armazéns");const kms=D()?await D().estradaVarios(a,pts):pts.map(()=>null);if(id!==pedido)return;
     const lista=pts.map((p,i)=>({w:p.w,km:kms[i]!=null?kms[i]:Math.round(D()?D().linha(a,p)*13:calcularDistanciaKm(a,p)*10)/10,aprox:kms[i]==null})).sort((x,y)=>x.km-y.km),m=lista[0];
+    if(m.km>LONGE){limpar();if(status){status.textContent=`A morada de recolha ficou a ${m.km.toLocaleString("pt-PT")} km do armazém mais próximo: provavelmente foi encontrada noutro país. Acrescente a localidade e o país (por exemplo «Campo Grande 334, 1700-097 Lisboa, Portugal»).`;status.className="provider-pickup-pricing-status is-warning"}return}
     input.value=String(m.km);delete input.dataset.semArmazem;input.dataset.warehouseId=m.w.id;input.dataset.warehouseName=`${m.w.name} (${m.km.toLocaleString("pt-PT")} km ${m.aprox?"aproximados":"por estrada"})`;
     updateProviderDirectPickupStatus();updateProviderDirectTotals()}
   catch(e){if(id!==pedido)return;limpar();if(status){status.textContent=/armaz/.test(e.message)?"Não encontrámos os armazéns no mapa. Corrija as moradas em Configurações.":"Não encontrámos a morada de recolha. Experimente só o código postal e a localidade.";status.className="provider-pickup-pricing-status is-warning"}}};

@@ -13,7 +13,7 @@ function carregar(nome){const[url,obter]=LIBS[nome];if(obter())return Promise.re
 const qr=()=>carregar("qr").catch(()=>null);   // sem QR o documento abre na mesma, com o código escrito por extenso
 
 const absoluto=u=>new URL(u,location.href).href;
-const css=()=>absoluto("comum/centro-doc-folha.css?v=128");
+const css=()=>absoluto("comum/centro-doc-folha.css?v=129");
 const imagensProntas=raiz=>Promise.all([...raiz.querySelectorAll("img")].map(i=>i.complete&&i.naturalWidth?null:new Promise(r=>{i.onload=i.onerror=r;setTimeout(r,4000)})));
 
 /* imprimir: uma moldura escondida só com as folhas A4; o diálogo de impressão do navegador também permite «Guardar como PDF» */

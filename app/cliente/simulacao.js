@@ -71,16 +71,18 @@ nome:"Transportes XPTO",localizacao:localStorage.getItem("elolog_prestador_armaz
    Procura a morada completa e, se não a encontrar, versões mais curtas (sem a porta, só o código postal, só a localidade).
    Guarda o que já encontrou. Se não encontrar nada, o cliente pode escrever os km à mão: nunca fica bloqueado. */
 const COORDENADAS_CONHECIDAS={};const esperar=ms=>new Promise(r=>setTimeout(r,ms));
-function cacheGeo(){try{return JSON.parse(localStorage.getItem("elolog_geo_cache")||"{}")}catch(e){return{}}}
-function guardarGeo(k,v){try{const c=cacheGeo();c[k]=v;const ks=Object.keys(c);if(ks.length>200)delete c[ks[0]];localStorage.setItem("elolog_geo_cache",JSON.stringify(c))}catch(e){}}
-async function geocodificar(q){const r=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=pt&q="+encodeURIComponent(q));
+function cacheGeo(){try{return JSON.parse(localStorage.getItem("elolog_geo_cache_v2")||"{}")}catch(e){return{}}}
+function guardarGeo(k,v){try{const c=cacheGeo();c[k]=v;const ks=Object.keys(c);if(ks.length>200)delete c[ks[0]];localStorage.setItem("elolog_geo_cache_v2",JSON.stringify(c))}catch(e){}}
+/* v129: com código postal português (0000-000) e sem outro país escrito, procura só em Portugal (evita «Campo Grande» no Brasil) */
+const soPortugal=q=>/\b\d{4}-\d{3}\b/.test(q)&&!/s[aã]o tom[eé]|angola|brasil|brazil|cabo verde|mo[cç]ambique|guin[eé]|espanha|spain|fran[cç]a|france/i.test(q);
+async function geocodificar(q){const r=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=pt"+(soPortugal(q)?"&countrycodes=pt":"")+"&q="+encodeURIComponent(q));
   if(!r.ok)throw new Error("Serviço de localização indisponível.");const j=await r.json();return Array.isArray(j)&&j.length?{lat:Number(j[0].lat),lon:Number(j[0].lon)}:null}
 function tentativasMorada(t){const partes=t.split(",").map(x=>x.trim()).filter(Boolean),cp=(t.match(/\b\d{4}-\d{3}\b/)||[])[0],l=[t];
   if(partes.length>1)l.push(partes.slice(1).join(", "));if(cp)l.push(cp+", Portugal");if(partes.length>1)l.push(partes[partes.length-1]);
   return[...new Set(l.map(x=>x.replace(/\s+/g," ").trim()).filter(x=>x.length>2))]}
 async function obterCoordenadas(localizacao){const k=String(localizacao||"").trim().toLowerCase().replace(/\s+/g," ");if(!k)throw new Error("Localização em falta.");
   if(COORDENADAS_CONHECIDAS[k])return COORDENADAS_CONHECIDAS[k];const c=cacheGeo()[k];if(c)return COORDENADAS_CONHECIDAS[k]=c;
-  const tent=tentativasMorada(String(localizacao).trim());for(let i=0;i<tent.length;i++){if(i)await esperar(1100);const g=await geocodificar(tent[i]);
+  const tent=tentativasMorada(String(localizacao).trim()).flatMap(x=>soPortugal(x)&&!/portugal/i.test(x)?[x+", Portugal",x]:[x]).filter((x,i,a)=>a.indexOf(x)===i).slice(0,5);for(let i=0;i<tent.length;i++){if(i)await esperar(1100);const g=await geocodificar(tent[i]);
     if(g){COORDENADAS_CONHECIDAS[k]=g;guardarGeo(k,g);return g}}throw new Error("Localização não encontrada.")}
 function calcularDistanciaKm(a,b){const raio=6371;const dLat=(b.lat-a.lat)*Math.PI/180;const dLon=(b.lon-a.lon)*Math.PI/180;const lat1=a.lat*Math.PI/180;const lat2=b.lat*Math.PI/180;
   const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;return Math.round(raio*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h)))}
