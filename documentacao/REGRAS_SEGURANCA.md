@@ -49,3 +49,17 @@ documentos 60 · mensagens de chat 150 · ocorrências 30 (+60 registos) · tick
 - Todas as páginas HTML têm `Content-Security-Policy` (só a Elolog, o Supabase do projeto e os CDN jsDelivr/cdnjs) e `referrer` `strict-origin-when-cross-origin`. Ao acrescentar um serviço externo, acrescentá-lo à política nas 14 páginas, senão o navegador bloqueia-o.
 - No front-end só existe a chave pública (anon). A chave `service_role` e as chaves de API ficam apenas nos segredos das Edge Functions. `node ferramentas/auditoria.cjs` falha se encontrar uma página sem CSP ou uma chave `service_role` no código.
 - Campos de palavra-passe nova com `autocomplete="new-password"`; nenhuma palavra-passe nem código é guardado no navegador.
+
+## Centro Documental (v123)
+
+- Um documento emitido nunca é alterado nem apagado (gatilhos no servidor): uma correção cria nova versão com o mesmo número e a anterior fica «substituída», sempre consultável.
+- Cada documento tem um código de validação aleatório (96 bits). A validação pública passa pela função `validar-documento` (60 pedidos por hora por IP), que chama `servico_validar_documento` com a chave de serviço; o público continua a executar só `validar_empresa`.
+- A validação mostra só o que não é confidencial: tipo, número, versão, estado, data, encomenda e empresa emissora. Nunca nomes, moradas, contactos nem valores.
+- Quem vê: a empresa emissora (os comprovativos de pagamento só administração, financeiro e operador), o cliente da encomenda e a administração Elolog. Quem emite: guia (administração, operador), receção (+ armazém), comprovativo (administração, financeiro).
+- O comprovativo de pagamento é operacional e diz em letra visível que não é recibo nem fatura fiscal.
+
+## Terreno ao vivo e integrações (v127)
+
+- **Posição do motorista**: guarda-se só a última posição de cada serviço em curso (nunca o percurso), só enquanto o motorista partilha, no máximo uma a cada 15 segundos. O cliente vê apenas a SUA entrega e só com sinal de menos de 30 minutos; a partilha termina com o comprovativo ou com «Parar partilha».
+- **Comprovativo no terreno**: nunca se altera nem se apaga; o código local (id_local) impede gravações duplicadas quando o telemóvel reenvia sem rede; fotografias limitadas pelo prestador (limite_fotos) e por tamanho; o motorista só regista serviços que lhe estão atribuídos.
+- **Webhooks**: só endereços https:// públicos (recusados localhost, IP internos, .local/.internal, outras portas e credenciais no endereço — validado na base de dados e outra vez na função). O segredo vive no cofre (vault), é mostrado uma única vez e assina cada pedido com HMAC-SHA256 (`X-Elolog-Assinatura: t=…,v1=…`). Os eventos levam códigos, estados e datas — nunca nomes, moradas, contactos nem imagens. Sem redirecionamentos; 8 s de limite; até 8 tentativas.

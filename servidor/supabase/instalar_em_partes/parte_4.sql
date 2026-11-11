@@ -4290,4 +4290,765 @@ begin
 end $function$;
 
 
+-- ===== 00180_centro_documental.sql =====
+-- v123: Centro Documental — documentos emitidos por encomenda (guia, guia de receção, comprovativo de pagamento).
+-- Regras: numeração própria de cada empresa; um documento nunca é alterado nem apagado (uma correção cria nova versão com o mesmo número);
+-- cada documento tem um código aleatório para validação pelo QR; o conteúdo é uma fotografia dos dados no momento da emissão (construída no servidor).
+-- Só acrescenta tabelas e funções: as tabelas existentes não mudam.
+
+create table if not exists public.documentos_emitidos (
+  id uuid primary key default gen_random_uuid(),
+  empresa_id uuid not null references public.empresas(id),
+  tipo text not null check (tipo in ('guia', 'rececao', 'pagamento')),
+  numero text not null,
+  versao int not null default 1 check (versao >= 1),
+  estado text not null default 'valido' check (estado in ('valido', 'substituido', 'anulado')),
+  encomenda_id uuid not null references public.encomendas(id),
+  pagamento_id uuid references public.pagamentos(id),
+  cliente_id uuid,
+  referencia text not null,
+  dados jsonb not null,
+  sha256 text not null,
+  codigo_validacao text not null unique default encode(extensions.gen_random_bytes(12), 'hex'),
+  motivo text,
+  substitui_id uuid references public.documentos_emitidos(id),
+  emitido_por uuid,
+  emitido_em timestamptz not null default now(),
+  unique (empresa_id, numero, versao));
+create index if not exists documentos_emitidos_encomenda on public.documentos_emitidos (encomenda_id);
+create index if not exists documentos_emitidos_empresa on public.documentos_emitidos (empresa_id, tipo, emitido_em desc);
+create unique index if not exists documentos_emitidos_um_valido on public.documentos_emitidos (empresa_id, tipo, coalesce(pagamento_id, encomenda_id)) where estado = 'valido';
+
+create table if not exists public.documentos_numeracao (
+  empresa_id uuid not null references public.empresas(id), tipo text not null, ano int not null, ultimo int not null default 0,
+  primary key (empresa_id, tipo, ano));
+
+create table if not exists public.documentos_eventos (
+  id bigint generated always as identity primary key,
+  documento_id uuid not null references public.documentos_emitidos(id),
+  acao text not null check (acao in ('emitido', 'reemitido', 'consultado', 'impresso', 'descarregado', 'validado')),
+  user_id uuid, detalhe text, em timestamptz not null default now());
+create index if not exists documentos_eventos_doc on public.documentos_eventos (documento_id, em desc);
+
+-- logótipo do prestador, para os documentos terem as duas marcas (Elolog + prestador)
+create table if not exists public.empresas_marca (
+  empresa_id uuid primary key references public.empresas(id),
+  logotipo text not null check (logotipo ~ '^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$' and length(logotipo) <= 400000),
+  atualizado_em timestamptz not null default now());
+
+alter table public.documentos_emitidos enable row level security;
+alter table public.documentos_numeracao enable row level security;
+alter table public.documentos_eventos enable row level security;
+alter table public.empresas_marca enable row level security;
+revoke all on public.documentos_emitidos, public.documentos_numeracao, public.documentos_eventos, public.empresas_marca from anon, authenticated;
+grant select on public.documentos_emitidos, public.documentos_eventos to authenticated;
+
+-- quem vê: a empresa emissora (os comprovativos de pagamento só administração, financeiro e operador), o cliente da encomenda e a administração Elolog
+create or replace function private.documento_visivel(d public.documentos_emitidos) returns boolean language sql stable security definer set search_path = public as $$
+  select private.e_admin_plataforma()
+      or (d.cliente_id is not null and d.cliente_id = auth.uid())
+      or (d.empresa_id = private.minha_empresa() and (d.tipo <> 'pagamento' or private.papel_em(array['admin_empresa', 'financeiro', 'operador']))) $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename = 'documentos_emitidos' and policyname = 'documentos_emitidos_ver') then
+    create policy documentos_emitidos_ver on public.documentos_emitidos for select to authenticated using (private.documento_visivel(documentos_emitidos)); end if;
+  if not exists (select 1 from pg_policies where tablename = 'documentos_eventos' and policyname = 'documentos_eventos_ver') then
+    create policy documentos_eventos_ver on public.documentos_eventos for select to authenticated
+      using (exists (select 1 from public.documentos_emitidos d where d.id = documento_id and private.documento_visivel(d))); end if;
+end $$;
+
+-- imutabilidade: só o estado pode passar de válido a substituído/anulado; nunca se apaga
+create or replace function private.documento_imutavel() returns trigger language plpgsql set search_path = public as $$
+begin
+  if tg_op = 'DELETE' then raise exception 'Os documentos emitidos não podem ser apagados.'; end if;
+  if new.dados is distinct from old.dados or new.numero <> old.numero or new.versao <> old.versao or new.codigo_validacao <> old.codigo_validacao
+     or new.sha256 <> old.sha256 or new.tipo <> old.tipo or new.empresa_id <> old.empresa_id or new.emitido_em <> old.emitido_em
+     or not (old.estado = 'valido' and new.estado in ('valido', 'substituido', 'anulado')) then
+    raise exception 'Um documento emitido não pode ser alterado: emita uma nova versão.';
+  end if;
+  return new;
+end $$;
+create or replace trigger documentos_emitidos_imutavel before update or delete on public.documentos_emitidos for each row execute function private.documento_imutavel();
+create or replace function private.evento_imutavel() returns trigger language plpgsql as $$ begin raise exception 'O histórico dos documentos não pode ser alterado.'; end $$;
+create or replace trigger documentos_eventos_imutavel before update or delete on public.documentos_eventos for each row execute function private.evento_imutavel();
+
+-- fotografia dos dados no momento da emissão (o mesmo formato que a aplicação usa em demonstração)
+create or replace function private.documento_dados(p_tipo text, p_encomenda uuid, p_pagamento uuid) returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare e encomendas; r jsonb; pago numeric; pg pagamentos;
+begin
+  select * into e from encomendas where id = p_encomenda;
+  r := jsonb_build_object(
+    'empresa', (select jsonb_build_object('id', m.id, 'nome', coalesce(m.nome_comercial, m.nome), 'nif', m.nif, 'morada', concat_ws(', ', m.morada, nullif(concat_ws(' ', m.codigo_postal, m.cidade), ''), m.pais),
+                  'telefone', m.telefone, 'email', m.email) from empresas m where m.id = e.empresa_id),
+    'cliente', (select jsonb_build_object('nome', coalesce(c.nome, e.cliente_nome), 'nif', coalesce(c.nif, e.cliente_nif)) from (select 1) x left join clientes c on c.id = e.cliente_id),
+    'remetente', coalesce(e.remetente, '{}'::jsonb) - 'nif', 'destinatario', coalesce(e.destinatario, '{}'::jsonb) - 'nif',
+    'encomenda', jsonb_build_object('codigo', e.codigo, 'simulacao', (select s.codigo from simulacoes s where s.id = e.simulacao_id), 'origem', e.origem, 'destino', e.destino,
+      'modalidade', case when e.navio is not null then 'Marítimo' else 'A confirmar pelo prestador' end, 'tipo_carga', e.tipo_carga, 'descricao', e.descricao,
+      'quantidade', e.quantidade, 'peso_kg', e.peso_kg, 'volume_m3', e.volume_m3, 'volumes', coalesce(e.volumes, '[]'::jsonb), 'valor_declarado', e.valor_declarado,
+      'data_prevista', e.data_prevista, 'morada_recolha', e.morada_recolha, 'navio', e.navio, 'viagem', e.viagem, 'partida_prevista', e.partida_prevista,
+      'chegada_prevista', e.chegada_prevista, 'observacoes', e.observacoes),
+    'ocorrencias', (select coalesce(jsonb_agg(jsonb_build_object('codigo', o.codigo, 'tipo', o.tipo, 'descricao', o.descricao, 'em', o.created_at) order by o.created_at), '[]'::jsonb)
+                      from ocorrencias o where o.encomenda_id = e.id));
+  if p_tipo = 'rececao' then
+    r := r || jsonb_build_object('rececao', (select jsonb_build_object('em', ra.confirmado_em, 'por', f.nome, 'armazem', a.nome, 'quantidade_esperada', e.quantidade,
+            'quantidade_recebida', ra.quantidade_recebida, 'conferida', ra.carga_conferida, 'localizacao', ra.localizacao, 'ocorrencias', ra.ocorrencias)
+          from recibos_armazem ra left join armazens a on a.id = ra.armazem_id left join funcionarios f on f.id = ra.confirmado_por where ra.encomenda_id = e.id));
+  elsif p_tipo = 'pagamento' then
+    select * into pg from pagamentos where id = p_pagamento;
+    select coalesce(sum(case when tipo = 'reembolso' then -valor else valor end), 0) into pago from pagamentos
+     where encomenda_id = e.id and estado = 'pago' and coalesce(pago_em, created_at) <= coalesce(pg.pago_em, pg.created_at);
+    r := r || jsonb_build_object('pagamento', jsonb_build_object('codigo', pg.codigo, 'valor', pg.valor, 'moeda', pg.moeda, 'metodo', pg.metodo, 'referencia', pg.referencia,
+            'em', coalesce(pg.pago_em, pg.created_at), 'total_encomenda', e.preco_total, 'total_pago', pago, 'saldo', greatest(coalesce(e.preco_total, 0) - pago, 0),
+            'estado', case when coalesce(e.preco_total, 0) - pago <= 0 then 'integral' else 'parcial' end));
+  end if;
+  return r;
+end $$;
+
+-- ===== 00181_centro_documental_emissao.sql =====
+-- v123: Centro Documental — emissão automática, reemissão com nova versão, histórico e validação pública pelo QR.
+-- Um documento só é emitido quando a operação foi confirmada: guia quando a encomenda sai da aprovação; guia de receção quando o armazém
+-- confirma a receção; comprovativo quando um pagamento fica «pago». O comprovativo operacional NÃO é recibo fiscal.
+
+create or replace function private.documento_emitir(p_tipo text, p_encomenda uuid, p_pagamento uuid, p_motivo text, p_reemitir boolean)
+returns public.documentos_emitidos language plpgsql security definer set search_path = public as $$
+declare e encomendas; atual documentos_emitidos; novo documentos_emitidos; d jsonb; n int; v_ano int := extract(year from now())::int;
+begin
+  select * into e from encomendas where id = p_encomenda;
+  if not found then raise exception 'Encomenda não encontrada.'; end if;
+  select * into atual from documentos_emitidos where empresa_id = e.empresa_id and tipo = p_tipo and coalesce(pagamento_id, encomenda_id) = coalesce(p_pagamento, p_encomenda)
+     and estado = 'valido' for update;
+  if found and not p_reemitir then return atual; end if;
+  d := private.documento_dados(p_tipo, p_encomenda, p_pagamento);
+  if atual.id is not null then
+    if atual.dados = d then raise exception 'Os dados não mudaram desde a versão %: não é preciso emitir nova versão.', atual.versao; end if;
+    update documentos_emitidos set estado = 'substituido' where id = atual.id;
+    insert into documentos_emitidos (empresa_id, tipo, numero, versao, encomenda_id, pagamento_id, cliente_id, referencia, dados, sha256, motivo, substitui_id, emitido_por)
+    values (e.empresa_id, p_tipo, atual.numero, atual.versao + 1, p_encomenda, p_pagamento, e.cliente_id, e.codigo, d, encode(extensions.digest(d::text, 'sha256'), 'hex'),
+            p_motivo, atual.id, auth.uid()) returning * into novo;
+    insert into documentos_eventos (documento_id, acao, user_id, detalhe) values (novo.id, 'reemitido', auth.uid(), p_motivo);
+  else
+    insert into documentos_numeracao (empresa_id, tipo, ano, ultimo) values (e.empresa_id, p_tipo, v_ano, 1)
+      on conflict (empresa_id, tipo, ano) do update set ultimo = documentos_numeracao.ultimo + 1 returning ultimo into n;
+    insert into documentos_emitidos (empresa_id, tipo, numero, encomenda_id, pagamento_id, cliente_id, referencia, dados, sha256, emitido_por)
+    values (e.empresa_id, p_tipo, 'EL-' || case p_tipo when 'guia' then 'GUI' when 'rececao' then 'REC' else 'RCP' end || '-' || v_ano || '-' || lpad(n::text, 6, '0'),
+            p_encomenda, p_pagamento, e.cliente_id, e.codigo, d, encode(extensions.digest(d::text, 'sha256'), 'hex'), auth.uid()) returning * into novo;
+    insert into documentos_eventos (documento_id, acao, user_id) values (novo.id, 'emitido', auth.uid());
+  end if;
+  if e.cliente_id is not null then
+    insert into notificacoes (user_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+    values (e.cliente_id, 'documento_emitido', case p_tipo when 'guia' then 'Guia da encomenda' when 'rececao' then 'Carga recebida no armazém' else 'Comprovativo de pagamento' end
+            || ' · ' || e.codigo, 'O documento ' || novo.numero || case when novo.versao > 1 then ' (versão ' || novo.versao || ')' else '' end || ' está disponível nos seus documentos.',
+            'documentos_emitidos', novo.id);
+  end if;
+  return novo;
+end $$;
+
+-- condições: nenhum documento declara uma operação que não foi confirmada
+create or replace function private.documento_pode(p_tipo text, p_encomenda uuid, p_pagamento uuid) returns text language sql stable security definer set search_path = public as $$
+  select case p_tipo
+    when 'guia' then case when (select estado from encomendas where id = p_encomenda) in ('aprovacao', 'cancelada') then 'A guia só é emitida depois de a encomenda ser aprovada.' end
+    when 'rececao' then case when not exists (select 1 from recibos_armazem where encomenda_id = p_encomenda and confirmado) then 'A receção ainda não foi confirmada pelo armazém.' end
+    when 'pagamento' then case when not exists (select 1 from pagamentos where id = p_pagamento and encomenda_id = p_encomenda and estado = 'pago' and tipo <> 'reembolso')
+                               then 'O pagamento ainda não está confirmado.' end
+    else 'Tipo de documento inválido.' end $$;
+
+-- emissão automática (nunca bloqueia a operação principal: um erro no documento fica só registado como aviso)
+create or replace function private.documentos_automaticos() returns trigger language plpgsql security definer set search_path = public as $$
+declare t text; enc uuid; pag uuid;
+begin
+  if tg_table_name = 'encomendas' then t := 'guia'; enc := new.id;
+  elsif tg_table_name = 'recibos_armazem' then t := 'rececao'; enc := new.encomenda_id;
+  else t := 'pagamento'; enc := new.encomenda_id; pag := new.id; end if;
+  if enc is null or private.documento_pode(t, enc, pag) is not null then return new; end if;
+  begin perform private.documento_emitir(t, enc, pag, null, false);
+  exception when others then raise warning 'Centro documental: % não emitido para %: %', t, enc, sqlerrm; end;
+  return new;
+end $$;
+create or replace trigger documentos_guia after insert or update of estado on public.encomendas for each row execute function private.documentos_automaticos();
+create or replace trigger documentos_rececao after insert or update of confirmado on public.recibos_armazem for each row execute function private.documentos_automaticos();
+create or replace trigger documentos_pagamento after insert or update of estado on public.pagamentos for each row execute function private.documentos_automaticos();
+
+-- quem pode emitir/reemitir cada tipo
+create or replace function private.documento_papeis(p_tipo text) returns text[] language sql immutable as $$
+  select case p_tipo when 'guia' then array['admin_empresa', 'operador'] when 'rececao' then array['admin_empresa', 'operador', 'armazem'] else array['admin_empresa', 'financeiro'] end $$;
+
+-- emitir manualmente um documento em falta (ex.: encomendas anteriores ao Centro Documental)
+create or replace function public.emitir_documento(p_encomenda text, p_tipo text, p_pagamento text default null) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare e encomendas; pg uuid; falta text; d documentos_emitidos;
+begin
+  select * into e from encomendas where codigo = upper(trim(p_encomenda));
+  if not found or e.empresa_id is distinct from private.minha_empresa() then raise exception 'Encomenda não encontrada nesta empresa.'; end if;
+  if not private.papel_em(private.documento_papeis(p_tipo)) then raise exception 'A sua função não pode emitir este documento.' using errcode = '42501'; end if;
+  if p_tipo = 'pagamento' then select id into pg from pagamentos where codigo = p_pagamento and encomenda_id = e.id; end if;
+  falta := private.documento_pode(p_tipo, e.id, pg);
+  if falta is not null then raise exception '%', falta; end if;
+  d := private.documento_emitir(p_tipo, e.id, pg, null, false);
+  return jsonb_build_object('id', d.id, 'numero', d.numero, 'versao', d.versao);
+end $$;
+
+-- corrigir: nova versão com o mesmo número; a anterior fica «substituída» e continua consultável
+create or replace function public.reemitir_documento(p_documento uuid, p_motivo text) returns jsonb language plpgsql security definer set search_path = public as $$
+declare d documentos_emitidos; n documentos_emitidos;
+begin
+  select * into d from documentos_emitidos where id = p_documento;
+  if not found or d.empresa_id is distinct from private.minha_empresa() then raise exception 'Documento não encontrado nesta empresa.'; end if;
+  if d.estado <> 'valido' then raise exception 'Só a versão em vigor pode ser corrigida.'; end if;
+  if not private.papel_em(private.documento_papeis(d.tipo)) then raise exception 'A sua função não pode emitir este documento.' using errcode = '42501'; end if;
+  if length(trim(coalesce(p_motivo, ''))) < 5 then raise exception 'Indique o motivo da nova versão.'; end if;
+  n := private.documento_emitir(d.tipo, d.encomenda_id, d.pagamento_id, trim(p_motivo), true);
+  return jsonb_build_object('id', n.id, 'numero', n.numero, 'versao', n.versao);
+end $$;
+
+-- histórico de consulta, impressão e descarga
+create or replace function public.registar_evento_documento(p_documento uuid, p_acao text) returns void language plpgsql security definer set search_path = public as $$
+declare d documentos_emitidos;
+begin
+  if p_acao not in ('consultado', 'impresso', 'descarregado') then raise exception 'Ação inválida.'; end if;
+  select * into d from documentos_emitidos where id = p_documento;
+  if not found or not private.documento_visivel(d) then raise exception 'Documento não encontrado.'; end if;
+  insert into documentos_eventos (documento_id, acao, user_id) values (d.id, p_acao, auth.uid());
+end $$;
+
+-- validação pública pelo QR: só o que não é confidencial (sem nomes, moradas, valores ou contactos).
+-- Só a função do servidor «validar-documento» a chama (chave de serviço, com limite de pedidos por IP): o público continua a executar só validar_empresa.
+create or replace function public.servico_validar_documento(p_codigo text) returns jsonb language plpgsql security definer set search_path = public as $$
+declare d documentos_emitidos; ultima int;
+begin
+  if p_codigo !~ '^[0-9a-f]{24}$' then return jsonb_build_object('encontrado', false); end if;
+  select * into d from documentos_emitidos where codigo_validacao = p_codigo;
+  if not found then return jsonb_build_object('encontrado', false); end if;
+  select max(versao) into ultima from documentos_emitidos where empresa_id = d.empresa_id and numero = d.numero;
+  insert into documentos_eventos (documento_id, acao, user_id) values (d.id, 'validado', auth.uid());
+  return jsonb_build_object('encontrado', true, 'tipo', d.tipo, 'numero', d.numero, 'versao', d.versao, 'versao_atual', ultima, 'estado', d.estado,
+    'emitido_em', d.emitido_em, 'referencia', d.referencia, 'empresa', d.dados -> 'empresa' ->> 'nome', 'sha256', d.sha256,
+    'logotipo', (select logotipo from empresas_marca where empresa_id = d.empresa_id));
+end $$;
+
+-- marca do prestador
+create or replace function public.definir_logotipo(p_logotipo text) returns void language plpgsql security definer set search_path = public as $$
+declare v_emp uuid := private.minha_empresa();
+begin
+  if v_emp is null or not private.papel_em(array['admin_empresa']) then raise exception 'Só o administrador da empresa altera o logótipo.' using errcode = '42501'; end if;
+  if coalesce(p_logotipo, '') = '' then raise exception 'Escolha uma imagem PNG, JPEG ou WebP.'; end if;
+  insert into empresas_marca (empresa_id, logotipo) values (v_emp, p_logotipo)
+    on conflict (empresa_id) do update set logotipo = excluded.logotipo, atualizado_em = now();
+end $$;
+create or replace function public.logotipo_empresa(p_empresa uuid) returns text language sql stable security definer set search_path = public as $$
+  select logotipo from empresas_marca where empresa_id = p_empresa $$;
+
+revoke all on function public.emitir_documento(text, text, text), public.reemitir_documento(uuid, text), public.registar_evento_documento(uuid, text),
+  public.servico_validar_documento(text), public.definir_logotipo(text), public.logotipo_empresa(uuid) from public, anon, authenticated;
+grant execute on function public.emitir_documento(text, text, text), public.reemitir_documento(uuid, text), public.registar_evento_documento(uuid, text),
+  public.definir_logotipo(text), public.logotipo_empresa(uuid) to authenticated;
+grant execute on function public.servico_validar_documento(text) to service_role;
+revoke all on function private.documento_emitir(text, uuid, uuid, text, boolean), private.documento_dados(text, uuid, uuid), private.documento_pode(text, uuid, uuid)
+  from public, anon, authenticated;
+
+
+-- ===== 00182_fase1_eventos.sql =====
+-- v127 — Fase 1 (1/3): eventos para outros sistemas (webhooks). Cada mudança importante da encomenda fica numa fila de saída e a função
+-- «webhooks» entrega-a ao endereço HTTPS da empresa, assinada com HMAC-SHA256 (o segredo vive no cofre e só se vê uma vez, ao gerar).
+-- Repete com espera crescente até 8 tentativas. Só acrescenta tabelas e funções; só gera eventos para empresas com integração ativa.
+
+create table if not exists public.integracoes_webhook (
+  empresa_id uuid primary key references public.empresas(id),
+  url text not null check (url ~ '^https://[a-z0-9.-]+(:443)?(/[^\s]*)?$' and length(url) <= 500),
+  eventos text[] not null default array['encomenda.criada','encomenda.estado','documento.emitido','percurso.iniciado','atraso.previsto','terreno.comprovativo'],
+  ativo boolean not null default true, segredo_gerado_em timestamptz,
+  ultimo_estado text, ultimo_em timestamptz, atualizado_em timestamptz not null default now());
+create table if not exists public.eventos_saida (
+  id bigint generated always as identity primary key,
+  empresa_id uuid not null references public.empresas(id),
+  tipo text not null, encomenda_codigo text, dados jsonb not null default '{}'::jsonb,
+  criado_em timestamptz not null default now(), estado text not null default 'pendente' check (estado in ('pendente', 'enviado', 'falhou')),
+  tentativas int not null default 0, proxima_em timestamptz not null default now(), ultimo_erro text, enviado_em timestamptz);
+create index if not exists eventos_saida_pendentes on public.eventos_saida (proxima_em) where estado = 'pendente';
+create index if not exists eventos_saida_empresa on public.eventos_saida (empresa_id, criado_em desc);
+alter table public.integracoes_webhook enable row level security;
+alter table public.eventos_saida enable row level security;
+revoke all on public.integracoes_webhook, public.eventos_saida from anon, authenticated;
+grant select on public.eventos_saida to authenticated;
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename = 'eventos_saida' and policyname = 'eventos_saida_ver') then
+    create policy eventos_saida_ver on public.eventos_saida for select to authenticated
+      using (private.e_admin_plataforma() or (empresa_id = private.minha_empresa() and private.papel_em(array['admin_empresa', 'operador']))); end if;
+end $$;
+
+create or replace function private.emitir_evento(p_empresa uuid, p_tipo text, p_codigo text, p_dados jsonb) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if p_empresa is null then return; end if;
+  if exists (select 1 from integracoes_webhook w where w.empresa_id = p_empresa and w.ativo and (p_tipo = 'teste' or p_tipo = any (w.eventos))) then
+    insert into eventos_saida (empresa_id, tipo, encomenda_codigo, dados) values (p_empresa, p_tipo, p_codigo, coalesce(p_dados, '{}'::jsonb));
+  end if;
+end $$;
+
+-- eventos automáticos: encomenda criada, mudança de estado e documento emitido (sem dados pessoais: códigos, estados e datas)
+create or replace function private.eventos_encomenda() returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if tg_table_name = 'encomendas' then
+    if tg_op = 'INSERT' then perform private.emitir_evento(new.empresa_id, 'encomenda.criada', new.codigo, jsonb_build_object('estado', new.estado, 'origem', new.origem, 'destino', new.destino));
+    elsif new.estado is distinct from old.estado then perform private.emitir_evento(new.empresa_id, 'encomenda.estado', new.codigo, jsonb_build_object('de', old.estado, 'para', new.estado, 'em', now())); end if;
+  else
+    perform private.emitir_evento(new.empresa_id, 'documento.emitido', new.referencia, jsonb_build_object('tipo', new.tipo, 'numero', new.numero, 'versao', new.versao, 'codigo_validacao', new.codigo_validacao));
+  end if;
+  return new;
+exception when others then raise warning 'eventos: %', sqlerrm; return new;   -- um evento nunca bloqueia a operação
+end $$;
+create or replace trigger eventos_encomenda after insert or update of estado on public.encomendas for each row execute function private.eventos_encomenda();
+create or replace trigger eventos_documento after insert on public.documentos_emitidos for each row execute function private.eventos_encomenda();
+
+-- configuração (só o administrador da empresa)
+create or replace function public.configurar_webhook(p_url text, p_eventos text[], p_ativo boolean) returns jsonb language plpgsql security definer set search_path = public as $$
+declare v_emp uuid := private.minha_empresa(); v_ok text[] := array['encomenda.criada','encomenda.estado','documento.emitido','percurso.iniciado','atraso.previsto','terreno.comprovativo'];
+begin
+  if v_emp is null or not private.papel_em(array['admin_empresa']) then raise exception 'Só o administrador da empresa configura integrações.' using errcode = '42501'; end if;
+  p_url := lower(trim(coalesce(p_url, '')));
+  if p_url !~ '^https://[a-z0-9.-]+(:443)?(/[^\s]*)?$' or p_url ~ '^https://(localhost|127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2[0-9]|3[01])\.|0\.|\[)' or p_url ~ '^https://[^/]*\.(local|internal|lan)(/|:|$)' then
+    raise exception 'Indique um endereço público https:// (sem endereços internos).'; end if;
+  if p_eventos is null or cardinality(p_eventos) = 0 or not p_eventos <@ v_ok then raise exception 'Escolha pelo menos um evento válido.'; end if;
+  insert into integracoes_webhook (empresa_id, url, eventos, ativo) values (v_emp, p_url, p_eventos, coalesce(p_ativo, true))
+    on conflict (empresa_id) do update set url = excluded.url, eventos = excluded.eventos, ativo = excluded.ativo, atualizado_em = now();
+  return public.ver_webhook();
+end $$;
+create or replace function public.ver_webhook() returns jsonb language sql stable security definer set search_path = public as $$
+  select coalesce((select jsonb_build_object('url', w.url, 'eventos', w.eventos, 'ativo', w.ativo, 'tem_segredo', w.segredo_gerado_em is not null, 'segredo_gerado_em', w.segredo_gerado_em,
+           'ultimo_estado', w.ultimo_estado, 'ultimo_em', w.ultimo_em, 'pendentes', (select count(*) from eventos_saida e where e.empresa_id = w.empresa_id and e.estado = 'pendente'))
+    from integracoes_webhook w where w.empresa_id = private.minha_empresa() and private.papel_em(array['admin_empresa'])), '{}'::jsonb) $$;
+-- segredo novo: devolvido UMA vez; fica no cofre (vault) e nunca mais é mostrado
+create or replace function public.gerar_segredo_webhook() returns text language plpgsql security definer set search_path = public as $$
+declare v_emp uuid := private.minha_empresa(); s text := 'whsec_' || encode(extensions.gen_random_bytes(24), 'hex'); n text;
+begin
+  if v_emp is null or not private.papel_em(array['admin_empresa']) then raise exception 'Só o administrador da empresa gera o segredo.' using errcode = '42501'; end if;
+  if not exists (select 1 from integracoes_webhook where empresa_id = v_emp) then raise exception 'Grave primeiro o endereço da integração.'; end if;
+  n := 'webhook_' || v_emp;
+  if exists (select 1 from vault.secrets where name = n) then update vault.secrets set secret = s where name = n;
+  else perform vault.create_secret(s, n, 'Segredo do webhook da empresa'); end if;
+  update integracoes_webhook set segredo_gerado_em = now(), atualizado_em = now() where empresa_id = v_emp;
+  return s;
+end $$;
+create or replace function public.testar_webhook() returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not private.papel_em(array['admin_empresa']) then raise exception 'Só o administrador da empresa testa a integração.' using errcode = '42501'; end if;
+  perform private.emitir_evento(private.minha_empresa(), 'teste', null, jsonb_build_object('mensagem', 'Evento de teste da Elolog'));
+end $$;
+
+-- só para a função «webhooks» (chave de serviço)
+create or replace function public.servico_webhooks_pendentes(p_limite int default 25) returns table (id bigint, empresa_id uuid, tipo text, encomenda_codigo text, dados jsonb,
+  criado_em timestamptz, tentativas int, url text, segredo text) language sql security definer set search_path = public as $$
+  select e.id, e.empresa_id, e.tipo, e.encomenda_codigo, e.dados, e.criado_em, e.tentativas, w.url,
+         (select decrypted_secret from vault.decrypted_secrets v where v.name = 'webhook_' || e.empresa_id)
+    from eventos_saida e join integracoes_webhook w on w.empresa_id = e.empresa_id and w.ativo
+   where e.estado = 'pendente' and e.proxima_em <= now() order by e.id limit least(greatest(p_limite, 1), 100) $$;
+create or replace function public.servico_webhook_resultado(p_id bigint, p_ok boolean, p_erro text default null) returns void language plpgsql security definer set search_path = public as $$
+declare e eventos_saida;
+begin
+  update eventos_saida set tentativas = tentativas + 1, enviado_em = case when p_ok then now() end, ultimo_erro = case when p_ok then null else left(p_erro, 300) end,
+    estado = case when p_ok then 'enviado' when tentativas + 1 >= 8 then 'falhou' else 'pendente' end,
+    proxima_em = now() + make_interval(mins => least(power(2, tentativas + 1)::int, 240)) where id = p_id returning * into e;
+  update integracoes_webhook set ultimo_estado = case when p_ok then 'entregue' else 'falhou: ' || left(coalesce(p_erro, ''), 120) end, ultimo_em = now() where empresa_id = e.empresa_id;
+end $$;
+
+revoke all on function private.emitir_evento(uuid, text, text, jsonb), private.eventos_encomenda() from public, anon, authenticated;
+revoke all on function public.configurar_webhook(text, text[], boolean), public.ver_webhook(), public.gerar_segredo_webhook(), public.testar_webhook(),
+  public.servico_webhooks_pendentes(int), public.servico_webhook_resultado(bigint, boolean, text) from public, anon, authenticated;
+grant execute on function public.configurar_webhook(text, text[], boolean), public.ver_webhook(), public.gerar_segredo_webhook(), public.testar_webhook() to authenticated;
+grant execute on function public.servico_webhooks_pendentes(int), public.servico_webhook_resultado(bigint, boolean, text) to service_role;
+do $$ begin if exists (select 1 from pg_extension where extname = 'pg_cron') then
+  perform cron.schedule('elolog-webhooks', '*/2 * * * *', $c$select private.chamar_funcao('webhooks') where exists (select 1 from public.eventos_saida where estado = 'pendente' and proxima_em <= now())$c$); end if; end $$;
+
+-- ===== 00183_fase1_seguimento.sql =====
+-- v127 — Fase 1 (2/3): seguimento ao vivo dos serviços de terreno, chegada prevista e alertas de atraso.
+-- Privacidade: guarda-se só a ÚLTIMA posição de cada serviço em curso (nunca o histórico do percurso) e só enquanto o motorista partilha.
+-- O cliente vê a posição apenas da SUA entrega em curso e só se o sinal tiver menos de 30 minutos. Só acrescenta tabelas e funções.
+
+create table if not exists public.trabalhos_seguimento (
+  trabalho_id uuid primary key references public.trabalhos_terreno(id),
+  empresa_id uuid not null references public.empresas(id),
+  encomenda_id uuid references public.encomendas(id),
+  operador_id uuid not null,
+  lat numeric(9,6) not null check (lat between -90 and 90),
+  lon numeric(9,6) not null check (lon between -180 and 180),
+  precisao_m int check (precisao_m between 0 and 100000),
+  velocidade_kmh numeric(6,1) check (velocidade_kmh between 0 and 300),
+  eta timestamptz, distancia_km numeric(8,1) check (distancia_km >= 0),
+  previsto_ate timestamptz,
+  iniciado_em timestamptz not null default now(), atualizado_em timestamptz not null default now(),
+  terminado_em timestamptz, alerta_atraso_em timestamptz, alerta_sinal_em timestamptz);
+create index if not exists trabalhos_seguimento_ativos on public.trabalhos_seguimento (empresa_id) where terminado_em is null;
+alter table public.trabalhos_seguimento enable row level security;
+revoke all on public.trabalhos_seguimento from anon, authenticated;
+grant select on public.trabalhos_seguimento to authenticated;
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename = 'trabalhos_seguimento' and policyname = 'seguimento_ver') then
+    create policy seguimento_ver on public.trabalhos_seguimento for select to authenticated
+      using (private.e_admin_plataforma() or (empresa_id = private.minha_empresa() and (private.meu_papel() <> 'operador_terreno' or operador_id = auth.uid()))); end if;
+end $$;
+
+-- o serviço tem de ser do próprio operador (ou de um administrador/operador da mesma empresa)
+create or replace function private.trabalho_meu(p_trabalho uuid) returns public.trabalhos_terreno language plpgsql stable security definer set search_path = public as $$
+declare t trabalhos_terreno;
+begin
+  select * into t from trabalhos_terreno where id = p_trabalho;
+  if not found or t.empresa_id is distinct from private.minha_empresa()
+     or not (t.operador_id = auth.uid() or private.papel_em(array['admin_empresa', 'operador'])) then
+    raise exception 'Este serviço não está atribuído a si.' using errcode = '42501'; end if;
+  return t;
+end $$;
+
+create or replace function public.iniciar_percurso(p_trabalho uuid, p_lat numeric, p_lon numeric, p_precisao int default null, p_previsto_ate timestamptz default null)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare t trabalhos_terreno;
+begin
+  t := private.trabalho_meu(p_trabalho);
+  if t.estado not in ('planeada', 'em_curso') then raise exception 'Este serviço já está fechado.'; end if;
+  if p_previsto_ate is not null and (p_previsto_ate < now() - interval '1 day' or p_previsto_ate > now() + interval '14 days') then raise exception 'Hora combinada inválida.'; end if;
+  update trabalhos_terreno set estado = 'em_curso', operador_id = coalesce(operador_id, auth.uid()), updated_at = now() where id = t.id;
+  insert into trabalhos_seguimento (trabalho_id, empresa_id, encomenda_id, operador_id, lat, lon, precisao_m, previsto_ate)
+  values (t.id, t.empresa_id, t.encomenda_id, coalesce(t.operador_id, auth.uid()), p_lat, p_lon, p_precisao, p_previsto_ate)
+  on conflict (trabalho_id) do update set lat = excluded.lat, lon = excluded.lon, precisao_m = excluded.precisao_m, atualizado_em = now(), terminado_em = null,
+    previsto_ate = coalesce(excluded.previsto_ate, trabalhos_seguimento.previsto_ate), alerta_sinal_em = null;
+  perform private.emitir_evento(t.empresa_id, 'percurso.iniciado', (select codigo from encomendas where id = t.encomenda_id), jsonb_build_object('servico', t.tipo, 'previsto_ate', p_previsto_ate));
+  return jsonb_build_object('ok', true);
+end $$;
+
+-- posição: no máximo uma a cada 15 segundos por serviço (o resto é ignorado sem erro)
+create or replace function public.registar_posicao(p_trabalho uuid, p_lat numeric, p_lon numeric, p_precisao int default null, p_velocidade numeric default null,
+  p_eta timestamptz default null, p_distancia numeric default null) returns boolean language plpgsql security definer set search_path = public as $$
+declare s trabalhos_seguimento;
+begin
+  select * into s from trabalhos_seguimento where trabalho_id = p_trabalho and operador_id = auth.uid() and terminado_em is null;
+  if not found then raise exception 'Inicie o percurso antes de partilhar a posição.' using errcode = '42501'; end if;
+  if s.atualizado_em > now() - interval '15 seconds' then return false; end if;
+  update trabalhos_seguimento set lat = p_lat, lon = p_lon, precisao_m = p_precisao, velocidade_kmh = least(greatest(p_velocidade, 0), 300),
+    eta = case when p_eta between now() - interval '1 hour' and now() + interval '3 days' then p_eta end, distancia_km = greatest(p_distancia, 0),
+    atualizado_em = now(), alerta_sinal_em = null where trabalho_id = p_trabalho;
+  return true;
+end $$;
+
+create or replace function public.terminar_percurso(p_trabalho uuid) returns void language plpgsql security definer set search_path = public as $$
+begin perform private.trabalho_meu(p_trabalho); update trabalhos_seguimento set terminado_em = coalesce(terminado_em, now()) where trabalho_id = p_trabalho; end $$;
+
+-- o que está a caminho: o cliente vê as SUAS entregas; a empresa vê os seus serviços; a administração vê tudo
+create or replace function public.servicos_a_caminho() returns table (codigo text, tipo text, lat numeric, lon numeric, precisao_m int, eta timestamptz, distancia_km numeric,
+  previsto_ate timestamptz, atualizado_em timestamptz, estado text, empresa text, motorista text, destino text)
+language sql stable security definer set search_path = public as $$
+  select e.codigo, t.tipo::text, s.lat, s.lon, s.precisao_m, s.eta, s.distancia_km, s.previsto_ate, s.atualizado_em,
+         case when s.atualizado_em < now() - interval '20 minutes' then 'sem_sinal'
+              when s.previsto_ate is not null and s.eta > s.previsto_ate + interval '15 minutes' then 'atrasado' else 'a_tempo' end,
+         (select coalesce(m.nome_comercial, m.nome) from empresas m where m.id = s.empresa_id), split_part((select f.nome from funcionarios f where f.id = s.operador_id), ' ', 1),
+         case when t.tipo = 'recolha' then e.morada_recolha else coalesce(e.destinatario ->> 'morada', e.destino) end
+    from trabalhos_seguimento s join trabalhos_terreno t on t.id = s.trabalho_id left join encomendas e on e.id = s.encomenda_id
+   where s.terminado_em is null
+     and (private.e_admin_plataforma()
+          or (s.empresa_id = private.minha_empresa() and (private.meu_papel() <> 'operador_terreno' or s.operador_id = auth.uid()))
+          or (e.cliente_id = auth.uid() and s.atualizado_em > now() - interval '30 minutes'))
+   order by s.atualizado_em desc limit 200 $$;
+
+-- alertas (de 5 em 5 minutos): atraso previsto e motorista sem sinal; cada alerta só uma vez por serviço
+create or replace function private.alertas_terreno() returns int language plpgsql security definer set search_path = public as $$
+declare r record; n int := 0;
+begin
+  for r in select s.*, e.codigo, e.cliente_id, t.tipo from trabalhos_seguimento s join trabalhos_terreno t on t.id = s.trabalho_id left join encomendas e on e.id = s.encomenda_id
+           where s.terminado_em is null loop
+    if r.alerta_atraso_em is null and r.previsto_ate is not null and r.eta > r.previsto_ate + interval '15 minutes' then
+      insert into notificacoes (empresa_id, tipo, titulo, corpo, referencia_tabela, referencia_id) values (r.empresa_id, 'atraso_previsto',
+        'Atraso previsto: ' || coalesce(r.codigo, 'serviço'), 'Chegada prevista às ' || to_char(r.eta at time zone 'Europe/Lisbon', 'HH24:MI') || ' (combinado até às ' || to_char(r.previsto_ate at time zone 'Europe/Lisbon', 'HH24:MI') || ').', 'encomendas', r.encomenda_id);
+      if r.cliente_id is not null and r.tipo = 'entrega' then
+        insert into notificacoes (user_id, tipo, titulo, corpo, referencia_tabela, referencia_id) values (r.cliente_id, 'atraso_previsto', 'A sua entrega ' || r.codigo || ' vai chegar mais tarde',
+          'Nova hora prevista: ' || to_char(r.eta at time zone 'Europe/Lisbon', 'HH24:MI') || '. Pedimos desculpa pelo atraso.', 'encomendas', r.encomenda_id); end if;
+      perform private.emitir_evento(r.empresa_id, 'atraso.previsto', r.codigo, jsonb_build_object('eta', r.eta, 'previsto_ate', r.previsto_ate));
+      update trabalhos_seguimento set alerta_atraso_em = now() where trabalho_id = r.trabalho_id; n := n + 1;
+    end if;
+    if r.alerta_sinal_em is null and r.atualizado_em < now() - interval '20 minutes' then
+      insert into notificacoes (empresa_id, tipo, titulo, corpo, referencia_tabela, referencia_id) values (r.empresa_id, 'sem_sinal',
+        'Sem sinal do motorista: ' || coalesce(r.codigo, 'serviço'), 'A última posição tem mais de 20 minutos. Confirme com o motorista.', 'encomendas', r.encomenda_id);
+      update trabalhos_seguimento set alerta_sinal_em = now() where trabalho_id = r.trabalho_id; n := n + 1;
+    end if;
+  end loop;
+  return n;
+end $$;
+
+revoke all on function private.trabalho_meu(uuid), private.alertas_terreno() from public, anon, authenticated;
+revoke all on function public.iniciar_percurso(uuid, numeric, numeric, int, timestamptz), public.registar_posicao(uuid, numeric, numeric, int, numeric, timestamptz, numeric),
+  public.terminar_percurso(uuid), public.servicos_a_caminho() from public, anon;
+grant execute on function public.iniciar_percurso(uuid, numeric, numeric, int, timestamptz), public.registar_posicao(uuid, numeric, numeric, int, numeric, timestamptz, numeric),
+  public.terminar_percurso(uuid), public.servicos_a_caminho() to authenticated;
+do $$ begin if exists (select 1 from pg_extension where extname = 'pg_cron') then
+  perform cron.schedule('elolog-terreno', '*/5 * * * *', $c$select private.alertas_terreno() where exists (select 1 from public.trabalhos_seguimento where terminado_em is null)$c$); end if; end $$;
+
+-- ===== 00184_fase1_entregas.sql =====
+-- v127 — Fase 1 (3/3): comprovativo de entrega/recolha no terreno (quem recebeu, assinatura, fotografias, posição e hora), que funciona sem rede:
+-- a aplicação guarda-o no telemóvel e envia-o quando houver ligação; o código local (id_local) impede que seja gravado duas vezes.
+-- Um comprovativo nunca se altera nem se apaga. A entrega com assinatura passa a contar como confirmação para concluir a encomenda («entregue»)
+-- e emite o documento «Comprovativo de entrega» (EL-ENT) no Centro Documental. Só acrescenta tabelas e funções.
+
+create table if not exists public.comprovativos_terreno (
+  id uuid primary key default gen_random_uuid(), id_local uuid not null unique,
+  trabalho_id uuid not null references public.trabalhos_terreno(id), encomenda_id uuid references public.encomendas(id),
+  empresa_id uuid not null references public.empresas(id), tipo text not null check (tipo in ('recolha', 'entrega')),
+  resultado text not null check (resultado in ('entregue', 'recolhido', 'cliente_ausente', 'recusado')),
+  recebido_por text check (length(recebido_por) <= 120), identificacao text check (length(identificacao) <= 60),
+  assinatura text check (assinatura ~ '^data:image/png;base64,[A-Za-z0-9+/=]+$' and length(assinatura) <= 300000),
+  notas text check (length(notas) <= 1000), volumes_conferidos int check (volumes_conferidos between 0 and 100000),
+  lat numeric(9,6) check (lat between -90 and 90), lon numeric(9,6) check (lon between -180 and 180), precisao_m int,
+  feito_em timestamptz not null, recebido_em timestamptz not null default now(), criado_por uuid not null);
+create table if not exists public.comprovativos_terreno_fotos (
+  id bigint generated always as identity primary key, comprovativo_id uuid not null references public.comprovativos_terreno(id), n int not null,
+  imagem text not null check (imagem ~ '^data:image/(jpeg|webp|png);base64,[A-Za-z0-9+/=]+$' and length(imagem) <= 700000), unique (comprovativo_id, n));
+create index if not exists comprovativos_terreno_encomenda on public.comprovativos_terreno (encomenda_id);
+alter table public.comprovativos_terreno enable row level security;
+alter table public.comprovativos_terreno_fotos enable row level security;
+revoke all on public.comprovativos_terreno, public.comprovativos_terreno_fotos from anon, authenticated;
+grant select on public.comprovativos_terreno, public.comprovativos_terreno_fotos to authenticated;
+create or replace function private.comprovativo_visivel(c public.comprovativos_terreno) returns boolean language sql stable security definer set search_path = public as $$
+  select private.e_admin_plataforma() or (c.empresa_id = private.minha_empresa() and (private.meu_papel() <> 'operador_terreno' or c.criado_por = auth.uid()))
+      or exists (select 1 from encomendas e where e.id = c.encomenda_id and e.cliente_id = auth.uid()) $$;
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename = 'comprovativos_terreno' and policyname = 'comprovativos_ver') then
+    create policy comprovativos_ver on public.comprovativos_terreno for select to authenticated using (private.comprovativo_visivel(comprovativos_terreno)); end if;
+  if not exists (select 1 from pg_policies where tablename = 'comprovativos_terreno_fotos' and policyname = 'comprovativos_fotos_ver') then
+    create policy comprovativos_fotos_ver on public.comprovativos_terreno_fotos for select to authenticated
+      using (exists (select 1 from public.comprovativos_terreno c where c.id = comprovativo_id and private.comprovativo_visivel(c))); end if;
+end $$;
+create or replace function private.comprovativo_imutavel() returns trigger language plpgsql as $$ begin raise exception 'Um comprovativo do terreno não pode ser alterado nem apagado.'; end $$;
+create or replace trigger comprovativos_imutavel before update or delete on public.comprovativos_terreno for each row execute function private.comprovativo_imutavel();
+create or replace trigger comprovativos_fotos_imutavel before update or delete on public.comprovativos_terreno_fotos for each row execute function private.comprovativo_imutavel();
+
+-- p = {id_local, trabalho, resultado, recebido_por, identificacao, assinatura, notas, volumes, lat, lon, precisao, feito_em, fotos:[dataURL,…]}
+create or replace function public.registar_comprovativo(p jsonb) returns jsonb language plpgsql security definer set search_path = public as $$
+declare t trabalhos_terreno; c comprovativos_terreno; v_id uuid; v_quando timestamptz; v_res text := p ->> 'resultado'; f text; i int := 0; lim int; aviso text; e encomendas;
+begin
+  begin v_id := (p ->> 'id_local')::uuid; exception when others then raise exception 'Comprovativo sem código local válido.'; end;
+  select * into c from comprovativos_terreno where id_local = v_id;
+  if found then return jsonb_build_object('id', c.id, 'repetido', true); end if;   -- reenvio sem rede: já estava gravado
+  t := private.trabalho_meu((p ->> 'trabalho')::uuid);
+  if t.tipo not in ('recolha', 'entrega') then raise exception 'Este serviço não tem comprovativo.'; end if;
+  if v_res not in ('entregue', 'recolhido', 'cliente_ausente', 'recusado') or (t.tipo = 'entrega' and v_res = 'recolhido') or (t.tipo = 'recolha' and v_res = 'entregue') then raise exception 'Resultado inválido.'; end if;
+  if v_res in ('entregue', 'recolhido') then
+    if length(trim(coalesce(p ->> 'recebido_por', ''))) < 2 then raise exception 'Indique o nome de quem %.', case when v_res = 'entregue' then 'recebeu' else 'entregou a carga' end; end if;
+    if coalesce(p ->> 'assinatura', '') = '' then raise exception 'Falta a assinatura.'; end if;
+  end if;
+  v_quando := coalesce(nullif(p ->> 'feito_em', '')::timestamptz, now());
+  if v_quando < now() - interval '7 days' or v_quando > now() + interval '10 minutes' then v_quando := now(); end if;
+  lim := nullif((public.limites_anexos(t.empresa_id) ->> 'fotos'), '')::int;
+  if lim is not null and jsonb_array_length(coalesce(p -> 'fotos', '[]')) > lim then raise exception 'A empresa permite no máximo % fotografia(s) por serviço.', lim; end if;
+  insert into comprovativos_terreno (id_local, trabalho_id, encomenda_id, empresa_id, tipo, resultado, recebido_por, identificacao, assinatura, notas, volumes_conferidos, lat, lon, precisao_m, feito_em, criado_por)
+  values (v_id, t.id, t.encomenda_id, t.empresa_id, t.tipo::text, v_res, nullif(trim(p ->> 'recebido_por'), ''), nullif(trim(p ->> 'identificacao'), ''), nullif(p ->> 'assinatura', ''),
+          nullif(trim(p ->> 'notas'), ''), nullif(p ->> 'volumes', '')::int, nullif(p ->> 'lat', '')::numeric, nullif(p ->> 'lon', '')::numeric, nullif(p ->> 'precisao', '')::int, v_quando, auth.uid())
+  returning * into c;
+  for f in select jsonb_array_elements_text(coalesce(p -> 'fotos', '[]')) loop i := i + 1; insert into comprovativos_terreno_fotos (comprovativo_id, n, imagem) values (c.id, i, f); end loop;
+  update trabalhos_terreno set estado = case when v_res in ('cliente_ausente', 'recusado') then 'cliente_ausente'::estado_trabalho else 'concluida' end, updated_at = now() where id = t.id;
+  update trabalhos_seguimento set terminado_em = coalesce(terminado_em, now()) where trabalho_id = t.id;
+  perform private.emitir_evento(t.empresa_id, 'terreno.comprovativo', (select codigo from encomendas where id = t.encomenda_id), jsonb_build_object('servico', t.tipo, 'resultado', v_res, 'feito_em', v_quando));
+  if t.tipo = 'entrega' and v_res = 'entregue' and t.encomenda_id is not null then
+    insert into entregas (encomenda_id, identificacao, entregue_por, entregue_em) values (t.encomenda_id, coalesce(c.identificacao, c.recebido_por), auth.uid(), v_quando)
+      on conflict (encomenda_id) do update set identificacao = excluded.identificacao, entregue_por = excluded.entregue_por, entregue_em = excluded.entregue_em, updated_at = now();
+    select * into e from encomendas where id = t.encomenda_id;
+    if e.estado = 'disponivel' then
+      begin perform public.avancar_encomenda(e.id, 'entregue', 'Entregue a ' || c.recebido_por || ' (comprovativo assinado no terreno)');
+      exception when others then aviso := 'Comprovativo guardado; a encomenda não passou a «Entregue»: ' || sqlerrm; end;
+    else aviso := 'Comprovativo guardado. A encomenda está em «' || e.estado || '»: o escritório conclui a entrega.'; end if;
+    begin perform private.documento_emitir('entrega', t.encomenda_id, null, null, false);
+    exception when others then raise warning 'Centro documental: comprovativo de entrega não emitido: %', sqlerrm; end;
+  end if;
+  return jsonb_build_object('id', c.id, 'repetido', false, 'aviso', aviso);
+end $$;
+
+-- a entrega assinada no terreno também confirma o levantamento (além da identificação + assinatura/PIN do escritório)
+create or replace function private.entrega_confirmada(p_encomenda uuid) returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from entregas en where en.encomenda_id = p_encomenda and coalesce(en.identificacao, '') <> '' and (en.assinatura_documento_id is not null or en.pin_validado))
+      or exists (select 1 from comprovativos_terreno c where c.encomenda_id = p_encomenda and c.resultado = 'entregue' and c.assinatura is not null) $$;
+revoke all on function private.entrega_confirmada(uuid) from public, anon, authenticated;
+revoke all on function private.comprovativo_visivel(comprovativos_terreno) from public, anon;
+grant execute on function private.comprovativo_visivel(comprovativos_terreno) to authenticated;   -- usada pela regra de acesso
+revoke all on function public.registar_comprovativo(jsonb) from public, anon;
+grant execute on function public.registar_comprovativo(jsonb) to authenticated;
+
+-- ===== 00185_fase1_documento_entrega.sql =====
+-- v127 — Fase 1: o comprovativo de entrega assinado no terreno conta para concluir a encomenda e passa a documento do Centro Documental (EL-ENT).
+-- Substitui (create or replace) as funções do Centro Documental e a verificação de etapas, acrescentando só o caso «entrega»; o resto fica igual.
+
+create or replace function private.encomenda_falta(e encomendas, p_para estado_encomenda, p_excecao text default null) returns text[]
+language plpgsql stable security definer set search_path = public as $$
+declare f text[] := '{}'; r recibos_armazem;
+begin
+  if e.estado = 'aprovacao' and p_para = 'armazenamento' then          -- aprovação dispensada (fluxo autorizado)
+    if not (e.criada_no_terreno or private.meu_papel() = 'admin_empresa') then f := f || text 'fluxo autorizado direto para armazém (registo no terreno ou administrador da empresa)'; end if;
+    if length(trim(coalesce(p_excecao, ''))) < 5 then f := f || text 'motivo de exceção para dispensar a aprovação'; end if;
+  end if;
+  if p_para = 'armazenamento' then
+    if e.criada_no_terreno then
+      if e.cliente_id is null and coalesce(e.cliente_nome, '') = '' then f := f || text 'cliente'; end if;
+      if coalesce(e.origem, '') = '' or coalesce(e.destino, '') = '' then f := f || text 'rota'; end if;
+      if not exists (select 1 from pagamentos pg where pg.encomenda_id = e.id and pg.tipo <> 'reembolso' and pg.estado in ('pendente','parcial','pago')) then f := f || text 'primeiro pagamento'; end if;
+      if e.assinatura_documento_id is null and e.pin_validacao_hash is null then f := f || text 'assinatura ou PIN do cliente'; end if;
+    end if;
+    select * into r from recibos_armazem where encomenda_id = e.id;
+    if r.encomenda_id is null or not r.confirmado or r.quantidade_recebida is null then f := f || text 'receção no armazém com quantidade confirmada';
+    elsif e.quantidade is not null and r.quantidade_recebida <> e.quantidade and coalesce(trim(r.ocorrencias), '') = '' then
+      f := f || ('ocorrência a explicar a diferença de quantidade (' || r.quantidade_recebida || ' de ' || e.quantidade || ')'); end if;
+  end if;
+  if p_para = 'expedicao' and not exists (select 1 from recibos_armazem ra where ra.encomenda_id = e.id and ra.confirmado and ra.carga_conferida) then
+    f := f || text 'receção confirmada e carga conferida pelo armazém'; end if;
+  if p_para = 'em_transito' and not (coalesce(e.navio, '') <> '' and coalesce(e.viagem, '') <> '' and e.partida_prevista is not null)
+     and not exists (select 1 from manifesto_encomendas me join manifestos m on m.id = me.manifesto_id where me.encomenda_id = e.id
+                      and coalesce(m.transportador, '') <> '' and coalesce(m.numero_viagem, '') <> '' and m.partida is not null) then
+    f := f || text 'navio, viagem e data prevista de partida'; end if;
+  if p_para = 'disponivel' and not exists (select 1 from trabalhos_terreno t where t.encomenda_id = e.id and t.tipo = 'processamento_destino' and t.estado = 'concluida') then
+    f := f || text 'processamento no destino concluído'; end if;
+  if p_para = 'entregue' then
+    if e.estado <> 'disponivel' then f := f || text 'passar por Destino e Disponível (chegada e aviso ao cliente)'; end if;
+    if not private.entrega_confirmada(e.id) then
+      f := f || text 'confirmação do levantamento (identificação e assinatura/PIN)'; end if;
+  end if;
+  return f;
+end $$;
+
+create or replace function private.documento_dados(p_tipo text, p_encomenda uuid, p_pagamento uuid) returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare e encomendas; r jsonb; pago numeric; pg pagamentos;
+begin
+  select * into e from encomendas where id = p_encomenda;
+  r := jsonb_build_object(
+    'empresa', (select jsonb_build_object('id', m.id, 'nome', coalesce(m.nome_comercial, m.nome), 'nif', m.nif, 'morada', concat_ws(', ', m.morada, nullif(concat_ws(' ', m.codigo_postal, m.cidade), ''), m.pais),
+                  'telefone', m.telefone, 'email', m.email) from empresas m where m.id = e.empresa_id),
+    'cliente', (select jsonb_build_object('nome', coalesce(c.nome, e.cliente_nome), 'nif', coalesce(c.nif, e.cliente_nif)) from (select 1) x left join clientes c on c.id = e.cliente_id),
+    'remetente', coalesce(e.remetente, '{}'::jsonb) - 'nif', 'destinatario', coalesce(e.destinatario, '{}'::jsonb) - 'nif',
+    'encomenda', jsonb_build_object('codigo', e.codigo, 'simulacao', (select s.codigo from simulacoes s where s.id = e.simulacao_id), 'origem', e.origem, 'destino', e.destino,
+      'modalidade', case when e.navio is not null then 'Marítimo' else 'A confirmar pelo prestador' end, 'tipo_carga', e.tipo_carga, 'descricao', e.descricao,
+      'quantidade', e.quantidade, 'peso_kg', e.peso_kg, 'volume_m3', e.volume_m3, 'volumes', coalesce(e.volumes, '[]'::jsonb), 'valor_declarado', e.valor_declarado,
+      'data_prevista', e.data_prevista, 'morada_recolha', e.morada_recolha, 'navio', e.navio, 'viagem', e.viagem, 'partida_prevista', e.partida_prevista,
+      'chegada_prevista', e.chegada_prevista, 'observacoes', e.observacoes),
+    'ocorrencias', (select coalesce(jsonb_agg(jsonb_build_object('codigo', o.codigo, 'tipo', o.tipo, 'descricao', o.descricao, 'em', o.created_at) order by o.created_at), '[]'::jsonb)
+                      from ocorrencias o where o.encomenda_id = e.id));
+  if p_tipo = 'rececao' then
+    r := r || jsonb_build_object('rececao', (select jsonb_build_object('em', ra.confirmado_em, 'por', f.nome, 'armazem', a.nome, 'quantidade_esperada', e.quantidade,
+            'quantidade_recebida', ra.quantidade_recebida, 'conferida', ra.carga_conferida, 'localizacao', ra.localizacao, 'ocorrencias', ra.ocorrencias)
+          from recibos_armazem ra left join armazens a on a.id = ra.armazem_id left join funcionarios f on f.id = ra.confirmado_por where ra.encomenda_id = e.id));
+  elsif p_tipo = 'pagamento' then
+    select * into pg from pagamentos where id = p_pagamento;
+    select coalesce(sum(case when tipo = 'reembolso' then -valor else valor end), 0) into pago from pagamentos
+     where encomenda_id = e.id and estado = 'pago' and coalesce(pago_em, created_at) <= coalesce(pg.pago_em, pg.created_at);
+    r := r || jsonb_build_object('pagamento', jsonb_build_object('codigo', pg.codigo, 'valor', pg.valor, 'moeda', pg.moeda, 'metodo', pg.metodo, 'referencia', pg.referencia,
+            'em', coalesce(pg.pago_em, pg.created_at), 'total_encomenda', e.preco_total, 'total_pago', pago, 'saldo', greatest(coalesce(e.preco_total, 0) - pago, 0),
+            'estado', case when coalesce(e.preco_total, 0) - pago <= 0 then 'integral' else 'parcial' end));
+  elsif p_tipo = 'entrega' then
+    r := r || jsonb_build_object('entrega', (select jsonb_build_object('recebido_por', c.recebido_por, 'identificacao', c.identificacao, 'feito_em', c.feito_em, 'lat', c.lat, 'lon', c.lon,
+            'precisao_m', c.precisao_m, 'volumes_conferidos', c.volumes_conferidos, 'notas', c.notas, 'assinatura', c.assinatura, 'motorista', f.nome,
+            'fotos', (select count(*) from comprovativos_terreno_fotos x where x.comprovativo_id = c.id))
+          from comprovativos_terreno c left join funcionarios f on f.id = c.criado_por where c.encomenda_id = e.id and c.resultado = 'entregue' order by c.recebido_em desc limit 1));
+  end if;
+  return r;
+end $$;
+
+create or replace function private.documento_emitir(p_tipo text, p_encomenda uuid, p_pagamento uuid, p_motivo text, p_reemitir boolean)
+returns public.documentos_emitidos language plpgsql security definer set search_path = public as $$
+declare e encomendas; atual documentos_emitidos; novo documentos_emitidos; d jsonb; n int; v_ano int := extract(year from now())::int;
+begin
+  select * into e from encomendas where id = p_encomenda;
+  if not found then raise exception 'Encomenda não encontrada.'; end if;
+  select * into atual from documentos_emitidos where empresa_id = e.empresa_id and tipo = p_tipo and coalesce(pagamento_id, encomenda_id) = coalesce(p_pagamento, p_encomenda)
+     and estado = 'valido' for update;
+  if found and not p_reemitir then return atual; end if;
+  d := private.documento_dados(p_tipo, p_encomenda, p_pagamento);
+  if atual.id is not null then
+    if atual.dados = d then raise exception 'Os dados não mudaram desde a versão %: não é preciso emitir nova versão.', atual.versao; end if;
+    update documentos_emitidos set estado = 'substituido' where id = atual.id;
+    insert into documentos_emitidos (empresa_id, tipo, numero, versao, encomenda_id, pagamento_id, cliente_id, referencia, dados, sha256, motivo, substitui_id, emitido_por)
+    values (e.empresa_id, p_tipo, atual.numero, atual.versao + 1, p_encomenda, p_pagamento, e.cliente_id, e.codigo, d, encode(extensions.digest(d::text, 'sha256'), 'hex'),
+            p_motivo, atual.id, auth.uid()) returning * into novo;
+    insert into documentos_eventos (documento_id, acao, user_id, detalhe) values (novo.id, 'reemitido', auth.uid(), p_motivo);
+  else
+    insert into documentos_numeracao (empresa_id, tipo, ano, ultimo) values (e.empresa_id, p_tipo, v_ano, 1)
+      on conflict (empresa_id, tipo, ano) do update set ultimo = documentos_numeracao.ultimo + 1 returning ultimo into n;
+    insert into documentos_emitidos (empresa_id, tipo, numero, encomenda_id, pagamento_id, cliente_id, referencia, dados, sha256, emitido_por)
+    values (e.empresa_id, p_tipo, 'EL-' || case p_tipo when 'guia' then 'GUI' when 'rececao' then 'REC' when 'entrega' then 'ENT' else 'RCP' end || '-' || v_ano || '-' || lpad(n::text, 6, '0'),
+            p_encomenda, p_pagamento, e.cliente_id, e.codigo, d, encode(extensions.digest(d::text, 'sha256'), 'hex'), auth.uid()) returning * into novo;
+    insert into documentos_eventos (documento_id, acao, user_id) values (novo.id, 'emitido', auth.uid());
+  end if;
+  if e.cliente_id is not null then
+    insert into notificacoes (user_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+    values (e.cliente_id, 'documento_emitido', case p_tipo when 'guia' then 'Guia da encomenda' when 'rececao' then 'Carga recebida no armazém' when 'entrega' then 'Comprovativo de entrega' else 'Comprovativo de pagamento' end
+            || ' · ' || e.codigo, 'O documento ' || novo.numero || case when novo.versao > 1 then ' (versão ' || novo.versao || ')' else '' end || ' está disponível nos seus documentos.',
+            'documentos_emitidos', novo.id);
+  end if;
+  return novo;
+end $$;
+
+create or replace function private.documento_pode(p_tipo text, p_encomenda uuid, p_pagamento uuid) returns text language sql stable security definer set search_path = public as $$
+  select case p_tipo
+    when 'guia' then case when (select estado from encomendas where id = p_encomenda) in ('aprovacao', 'cancelada') then 'A guia só é emitida depois de a encomenda ser aprovada.' end
+    when 'rececao' then case when not exists (select 1 from recibos_armazem where encomenda_id = p_encomenda and confirmado) then 'A receção ainda não foi confirmada pelo armazém.' end
+    when 'pagamento' then case when not exists (select 1 from pagamentos where id = p_pagamento and encomenda_id = p_encomenda and estado = 'pago' and tipo <> 'reembolso')
+                               then 'O pagamento ainda não está confirmado.' end
+    when 'entrega' then case when not exists (select 1 from comprovativos_terreno c where c.encomenda_id = p_encomenda and c.resultado = 'entregue')
+                             then 'Ainda não há comprovativo de entrega assinado no terreno.' end
+    else 'Tipo de documento inválido.' end $$;
+
+create or replace function private.documento_papeis(p_tipo text) returns text[] language sql immutable as $$
+  select case p_tipo when 'guia' then array['admin_empresa', 'operador'] when 'rececao' then array['admin_empresa', 'operador', 'armazem']
+                     when 'entrega' then array['admin_empresa', 'operador', 'operador_terreno'] else array['admin_empresa', 'financeiro'] end $$;
+
+-- ===== 00186_fase1_tipo_entrega.sql =====
+-- v127 — Fase 1: o Centro Documental aceita o tipo «entrega» (comprovativo de entrega). Troca a regra de tipos por uma mais larga;
+-- nenhum documento existente é alterado (só se acrescenta um valor permitido).
+alter table public.documentos_emitidos drop constraint if exists documentos_emitidos_tipo_check;
+alter table public.documentos_emitidos add constraint documentos_emitidos_tipo_check check (tipo in ('guia', 'rececao', 'pagamento', 'entrega'));
+
+-- ===== 00187_encomenda_prestador.sql =====
+-- v128: o prestador cria encomendas NO SERVIDOR (antes ficavam só no navegador de quem as criava e os colegas não as viam).
+-- A encomenda entra em «Aprovação» da empresa e aparece a todos os funcionários. O código local (id_local) evita duplicados quando o
+-- navegador reenvia encomendas antigas. O preço (incluindo a recolha por km) fica registado em preco_detalhe. Só acrescenta uma tabela e funções.
+
+create table if not exists public.encomendas_origem_local (
+  id_local text primary key check (length(id_local) between 4 and 80),
+  encomenda_id uuid not null references public.encomendas(id), empresa_id uuid not null references public.empresas(id),
+  criado_em timestamptz not null default now());
+alter table public.encomendas_origem_local enable row level security;
+revoke all on public.encomendas_origem_local from anon, authenticated;
+
+create or replace function public.criar_encomenda_prestador(p jsonb) returns jsonb language plpgsql security definer set search_path = public as $$
+declare v_emp uuid := private.minha_empresa(); v_papel text := private.meu_papel()::text; v_id text := trim(coalesce(p ->> 'id_local', '')); e encomendas; v_existe uuid;
+        rem jsonb; dest jsonb; vols jsonb := '[]'::jsonb; v jsonb; preco numeric := nullif(p ->> 'preco_total', '')::numeric; km numeric := nullif(p ->> 'km_recolha', '')::numeric;
+        t text := '';
+begin
+  if v_emp is null or v_papel not in ('admin_empresa', 'operador', 'operador_terreno') then raise exception 'Só funcionários da empresa (administração, operação ou terreno) criam encomendas.' using errcode = '42501'; end if;
+  if length(v_id) < 4 then raise exception 'Encomenda sem código local.'; end if;
+  select encomenda_id into v_existe from encomendas_origem_local where id_local = v_id and empresa_id = v_emp;
+  if v_existe is not null then select * into e from encomendas where id = v_existe; return jsonb_build_object('id', e.id, 'codigo', e.codigo, 'repetido', true); end if;
+  if coalesce(trim(p ->> 'origem'), '') = '' or coalesce(trim(p ->> 'destino'), '') = '' then raise exception 'Indique a origem e o destino.'; end if;
+  if coalesce(trim(p ->> 'cliente_nome'), '') = '' then raise exception 'Indique o cliente ou remetente.'; end if;
+  if preco is not null and (preco < 0 or preco > 10000000) then raise exception 'Valor da encomenda inválido.'; end if;
+  if km is not null and (km < 0 or km > 5000) then raise exception 'Distância de recolha inválida.'; end if;
+  if jsonb_typeof(coalesce(p -> 'volumes', '[]')) <> 'array' or jsonb_array_length(coalesce(p -> 'volumes', '[]')) > 200 then raise exception 'Lista de volumes inválida.'; end if;
+  for v in select * from jsonb_array_elements(coalesce(p -> 'volumes', '[]')) loop
+    vols := vols || jsonb_strip_nulls(jsonb_build_object('descricao', left(v ->> 'descricao', 200), 'quantidade', nullif(v ->> 'quantidade', '')::numeric, 'peso', nullif(v ->> 'peso', '')::numeric,
+      'comprimento', nullif(v ->> 'comprimento', '')::numeric, 'largura', nullif(v ->> 'largura', '')::numeric, 'altura', nullif(v ->> 'altura', '')::numeric, 'valor', nullif(v ->> 'valor', '')::numeric));
+  end loop;
+  rem := jsonb_strip_nulls(jsonb_build_object('nome', left(nullif(trim(p -> 'remetente' ->> 'nome'), ''), 120), 'telefone', left(nullif(trim(p -> 'remetente' ->> 'telefone'), ''), 40),
+    'email', left(nullif(trim(p -> 'remetente' ->> 'email'), ''), 160), 'morada', left(nullif(trim(p -> 'remetente' ->> 'morada'), ''), 300)));
+  dest := jsonb_strip_nulls(jsonb_build_object('nome', left(nullif(trim(p -> 'destinatario' ->> 'nome'), ''), 120), 'telefone', left(nullif(trim(p -> 'destinatario' ->> 'telefone'), ''), 40),
+    'email', left(nullif(trim(p -> 'destinatario' ->> 'email'), ''), 160), 'nif', left(nullif(trim(p -> 'destinatario' ->> 'nif'), ''), 20), 'morada', left(nullif(trim(p -> 'destinatario' ->> 'morada'), ''), 300)));
+  insert into encomendas (empresa_id, cliente_nome, cliente_nif, cliente_telefone, origem, destino, tipo_carga, descricao, quantidade, peso_kg, volume_m3, volumes, estado, criada_no_terreno,
+                          preco_total, data_prevista, criado_por, morada_recolha, remetente, destinatario, valor_declarado, observacoes, preco_detalhe)
+  values (v_emp, left(trim(p ->> 'cliente_nome'), 160), left(nullif(trim(p ->> 'cliente_nif'), ''), 20), left(nullif(trim(p -> 'remetente' ->> 'telefone'), ''), 40),
+          left(trim(p ->> 'origem'), 200), left(trim(p ->> 'destino'), 200), left(nullif(trim(p ->> 'tipo_carga'), ''), 120), left(nullif(trim(p ->> 'descricao'), ''), 1000),
+          nullif(p ->> 'quantidade', '')::numeric::int, nullif(p ->> 'peso_kg', '')::numeric, nullif(p ->> 'volume_m3', '')::numeric, vols, 'aprovacao', v_papel = 'operador_terreno',
+          preco, nullif(p ->> 'data_prevista', '')::date, auth.uid(), case when coalesce((p ->> 'recolha')::boolean, false) then left(nullif(trim(p ->> 'morada_recolha'), ''), 300) end,
+          rem, dest, nullif(p ->> 'valor_declarado', '')::numeric, left(nullif(trim(p ->> 'observacoes'), ''), 1000),
+          jsonb_strip_nulls(jsonb_build_object('origem', 'prestador', 'recolha_km', km, 'recolha_valor', nullif(p ->> 'recolha_valor', '')::numeric, 'recolha_tarifa', left(p ->> 'recolha_tarifa', 120),
+            'carga_valor', nullif(p ->> 'carga_valor', '')::numeric, 'moeda', 'EUR')))
+  returning * into e;
+  insert into encomendas_origem_local (id_local, encomenda_id, empresa_id) values (v_id, e.id, v_emp);
+  select coalesce(nome, '') into t from funcionarios where id = auth.uid();
+  insert into encomenda_historico (encomenda_id, empresa_id, de, para, nota, user_id, codigo, responsavel, prestador)
+  values (e.id, v_emp, null, 'aprovacao', 'Encomenda criada pelo prestador', auth.uid(), e.codigo, t, (select coalesce(nome_comercial, nome) from empresas where id = v_emp));
+  insert into notificacoes (empresa_id, tipo, titulo, corpo, referencia_tabela, referencia_id)
+  values (v_emp, 'encomenda_nova', 'Nova encomenda para aprovar: ' || e.codigo, t || ' criou a encomenda ' || e.origem || ' → ' || e.destino || '.', 'encomendas', e.id);
+  return jsonb_build_object('id', e.id, 'codigo', e.codigo, 'repetido', false);
+end $$;
+revoke all on function public.criar_encomenda_prestador(jsonb) from public, anon;
+grant execute on function public.criar_encomenda_prestador(jsonb) to authenticated;
+
+
 commit;

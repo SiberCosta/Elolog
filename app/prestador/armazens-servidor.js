@@ -48,7 +48,7 @@ window.updateProviderDirectNearestWarehouse=async function(){const pickup=provid
   catch(e){if(id!==pedido)return;limpar();if(status){status.textContent=/armaz/.test(e.message)?"Não encontrámos os armazéns no mapa. Corrija as moradas em Configurações.":"Não encontrámos a morada de recolha. Experimente só o código postal e a localidade.";status.className="provider-pickup-pricing-status is-warning"}}};
 
 /* Configurações: mostrar os armazéns guardados no servidor, mesmo noutro navegador */
-function ligarConfig(){const r=window.renderProviderSettings;if(typeof r!=="function"||r.__armazens)return;const novo=function(){const x=r.apply(this,arguments);carregarDoServidor(true).then(ok=>{if(ok&&document.getElementById("providerWarehouseRows"))r.apply(this,arguments)});return x};novo.__armazens=1;window.renderProviderSettings=novo}
+function ligarConfig(){const r=window.renderProviderSettings;if(typeof r!=="function"||r.__armazens)return;const novo=function(){const x=r.apply(this,arguments);botaoValidarTodas();carregarDoServidor(true).then(ok=>{if(ok&&document.getElementById("providerWarehouseRows")){r.apply(this,arguments);botaoValidarTodas()}});return x};novo.__armazens=1;window.renderProviderSettings=novo}
 
 /* Configurações: botão «Validar morada» em cada armazém — localiza no mapa, mostra onde ficou e guarda as coordenadas */
 async function validar(row){const btn=row.querySelector(".arm-validar"),est=row.querySelector(".arm-estado"),morada=row.querySelector(".provider-warehouse-address")?.value.trim();
@@ -65,7 +65,21 @@ function enriquecer(row,data){if(!row||row.querySelector(".arm-validar"))return;
   row.querySelector(".provider-warehouse-address")?.addEventListener("input",()=>{delete row.dataset.lat;delete row.dataset.lon;est.className="arm-estado";est.textContent="Morada alterada: carregue em «Validar morada»."})}
 function ligarLinhas(){const a=window.addProviderWarehouseRow;if(typeof a!=="function"||a.__armazens)return;const novo=function(data={}){const r=a.apply(this,arguments);enriquecer(document.querySelector("#providerWarehouseRows .provider-warehouse-row:last-child"),data);return r};novo.__armazens=1;window.addProviderWarehouseRow=novo}
 
-function iniciar(){ligar();ligarConfig();ligarLinhas();document.addEventListener("input",e=>{if(e.target?.id==="providerDirectOrigin"&&!getProviderWarehouses().length&&typeof scheduleProviderDirectNearestWarehouse==="function")scheduleProviderDirectNearestWarehouse()})}
+/* v122: encontrar e validar os armazéns sem procurar — entrada no menu Armazém, botão «Validar e guardar armazéns» e atalho na simulação */
+function abrir(btn){try{showProviderPage("providerSettings",btn)}catch(_){}let n=0;const ir=()=>{const sec=document.querySelector(".provider-warehouse-settings");if(!sec){if(++n<20)setTimeout(ir,150);return}
+  sec.scrollIntoView({behavior:"smooth",block:"start"});sec.classList.add("arm-destaque");setTimeout(()=>sec.classList.remove("arm-destaque"),2400);
+  const vazio=[...sec.querySelectorAll(".provider-warehouse-address")].find(i=>!i.value.trim());(vazio||sec.querySelector(".arm-validar"))?.focus({preventScroll:true})};setTimeout(ir,120)}
+async function validarTodas(btn){const linhas=[...document.querySelectorAll("#providerWarehouseRows .provider-warehouse-row")].filter(r=>r.querySelector(".provider-warehouse-address")?.value.trim());
+  const fb=document.getElementById("providerSettingsFeedback"),dizer=(t,c)=>{if(fb)fb.innerHTML=`<div class="${c}" role="status">${t}</div>`};
+  if(!linhas.length){dizer("Escreva a morada de pelo menos um armazém e volte a carregar em «Validar e guardar armazéns».","sim-warning");document.querySelector(".provider-warehouse-address")?.focus();return}
+  btn.disabled=true;btn.textContent="A validar…";try{for(const r of linhas)await validar(r)}finally{btn.disabled=false;btn.textContent="Validar e guardar armazéns"}
+  const falhou=linhas.filter(r=>r.dataset.lat==null);if(falhou.length){dizer(`${falhou.length===1?"Uma morada não foi encontrada":falhou.length+" moradas não foram encontradas"} no mapa. Corrija-a${falhou.length===1?"":"s"} (veja a indicação em cada armazém) e volte a validar. Nada foi guardado.`,"sim-warning");falhou[0].querySelector(".provider-warehouse-address")?.focus();return}
+  saveProviderSettings();linhas.forEach(r=>{const e=r.querySelector(".arm-estado");if(e){e.className="arm-estado ok";e.textContent="Morada validada e guardada."}})}
+function botaoValidarTodas(){const h=document.querySelector(".provider-warehouse-settings header");if(!h||h.querySelector(".arm-validar-todas"))return;const b=document.createElement("button");b.type="button";b.className="btn-secondary arm-validar-todas";b.textContent="Validar e guardar armazéns";b.onclick=()=>validarTodas(b);h.appendChild(b)}
+function ligarEstado(){const u=window.updateProviderDirectPickupStatus;if(typeof u!=="function"||u.__armazens)return;const novo=function(){const r=u.apply(this,arguments);const st=document.getElementById("providerDirectPickupPricingStatus");
+  if(st&&providerDirectValue("providerDirectPickup")==="yes"&&!getProviderWarehouses().length&&!st.querySelector(".arm-gerir")){const b=document.createElement("button");b.type="button";b.className="btn-secondary arm-gerir";b.textContent="Adicionar armazém";b.onclick=()=>abrir();st.appendChild(b)}return r};novo.__armazens=1;window.updateProviderDirectPickupStatus=novo}
+
+function iniciar(){ligar();ligarConfig();ligarLinhas();ligarEstado();document.addEventListener("input",e=>{if(e.target?.id==="providerDirectOrigin"&&!getProviderWarehouses().length&&typeof scheduleProviderDirectNearestWarehouse==="function")scheduleProviderDirectNearestWarehouse()})}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",iniciar);else iniciar();
-window.elologArmazens={localizar,carregarDoServidor};
+window.elologArmazens={localizar,carregarDoServidor,abrir,validarTodas};
 })();

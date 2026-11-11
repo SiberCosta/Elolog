@@ -1,0 +1,60 @@
+/* Elolog — Terreno ao vivo e Integrações (v127). Pensado primeiro para o telemóvel do motorista: botões grandes, texto legível ao sol. */
+.tv{display:grid;gap:14px}
+.tv h2{margin:0}.tv h3{margin:8px 0 0;font-size:16px}
+.tv-topo{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:10px}.tv-topo p{margin:4px 0 0;color:var(--elo-texto,#4D6172);max-width:64ch}
+.tv-rede{font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:999px;white-space:nowrap}
+.tv-rede.ok{background:var(--elo-ok-fundo,#E6F2EC);color:var(--elo-ok,#1F6B50)}.tv-rede.sem{background:var(--elo-aviso-fundo,#FBEFD9);color:var(--elo-aviso,#8A5300)}
+.tv-faixa{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 14px;border-radius:12px;background:#0B2E45;color:#fff}
+.tv-faixa>div{flex:1 1 220px;display:grid;gap:2px}.tv-faixa span{color:#CFE0EC;font-size:13px}.tv-faixa .btn-secondary{background:#fff;color:#0B2E45;border-color:#fff}
+.tv-pulso{width:12px;height:12px;border-radius:50%;background:#3FD08F;box-shadow:0 0 0 0 rgba(63,208,143,.6);animation:tvPulso 1.8s infinite;flex:none}
+@keyframes tvPulso{70%{box-shadow:0 0 0 10px rgba(63,208,143,0)}100%{box-shadow:0 0 0 0 rgba(63,208,143,0)}}
+@media(prefers-reduced-motion:reduce){.tv-pulso{animation:none}}
+.tv-fila{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 14px;border:1.5px solid var(--elo-aviso-forte,#C27A12);background:var(--elo-aviso-fundo,#FBEFD9);border-radius:12px;color:var(--elo-aviso,#8A5300)}
+.tv-fila span{font-size:13px}.tv-erro{margin:0;width:100%;color:var(--elo-erro,#A2392A);font-weight:600}
+.tv-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.tv-cartao{border:1px solid var(--elo-fio,#DCE4EA);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:4px;background:var(--elo-cartao,#fff);min-width:0}
+.tv-cartao header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:4px}
+.tv-ativo{border:2px solid #0E4A6E;box-shadow:0 0 0 4px rgba(14,74,110,.08)}
+.tv-tipo{font-size:11.5px;font-weight:700;padding:2px 10px;border-radius:999px;background:#E8F1F7;color:#0E4A6E}.tv-recolha{background:#F1ECFA;color:#5B3A8C}
+.tv-cod{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;color:#0E4A6E}
+.tv-curso{font-size:11.5px;font-weight:700;color:var(--elo-ok,#1F6B50)}
+.tv-nome{font-size:17px;color:var(--elo-tinta,#13293D)}.tv-tel{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:15px;color:#0E4A6E;text-decoration:none;padding:4px 0}
+.tv-morada,.tv-vol,.tv-nota{margin:0;color:var(--elo-texto,#4D6172)}.tv-nota{font-size:13px}.tv-vol{font-weight:600;color:var(--elo-tinta,#13293D)}
+.tv-acoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:flex-end}.tv-acoes>*{min-height:44px}
+.tv-hora{display:grid;gap:2px;font-size:12px;color:var(--elo-suave,#5A6E7E)}.tv-hora input{min-height:40px;padding:6px 8px;border:1.5px solid var(--elo-fio,#DCE4EA);border-radius:9px;font:inherit}
+.tv-vazio{padding:28px;border:1.5px dashed var(--elo-fio,#DCE4EA);border-radius:12px;text-align:center;color:var(--elo-texto,#4D6172);grid-column:1/-1;margin:0}
+/* acompanhamento */
+.tv-resumo{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.tv-resumo>div{border:1px solid var(--elo-fio,#DCE4EA);border-radius:12px;padding:10px 14px}
+.tv-resumo b{display:block;font-size:26px}.tv-resumo span{color:var(--elo-suave,#5A6E7E);font-size:13px}
+.tv-resumo .ok b{color:var(--elo-ok,#1F6B50)}.tv-resumo .atraso b{color:var(--elo-aviso,#8A5300)}.tv-resumo .sinal b{color:var(--elo-erro,#A2392A)}
+.tv-estado{margin-left:auto;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
+.tv-estado.tv-ok{background:var(--elo-ok-fundo,#E6F2EC);color:var(--elo-ok,#1F6B50)}.tv-estado.tv-atraso{background:var(--elo-aviso-fundo,#FBEFD9);color:var(--elo-aviso,#8A5300)}.tv-estado.tv-sinal{background:var(--elo-erro-fundo,#FCEFEC);color:var(--elo-erro,#A2392A)}
+.tv-seg-atraso{border-left:4px solid var(--elo-aviso-forte,#C27A12)}.tv-seg-sinal{border-left:4px solid var(--elo-erro,#A2392A)}
+.tv-eta{display:flex;flex-wrap:wrap;gap:6px 22px;margin:4px 0}.tv-eta span{display:block;font-size:11.5px;color:var(--elo-suave,#5A6E7E)}.tv-eta b{font-size:20px;color:#0E4A6E}
+.tv-cliente{display:grid;gap:8px;margin-bottom:14px}.tv-cliente>div{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:14px 16px;border-radius:14px;background:#0B2E45;color:#fff}
+.tv-cliente>div>div{flex:1 1 240px;display:grid;gap:3px}.tv-cliente span{color:#CFE0EC;font-size:13.5px}.tv-cliente .tv-cod{color:#fff}.tv-cliente .btn-secondary{background:#fff;color:#0B2E45;border-color:#fff}
+/* comprovativo */
+.tv-modal{position:fixed;inset:0;z-index:2100;background:rgba(11,46,69,.55);display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:max(12px,env(safe-area-inset-top)) 12px 24px}
+.tv-form{background:var(--elo-cartao,#fff);border-radius:16px;width:min(620px,100%);padding:16px 18px 18px;display:grid;gap:14px}
+.tv-form header{display:flex;justify-content:space-between;align-items:center;gap:10px}.tv-form h3{margin:0;font-size:17px}
+.tv-res{border:0;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}.tv-res legend{font-weight:700;margin-bottom:6px}
+.tv-res label{display:flex;align-items:center;gap:6px;padding:10px 14px;border:1.5px solid var(--elo-fio,#DCE4EA);border-radius:10px;font-weight:600;min-height:44px}
+.tv-res label:has(input:checked){border-color:#0E4A6E;background:#E8F1F7;color:#0E4A6E}
+.tv-campos{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tv-campos label,.tv-form label.tv-bloco{display:grid;gap:4px;font-weight:600;font-size:13.5px}
+.tv-form input:not([type=radio]):not([type=checkbox]):not([type=file]),.tv-form textarea{font:inherit;font-weight:400;padding:11px 12px;border:1.5px solid var(--elo-fio,#DCE4EA);border-radius:10px;min-width:0;width:100%;box-sizing:border-box}
+.tv-de{display:flex;align-items:center;gap:8px;font-weight:400}.tv-de input{max-width:100px}
+.tv-bloco{display:grid;gap:8px}.tv-fotos{display:flex;flex-wrap:wrap;gap:8px}.tv-fotos figure{position:relative;margin:0}
+.tv-fotos img{width:84px;height:84px;object-fit:cover;border-radius:8px;display:block}.tv-fotos button{position:absolute;top:-6px;right:-6px;width:26px;height:26px;border-radius:50%;border:0;background:#A2392A;color:#fff;font-weight:700}
+.tv-foto-bt{display:inline-flex;align-items:center;justify-content:center;justify-self:start;cursor:pointer}
+.tv-assin canvas{width:100%;height:170px;border:1.5px dashed #9FB0BE;border-radius:10px;background:#fff;touch-action:none}.tv-assin .btn-secondary{justify-self:start}
+.tv-msg{margin:0;font-weight:600}.tv-msg.erro{color:var(--elo-erro,#A2392A)}.tv-msg.ok{color:var(--elo-ok,#1F6B50)}.tv-guardar{min-height:50px;font-size:16px}
+/* integrações */
+.ig-form{display:grid;gap:12px;max-width:760px}.ig-form>label{display:grid;gap:4px;font-weight:600}.ig-form input[type=url]{font:inherit;padding:11px 12px;border:1.5px solid var(--elo-fio,#DCE4EA);border-radius:10px}
+.ig-form fieldset{border:1px solid var(--elo-fio,#DCE4EA);border-radius:12px;padding:10px 14px;display:grid;gap:6px}.ig-ev{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.ig-ev code{font-size:11.5px;color:var(--elo-suave,#5A6E7E)}
+.ig-segredo{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:12px 14px;border:2px solid #0E4A6E;border-radius:12px;background:#E8F1F7}.ig-segredo b{width:100%}
+.ig-segredo code{font:700 14px/1.4 ui-monospace,Menlo,Consolas,monospace;overflow-wrap:anywhere;user-select:all}
+.ig-tab-envolve{overflow-x:auto}.ig-tab{width:100%;border-collapse:collapse;font-size:13px}.ig-tab th,.ig-tab td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--elo-fio-leve,#EDF1F3)}
+.ig-enviado{color:var(--elo-ok,#1F6B50)}.ig-falhou{color:var(--elo-erro,#A2392A)}.ig-pendente{color:var(--elo-aviso,#8A5300)}
+.ig-ajuda summary{cursor:pointer;font-weight:700}.ig-codigo{background:#0F2233;color:#E8F1F7;padding:12px;border-radius:10px;overflow-x:auto;font-size:12.5px}
+@media(max-width:600px){.tv-campos{grid-template-columns:1fr}.tv-resumo{grid-template-columns:1fr 1fr}.tv-lista{grid-template-columns:1fr}.tv-acoes>*{flex:1 1 auto}.tv-modal{padding:0}.tv-form{border-radius:0;min-height:100%}}
+.tv-faixa[hidden],.tv-cliente[hidden]{display:none!important}

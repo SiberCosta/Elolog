@@ -161,6 +161,6 @@ Ver `COPIAS_DE_SEGURANCA.md`.
 ## Num projeto novo do Supabase
 
 1. Aplicar as migrações por ordem (`servidor/supabase/migrations`).
-2. Publicar as funções: `registar-prestador`, `gerir-funcionarios`, `gerir-equipa`, `enviar-emails`, `pagamentos`, `pagamentos-aviso` (todas com `--no-verify-jwt`; validam o acesso no código).
+2. Publicar as funções: `registar-prestador`, `gerir-funcionarios`, `gerir-equipa`, `enviar-emails`, `pagamentos`, `pagamentos-aviso`, `validar-documento`, `webhooks` (todas com `--no-verify-jwt`; validam o acesso no código).
 3. SQL Editor: `select private.agendar_tarefas('https://<projeto>.supabase.co');` — cria o segredo do agendador no cofre e as 3 tarefas (emails, pagamentos e limpeza diária).
 4. Correr os testes `servidor/supabase/testes/01`, `02` e `05` (o 5 cobre faturas, pagamentos, navios e documentos: 39 verificações).

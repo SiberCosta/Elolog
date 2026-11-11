@@ -1,6 +1,6 @@
 # Elolog
 
-**Versão de 08/11/2026 (v121).** Se esta pasta tem este ficheiro, é a versão nova.
+**Versão de 11/11/2026 (v127).** Se esta pasta tem este ficheiro, é a versão nova.
 
 Plataforma de intermediação logística: clientes simulam e comparam propostas; transitárias gerem encomendas, equipa e cobranças; a administração Elolog valida e acompanha a rede.
 
@@ -57,6 +57,69 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Código de confirmação ao ligar uma caixa:** ao ligar uma caixa nova (ou mudar o endereço), a plataforma envia um código de 6 dígitos para essa caixa e só guarda depois de o escrever (válido 10 minutos, máx. 8 tentativas por 10 min).
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
+
+## v128 (encomendas do prestador no servidor e recolha por km)
+
+- **Encomendas visíveis a todos**: a encomenda criada em «Simular e criar encomenda» (ou ao aceitar uma simulação revista) é gravada no servidor (`criar_encomenda_prestador`) e entra em «Aprovar pedidos» para todos os funcionários da empresa, com aviso «Nova encomenda para aprovar». Antes ficava só no navegador de quem a criou.
+- **Encomendas antigas**: ao entrar, as encomendas em Aprovação que ficaram só neste navegador são enviadas uma vez (o código local impede duplicados).
+- **Recolha por km**: a tarifa de recolha conta como valor × km até ao armazém mais próximo, com o preço mínimo da tarifa como piso (a mesma regra do servidor). O cálculo aparece por baixo da tarifa: «1,50 €/km × 12 km = 18,00 €». Sem morada de recolha, a recolha fica a 0 € até ser indicada.
+- Servidor: migração `00187` (aplicada; acrescenta a tabela `encomendas_origem_local` e a função; não altera dados). Teste `testes/32_encomenda_prestador.sql` (10/10).
+- Ficheiros: `app/prestador/encomendas-servidor.js` (novo); `app/prestador/servidor.js` mostra o nome do cliente destas encomendas.
+- Ainda só locais: fotografias e documentos anexos às encomendas criadas pelo prestador.
+
+## v127 (Fase 1: terreno ao vivo, comprovativo de entrega sem rede e integrações)
+
+- **Serviços ao vivo** (motorista; menu Equipa e transportes e, para o operador de terreno, «Ao vivo» na barra): os serviços do dia com quem e onde, ligar, «Navegar», «Iniciar percurso» (com «Combinado até», opcional) e «Registar entrega/recolha».
+- **Posição e chegada prevista**: ao iniciar o percurso, o telemóvel partilha a posição (de 30 em 30 s, com o ecrã ligado) e calcula a chegada prevista por estrada (OSRM, gratuito). Guarda-se só a última posição.
+- **Alertas** (de 5 em 5 minutos, no servidor): «Atraso previsto» quando a chegada passa mais de 15 min da hora combinada (avisa a empresa e o cliente) e «Sem sinal do motorista» ao fim de 20 min sem posição (avisa a empresa). Cada alerta só uma vez.
+- **Acompanhamento ao vivo** (empresa e administração): serviços em curso com chegada prevista, distância e estado (a tempo, atrasado, sem sinal), «Ver no mapa». O **cliente** vê no Início «A sua entrega está a caminho» com a hora prevista.
+- **Comprovativo no terreno, sem rede**: resultado (entregue/recolhido, cliente ausente, recusado), quem recebeu, identificação, volumes conferidos, fotografias, **assinatura no ecrã**, notas, posição e hora. Sem rede fica guardado no telemóvel e segue sozinho quando houver ligação (sem duplicar).
+- **Entrega concluída**: a entrega assinada no terreno passa a encomenda de «Disponível» a «Entregue» (a assinatura do terreno conta como confirmação) e emite o **Comprovativo de entrega (EL-ENT)** no Centro Documental, com quem recebeu, assinatura, posição e fotografias.
+- **Integrações (webhooks)** (Empresa e configurações): endereço https://, escolha dos eventos (encomenda criada, mudança de estado, documento emitido, percurso iniciado, atraso previsto, comprovativo), segredo mostrado uma vez, evento de teste e registo dos últimos envios. Assinatura HMAC-SHA256 e até 8 tentativas.
+- Servidor: migrações `00182`–`00186` (aplicadas; acrescentam tabelas e funções; a regra de tipos do Centro Documental passou a aceitar «entrega»; `encomenda_falta` e as funções do Centro Documental foram substituídas acrescentando só o caso da entrega), função `webhooks` (publicada), tarefas `elolog-terreno` e `elolog-webhooks` (só trabalham quando há serviços em curso ou eventos por enviar). Testes: `testes/31_fase1.sql` (31/31).
+- Ficheiros: `app/comum/terreno-dados.js`, `terreno-motorista.js`, `terreno-vivo.js`, `integracoes.js`, `terreno.css`; Centro Documental (`centro-doc-modelo.js`, `centro-doc.js`, `centro-doc-demo.js`, `centro-doc-folha.css`); `app/prestador/menu-lateral.js`, `app/comum/acesso-por-funcao.js`.
+
+## v126 (sem texto repetido no topo dos documentos)
+
+- Saem do topo da guia, da receção e do comprovativo as etiquetas «Em vigor» e «Versão N»: o estado e a versão ficam só na legenda em baixo (e a marca «Substituído» continua sobre as versões antigas). Ficam no topo só os estados próprios do documento: «Pagamento parcial» / «Pago na totalidade» e «Sem diferenças» / «Diferença de N volume(s)».
+- Ficheiro: `app/comum/centro-doc-modelo.js`. Sem migrações.
+
+## v125 (documentos em cartões, Azul Atlântico e código de barras)
+
+- **Cartões próprios**: Remetente, Destinatário (em destaque), Dados do navio, Totais de carga, Conteúdo e Percurso da carga; no comprovativo, Valor recebido, A conta, Detalhes do pagamento, Cliente e Encomenda; na receção, Totais recebidos e Armazém.
+- **Azul Atlântico na estrutura**: faixa do topo com a marca Elolog e o logótipo do prestador num cartão branco, títulos dos cartões, destinatário e números críticos (volumes, peso, valor recebido). Verde, âmbar e vermelho só para estados («Em vigor», «Pagamento parcial», «Substituído», diferenças na receção).
+- **Código de barras Code 128** da encomenda na guia, na receção, no comprovativo e em cada etiqueta (gerado sem bibliotecas e verificado: descodifica com o dígito de controlo certo).
+- **Telemóvel e tablet**: no visualizador a folha já não encolhe; ocupa a largura e, abaixo de 700 px, os cartões empilham-se. A barra de ações fica em duas colunas no telemóvel.
+- **A4 sem cortes**: se uma folha ficar mais alta do que o A4 (muitas linhas ou moradas longas), a impressão e o PDF reduzem-na proporcionalmente em vez de a cortar.
+- Ficheiros: `app/comum/centro-doc-modelo.js`, `centro-doc-folha.css`, `centro-doc.css`, `centro-doc.js`, `centro-doc-pdf.js`. Sem migrações.
+
+## v124 (guia e comprovativo redesenhados para quem os usa)
+
+- **Guia**: lê-se como o caminho da carga. Em cima, a rota em grande (origem → destino) e a frase com modalidade, data e navio; depois os números de relance (volumes, peso, volume, valor declarado); «Sai de» e, com mais peso, «Entregar a»; «O que leva» com a tabela dos volumes; «Atenção ao manusear» quando há observações ou ocorrências; e o **percurso** em três paragens ligadas (receção, expedição, entrega), cada uma com hora, «volumes conferidos ____ de N» e assinatura.
+- **Comprovativo**: diz em grande «Recebemos 150,00 €» e numa frase quem pagou, como, quando e para que encomenda; uma barra mostra quanto já está pago; «A conta» faz a soma à vista (total, pago antes, este pagamento, total pago, saldo); a nota «não é recibo nem fatura» fica no fim, em letra legível.
+- **Legenda técnica** em baixo de todos os documentos, como num desenho de engenharia: documento, número, versão, folha, emissor, data, estado, código de validação com QR e, quando há correção, a linha «Revisão N» com o motivo.
+- Marcas: Elolog à esquerda e o logótipo do prestador à direita. Números e códigos em letra monoespaçada. A letra Work Sans passa a ir também para a impressão.
+- Ficheiros: `app/comum/centro-doc-modelo.js` (reescrito), `app/comum/centro-doc-folha.css` (novo: o estilo da folha A4 saiu de `centro-doc.css`), `app/comum/centro-doc-pdf.js`. Sem migrações.
+
+## v123 (Centro Documental: guia, guia de receção e comprovativo, com as duas marcas)
+
+- **Emissão automática no servidor**, só quando a etapa está confirmada: a **guia de encomenda** quando a encomenda sai da aprovação; a **guia de receção** quando o armazém confirma a receção; o **comprovativo de pagamento** quando um pagamento fica «pago» (com o valor recebido, o total pago, o saldo e «parcial» ou «integral»). O cliente recebe uma notificação.
+- **Numeração própria de cada empresa**: EL-GUI-2026-000001, EL-REC-…, EL-RCP-…. **Nada se apaga nem se altera**: uma correção («Corrigir este documento», com motivo) cria a versão seguinte com o mesmo número e a anterior fica «substituída», sempre consultável e marcada no papel.
+- **Duas marcas** em todos os documentos: Elolog à esquerda e o logótipo do prestador à direita (o logótipo das Configurações passa a ser guardado também no servidor; sem logótipo aparece o nome da empresa).
+- **Digital e físico**: o mesmo modelo A4 serve para ver, **descarregar em PDF** e **imprimir**; a guia tem espaços para data, nome, assinatura e carimbo na receção, expedição e entrega, e **etiquetas dos volumes** (uma por volume, 4 por folha, com QR).
+- **Validação pelo QR**: cada documento tem um código aleatório; `site/validar.html` mostra se é autêntico, se está em vigor ou foi substituído, sem nomes, moradas, contactos nem valores. Passa pela função `validar-documento` (limite de pedidos por IP); o público continua a executar só `validar_empresa`.
+- **Centro documental** no menu de cada perfil: cliente (Pagamentos e documentos), prestador (Documentos) e administração (Conformidade e segurança). Separadores Guias, Receções, Comprovativos e Versões anteriores; pesquisa; histórico de emissão, consulta, impressão, descarga e validação; «Emitir um documento em falta» para encomendas anteriores.
+- O comprovativo diz em letra visível que **não é recibo nem fatura fiscal**: o documento fiscal continua a ser emitido pelo programa certificado do prestador.
+- Servidor: migrações `00180_centro_documental.sql` e `00181_centro_documental_emissao.sql` (aplicadas; só acrescentam tabelas e funções), função `validar-documento` (publicada). Testes: `testes/30_centro_documental.sql` (36/36).
+- Ficheiros: `app/comum/centro-doc.js`, `centro-doc-modelo.js`, `centro-doc-pdf.js`, `centro-doc-demo.js`, `centro-doc.css`, `site/validar.html`, `site/scripts/validar.js`, `app/prestador/menu-lateral.js`.
+- Bibliotecas gratuitas carregadas só quando se pede um PDF ou um QR (cdnjs): qrcode-generator 1.4.4, html2canvas 1.4.1 e jsPDF 2.5.1.
+
+## v122 (armazéns fáceis de encontrar e validar)
+
+- **Menu Armazém › «Armazéns e moradas»**: abre logo a secção dos armazéns (antes estava só no fim de «Empresa e configurações › Dados da empresa»).
+- **Botão «Validar e guardar armazéns»** no topo da secção: procura todas as moradas no mapa e só guarda se todas forem encontradas; se alguma falhar, diz qual e não guarda nada. Mantém-se o «Validar morada» em cada armazém.
+- **Na simulação direta**, quando a empresa ainda não tem armazém, aparece o botão «Adicionar armazém», que leva diretamente à secção.
+- Ficheiros: `app/prestador/armazens-servidor.js`, `app/prestador/menu-lateral.js`, `app/comum/tarifarios.css`. Sem migrações.
 
 ## v121 (distância da recolha e validação dos armazéns)
 

@@ -63,6 +63,8 @@ supabase functions deploy gerir-funcionarios --no-verify-jwt
 supabase functions deploy enviar-emails --no-verify-jwt        # ver "Aviso por e-mail" (segredos próprios)
 supabase functions deploy pagamentos --no-verify-jwt           # ifthenpay (ver documentacao/PRODUCAO.md)
 supabase functions deploy pagamentos-aviso --no-verify-jwt     # aviso (callback) da ifthenpay
+supabase functions deploy validar-documento --no-verify-jwt    # validação pública dos documentos pelo QR (site/validar.html)
+supabase functions deploy webhooks --no-verify-jwt             # entrega dos eventos aos sistemas das empresas (agendador)
 supabase secrets set SITE_URL=https://o-seu-endereço      # opcional: destino do link do e-mail de confirmação
 ```
 `SUPABASE_URL`, `SUPABASE_ANON_KEY` e `SUPABASE_SERVICE_ROLE_KEY` já são injetadas pelo Supabase nas Edge Functions. **A chave `service_role` nunca vai para o front-end.** `--no-verify-jwt` porque o registo é público e a outra função valida o token no próprio código (`auth.getUser`).

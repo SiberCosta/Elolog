@@ -76,7 +76,7 @@ export function seguro(nome: string, tratador: Tratador, o: OpcoesSeguro = {}): 
 }
 
 // ---------------------------------------------------------------- assistente ELO (respostas automáticas)
-const CONTROLO = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F​-‏‪-‮⁦-⁩]/g;
+const CONTROLO = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F\u200B-\u200F\u202A-\u202E\u2066-\u2069]/g;
 
 /** R1: nenhuma entrada chega ao assistente sem validação. Texto curto, sem caracteres de controlo nem invisíveis. */
 export function entradaAssistente(v: unknown, max = 1000): { ok: true; texto: string } | { ok: false; motivo: string } {

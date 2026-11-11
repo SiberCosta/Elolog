@@ -114,3 +114,7 @@ html:not(#bv) body .tf-pagina,html:not(#bv) body .tf-pagina>*,html:not(#bv) body
 .provider-warehouse-row .arm-estado.ok{color:#1d6b45}.provider-warehouse-row .arm-estado.erro{color:#a33a2a}
 .provider-warehouse-row .arm-estado a{color:inherit;font-weight:600}
 @media(max-width:720px){.provider-warehouse-row{grid-template-columns:1fr}.provider-warehouse-row .arm-validar{width:100%}}
+/* v122: armazéns fáceis de encontrar e validar */
+.provider-warehouse-settings>header>div{flex:1 1 auto}.provider-warehouse-settings>header>button{white-space:nowrap}
+.provider-warehouse-settings.arm-destaque{outline:2px solid #1f6f8b;outline-offset:4px;transition:outline-color .4s}
+.provider-pickup-pricing-status .arm-gerir{margin-left:8px}
