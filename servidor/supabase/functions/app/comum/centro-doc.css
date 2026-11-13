@@ -1,0 +1,49 @@
+/* Elolog — Centro Documental (v123). Duas partes: o documento A4 (.edoc, igual no ecrã, no papel e no PDF) e a página da lista (.cdoc). */
+
+/* o documento A4 está em centro-doc-folha.css */
+
+/* ---------- página do Centro Documental ---------- */
+.cdoc{display:grid;gap:16px}
+.cdoc-topo{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.cdoc-topo p{margin:4px 0 0;color:var(--elo-texto,#4D6172);max-width:62ch}
+.cdoc-abas{display:flex;flex-wrap:wrap;gap:6px}
+.cdoc-abas button{border:1.5px solid var(--elo-fio,#DCE4EA);background:transparent;color:var(--elo-tinta,#13293D);border-radius:999px;padding:7px 14px;font-weight:600;cursor:pointer}
+.cdoc-abas button[aria-pressed="true"]{border-color:var(--elo-mar,#13293D);background:var(--elo-mar,#13293D);color:#fff}
+.cdoc-abas b{margin-left:6px;font-variant-numeric:tabular-nums;opacity:.75}
+.cdoc-filtros{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cdoc-filtros input{flex:1 1 260px;min-width:0;padding:10px 12px;border:1.5px solid var(--elo-fio,#DCE4EA);border-radius:10px;font:inherit}
+.cdoc-lista{display:grid;gap:8px}
+.cdoc-item{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--elo-fio,#DCE4EA);border-radius:12px;background:var(--elo-cartao,#fff)}
+.cdoc-item strong{display:block;font-variant-numeric:tabular-nums}.cdoc-item small{display:block;color:var(--elo-suave,#5A6E7E)}
+.cdoc-tipo{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--elo-azul,#1F5F8B)}
+.cdoc-estado{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;background:var(--elo-ok-fundo,#E6F2EC);color:var(--elo-ok,#1F6B50)}
+.cdoc-estado.substituido,.cdoc-estado.anulado{background:var(--elo-erro-fundo,#FCEFEC);color:var(--elo-erro,#A2392A)}
+.cdoc-acoes{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.cdoc-acoes button,.cdoc-ver-acoes button{white-space:nowrap}
+.cdoc-vazio{padding:28px;border:1.5px dashed var(--elo-fio,#DCE4EA);border-radius:12px;text-align:center;color:var(--elo-texto,#4D6172)}
+.cdoc-emitir{border:1px solid var(--elo-fio,#DCE4EA);border-radius:12px;padding:12px 14px;background:var(--elo-fundo,#F1F5F8)}
+.cdoc-emitir summary{cursor:pointer;font-weight:700}
+.cdoc-emitir form{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:10px}
+.cdoc-emitir label{display:grid;gap:4px;font-size:13px;font-weight:600}
+.cdoc-emitir input,.cdoc-emitir select{padding:9px 10px;border:1.5px solid var(--elo-fio,#DCE4EA);border-radius:9px;font:inherit;min-width:0}
+.cdoc-msg{margin:0;font-weight:600}.cdoc-msg.erro{color:var(--elo-erro,#A2392A)}.cdoc-msg.ok{color:var(--elo-ok,#1F6B50)}
+/* visualizador */
+.cdoc-ver{position:fixed;inset:0;z-index:2000;background:rgba(19,41,61,.55);display:flex;justify-content:center;align-items:stretch;padding:max(12px,env(safe-area-inset-top)) 12px 12px}
+.cdoc-ver-caixa{background:var(--elo-fundo,#F1F5F8);border-radius:14px;width:min(1100px,100%);display:grid;grid-template-rows:auto 1fr;overflow:hidden}
+.cdoc-ver-topo{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--elo-cartao,#fff);border-bottom:1px solid var(--elo-fio,#DCE4EA)}
+.cdoc-ver-acoes{display:flex;flex-wrap:wrap;gap:6px}
+.cdoc-ver-corpo{overflow:auto;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px;padding:16px}
+.cdoc-folhas{display:grid;gap:16px;justify-items:center;align-content:start;min-width:0}
+.cdoc-escala{box-shadow:0 2px 14px rgba(19,41,61,.16);container:folha/inline-size}
+.cdoc-hist{background:var(--elo-cartao,#fff);border:1px solid var(--elo-fio,#DCE4EA);border-radius:12px;padding:12px 14px;align-self:start}
+.cdoc-hist h4{margin:0 0 8px}.cdoc-hist ol{margin:0;padding-left:18px;display:grid;gap:6px;font-size:13px}.cdoc-hist small{color:var(--elo-suave,#5A6E7E)}
+.cdoc-hist form{display:grid;gap:6px;margin-top:12px}.cdoc-hist textarea{font:inherit;padding:8px;border:1.5px solid var(--elo-fio,#DCE4EA);border-radius:9px;min-height:64px}
+@media(max-width:860px){.cdoc-item{grid-template-columns:1fr auto}.cdoc-acoes{grid-column:1/-1;justify-content:flex-start}.cdoc-ver-corpo{grid-template-columns:1fr}.cdoc-ver{padding:0}.cdoc-ver-caixa{border-radius:0}}
+.cdoc-moldura{width:100%;max-width:794px}.cdoc-escala{width:100%}
+.cdoc-ver-caixa{height:100%;min-height:0;max-height:100%}.cdoc-ver-corpo{min-height:0;overscroll-behavior:contain}
+.cdoc-ver-topo>div:first-child{flex:1 1 280px;min-width:0}.cdoc-ver-acoes{flex:0 1 auto;max-width:100%;justify-content:flex-end}
+.cdoc-fechar{flex:none}
+/* no PDF (html2canvas) os números de largura fixa e o espaçamento entre letras partem números a meio */
+.cdoc-render .edoc,.cdoc-render .edoc *{font-variant-numeric:normal!important;letter-spacing:normal!important}
+@media(max-width:600px){.cdoc-ver-topo{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:10px 12px}.cdoc-fechar{grid-column:2;grid-row:1;align-self:start}
+  .cdoc-ver-acoes{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:6px}.cdoc-ver-acoes button{white-space:normal;padding-inline:8px}.cdoc-ver-corpo{padding:10px}}

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://wcggcpdiswbzrdpwgdpb.supabase.co https://tiles.openfreemap.org; font-src 'self' data:; connect-src 'self' https://wcggcpdiswbzrdpwgdpb.supabase.co https://nominatim.openstreetmap.org https://json.geoapi.pt https://photon.komoot.io https://router.project-osrm.org https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://valhalla1.openstreetmap.de https://tiles.openfreemap.org; frame-src 'self' blob: https://wcggcpdiswbzrdpwgdpb.supabase.co; worker-src 'self' blob: https://cdnjs.cloudflare.com; media-src 'self' blob: data:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"><meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validar documento | Elolog</title>
+  <meta name="description" content="Confirme se uma guia, guia de receção ou comprovativo emitido pela Elolog é autêntico e está em vigor.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#13293D">
+  <link rel="icon" type="image/png" sizes="48x48" href="../partilhado/imagens/favicon-48.png">
+  <link rel="stylesheet" href="../partilhado/estilos/paleta.css?v=132">
+  <style>
+    body{margin:0;min-height:100vh;box-sizing:border-box;padding:28px max(16px,env(safe-area-inset-left)) 28px max(16px,env(safe-area-inset-right));background:var(--elo-fundo);color:var(--elo-tinta);font:16px/1.55 "Work Sans",Arial,sans-serif}
+    main{max-width:560px;margin:0 auto;display:grid;gap:18px}
+    .marca{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .marca img{display:block;height:40px;width:auto;max-width:180px;object-fit:contain}
+    h1{margin:0;font-size:26px;line-height:1.25;text-wrap:balance}
+    p{margin:0;color:var(--elo-texto)}
+    form{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;background:var(--elo-cartao);border:1px solid var(--elo-fio);border-radius:16px;padding:18px}
+    label{display:grid;gap:6px;flex:1 1 260px;font-weight:600;font-size:14px}
+    input{font:600 17px/1.3 "Courier New",monospace;letter-spacing:.04em;padding:12px;border:1.5px solid var(--elo-fio);border-radius:11px;min-width:0;color:var(--elo-tinta)}
+    input:focus-visible,.bt:focus-visible{outline:3px solid var(--elo-azul);outline-offset:2px}
+    .bt{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:11px;border:2px solid var(--elo-mar);background:transparent;color:var(--elo-mar);font:700 15px/1 "Work Sans",Arial,sans-serif;cursor:pointer}
+    .bt:hover{background:var(--elo-mar);color:#fff}.bt[disabled]{opacity:.6;cursor:wait}
+    #resultado{display:grid;gap:14px}
+    .veredito{border-radius:16px;padding:18px 20px;border:2px solid}
+    .veredito strong{display:block;font-size:20px;margin-bottom:4px}
+    .ok{background:var(--elo-ok-fundo);border-color:var(--elo-ok);color:var(--elo-ok)}
+    .aviso{background:var(--elo-aviso-fundo);border-color:var(--elo-aviso-forte);color:var(--elo-aviso)}
+    .erro{background:var(--elo-erro-fundo);border-color:var(--elo-erro);color:var(--elo-erro)}
+    .veredito p{color:inherit}
+    dl{margin:0;background:var(--elo-cartao);border:1px solid var(--elo-fio);border-radius:16px;padding:6px 18px}
+    dl div{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--elo-fio-leve)}dl div:last-child{border-bottom:0}
+    dt{color:var(--elo-suave)}dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+    .duas{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .duas img{height:44px;width:auto;max-width:200px;object-fit:contain}
+    small{color:var(--elo-suave)}
+    @media(max-width:480px){dl div{grid-template-columns:1fr;gap:2px}h1{font-size:22px}input{font-size:14.5px;letter-spacing:0}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="marca"><a href="inicio.html"><img src="../partilhado/imagens/elolog-logo.svg" alt="Elolog" width="130" height="40"></a></div>
+  <div><h1>Validar um documento Elolog</h1><p>Confirme se uma guia, guia de receção ou comprovativo de pagamento é autêntico e se é a versão em vigor.</p></div>
+  <form id="valForm" novalidate>
+    <label for="valCodigo">Código de validação<input id="valCodigo" name="c" inputmode="latin" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40" placeholder="0000 0000 0000 0000 0000 0000"></label>
+    <button type="submit" class="bt" id="valBotao">Validar</button>
+  </form>
+  <div id="resultado" role="status" aria-live="polite"></div>
+  <p><small>Por privacidade, esta página não mostra nomes, moradas, contactos nem valores. Esses dados estão no documento e na Área de Cliente.</small></p>
+</main>
+<script src="../app/comum/servidor-config.js?v=132"></script>
+<script src="scripts/validar.js?v=132"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+# Elolog — pôr em produção (v65)
+
+Tudo o que falta ativar já está construído e testado. Esta página diz o que fazer, por esta ordem.
+
+| Ponto | Estado no projeto «Elolog» | Falta fazer (por si) | Custo |
+|---|---|---|---|
+| Emails | Fila, modelos e envio a cada 5 minutos ativos | Criar conta Brevo e definir 3 segredos | Grátis até 300 emails/dia |
+| Documentos | Armazenamento privado por empresa e por cliente, 20 MB por ficheiro | Nada | Grátis até 1 GB |
+| Faturas certificadas | Leitura do QR da AT, validação e registo | Cada empresa usa o seu programa certificado | Grátis na Elolog |
+| Pagamentos | Multibanco e MB WAY pela ifthenpay, aviso automático e verificação a cada 10 min | Cada empresa pede chaves à ifthenpay e grava-as na Elolog | Comissão da ifthenpay por pagamento |
+| Cópias de segurança | Cópia diária cifrada no GitHub Actions | Definir 2 a 4 segredos no GitHub | Grátis |
+
+## Pôr a funcionar no projeto «Elolog» (wcggcpdiswbzrdpwgdpb)
+
+Já feito: tabelas base (00011–00013), as 7 Edge Functions publicadas e a aplicação ligada ao projeto. Falta, por esta ordem:
+
+1. **Base de dados** — Supabase › SQL Editor › New query › colar todo o `servidor/supabase/instalar_projeto_elolog.sql` › Run. No fim aparece «Tarefas agendadas: …». (Uma só transação: ou fica tudo instalado, ou nada muda.)
+2. **Primeiro administrador** — Authentication › Users › Add user › Create new user (o seu email, uma palavra-passe forte, «Auto Confirm User» ligado). Depois, no SQL Editor:
+   ```sql
+   insert into administradores_plataforma (user_id, nome, email, papel)
+   select id, 'Administração Elolog', email, 'admin' from auth.users where email = 'O_SEU_EMAIL';
+   ```
+   Entre em `https://www.elolog.pt/app/area-cliente.html?acesso=administracao`. Para criar a equipa Elolog ative o código de autenticação (2.º fator) no seu perfil.
+3. **Endereços** — Authentication › URL Configuration: Site URL `https://www.elolog.pt/app/area-cliente.html`; Redirect URLs `https://www.elolog.pt/**`.
+4. **Segredos** — Edge Functions › Secrets: `BREVO_API_KEY`, `EMAIL_REMETENTE` (`notificacoes@elolog.pt`), `APP_URL` e `SITE_URL` (`https://www.elolog.pt/app/area-cliente.html`).
+5. **Cópias de segurança** — no GitHub, atualizar `SUPABASE_DB_URL` (e `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`) para o projeto novo (ver `COPIAS_DE_SEGURANCA.md`).
+6. **Prestadores e pagamentos** — cada empresa regista-se em «Tornar-se prestador»; a administração aprova; a empresa cria tarifas e, se quiser pagamentos online, grava as chaves ifthenpay.
+
+## WhatsApp (assistente ELO e botão de contacto)
+
+**Botão de contacto (ativo):** número `351934876092` em `partilhado/scripts/contactos.js` (só dígitos, com indicativo). Para mudar o número, altere só esse ficheiro (e o rodapé, se quiser).
+
+**ELO a responder sozinho no WhatsApp** (função `whatsapp-elo`, já publicada):
+1. Um número só para isto (não pode estar ao mesmo tempo na app WhatsApp normal). Um telemóvel novo ou fixo serve.
+2. developers.facebook.com › My Apps › Create app › tipo **Business** › adicionar **WhatsApp**. A Meta cria uma conta WhatsApp Business e um número de teste gratuito para experimentar.
+3. Em WhatsApp › API Setup: copiar o **Phone number ID**. Em Business Settings › System users: criar um utilizador de sistema e gerar um **token permanente** com `whatsapp_business_messaging`. Em App settings › Basic: copiar o **App Secret**.
+4. Supabase › Edge Functions › Secrets: `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID`, `WHATSAPP_APP_SECRET` e `WHATSAPP_VERIFY_TOKEN` (uma palavra inventada por si).
+5. WhatsApp › Configuration › Webhook: Callback URL `https://wcggcpdiswbzrdpwgdpb.supabase.co/functions/v1/whatsapp-elo`, Verify token = o mesmo `WHATSAPP_VERIFY_TOKEN` › Verify and save › subscrever o campo **messages**.
+6. Adicionar o número real (WhatsApp › Phone numbers), verificar por SMS e pôr o mesmo número em `contactos.js`.
+
+O ELO responde: menu, estado da encomenda (só ao número de telemóvel associado à encomenda), simulação, contactos, registo de prestadores e «falar com a equipa» (avisa a administração por notificação e email). Custos: as respostas a mensagens enviadas pelo cliente, dentro de 24 h, são gratuitas na tabela atual da Meta; mensagens iniciadas pela Elolog (modelos) são pagas — a função não as usa.
+
+## Painel de email (v67)
+
+1. Supabase › SQL Editor › colar `servidor/supabase/migrations/00137_caixas_email.sql` › **Run** (uma vez).
+2. Entrar na administração (com o código do 2.º fator) › menu **Email** › **⚙** › preencher e **Testar e guardar** (chega um código de confirmação a essa caixa; escreva-o e carregue em **Confirmar e guardar**):
+   - Email `contacto@elolog.pt` · Servidor IMAP `imap.correio.pt` · Servidor SMTP `smtp.correio.pt` · Utilizador `contacto@elolog.pt` · a palavra-passe da caixa (a do webmail).
+   - Se o teste disser que não liga ao servidor, confirme os nomes em www.pt › Email › configurar programa de email (IMAP SSL 993, SMTP SSL 465) e corrija.
+3. Repita para `denivaldo@elolog.pt` e `elolog@elolog.pt` se quiser (máx. 5 caixas por empresa). Os aliases (notificacoes@, privacidade@) chegam à caixa `contacto@`.
+4. Cada prestador liga as suas caixas da mesma forma (só o administrador da empresa).
+5. Para um funcionário usar uma caixa: **⚙ › Acessos › Dar acesso**. Para lhe passar só um email: abrir o email › **Encaminhar a funcionário**.
+
+Só aceita ligações seguras (IMAP 993 e SMTP 465). Contas Gmail/Outlook com 2 passos pedem uma «palavra-passe de aplicação». Limites: 40 envios por utilizador a cada 10 minutos; mensagens com mais de 12 MB abrem-se no webmail.
+
+## Prestador criado pela Elolog com código temporário (v76)
+
+1. No Supabase › **SQL Editor**, cole e execute o conteúdo de `servidor/supabase/migrations/00146_acesso_temporario.sql` (a ferramenta automática não o aplicou).
+2. A Edge Function `criar-prestador` já está publicada e usa os segredos Brevo existentes. Só um administrador da plataforma com o 2.º fator confirmado pode criar prestadores e reenviar códigos.
+
+## Contas Pessoais por telemóvel (SMS) (v76)
+
+- A confirmação por email funciona já. A confirmação por **SMS** só funciona depois de ligar um fornecedor de SMS em Supabase › Authentication › Sign In / Providers › **Phone** (Twilio, MessageBird, Vonage ou Textlocal). Cada SMS tem custo no fornecedor escolhido. Até lá, quem escolher «Telemóvel» recebe a indicação para usar o email.
+- Contas só com telemóvel ficam com o email vazio em `clientes` e recuperam a palavra-passe pela equipa Elolog (a recuperação automática é por email).
+
+## Recuperar a palavra-passe (v74)
+
+- Os emails de recuperação saem pela Brevo (função `recuperar-acesso`), não pelos modelos do Supabase. Basta que existam os segredos `BREVO_API_KEY` e `EMAIL_REMETENTE` (já existem).
+- Em Supabase › Authentication › URL Configuration, confirme **Site URL = `https://www.elolog.pt`** e junte `https://www.elolog.pt/**` às Redirect URLs.
+- Limites: 3 pedidos por email a cada 15 min e 20 por endereço IP por hora.
+
+## Espaço de ficheiros (v74)
+
+- O plano grátis do Supabase tem **1 GB de ficheiros para o projeto inteiro** e pausa o projeto ao fim de 7 dias sem uso. Para garantir 2 GB/20 GB a cada prestador, passe para o plano **Pro** (25 $/mês, 100 GB incluídos, cerca de 0,021 $/GB a mais) antes de vender planos. Confirme os preços em supabase.com/pricing.
+- A plataforma já mede e trava por empresa (`00144_espaco_ficheiros.sql`); o valor de um contrato Empresarial define-se em «Planos e subscrições» › «Espaço de ficheiros por empresa».
+
+## Aparecer no Google (com o logótipo)
+
+1. https://search.google.com/search-console › **Adicionar propriedade** › **Domínio** › `elolog.pt`.
+2. O Google mostra um registo **TXT** (`google-site-verification=…`). No ptdns, crie um registo TXT no nome `@` com esse valor e carregue em **Verificar** (pode demorar até 1 hora).
+3. **Sitemaps** › escreva `https://www.elolog.pt/sitemap.xml` › Enviar.
+4. **Inspeção de URL** › `https://www.elolog.pt/site/inicio.html` › **Pedir indexação** (repita para o simulador).
+5. Opcional: https://www.bing.com/webmasters › importar do Google Search Console.
+
+O Google decide quando atualiza: o título e a descrição costumam aparecer em dias; o logótipo (ícone) e o nome «Elolog» podem levar algumas semanas. Para testar os dados estruturados: https://search.google.com/test/rich-results com `https://www.elolog.pt/site/inicio.html`.
+
+## Domínio elolog.pt
+
+O endereço principal é **https://www.elolog.pt** (o ficheiro `CNAME` na raiz do projeto já o indica ao GitHub Pages). A aplicação fica em `https://www.elolog.pt/app/area-cliente.html`.
+
+**1. Registos DNS** (painel do registador do elolog.pt, «Zona DNS» / «Gestão de DNS»):
+
+| Tipo | Nome | Valor | Para quê |
+|---|---|---|---|
+| A | `@` (elolog.pt) | `185.199.108.153` | site (GitHub Pages) |
+| A | `@` | `185.199.109.153` | site |
+| A | `@` | `185.199.110.153` | site |
+| A | `@` | `185.199.111.153` | site |
+| CNAME | `www` | `sibercosta.github.io.` | site |
+| TXT | `@` | o código `brevo-code:…` dado pela Brevo | email (prova de posse) |
+| CNAME | `brevo1._domainkey` | valor dado pela Brevo | email (DKIM) |
+| CNAME | `brevo2._domainkey` | valor dado pela Brevo | email (DKIM) |
+| TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com` | email (DMARC) |
+
+Apague antes os registos A/CNAME de «página de estacionamento» que o registador tenha criado para `@` e `www`. Os valores da Brevo são próprios da sua conta: copie-os de Brevo › Senders, Domains & Dedicated IPs › **Domains › Add a domain** (elolog.pt) › «Authenticate». A propagação demora de minutos a algumas horas.
+
+**2. GitHub**: repositório › Settings › Pages › Custom domain: `www.elolog.pt` › Save; quando o certificado ficar pronto, ligar **Enforce HTTPS**. O `elolog.pt` sem «www» passa a redirecionar sozinho para `www.elolog.pt`.
+
+**3. Brevo**: depois de o domínio ficar «Authenticated», em Senders crie `Elolog <notificacoes@elolog.pt>`.
+
+**4. Supabase**
+- Authentication › URL Configuration › Site URL: `https://www.elolog.pt/app/area-cliente.html`; Redirect URLs: `https://www.elolog.pt/**` (mantenha também `https://sibercosta.github.io/**` enquanto houver links antigos).
+- Edge Functions › Secrets: `EMAIL_REMETENTE` = `notificacoes@elolog.pt`, `APP_URL` e `SITE_URL` = `https://www.elolog.pt/app/area-cliente.html`, `BREVO_API_KEY` = chave da Brevo.
+
+**5. Receber emails** (contacto@elolog.pt): a Brevo só envia. Para receber, use o reencaminhamento de email do registador (muitos incluem-no grátis) ou o ImprovMX (grátis): aponta `contacto@elolog.pt` para o seu Gmail com 2 registos MX.
+
+## 0. Email de confirmação de conta (abre «localhost:3000»)
+
+O Supabase usa o «Site URL» para onde reencaminha depois de o utilizador confirmar o email; por omissão é `http://localhost:3000`.
+1. Supabase › Authentication › URL Configuration › **Site URL**: o endereço público da aplicação (`https://www.elolog.pt/app/area-cliente.html`).
+2. Em **Redirect URLs** acrescente `https://<o seu domínio>/app/area-cliente.html*` (e o endereço de testes, se tiver).
+3. Supabase › Edge Functions › Secrets: `SITE_URL` com o mesmo endereço (usado no registo das empresas).
+
+A aplicação já pede ao Supabase para voltar à página onde a conta foi criada e, ao regressar, mostra «Email confirmado. Já pode iniciar sessão» (ou um aviso claro se o link tiver expirado). Os links já enviados antes desta alteração continuam a ir para o endereço antigo: peça um novo email.
+
+## 1. Emails (Brevo)
+
+1. Crie conta em brevo.com e valide o endereço remetente (Senders & IP › Senders).
+2. Supabase › Edge Functions › Secrets: `BREVO_API_KEY` (chave API v3), `EMAIL_REMETENTE` (o endereço validado), `APP_URL` (endereço público da aplicação).
+3. Teste: SQL Editor → `select private.chamar_funcao('enviar-emails', '{"teste":"o-seu-email@exemplo.pt"}');` e veja a resposta em `select status_code, content from net._http_response order by id desc limit 1;`.
+
+O agendamento já está ativo (`elolog-emails`, a cada 5 minutos). Enquanto os segredos não existirem a função responde «fornecedor não configurado» e os emails ficam na fila sem se perderem.
+
+## 2. Documentos
+
+Não precisa de nada. Os ficheiros ficam no bucket privado `documentos`, numa pasta por empresa (ou por cliente). Só abre quem tem acesso ao registo em `documentos`; os links de descarga duram 2 minutos. Formatos: PDF, JPG, PNG, WEBP, Word e Excel, até 20 MB.
+
+## 3. Faturas certificadas
+
+A lei exige que a fatura saia de um programa certificado pela AT; a Elolog não a emite. O fluxo é: **Financeiro › Registar fatura certificada** (ou Documentos) → carregar o PDF → a plataforma lê o código QR → mostra o resumo (número, ATCUD, NIF, IVA, total) → confirmar. O servidor volta a verificar: NIF do emitente igual ao da empresa, NIF do cliente válido e igual ao da encomenda, ATCUD, data, fatura repetida e total acima do preço da encomenda. O cliente recebe um aviso e vê a fatura nos seus documentos.
+
+## 4. Pagamentos (ifthenpay)
+
+Para cada empresa prestadora:
+
+1. Contrato com a ifthenpay e pedido das chaves **Multibanco (dinâmico)** e **MB WAY**, e de uma **chave anti-phishing**. Peça primeiro chaves de teste (sandbox).
+2. Na Elolog, o administrador da empresa abre **Empresa e configurações › Pagamentos online**, grava as chaves, deixa «Modo de testes» ligado e ativa.
+3. Dê à ifthenpay o endereço de aviso que aparece nessa janela:
+   `https://<projeto>.supabase.co/functions/v1/pagamentos-aviso?key=[ANTI_PHISHING_KEY]&orderId=[ORDER_ID]&amount=[AMOUNT]&requestId=[REQUEST_ID]`
+4. Faça um pagamento de teste como cliente; depois desligue «Modo de testes».
+
+O cliente escolhe Multibanco (recebe entidade, referência e prazo de 3 dias) ou MB WAY (recebe o pedido na app e tem 4 minutos). O valor é sempre calculado no servidor (preço da encomenda menos o que já foi pago). Um aviso com chave ou valor errados é recusado e repetir o aviso não paga duas vezes. Se a ifthenpay mudar os endereços da API, defina `IFTHENPAY_MB_URL`, `IFTHENPAY_MB_SANDBOX_URL`, `IFTHENPAY_MBWAY_URL` ou `IFTHENPAY_MBWAY_ESTADO_URL` nos segredos das Edge Functions.
+
+## 5. Navios em tempo real
+
+A integração AIS (aisstream.io) foi retirada na v120: não há chave `AISSTREAM_API_KEY`, nem função `navios-ais`, nem tarefa agendada. A ligação «Ver a posição real» abre o VesselFinder no navegador.
+
+## 6. Cópias de segurança
+
+Ver `COPIAS_DE_SEGURANCA.md`.
+
+## Num projeto novo do Supabase
+
+1. Aplicar as migrações por ordem (`servidor/supabase/migrations`).
+2. Publicar as funções: `registar-prestador`, `gerir-funcionarios`, `gerir-equipa`, `enviar-emails`, `pagamentos`, `pagamentos-aviso`, `validar-documento`, `webhooks` (todas com `--no-verify-jwt`; validam o acesso no código).
+3. SQL Editor: `select private.agendar_tarefas('https://<projeto>.supabase.co');` — cria o segredo do agendador no cofre e as 3 tarefas (emails, pagamentos e limpeza diária).
+4. Correr os testes `servidor/supabase/testes/01`, `02` e `05` (o 5 cobre faturas, pagamentos, navios e documentos: 39 verificações).
