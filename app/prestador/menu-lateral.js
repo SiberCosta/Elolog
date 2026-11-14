@@ -3,35 +3,38 @@
    Formato de cada entrada: [texto, ação, página, permissão (ou ""), só administrador]. Carregar depois de permissoes.js e de acesso-por-funcao.js. */
 (function(){
   const I=n=>`<i class="ic ic-${n}" aria-hidden="true"></i>`;
+  /* v133: organização desenhada no quadro «estrutura do Elolog» (Painel, Operações, Em trânsito, Clientes, Propostas, Armazém, Equipa, Financeiro,
+     Documentos, Relatórios, Chat da equipa, Apoio ao cliente, Gestão). Nenhuma página foi retirada: o que não estava no desenho ficou no grupo mais próximo. */
   const AREAS=[
     ["dashboard","Painel","chart",[["Painel","showPage('dashboard',this)","dashboard",""]]],
-    ["op","Operações","box",[["Quadro de encomendas","showProviderPage('providerBoard',this)","providerBoard","view_loads"],["Criar encomenda","openProviderDirectMode('order',this)","providerDirectSimulation","create_order"],
-      ["Simular serviço","openProviderDirectMode('simulation',this)","providerDirectSimulation","create_order"],["Atualizar estado","showProviderPage('providerOrder',this)","providerOrder","change_status"],
+    ["op","Operações","box",[["Criar encomenda","openProviderDirectMode('order',this)","providerDirectSimulation","create_order"],["Simular encomenda","openProviderDirectMode('simulation',this)","providerDirectSimulation","create_order"],
       ["Aprovar pedidos","showProviderPage('providerAprovacao',this)","providerAprovacao","approve"],["Programar recolhas","showProviderPage('providerRecolha',this)","providerRecolha","view_loads"],
       ["Ocorrências","showProviderFieldPage('incidents',this)","providerFieldTeam","field_work"],["Histórico","showProviderPage('providerOrderHistory',this)","providerOrderHistory","view_loads"],
+      ["Atualizar estados","showProviderPage('providerOrder',this)","providerOrder","change_status"],["Quadro de encomendas","showProviderPage('providerBoard',this)","providerBoard","view_loads"],
       ["Automação","showProviderPage('providerAutomation',this)","providerAutomation","view_loads"]]],
+    ["tr","Em trânsito","ship",[["Em trânsito","showProviderPage('providerTransito',this)","providerTransito","view_loads"],["No destino","showProviderPage('providerDestino',this)","providerDestino","view_loads"],
+      ["Disponível","showProviderPage('providerDisponivel',this)","providerDisponivel","view_loads"],["Entrega e levantamento","showProviderPage('providerLevantamento',this)","providerLevantamento","view_loads"],
+      ["Navios em tempo real","elologNavios.abrir(this)","","view_loads"],["Mapa marítimo","showProviderPage('providerMapa',this)","providerMapa","view_loads"],
+      ["Calendário marítimo","showProviderPage('providerMaritimeCalendar',this)","providerMaritimeCalendar","view_loads"]]],
     ["cli","Clientes","users",[["Lista de clientes","showProviderPage('providerClientList',this)","providerClientList","view_clients"],["Ficha do cliente","showProviderPage('providerClientProfile',this)","providerClientProfile","view_clients"]]],
     ["prop","Propostas","tag",[["Pedidos recebidos","showProviderProposalTab('new',this)","providerCotacao","create_quote"],["Criar cotação","showProviderProposalTab('create',this)","providerCotacao","create_quote"],
       ["Enviadas","showProviderProposalTab('sent',this)","providerCotacao","create_quote"],["Aceites","showProviderProposalTab('accepted',this)","providerCotacao","create_quote"],["Recusadas","showProviderProposalTab('rejected',this)","providerCotacao","create_quote"]]],
     ["arm","Armazém","warehouse",[["Armazéns e moradas","elologArmazens.abrir(this)","","settings"],["Receção e localização","showProviderPage('providerArmazenamento',this)","providerArmazenamento","view_loads"],["Expedição","showProviderPage('providerExpedicao',this)","providerExpedicao","view_loads"],
-      ["Manifestos de carga","showProviderPage('providerManifestos',this)","providerManifestos","view_manifests"],["Calendário marítimo","showProviderPage('providerMaritimeCalendar',this)","providerMaritimeCalendar","view_loads"],
-      ["Mapa marítimo","showProviderPage('providerMapa',this)","providerMapa","view_loads"],["Em trânsito","showProviderPage('providerTransito',this)","providerTransito","view_loads"],
-      ["No destino","showProviderPage('providerDestino',this)","providerDestino","view_loads"],["Disponível","showProviderPage('providerDisponivel',this)","providerDisponivel","view_loads"],
-      ["Saídas e levantamentos","showProviderPage('providerLevantamento',this)","providerLevantamento","view_loads"],["Navios em tempo real","elologNavios.abrir(this)","","view_loads"]]],
-    ["eq","Equipa e transportes","truck",[["Agenda de serviços","showProviderFieldPage('planning',this)","providerFieldTeam","field_work"],["Painel do terreno","showProviderFieldPage('dashboard',this)","providerFieldTeam","field_work"],["Serviços ao vivo","elologTerreno.motorista(this)","","field_work"],["Acompanhamento ao vivo","elologTerreno.painel(this)","","field_work"],
-      ["Motoristas e operadores","showProviderFieldPage('operators',this)","providerFieldTeam","field_work"],["Viaturas","showProviderFieldPage('vehicles',this)","providerFieldTeam","field_work"],
+      ["Manifestos de carga","showProviderPage('providerManifestos',this)","providerManifestos","view_manifests"]]],
+    ["eq","Equipa","truck",[["Serviços","showProviderFieldPage('planning',this)","providerFieldTeam","field_work"],["Painel do terreno","showProviderFieldPage('dashboard',this)","providerFieldTeam","field_work"],["Serviços ao vivo","elologTerreno.motorista(this)","","field_work"],["Acompanhamento ao vivo","elologTerreno.painel(this)","","field_work"],
+      ["Operadores","showProviderFieldPage('operators',this)","providerFieldTeam","field_work"],["Viaturas","showProviderFieldPage('vehicles',this)","providerFieldTeam","field_work"],
       ["Recolhas","showProviderFieldPage('pickups',this)","providerFieldTeam","field_work"],["Entregas","showProviderFieldPage('deliveries',this)","providerFieldTeam","field_work"]]],
     ["fin","Financeiro","euro",[["Resumo","showProviderFinanceTab('overview',this)","providerFinanceiro","manage_payments"],["Regras de cobrança","showProviderFinanceTab('prices',this)","providerFinanceiro","manage_payments"],
       ["Faturação","showProviderFinanceTab('billing',this)","providerFinanceiro","manage_payments"],["Recebimentos","showProviderFinanceTab('receipts',this)","providerFinanceiro","manage_payments"],
-      ["Movimentos e reconciliação","showProviderFinanceTab('history',this)","providerFinanceiro","manage_payments"],["Registar fatura certificada","elologFaturas.abrir(this)","","manage_payments"]]],
+      ["Histórico","showProviderFinanceTab('history',this)","providerFinanceiro","manage_payments"],["Registar fatura","elologFaturas.abrir(this)","","manage_payments"]]],
     ["doc","Documentos","file",[["Centro documental","elologCentroDoc.abrir(this)","","view_loads"],["Documentos","showProviderPage('providerDocumentos',this)","providerDocumentos","download_manifest"]]],
     ["rel","Relatórios","clipboard",[["Relatórios","showProviderPage('providerReports',this)","providerReports","view_loads"]]],
-    ["apoio","Apoio ao cliente","headset",[["Pedidos de apoio","showProviderPage('providerSupport',this)","providerSupport","view_clients"],["Reclamações","showProviderPage('providerComplaints',this)","providerComplaints","view_clients"],["Email","elologEmail.abrir(this)","",""]]],
     ["chat","Chat da equipa","users",[["Chat da equipa","elologChat.abrir(this)","",""]]],
-    ["func","Funcionários e acessos","shield",[["Funcionários e funções","showProviderPage('providerEmployees',this)","providerEmployees","manage_employees",1],["Segurança e histórico","showProviderPage('providerSecurity',this)","providerSecurity",""]]],
-    ["emp","Empresa e configurações","settings",[["Dados da empresa","showProviderPage('providerSettings',this)","providerSettings","settings",1],["Integrações (webhooks)","elologIntegracoes.abrir(this)","","settings"],["Subscrição","showProviderPage('providerSubscription',this)","providerSubscription","",1],
-      ["Pagamentos online","elologPagamentos.config(this)","","settings",1],
-      ["O meu perfil","showProviderPage('providerPerfil',this)","providerPerfil",""]]]];
+    ["apoio","Apoio ao cliente","headset",[["Pedidos de apoio","showProviderPage('providerSupport',this)","providerSupport","view_clients"],["Reclamações","showProviderPage('providerComplaints',this)","providerComplaints","view_clients"],["Email","elologEmail.abrir(this)","",""]]],
+    ["gest","Gestão","settings",[["Funcionários","showProviderPage('providerEmployees',this)","providerEmployees","manage_employees",1],["Segurança e histórico","showProviderPage('providerSecurity',this)","providerSecurity",""],
+      ["Dados da empresa","showProviderPage('providerSettings',this)","providerSettings","settings",1],["O meu perfil","showProviderPage('providerPerfil',this)","providerPerfil",""],
+      ["Subscrição","showProviderPage('providerSubscription',this)","providerSubscription","",1],["Pagamentos online","elologPagamentos.config(this)","","settings",1],
+      ["Integrações (webhooks)","elologIntegracoes.abrir(this)","","settings"]]]];
   const CAMPO=[["Painel","dashboard","chart"],["Recolhas","pickups","truck"],["Entregas","deliveries","pin"],["Rota","route","map"],["Pagamentos","payments","euro"],["Ocorrências","incidents","warning"],["Histórico","history","clock"],["O meu perfil","profile","user"]];
   const pode=(perm,soAdmin)=>{try{const f=providerFunction();if(soAdmin&&f!=="admin")return false;return!perm||f==="admin"||hasProviderPermission(perm)}catch(e){return true}};
   const item=([t,ir,pg])=>`<button type="button" data-pagina="${pg}" onclick="${ir}">${t}</button>`;

@@ -1,6 +1,6 @@
 /* Elolog — produção 3/3: pagamentos online pela ifthenpay (Multibanco e MB WAY).
    Cliente: escolher método → confirmar o resumo → referência ou pedido no telemóvel (o estado atualiza sozinho).
-   Empresa: Empresa e configurações › Pagamentos online (chaves guardadas só no servidor; voltam mascaradas).
+   Empresa: Gestão › Pagamentos online (chaves guardadas só no servidor; voltam mascaradas).
    Sem servidor, ou se a empresa ainda não aceita pagamentos online, fica o registo manual que já existia. */
 (function(){
   const P=()=>window.elologProducao;
@@ -34,7 +34,7 @@
       j.mostrar(`<div class="pm-espera" role="status" aria-live="polite"><span class="pm-roda" aria-hidden="true"></span><strong>Confirme o pagamento na app MB WAY</strong><p>Tem ${Math.floor(falta/60)}:${String(falta%60).padStart(2,"0")} para aceitar no telemóvel ${esc(tel)}.</p></div>`,[{texto:"Fechar",acao:j.fechar}]);
       if(!document.getElementById("pmJanela"))return;
       setTimeout(async()=>{if(!document.getElementById("pmJanela"))return;try{const r=await window.ELOLogServidor.chamarFuncao("pagamentos",{acao:"estado",pedido});const e=r.pedido.estado;
-        if(e==="pago"){marcar("Pago","MB WAY",tel);return j.mostrar('<div class="pm-sucesso" role="status"><strong>Pagamento recebido</strong><p>Obrigado. O comprovativo fica em Pagamentos e documentos.</p></div>',[{texto:"Concluir",principal:true,acao:j.fechar}])}
+        if(e==="pago"){marcar("Pago","MB WAY",tel);return j.mostrar('<div class="pm-sucesso" role="status"><strong>Pagamento recebido</strong><p>Obrigado. O comprovativo fica em Pagamentos.</p></div>',[{texto:"Concluir",principal:true,acao:j.fechar}])}
         if(e!=="pendente"||falta<=0)return j.mostrar(`<div class="pm-alerta" role="alert"><strong>${e==="recusado"?"O pedido foi recusado na app.":"O pedido expirou."}</strong><p>Pode tentar de novo ou escolher Multibanco.</p></div>`,[{texto:"Fechar",acao:j.fechar},{texto:"Tentar de novo",principal:true,acao:passo1}])}catch(_){}
         esperar(pedido,inicio)},5000)};
     const marcar=(estado,met,ref)=>{pag.status=estado;pag.method=met;pag.reference=ref;if(estado==="Pago")pag.confirmedAt=new Date().toISOString();try{saveAll();renderEverything()}catch(_){}};

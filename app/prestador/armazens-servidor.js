@@ -38,13 +38,13 @@ window.updateProviderDirectNearestWarehouse=async function(){const pickup=provid
   try{const a=await obterCoordenadas(morada);if(id!==pedido)return;
     if(!ws.length){const origem=providerDirectValue("providerDirectOrigin");if(!origem)return limpar();const b=await obterCoordenadas(origem);if(id!==pedido)return;
       const e=D()?await D().estrada(a,b):{km:Math.round(calcularDistanciaKm(a,b)*13)/10,metodo:"aproximada"};if(id!==pedido)return;
-      input.value=String(e.km);delete input.dataset.warehouseId;input.dataset.semArmazem="1";input.dataset.warehouseName=`${origem}, ${e.km.toLocaleString("pt-PT")} km ${e.metodo==="estrada"?"por estrada":"aproximados"}`;
+      input.value=String(e.km);delete input.dataset.warehouseId;input.dataset.semArmazem="1";input.dataset.warehouseName=`${origem}, ${e.km.toLocaleString("pt-PT")} km ${e.metodo==="estrada"?(e.veiculo==="here"?"por estrada, camião HERE":e.veiculo==="camiao"?"por estrada, camião":"por estrada"):"aproximados"}`;
       updateProviderDirectPickupStatus();updateProviderDirectTotals();return}
     const pts=[];for(const w of ws){let c=w.lat!=null?{lat:+w.lat,lon:+w.lon}:null;if(!c){try{c=await obterCoordenadas(w.address)}catch(_){}}if(c)pts.push({w,...c})}
     if(id!==pedido)return;if(!pts.length)throw new Error("armazéns");const kms=D()?await D().estradaVarios(a,pts):pts.map(()=>null);if(id!==pedido)return;
     const lista=pts.map((p,i)=>({w:p.w,km:kms[i]!=null?kms[i]:Math.round(D()?D().linha(a,p)*13:calcularDistanciaKm(a,p)*10)/10,aprox:kms[i]==null})).sort((x,y)=>x.km-y.km),m=lista[0];
     if(m.km>LONGE){limpar();if(status){status.textContent=`A morada de recolha ficou a ${m.km.toLocaleString("pt-PT")} km do armazém mais próximo: provavelmente foi encontrada noutro país. Acrescente a localidade e o país (por exemplo «Campo Grande 334, 1700-097 Lisboa, Portugal»).`;status.className="provider-pickup-pricing-status is-warning"}return}
-    input.value=String(m.km);delete input.dataset.semArmazem;input.dataset.warehouseId=m.w.id;input.dataset.warehouseName=`${m.w.name} (${m.km.toLocaleString("pt-PT")} km ${m.aprox?"aproximados":"por estrada"})`;
+    input.value=String(m.km);delete input.dataset.semArmazem;input.dataset.warehouseId=m.w.id;input.dataset.warehouseName=`${m.w.name} (${m.km.toLocaleString("pt-PT")} km ${m.aprox?"aproximados":D()?.fonte?.()==="here"?"por estrada, camião HERE":D()?.fonte?.()==="camiao"?"por estrada, camião":"por estrada"})`;
     updateProviderDirectPickupStatus();updateProviderDirectTotals()}
   catch(e){if(id!==pedido)return;limpar();if(status){status.textContent=/armaz/.test(e.message)?"Não encontrámos os armazéns no mapa. Corrija as moradas em Configurações.":"Não encontrámos a morada de recolha. Experimente só o código postal e a localidade.";status.className="provider-pickup-pricing-status is-warning"}}};
 

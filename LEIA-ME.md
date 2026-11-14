@@ -58,6 +58,30 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v133 (menus como no quadro «estrutura do Elolog»)
+
+- **Cliente**: Início · Nova simulação · Criar encomenda (novo: abre «Registar encomenda direta») · Encomendas · Encomendas diretas · Pagamentos (entrada própria) · Documentos (Documentos, Centro documental) · Apoio e perfil. Ficheiro novo `app/comum/menus-esquema.js`.
+- **Prestador** (`prestador/menu-lateral.js`): Painel · Operações · **Em trânsito** (novo grupo: em trânsito, no destino, disponível, entrega e levantamento, navios, mapa e calendário marítimo) · Clientes · Propostas · Armazém (armazéns, receção, expedição, manifestos) · Equipa · Financeiro · Documentos · Relatórios · Chat da equipa · Apoio ao cliente · **Gestão** (junta funcionários, segurança, empresa, perfil, subscrição, pagamentos online, integrações).
+- **Administração**: Prestadores (Ativos) · Subscrições (Planos…) · Operações (Operações, Clientes, Criar encomenda = pedido por contacto, Encomendas diretas, Acompanhamento) · Conformidade e segurança · Apoio e reclamações · Relatórios e definições (Auditoria do prestador, Relatórios) · **Configurações** como entrada própria.
+- Nenhuma página foi retirada: o que não estava no desenho (Aprovar pedidos, Automação, Acompanhamento ao vivo, Email, Integrações, Documentação dos prestadores) ficou no grupo mais próximo.
+
+## v132 (HERE: rotas de camião com trânsito e moradas)
+
+- **HERE primeiro, gratuitos como reserva**: com sessão iniciada, a distância da recolha, a chegada prevista e o percurso no mapa usam o HERE (camião, com o trânsito atual); a localização de moradas usa GeoAPI.pt → HERE → Photon → Nominatim. Sem chave, com a quota esgotada ou com erro, a aplicação pausa o HERE 10 minutos e usa o Valhalla/OSRM. O simulador público (sem sessão) usa só os gratuitos. O desenho do mapa continua OpenFreeMap (gratuito).
+- **A chave nunca sai do servidor**: Edge Function `mapas-here` (sessão obrigatória; 300 pedidos/hora por utilizador). Segredo **HERE_API_KEY**, configurado pelo dono do projeto em Supabase → Edge Functions → Secrets (nunca no código nem no navegador).
+- **Teto mensal contra custos**: migração `00188` (tabela `here_uso`, `servico_here_contar` só do service_role, `here_uso_mes` só para a administração da plataforma). Por omissão pára em 4500 rotas e 27000 moradas por mês (≈ 90 % da quota gratuita indicada pelos revendedores); ajustar com os segredos `HERE_LIMITE_ROTAS` e `HERE_LIMITE_MORADAS` depois de confirmar o plano na conta HERE.
+
+## v131 (mapa MapLibre + OpenFreeMap e rotas de camião Valhalla)
+
+- **Rotas de camião** (`app/comum/rotas.js`, novo): distâncias e chegadas previstas pelo Valhalla público (FOSSGIS, gratuito, perfil «truck»: altura, peso e acessos de pesados). Se não responder, OSRM (carro) e, por fim, linha reta × 1,3. Usado na distância da recolha (`distancia.js`, aparece «por estrada, camião») e na chegada prevista do terreno (`terreno-dados.js`).
+- **Mapa interativo** (`app/comum/mapa-vivo.js`, novo): «Ver no mapa» no Acompanhamento ao vivo e no cartão do cliente abre um mapa MapLibre GL 4.5.2 (cdnjs, só quando é preciso) com o mapa gratuito da OpenFreeMap: motorista, destino e o percurso de camião desenhado, com km e minutos. Sem WebGL ou sem ligação, abre o OpenStreetMap. Estilos em `terreno.css`.
+- Política de conteúdo: `valhalla1.openstreetmap.de` e `tiles.openfreemap.org` (connect/img) e `cdnjs` em `style-src`.
+
+## v130 (outro mapa para as moradas)
+
+- **Localizar moradas** (`partilhado/scripts/mapa-moradas.js`, novo): três serviços gratuitos e sem chave, por ordem: **GeoAPI.pt** (códigos postais oficiais portugueses, precisos à rua), **Photon** (komoot, tolera moradas incompletas) e **Nominatim** (o de antes, como último recurso). Com código postal português e sem outro país escrito, a procura fica em Portugal. Usado na Área de Cliente, na simulação direta do prestador e no simulador público.
+- Política de conteúdo: `json.geoapi.pt` e `photon.komoot.io` acrescentados a `connect-src` nas páginas. Memória de moradas renovada (`elolog_geo_cache_v3`).
+
 ## v129 (rejeitadas fecham, encomendas em todos os aparelhos, distância corrigida)
 
 - **Encomenda rejeitada fecha mesmo**: o pagamento pendente sai de «Por receber» (fica guardado em `elolog_pagamentos_anulados`), deixa de contar em pendentes e alertas, e o Fluxo mostra «Encomenda cancelada». Corrige também as rejeitadas antes desta versão. Com servidor, rejeitar também cancela no servidor (`transitar_encomenda`).

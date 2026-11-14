@@ -27,7 +27,7 @@ const pessoa=t=>t.tipo==="recolha"?(t.encomenda?.remetente||{}):(t.encomenda?.de
 const S={vigia:null,trabalho:null,ultimoEnvio:0,ultimaEta:0,eta:null,dist:null,destino:null,trinco:null,ouvintes:new Set(),ultima:null};
 const avisar=()=>S.ouvintes.forEach(f=>{try{f(estado())}catch(_){}});
 const estado=()=>({trabalho:S.trabalho,eta:S.eta,distancia:S.dist,posicao:S.ultima,ativo:!!S.vigia});
-async function rota(a,b){try{const c=new AbortController(),t=setTimeout(()=>c.abort(),8000);const r=await fetch(`${OSRM}/route/v1/driving/${a.lon},${a.lat};${b.lon},${b.lat}?overview=false`,{signal:c.signal});clearTimeout(t);
+async function rota(a,b){if(window.elologRotas){const r=await window.elologRotas.rota(a,b);if(r)return{min:r.min,km:r.km}}try{const c=new AbortController(),t=setTimeout(()=>c.abort(),8000);const r=await fetch(`${OSRM}/route/v1/driving/${a.lon},${a.lat};${b.lon},${b.lat}?overview=false`,{signal:c.signal});clearTimeout(t);
     const j=await r.json();const x=j?.routes?.[0];return x?{min:x.duration/60,km:x.distance/1000}:null}catch(_){return null}}
 const linha=(a,b)=>{const R=6371,r=x=>x*Math.PI/180,h=Math.sin(r(b.lat-a.lat)/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(r(b.lon-a.lon)/2)**2;return 2*R*Math.atan2(Math.sqrt(h),Math.sqrt(1-h))};
 async function aoMover(p){const c={lat:+p.coords.latitude.toFixed(6),lon:+p.coords.longitude.toFixed(6),prec:Math.round(p.coords.accuracy||0),vel:p.coords.speed!=null?Math.round(p.coords.speed*36)/10:null};S.ultima=c;

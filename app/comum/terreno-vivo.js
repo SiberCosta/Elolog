@@ -6,6 +6,9 @@ const hora=v=>v?new Date(v).toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2
 const ha=v=>{if(!v)return"";const m=Math.max(0,Math.round((Date.now()-new Date(v))/60000));return m<1?"agora mesmo":m===1?"há 1 minuto":m<60?`há ${m} minutos`:`há ${Math.floor(m/60)} h`};
 const ESTADO={a_tempo:["A tempo","ok"],atrasado:["Atrasado","atraso"],sem_sinal:["Sem sinal","sinal"]};
 const mapa=s=>`https://www.openstreetmap.org/?mlat=${s.lat}&mlon=${s.lon}#map=15/${s.lat}/${s.lon}`;
+/* v131: «Ver no mapa» abre o mapa interativo com o percurso de camião (comum/mapa-vivo.js); sem ele, o OpenStreetMap */
+const verMapa=x=>`<a class="btn-secondary" href="${mapa(x)}" target="_blank" rel="noopener noreferrer" data-mapa="${esc(JSON.stringify({titulo:`${x.tipo==="recolha"?"Recolha":"Entrega"} ${x.codigo||""}`.trim(),de:{lat:x.lat,lon:x.lon,rotulo:x.motorista?`${x.motorista} (motorista)`:"Motorista"},paraMorada:x.destino||""}))}">Ver no mapa</a>`;
+document.addEventListener("click",e=>{const a=e.target.closest?.("[data-mapa]");if(!a||!window.elologMapa)return;e.preventDefault();try{window.elologMapa.abrir(JSON.parse(a.dataset.mapa))}catch(_){window.open(a.href,"_blank","noopener")}});
 let relogio=null;
 
 async function painel(botao){const s=window.elologPaginaPropria("terrenoPainel","Acompanhamento ao vivo",botao);if(!s)return;clearInterval(relogio);
@@ -20,7 +23,7 @@ function linha(x){const[t,c]=ESTADO[x.estado]||ESTADO.a_tempo;
   return`<article class="tv-cartao tv-seg-${c}"><header><span class="tv-tipo tv-${esc(x.tipo)}">${x.tipo==="recolha"?"Recolha":"Entrega"}</span><b class="tv-cod">${esc(x.codigo||"")}</b><span class="tv-estado tv-${c}">${t}</span></header>
     <div class="tv-eta"><div><span>Chegada prevista</span><b>${hora(x.eta)}</b></div>${x.previsto_ate?`<div><span>Combinado até</span><b>${hora(x.previsto_ate)}</b></div>`:""}<div><span>Distância</span><b>${x.distancia_km!=null?String(x.distancia_km).replace(".",",")+" km":"—"}</b></div></div>
     <p class="tv-morada">${esc(x.destino||"")}</p><p class="tv-nota">${x.motorista?`${esc(x.motorista)} · `:""}última posição ${ha(x.atualizado_em)}</p>
-    <div class="tv-acoes"><a class="btn-secondary" href="${mapa(x)}" target="_blank" rel="noopener noreferrer">Ver no mapa</a></div></article>`}
+    <div class="tv-acoes">${verMapa(x)}</div></article>`}
 
 /* ---------- cliente: «A sua entrega está a caminho» no início ---------- */
 async function cartaoCliente(){if(typeof currentUser==="undefined"||currentUser?.role!=="cliente")return;const p=document.getElementById("dashboard");if(!p)return;let l=[];try{l=await D().aCaminho()}catch(_){return}
@@ -28,7 +31,7 @@ async function cartaoCliente(){if(typeof currentUser==="undefined"||currentUser?
   if(!box){box=document.createElement("section");box.id="tvCliente";box.className="tv-cliente";box.setAttribute("aria-live","polite");p.prepend(box)}
   box.innerHTML=l.map(x=>`<div><span class="tv-pulso" aria-hidden="true"></span><div><b>${x.tipo==="recolha"?"Vamos recolher a sua carga":"A sua entrega está a caminho"} · <span class="tv-cod">${esc(x.codigo)}</span></b>
     <span>${x.eta?`Chegada prevista às ${hora(x.eta)}`:"A calcular a chegada prevista"}${x.estado==="atrasado"?" (com atraso)":""}. ${x.motorista?esc(x.motorista)+", ":""}${esc(x.empresa||"")}. Atualizado ${ha(x.atualizado_em)}.</span></div>
-    <a class="btn-secondary" href="${mapa(x)}" target="_blank" rel="noopener noreferrer">Ver no mapa</a></div>`).join("")}
+    ${verMapa(x)}</div>`).join("")}
 setInterval(()=>{if(document.getElementById("dashboard")?.classList.contains("active"))cartaoCliente()},60000);
 
 /* ---------- menus e avisos ---------- */
