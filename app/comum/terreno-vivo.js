@@ -8,7 +8,7 @@ const ESTADO={a_tempo:["A tempo","ok"],atrasado:["Atrasado","atraso"],sem_sinal:
 const mapa=s=>`https://www.openstreetmap.org/?mlat=${s.lat}&mlon=${s.lon}#map=15/${s.lat}/${s.lon}`;
 /* v131: «Ver no mapa» abre o mapa interativo com o percurso de camião (comum/mapa-vivo.js); sem ele, o OpenStreetMap */
 const verMapa=x=>`<a class="btn-secondary" href="${mapa(x)}" target="_blank" rel="noopener noreferrer" data-mapa="${esc(JSON.stringify({titulo:`${x.tipo==="recolha"?"Recolha":"Entrega"} ${x.codigo||""}`.trim(),de:{lat:x.lat,lon:x.lon,rotulo:x.motorista?`${x.motorista} (motorista)`:"Motorista"},paraMorada:x.destino||""}))}">Ver no mapa</a>`;
-document.addEventListener("click",e=>{const a=e.target.closest?.("[data-mapa]");if(!a||!window.elologMapa)return;e.preventDefault();try{window.elologMapa.abrir(JSON.parse(a.dataset.mapa))}catch(_){window.open(a.href,"_blank","noopener")}});
+document.addEventListener("click",e=>{const a=e.target.closest?.("[data-mapa]");if(!a||!window.elologMapaVivo)return;e.preventDefault();try{window.elologMapaVivo.abrir(JSON.parse(a.dataset.mapa))}catch(_){window.open(a.href,"_blank","noopener")}});
 let relogio=null;
 
 async function painel(botao){const s=window.elologPaginaPropria("terrenoPainel","Acompanhamento ao vivo",botao);if(!s)return;clearInterval(relogio);

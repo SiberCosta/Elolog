@@ -58,6 +58,12 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v134 (auditoria geral de botões e plataforma)
+
+- **Auditoria**: em cada perfil (cliente, prestador, operador de terreno, administração) abriu-se cada entrada do menu e clicou-se em cada botão visível, também dentro das janelas que se abrem (cerca de 1600 cliques, em computador e telemóvel); verificaram-se as funções chamadas por todos os botões, as ligações das páginas, o site público e os avisos de segurança do Supabase.
+- **Corrigido**: «Ver exemplo» e «Registar posição» do Mapa marítimo deixaram de funcionar na v131 (o mapa ao vivo usava o mesmo nome `elologMapa`; passou a `elologMapaVivo`). Botão do Financeiro que chamava `financeNotice` sem acesso. Erro «Transition was aborted» ao mudar de página depressa (`painel-transicao.js`). Perguntas da equipa de terreno (adicionar viatura, informação adicional, cliente ausente, assinatura/PIN, ocorrência) passam a usar um formulário da aplicação em vez da caixa nativa do navegador (`prestador/perguntas-terreno.js`, novo).
+- **Servidor**: migração `00189` fixa o caminho de pesquisa de 3 funções internas (aviso de segurança do Supabase). Sem alterações a dados nem permissões.
+
 ## v133 (menus como no quadro «estrutura do Elolog»)
 
 - **Cliente**: Início · Nova simulação · Criar encomenda (novo: abre «Registar encomenda direta») · Encomendas · Encomendas diretas · Pagamentos (entrada própria) · Documentos (Documentos, Centro documental) · Apoio e perfil. Ficheiro novo `app/comum/menus-esquema.js`.

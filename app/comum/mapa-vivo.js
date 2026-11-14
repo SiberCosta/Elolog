@@ -41,5 +41,5 @@ async function abrir(o){const de=o.de&&Number.isFinite(+o.de.lat)?{...o.de,lat:+
     mapa.fitBounds(b,{padding:60,maxZoom:15,duration:0});
     j.info(r?`${String(r.km).replace(".",",")} km, cerca de ${Math.max(1,Math.round(r.min))} min ${r.fonte==="here"?"de camião, com o trânsito atual (HERE)":r.fonte==="camiao"?"de camião":"de carro"}.`:"Percurso indisponível agora: mostramos só os pontos.")})}
 
-window.elologMapa={abrir,osm};
+window.elologMapaVivo={abrir,osm};   // v134: nome próprio (window.elologMapa é o mapa marítimo)
 })();

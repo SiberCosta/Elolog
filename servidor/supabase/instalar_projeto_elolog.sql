@@ -7114,5 +7114,12 @@ create or replace function public.here_uso_mes() returns table (tipo text, total
 revoke all on function public.here_uso_mes() from public, anon;
 grant execute on function public.here_uso_mes() to authenticated;
 
+-- ===== 00189_auditoria_search_path.sql =====
+-- v134 (auditoria): fixa o caminho de pesquisa de três funções internas assinaladas pelo Supabase («Function Search Path Mutable»).
+-- Não usam tabelas (só devolvem uma lista ou recusam alterações), por isso o caminho vazio é seguro. Não altera dados nem permissões.
+alter function private.evento_imutavel() set search_path = '';
+alter function private.comprovativo_imutavel() set search_path = '';
+alter function private.documento_papeis(text) set search_path = '';
+
 
 commit;
