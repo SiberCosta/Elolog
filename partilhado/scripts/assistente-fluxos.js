@@ -37,7 +37,7 @@
     {papeis:["prestador"],re:/registar fatura|fatura certificada|emitir fatura/,
       fazer:()=>({texto:"Abri o registo de fatura certificada: carregue o PDF do seu programa certificado, eu leio o código QR e mostro o resumo para confirmar.",go:chama("elologFaturas.abrir")})},
     {papeis:["prestador"],re:/navios?( em tempo real)?|onde (esta|anda) o navio|\bais\b/,
-      fazer:()=>servidor()?{texto:"A abrir os navios em tempo real (posição, velocidade e ETA atualizados a cada 30 minutos).",go:chama("elologNavios.abrir")}:{texto:"No modo de demonstração use o Mapa marítimo; os navios em tempo real precisam do servidor.",go:pagina("prestador","providerMaritimeCalendar")}},
+      fazer:()=>({texto:"O rastreio de navios em tempo real foi retirado da plataforma. As saídas e chegadas previstas estão no Calendário marítimo.",go:pagina("prestador","providerMaritimeCalendar")})},
     {papeis:["prestador"],re:/pagamentos? online|multibanco|mb ?way|ifthenpay/,
       fazer:()=>({texto:"A abrir a configuração dos pagamentos online (Multibanco e MB WAY pela ifthenpay).",go:chama("elologPagamentos.config")})},
     /* ---------- cliente ---------- */

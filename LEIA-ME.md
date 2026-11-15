@@ -58,6 +58,25 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v137 (Auditoria do prestador e Pedidos concluídos)
+
+- **Auditoria** (Gestão, só administrador; `prestador/auditoria-concluidos.js`): quem fez o quê e quando — sessões, códigos de segurança, criação e alteração de registos (com «Ver alterações» campo a campo), funcionários, tarifas. Filtros por período (7 dias a 12 meses) e tipo (operações, financeiro, equipa, acessos e segurança), pesquisa e «Exportar CSV». Com servidor lê a tabela `auditoria` (o servidor só mostra a empresa do administrador); na demonstração junta o histórico das encomendas, da equipa de terreno e da automação.
+- **Pedidos concluídos** (Propostas): pedidos e propostas que já se tornaram encomenda, com o código do pedido e da encomenda, cliente, valor, data e estado atual; «Abrir encomenda» abre a ficha.
+
+## v136 (auditoria: pendentes resolvidos)
+
+- **Servidor, desempenho** (migração `00191`): as 34 regras de acesso que calculavam o utilizador em cada linha passam a usar `(select auth.uid())`, uma vez por pedido (mesma regra; cópia das originais em `private.politicas_copia_v136`). Criados os 96 índices das chaves estrangeiras sem índice. Verificado: o que cada funcionário vê ficou igual.
+- **Anexos das encomendas do prestador**: as fotografias de anomalias e os documentos anexos seguem para o armazenamento do servidor, ligados à encomenda (visibilidade interna), uma única vez; os que falharem tentam outra vez ao entrar (`prestador/encomendas-servidor.js`).
+- **Cliente ausente**: o local da tentativa é pedido logo no formulário (preenchido com a morada de recolha) e usado só se o GPS falhar; já não aparece a caixa nativa. O formulário só abre depois de «Cheguei ao local», como a regra existente (`prestador/perguntas-terreno.js`).
+
+## v135 (menus redistribuídos, painel do prestador, automação na base, sem mapa marítimo)
+
+- **Menu do prestador** pela ordem do trabalho, grupos de 2 a 7 entradas: Painel · Propostas · Encomendas (com Encomendas diretas antes de Aprovar pedidos) · Recolhas e entregas · Armazém (com expedição, manifestos e calendário marítimo) · Em trânsito · Clientes e apoio · Equipa · Financeiro · Documentos (com Relatórios) · Comunicação (Chat e Email) · Gestão.
+- **Administração**: Operações antes de Subscrições; Apoio e reclamações, Email e Chat juntos em «Comunicação»; «Relatórios» (Configurações continua à parte).
+- **Painel do prestador** com o desenho do painel do cliente (`prestador/painel.js` reescrito, `prestador/painel-prestador.css` novo): próximo passo com o assunto mais urgente (pedidos sem proposta, aprovações, recolhas, recebimentos) e criação rápida de encomenda, indicadores com ícones de cor, encomendas em curso com o Fluxo Vivo, ações rápidas conforme a função, o que precisa de ação, alertas, pagamentos por receber e pesquisa. Personalizável em «Opções» e atualizado sozinho.
+- **Automação sem botão**: a página «Automação» saiu do menu; as regras do navegador ficam sempre ligadas e correm ao entrar, de minuto a minuto e ao voltar à aplicação. **Na base de dados** (migração `00190`, tarefa `elolog-automacao` de 15 em 15 minutos): avisos automáticos de encomendas em aprovação há mais de 24 h, pedidos sem proposta há mais de 24 h, pagamentos pendentes há mais de 3 dias e cargas que passaram a chegada prevista (um aviso por caso; não muda estados nem valores).
+- **Retirados**: Mapa marítimo (`prestador/mapa-maritimo.js` apagado), Navios em tempo real (prestador e assistente ELO) e o mapa e a posição em tempo real no Painel ao vivo da administração (a lista de navios com carga fica, com as encomendas de cada um). O Calendário marítimo continua.
+
 ## v134 (auditoria geral de botões e plataforma)
 
 - **Auditoria**: em cada perfil (cliente, prestador, operador de terreno, administração) abriu-se cada entrada do menu e clicou-se em cada botão visível, também dentro das janelas que se abrem (cerca de 1600 cliques, em computador e telemóvel); verificaram-se as funções chamadas por todos os botões, as ligações das páginas, o site público e os avisos de segurança do Supabase.

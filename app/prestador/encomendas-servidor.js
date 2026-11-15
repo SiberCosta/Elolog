@@ -40,9 +40,15 @@ async function enviar(o,extra){if(!o||o.servidor?.id||!P()?.online?.())return nu
   const sb=await P().sb();const{data,error}=await sb.rpc("criar_encomenda_prestador",{p:paraServidor(o,extra)});if(error)throw error;
   o.servidor={id:data.id,codigo:data.codigo};if(extra){o.pickupFee=extra.recolha;o.pickupTariff=extra.tarifa;o.cargoValue=extra.carga}
   if(typeof saveAll==="function")saveAll();return data}
+/* v136: fotografias de anomalias e documentos anexos seguem para o armazenamento do servidor, ligados à encomenda (só funcionários da empresa os veem) */
+function ficheiro(x){const m=/^data:([^;,]+)?(;base64)?,(.*)$/s.exec(String(x?.data||""));if(!m)return null;const bin=m[2]?atob(m[3]):decodeURIComponent(m[3]),u=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new File([u],x.name||"anexo",{type:x.type||m[1]||"application/octet-stream"})}
+async function anexos(o){if(!o?.servidor?.codigo||!P()?.enviarDocumento)return 0;const lista=[...(o.anomalyPhotos||[]),...(o.extraDocuments||[])].filter(x=>x&&x.data&&!x.noServidor);let n=0,falhou=0;
+  for(const x of lista){try{const f=ficheiro(x);if(!f)continue;await P().enviarDocumento(f,{encomenda:o.servidor.codigo,categoria:"operacional",visibilidade:"interna"});x.noServidor=true;n++}catch(e){falhou++;console.warn("Anexo não enviado:",x.name,erroTexto(e))}}
+  if(n&&typeof saveAll==="function")saveAll();if(falhou)avisar(`${falhou} anexo(s) da encomenda ${o.servidor.codigo} ficaram só neste navegador. Tentamos outra vez quando voltar a entrar.`,"warning");return n}
 function avisar(txt,tipo){if(typeof showPlatformNotice==="function")showPlatformNotice(txt,tipo);else console.warn(txt)}
 function depois(o,extra){if(!o||!P()?.online?.())return;
-  enviar(o,extra).then(d=>{if(!d)return;avisar(`Encomenda ${d.codigo} gravada no servidor: já aparece a todos os funcionários em «Aprovar pedidos».`,"success");window.elologAtualizarCotacoes?.()})
+  enviar(o,extra).then(async d=>{if(!d)return;avisar(`Encomenda ${d.codigo} gravada no servidor: já aparece a todos os funcionários em «Aprovar pedidos».`,"success");window.elologAtualizarCotacoes?.();const n=await anexos(o);if(n)avisar(`${n} anexo(s) guardado(s) no servidor com a encomenda ${d.codigo}.`,"success")})
     .catch(e=>avisar(`A encomenda ${o.id} ficou só neste navegador: ${erroTexto(e)} Volte a entrar para tentar outra vez.`,"warning"))}
 function envolver(nome){const f=window[nome];if(typeof f!=="function"||f.__servidor)return;
   const novo=function(){const antes=operations[0],t=typeof providerDirectPickupTariff==="function"?providerDirectPickupTariff():null,d=providerDirectSimulationData;
@@ -57,11 +63,12 @@ async function recuperar(){if(recuperado||!P()?.online?.()||typeof operations===
   const nome=typeof currentProviderCompanyName==="function"?currentProviderCompanyName():"";
   const locais=operations.filter(o=>o&&!o.servidor?.id&&o.createdByRole&&/aprova/i.test(String(o.status||o.stage||""))&&(!nome||!o.provider||o.provider===nome)).slice(0,30);
   let ok=0;for(const o of locais){try{if(await enviar(o))ok++}catch(e){console.warn("Encomenda local não enviada:",o.id,erroTexto(e))}}
+  for(const o of operations.filter(x=>x?.servidor?.codigo&&[...(x.anomalyPhotos||[]),...(x.extraDocuments||[])].some(y=>y?.data&&!y.noServidor)).slice(0,10)){try{await anexos(o)}catch(_){}}
   if(ok){avisar(`${ok} encomenda(s) que estavam só neste navegador foram gravadas no servidor e já aparecem aos colegas.`,"success");window.elologAtualizarCotacoes?.()}}
 
 function arrancar(){ligarRecolha();envolver("createProviderDirectOrder");envolver("createOrderFromReviewedSimulation")}
 arrancar();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arrancar);
 window.addEventListener("load",()=>{arrancar();setTimeout(()=>recuperar().catch(()=>{}),4000)});
 setInterval(()=>{if(!recuperado)recuperar().catch(()=>{})},60000);
-window.elologEncomendasServidor={taxaRecolha,detalhe,paraServidor,enviar,recuperar};
+window.elologEncomendasServidor={taxaRecolha,detalhe,paraServidor,enviar,recuperar,anexos};
 })();

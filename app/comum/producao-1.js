@@ -1,4 +1,4 @@
-/* Elolog — produção 1/3: janela em etapas (comum), documentos no armazenamento do servidor e navios em tempo real (AIS).
+/* Elolog — produção 1/3: janela em etapas (comum), documentos no armazenamento do servidor.
    Sem servidor configurado (modo de demonstração) tudo continua a funcionar como antes, no navegador. */
 (function(){
   const S=()=>window.ELOLogServidor, online=()=>!!(S()&&S().ativo&&S().ativo()&&S().cliente);
@@ -68,32 +68,7 @@
       box.innerHTML=`<h4>Documentos guardados</h4>${(data||[]).length?(data||[]).map(d=>`<div class="pm-linha"><div><strong>${esc(d.nome)}</strong><small>${d.categoria==="fatura"?"Fatura certificada, ":""}${new Date(d.created_at).toLocaleDateString("pt-PT")}</small></div><button type="button" class="btn-secondary" data-caminho="${esc(d.storage_path)}" data-nome="${esc(d.nome)}">Descarregar</button></div>`).join(""):'<p class="pm-vazio">Ainda não há documentos guardados no servidor.</p>'}`;
       box.querySelectorAll("[data-caminho]").forEach(b=>b.onclick=()=>abrirDocumento(b.dataset.caminho,b.dataset.nome).catch(e=>aviso(e.message,"error")))}catch(e){}}
 
-  /* ---------- navios em tempo real ---------- */
-  /* v110: janela com uma frase que explica, os navios seguidos em cartões alinhados e ações com nome claro */
-  async function navios(){const j=janela({eyebrow:"Navios",titulo:"Navios em tempo real"});
-    const irMapa=()=>{j.fechar();try{showProviderPage("providerMapa")}catch(_){}};
-    if(!online()){j.mostrar('<p class="nv-intro">Aqui acompanha os navios que levam a sua carga: onde estão, a que velocidade seguem e quando devem chegar.</p><p class="nv-nota">Esta é uma versão de demonstração, sem ligação aos navios reais. As viagens planeadas estão no Mapa marítimo.</p>',[{texto:"Fechar",acao:j.fechar},{texto:"Abrir mapa marítimo",principal:true,acao:irMapa}]);return}
-    const c=await sb(),emp=await minhaEmpresa(),dt=v=>v?new Date(v).toLocaleString("pt-PT",{dateStyle:"short",timeStyle:"short"}):"";
-    const desenhar=async()=>{const[{data:seg,error:e1},{data:pos,error:e2}]=await Promise.all([c.from("navios_seguidos").select("*").order("nome"),c.from("navios_posicoes").select("*")]);if(e1||e2)throw e1||e2;const P=Object.fromEntries((pos||[]).map(p=>[p.mmsi,p]));
-      const cartao=s=>{const p=P[s.mmsi]||{},tem=p.latitude!=null,mapa=tem?`https://www.openstreetmap.org/?mlat=${p.latitude}&mlon=${p.longitude}#map=7/${p.latitude}/${p.longitude}`:"",real=`https://www.vesselfinder.com/vessels/details/${encodeURIComponent(s.mmsi)}`;
-        return`<article class="nv-cartao"><header><div><strong>${esc(s.nome)}</strong><small>MMSI ${esc(s.mmsi)}${s.viagem?`, viagem ${esc(s.viagem)}`:""}</small></div>${tem?'<span class="nv-estado ok">Última posição guardada</span>':""}</header>
-          ${tem?`<dl><div><dt>Destino</dt><dd>${esc(p.destino||"Por indicar")}</dd></div><div><dt>Chegada prevista</dt><dd>${dt(p.eta)||"Por indicar"}</dd></div><div><dt>Velocidade</dt><dd>${p.velocidade_nos!=null?esc(p.velocidade_nos)+" nós":"Parado ou sem dado"}</dd></div><div><dt>Última posição</dt><dd>${dt(p.atualizado_em)}</dd></div></dl>`
-            :'<p class="nv-nota">Carregue em «Ver a posição real» para abrir o navio no VesselFinder, com a posição atual.</p>'}
-          <footer><a class="btn-secondary" href="${real}" target="_blank" rel="noopener noreferrer">Ver a posição real</a>${mapa?`<a class="btn-secondary" href="${mapa}" target="_blank" rel="noopener">Ver no mapa</a>`:""}<button type="button" class="btn-secondary nv-tirar" data-tirar="${esc(s.mmsi)}" data-nome="${esc(s.nome)}">Deixar de seguir</button></footer></article>`};
-      const lista=(seg||[]).map(cartao).join("");
-      j.mostrar(`<p class="nv-intro">Guarde os navios que levam a sua carga pelo MMSI. Em cada navio, «Ver a posição real» abre o VesselFinder com a posição, o destino e a chegada prevista.</p>
-        <fieldset class="nv-seguir"><legend>Seguir um navio</legend><div class="pm-grelha"><label>Nome do navio<input id="pmNavNome" maxlength="80" placeholder="Ex.: Sao Tome Express"></label><label>MMSI<input id="pmNavMmsi" inputmode="numeric" maxlength="9" placeholder="9 dígitos" autocomplete="off"></label><label>Viagem (opcional)<input id="pmNavViagem" maxlength="40"></label></div><small>O MMSI tem 9 dígitos e está no certificado do navio ou em sites de rastreio.</small></fieldset>
-        <h4 class="nv-tit">${(seg||[]).length?`${(seg||[]).length===1?"O navio que segue":"Os "+(seg||[]).length+" navios que segue"}`:"Ainda não segue nenhum navio"}</h4>
-        ${lista?`<div class="nv-lista">${lista}</div>`:'<p class="nv-nota">Escreva o nome e o MMSI acima e carregue em «Seguir navio». Aparece aqui logo a seguir.</p>'}`,
-        [{texto:"Fechar",acao:j.fechar},{texto:"Seguir navio",principal:true,acao:async()=>{const nome=document.getElementById("pmNavNome").value.trim(),mmsi=document.getElementById("pmNavMmsi").value.replace(/\D/g,"");
-          if(!window.eloValidar(["pmNavNome","pmNavMmsi"]))return;if(!/^\d{9}$/.test(mmsi))return aviso("O MMSI tem 9 dígitos. Confirme o número no certificado do navio.","warning");
-          const{error}=await c.from("navios_seguidos").insert({empresa_id:emp?.empresa_id,mmsi,nome,viagem:document.getElementById("pmNavViagem").value.trim()||null});
-          if(error)return aviso(error.code==="23505"?"Já está a seguir este navio.":"Não conseguimos adicionar o navio. Tente outra vez daqui a pouco.","error");aviso(`A seguir o ${nome}. Use «Ver a posição real» para o acompanhar.`,"success");desenhar()}}]);
-      j.corpo.querySelectorAll("[data-tirar]").forEach(b=>b.onclick=async()=>{if(b.dataset.certo!=="1"){b.dataset.certo="1";b.textContent="Confirmar: deixar de seguir";b.classList.add("nv-confirmar");setTimeout(()=>{if(b.isConnected){b.dataset.certo="";b.textContent="Deixar de seguir";b.classList.remove("nv-confirmar")}},5000);return}
-        const{error}=await c.from("navios_seguidos").delete().eq("mmsi",b.dataset.tirar);if(error)return aviso("Não conseguimos deixar de seguir este navio. Tente outra vez.","error");aviso(`Deixou de seguir o ${b.dataset.nome}.`,"success");desenhar()})};
-    const tentar=async()=>{j.mostrar('<p class="nv-nota" role="status">A carregar os navios…</p>',[{texto:"Fechar",acao:j.fechar}]);try{await desenhar()}catch(e){j.mostrar('<p class="nv-intro">Não conseguimos ler os navios agora.</p><p class="nv-nota">Pode ser a ligação à internet. Os navios que segue continuam guardados.</p>',[{texto:"Fechar",acao:j.fechar},{texto:"Tentar outra vez",principal:true,acao:tentar}])}};
-    tentar()}
-  window.elologNavios={abrir:navios};
+  /* v135: «Navios em tempo real» retirado da plataforma (pedido do dono). As tabelas navios_* ficam no servidor, sem uso. */
   /* ---------- regresso do email de confirmação da conta ---------- */
   function confirmacao(){const r=window.ELOLOG_RETORNO||location,h=new URLSearchParams(String(r.hash||"").replace(/^#/,"")),q=new URLSearchParams(r.search||"");
     if(h.get("error")||h.get("error_code"))aviso(/expired/i.test(h.get("error_code")||h.get("error_description")||"")?"O link de confirmação expirou. Peça um novo email ao iniciar sessão.":"Não foi possível confirmar a conta com este link.","error");

@@ -49,8 +49,8 @@ function abrir(btn){pagina();if(papel()==="admin")showAdminPage("adminDirectOrde
 /* ---------- entradas no menu ---------- */
 function menu(){const r=papel();if(r==="admin"){const g=document.getElementById("adminGrpOp");if(g&&!g.querySelector("[data-ed-menu]"))
     g.insertAdjacentHTML("beforeend",'<button type="button" data-ed-menu onclick="elologEncDiretasGestao.abrir(this)">Encomendas diretas</button>')}
-  if(r==="prestador"){const m=document.getElementById("providerMenuStructure"),g=m?.querySelector(".provider-submenu");if(g&&!m.querySelector("[data-ed-menu]"))
-    g.insertAdjacentHTML("afterbegin",'<button type="button" data-ed-menu onclick="elologEncDiretasGestao.abrir(this)">Encomendas diretas</button>')}}
+  if(r==="prestador"){const m=document.getElementById("providerMenuStructure"),g=m?.querySelector("#pm-op")||m?.querySelector(".provider-submenu");if(g&&!m.querySelector("[data-ed-menu]")){const ref=g.querySelector('[onclick*="providerAprovacao"]'),b='<button type="button" data-ed-menu onclick="elologEncDiretasGestao.abrir(this)">Encomendas diretas</button>';
+    ref?ref.insertAdjacentHTML("beforebegin",b):g.insertAdjacentHTML("afterbegin",b)}}}   /* v135: no grupo «Encomendas», antes de «Aprovar pedidos» */
 const conf=window.configureRole;if(typeof conf==="function")window.configureRole=function(){const x=conf.apply(this,arguments);setTimeout(()=>{try{menu()}catch(_){}},0);return x};
 const perm=window.applyProviderPermissions;if(typeof perm==="function")window.applyProviderPermissions=function(){const x=perm.apply(this,arguments);setTimeout(()=>{try{menu()}catch(_){}},0);return x};
 window.elologEncDiretasGestao={abrir,desenhar,menu};

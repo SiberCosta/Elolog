@@ -14,7 +14,7 @@ const IC={euro:"M17 6.5A7 7 0 1 0 17 17.5M4 10h9M4 14h9",caixa:"M3.5 7.5 12 3l8.
   armazem:"M3 10l9-6 9 6v10H3zM8 20v-6h8v6"};
 const ico=(p,s)=>`<svg width="${s||18}" height="${s||18}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${p}"/></svg>`;
 const pill=(t,c)=>`<span class="pv-pill pv-${c}">${esc(t)}</span>`;
-let dados=null,erro="",ed=0,sel=0,mapa=false,zoom=1,ecra=false,q="",ord="atualizada",dir=-1,carregando=false,temp=null;
+let aberto=-1,dados=null,erro="",ed=0,sel=0,mapa=false,zoom=1,ecra=false,q="",ord="atualizada",dir=-1,carregando=false,temp=null;
 
 function demo(){const h=new Date(),d=n=>new Date(h.getTime()+n*864e5).toISOString().slice(0,10);return{demo:true,gerado_em:h.toISOString(),
   kpis:{receita_hoje:1284,comissoes_hoje:1046,planos_hoje:238,receita_media_14d:1088,em_curso:156,novas_30d:142,novas_30d_anteriores:131,prazo_pct:94.8,prazo_pct_anterior:96,risco_valor:3140,risco_pagamentos:4,atrasadas:2},
@@ -46,17 +46,14 @@ function mostrarFrase(n){const c=document.querySelector("#pvPainel .pv-frases");
 function rodarFrases(){clearInterval(fT);if(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
   fT=setInterval(()=>{const c=document.querySelector("#pvPainel .pv-frases");if(!c||document.hidden||c.matches(":hover,:focus-within"))return;mostrarFrase(fi+1)},7000)}
 
-/** Posição real sem ligação nossa: com IMO (vem do AIS) abre a página do navio no VesselFinder; sem IMO, pesquisa pelo nome. */
-const real=v=>v.ais?.imo&&/^\d{7}$/.test(String(v.ais.imo))?`https://www.vesselfinder.com/vessels/details/${v.ais.imo}`:`https://www.google.com/search?q=${encodeURIComponent(`"${v.navio}" vessel position AIS`)}`;
-function viagens(vs){if(!vs.length)return'<div class="pv-vazio-n"><strong>Nenhum navio com carga Elolog.</strong><span>Quando um prestador expedir uma encomenda, o navio aparece aqui com a rota e a data de chegada.</span></div>';return vs.map((v,i)=>{const p=Math.round(M().progresso(v)*100),c=M().corViagem(v),pos=M().posicao(v);
-  const on=mapa&&i===sel;
-  return`<div class="pv-viagem ${on?"on":""}"><button type="button" class="pv-viagem-b" data-pv-viagem="${i}" aria-pressed="${on}" title="${on?"Navio no mapa":"Ver este navio no mapa"}">
+function viagens(vs){if(!vs.length)return'<div class="pv-vazio-n"><strong>Nenhum navio com carga Elolog.</strong><span>Quando um prestador expedir uma encomenda, o navio aparece aqui com a rota e a data de chegada.</span></div>';return vs.map((v,i)=>{const p=Math.round(M().progresso(v)*100),c=M().corViagem(v);
+  const on=i===aberto;   /* v135: sem mapa marítimo nem posição em tempo real; o clique mostra as encomendas do navio */
+  return`<div class="pv-viagem ${on?"on":""}"><button type="button" class="pv-viagem-b" data-pv-viagem="${i}" aria-pressed="${on}" title="${on?"Esconder as encomendas":"Ver as encomendas deste navio"}">
     <span class="pv-row"><strong>${esc(v.navio)}${v.viagem?` <small>viagem ${esc(v.viagem)}</small>`:""}</strong>${pill(v.atrasada?"Atrasada":v.em_transito?"Em rota":"No porto",v.atrasada?"verm":v.em_transito?"azul":"cinza")}</span>
     <span class="pv-rota"><span><b>${esc((v.origem||"").split(",")[0])}</b></span><span class="pv-barra"><i style="width:${p}%;background:${c}"></i><i class="pv-pt" style="left:calc(${p}% - 5px);border-color:${c}"></i></span><span><b>${esc((v.destino||"").split(",")[0])}</b></span></span>
     <span class="pv-sub pv-1l">${num(v.encomendas)} ${v.encomendas==1?"encomenda":"encomendas"}, ${esc((v.prestadores||[]).join(", "))}</span>
-    <span class="pv-row pv-sub"><span>Chega a ${dia(v.chegada)}</span><span class="pv-pos pv-pos-${pos[2]==="AIS"?"ais":"est"}">Posição ${pos[2]}${v.ais?.nos!=null?`, ${String(v.ais.nos).replace(".",",")} nós`:""}</span></span></button>
-    ${on?`<div class="pv-codigos">${(v.codigos||[]).slice(0,8).map(c=>`<button type="button" class="pv-cod" data-ficha="${esc(c)}">${esc(c)}</button>`).join("")}
-      <a class="pv-real" href="${real(v)}" target="_blank" rel="noopener noreferrer">${v.ais?.imo?"Ver a posição real (VesselFinder)":"Procurar a posição real deste navio"}</a></div>`:""}</div>`}).join("")}
+    <span class="pv-row pv-sub"><span>Chega a ${dia(v.chegada)}</span><span>${p}% da viagem</span></span></button>
+    ${on?`<div class="pv-codigos">${(v.codigos||[]).slice(0,8).map(c=>`<button type="button" class="pv-cod" data-ficha="${esc(c)}">${esc(c)}</button>`).join("")}</div>`:""}</div>`}).join("")}
 
 const COL=[["codigo","Código"],["origem","Origem"],["destino","Destino"],["chegada","Chegada prevista"],["transporte","Transporte"],["prestador","Prestador"],["estado","Estado"]];
 function tabela(rs){const f=q.trim().toLowerCase();let l=rs.filter(r=>!f||[r.codigo,r.origem,r.destino,r.cliente,r.prestador,r.transporte].join(" ").toLowerCase().includes(f));
@@ -75,7 +72,7 @@ function html(){const d=dados,k=d.kpis||{},p=P(),hora=new Date(d.gerado_em||Date
       <div class="pv-acoes"><button type="button" class="btn-primary pv-bt" data-pv-acao="contacto">${ico("M12 5v14M5 12h14",15)}Pedido por contacto</button><button type="button" class="btn-secondary pv-bt" data-pv-acao="auditoria">${ico("M9 4h6v3H9zM7 5H5v16h14V5h-2M9 13l2 2 4-4",15)}Auditoria de prestador</button>
         <button type="button" class="btn-secondary pv-bt pv-bt-i" data-pv-acao="ecra" aria-label="Ecrã inteiro (modo apresentação)" title="Ecrã inteiro">${ico("M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",16)}</button><button type="button" class="btn-secondary pv-bt pv-bt-i" data-pv-acao="atualizar" aria-label="Atualizar agora" title="Atualizar agora">${ico("M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7",16)}</button></div></div>
     <div class="pv-heroi-n pv-heroi-so">${frase(k,p,d)}</div>
-    ${mapa?"":`<div class="pv-mapa-g pv-sem-mapa" id="pvMapa"><div class="pv-acomp pv-acomp-larga"><div class="pv-acomp-c"><strong>Navios com carga Elolog</strong><span>${(d.viagens||[]).length?"Escolha um navio para o ver no mapa do corredor atlântico.":""}</span></div><div class="pv-acomp-l">${viagens(d.viagens||[])}</div></div></div>`}
+    ${mapa?"":`<div class="pv-mapa-g pv-sem-mapa" id="pvMapa"><div class="pv-acomp pv-acomp-larga"><div class="pv-acomp-c"><strong>Navios com carga Elolog</strong><span>${(d.viagens||[]).length?"Escolha um navio para ver as encomendas que leva.":""}</span></div><div class="pv-acomp-l">${viagens(d.viagens||[])}</div></div></div>`}
     ${!mapa?"":`<div class="pv-mapa-g" id="pvMapa"><div class="pv-mapa ${ecra?"grande":""}">${M().svg(d,sel,zoom)}
         <div class="pv-zoom"><button type="button" class="pv-btn-i" data-pv-zoom="1" aria-label="Aproximar o mapa">+</button><button type="button" class="pv-btn-i" data-pv-zoom="-1" aria-label="Afastar o mapa">−</button>
           <button type="button" class="pv-btn-i" data-pv-ecra aria-label="${ecra?"Reduzir":"Aumentar"} o mapa">${ico("M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",15)}</button></div>
@@ -109,7 +106,7 @@ function clique(ev){const b=ev.target.closest("[data-pv-ir],[data-pv-viagem],[da
   if(b.dataset.pvIr){const pg=b.dataset.pvIr;try{showAdminPage(pg,document.querySelector(`#sidebar [onclick*="'${pg}'"],#sidebar [onclick*='"${pg}"']`))}catch(_){}return}
   if(b.dataset.pvFrase!=null)return mostrarFrase(+b.dataset.pvFrase);
   if(b.dataset.pvRolar){const alvo=document.getElementById(b.dataset.pvRolar);alvo?.scrollIntoView({behavior:"smooth",block:"start"});return}
-  if(b.dataset.pvViagem!=null){const abrir=!mapa;sel=+b.dataset.pvViagem;mapa=true;zoom=Math.max(zoom,1.8);desenhar();if(abrir)document.getElementById("pvMapa")?.scrollIntoView({behavior:"smooth",block:"center"});return}
+  if(b.dataset.pvViagem!=null){const i=+b.dataset.pvViagem;aberto=aberto===i?-1:i;sel=i;desenhar();return}
   if(b.dataset.pvZoom){zoom=Math.max(1,Math.min(3.2,zoom+(+b.dataset.pvZoom)*.6));return desenhar()}
   if(b.hasAttribute("data-pv-ecra")){ecra=!ecra;return desenhar()}
   if(b.dataset.pvPeriodo)return window.painelAdminPeriodo?.(+b.dataset.pvPeriodo);
