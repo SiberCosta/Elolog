@@ -204,447 +204,447 @@ Comum (várias áreas),"(só aparece com dados, numa janela ou num estado)",,tra
 Comum (várias áreas),"(só aparece com dados, numa janela ou num estado)",,sim-goods-list-section,Simulação / cotação,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
 Comum (várias áreas),"(só aparece com dados, numa janela ou num estado)",,sim-recipient-section,Simulação / cotação,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
 Comum (várias áreas),"(só aparece com dados, numa janela ou num estado)",,sim-section-head,Simulação / cotação,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Operador de terreno,(global),Menu lateral e topo,field-board-panel,Acompanhamento logístico,1,Não,Agenda do operador Próximos serviços Ver rota Ainda sem serviços atrib,app/prestador/equipa-terreno-1.js,Visto no ecrã,Por migrar
-Operador de terreno,(global),Menu lateral e topo,field-dashboard-actions,Acompanhamento logístico,1,Não,Abrir rota Consultar próximo destino Minhas recolhas 0 por concluir Mi,app/prestador/equipa-terreno-1.js,Visto no ecrã,Por migrar
-Operador de terreno,(global),Menu lateral e topo,field-dashboard-hero,Acompanhamento logístico,1,Não,"CENTRO DE OPERAÇÕES Serviços de hoje no terreno. domingo, 15 de novemb",app/prestador/equipa-terreno-1.js,Visto no ecrã,Por migrar
-Operador de terreno,(global),Menu lateral e topo,field-dashboard-kpis,Indicador (KPI),1,Não,Serviços de hoje 0 0 em execução Por realizar 0 Atribuídos a si Atrasa,app/prestador/equipa-terreno-1.js,Visto no ecrã,Por migrar
-Operador de terreno,(global),Menu lateral e topo,section (sem classe),Secção de página / formulário,2,Não,Prioridade atual Sem serviço pendente 0 Nada à sua espera Todas as ope,,Visto no ecrã,Por migrar
-Operador de terreno,(global),Menu lateral e topo,topbar,Secção de página / formulário,1,Não,Painel PT 0,app/cliente/criar-encomenda.js,Visto no ecrã,Por migrar
-Operador de terreno,adminAccess,Funcionários e permissões,card,Contentor de página («card»),1,Não,"Funcionários e permissões Supervisão global de limites, funções, sessõ",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminActiveProviders,Prestadores ativos,card,Contentor de página («card»),1,Não,Prestadores ativos As transportadoras que trabalham na Elolog. Abra um,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminBilling,Faturação da plataforma,card,Contentor de página («card»),1,Não,Faturação da plataforma Subscrições Elolog: separadas dos pagamentos d,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminClients,Clientes,card,Contentor de página («card»),1,Não,Clientes,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminCommissions,Comissões e regras comerciais,card,Contentor de página («card»),1,Não,"As regras de comissão que o motor de preços usa (por prestador, modali",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminCompliance,Documentos e conformidade,card,Contentor de página («card»),1,Não,Documentos e conformidade,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminOperations,Supervisão de operações,card,Contentor de página («card»),1,Não,Supervisão de operações Selecione primeiro a empresa prestadora e cons,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminPlans,Planos e subscrições,card,Contentor de página («card»),1,Não,"Planos e subscrições Preços, limites, funcionalidades e contratos pers",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminProviderDocuments,Documentação dos prestadores,card,Contentor de página («card»),1,Não,Documentação dos prestadores,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminProviderRequests,Pedidos de inscrição de prestadores,card,Contentor de página («card»),1,Não,Pedidos de inscrição de prestadores,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminReports,Relatórios,admin-report-download,Ação rápida,1,Sim,"Relatório de operações Encomendas, estados, rotas e prestadores EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Por migrar
-Operador de terreno,adminReports,Relatórios,admin-report-download.access,Ação rápida,1,Sim,"Relatório de acessos Sessões, utilizadores e tentativas de login EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Por migrar
-Operador de terreno,adminReports,Relatórios,card,Contentor de página («card»),1,Não,Relatórios Descarregue os dados operacionais e de segurança da platafo,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminSecurity,Segurança e auditoria,card,Contentor de página («card»),1,Não,Segurança e auditoria,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminSettings,Configurações da plataforma,card,Contentor de página («card»),1,Não,"Configurações da plataforma Identidade, localização, processos, notifi",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminSupport,Apoio e reclamações,card,Contentor de página («card»),1,Não,"Apoio e reclamações Filas distintas para clientes e prestadores, com p",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminSuspendedProviders,Prestadores suspensos,card,Contentor de página («card»),1,Não,Prestadores suspensos,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,adminTariffs,,card.tf-pagina,Financeiro / pagamento,1,Não,,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,clientProfile,Dados do Cliente,card.client-profile-card,Cliente,1,Não,Dados do Cliente Nome / Empresa João Silva NIF — Telefone — E-mail — M,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,clientProfile,Dados do Cliente,client-data-wide,Cliente,1,Não,Morada —,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,clientProfile,Dados do Cliente,div (sem classe),Secção de página / formulário,4,Não,Nome / Empresa João Silva,,Visto no ecrã,Por migrar
-Operador de terreno,clientSimulation,Simulação de cotação,client-optional-tool,Ação rápida,2,Não,Fotografias 0,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,clientSimulation,Simulação de cotação,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância total 0 km To,app/comum/simulacao-site.js,Visto no ecrã,Por migrar
-Operador de terreno,clientSimulation,Simulação de cotação,sim-total,Indicador (KPI),1,Não,Preço A aguardar proposta,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,clientSimulation,Simulação de cotação,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Preço declarado (€),app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,clientSimulation,Simulação de cotação,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,clientSimulation,Simulação de cotação,client-sim-section.destinatario-envio,Simulação / cotação,1,Não,Destinatário da encomenda Dados de quem recebe a encomenda. ETAPA 02 U,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,clientSimulation,Simulação de cotação,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 01 Origem Destino",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,clientSimulation,Simulação de cotação,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,clientSupport,Apoio Cliente,card,Contentor de página («card»),1,Não,"ATENDIMENTO Apoio Cliente Precisa de ajuda com uma encomenda, pagament",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,dashboard,0,pa-cartao.pw,Prestador,2,Não,As minhas recolhas de hoje atribuídas a si Nenhuma recolha para si hoj,app/administracao/simulacoes.js,Visto no ecrã,Por migrar
-Operador de terreno,documents,Documentos,card,Contentor de página («card»),1,Não,Documentos Escolher ficheiro Enviar documento Carregue um documento e ,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,documents,Documentos,client-doc-toolbar,Documento,1,Não,Escolher ficheiro Enviar documento,app/comum/pagina-3.js,Visto no ecrã,Por migrar
-Operador de terreno,documents,Documentos,client-doc-empty.vz,Estado vazio,1,Não,Ainda não há documentos As faturas e os comprovativos das suas encomen,app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Operador de terreno,operations,Operações,card,Contentor de página («card»),1,Não,Operações + Nova operação Nenhuma operação encontrada.,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,payments,Pagamentos,card,Contentor de página («card»),1,Não,"Pagamentos Total registado 0,00 € Por pagar 0,00 € Pago 0,00 € Pagamen",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,payments,Pagamentos,client-payment-empty.vz,Estado vazio,1,Não,Nada nesta categoria Escolha outro separador para ver os restantes pag,app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Operador de terreno,payments,Pagamentos,client-payment-panel,Financeiro / pagamento,1,Não,Pagamentos Todos (0) Pendentes (0) Concluídos (0) Nada nesta categoria,app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Operador de terreno,payments,Pagamentos,client-payment-kpi,Indicador (KPI),1,Não,"Total registado 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Operador de terreno,payments,Pagamentos,client-payment-kpi.paid,Indicador (KPI),1,Não,"Pago 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Operador de terreno,payments,Pagamentos,client-payment-kpi.pending,Indicador (KPI),1,Não,"Por pagar 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Operador de terreno,proposals,Propostas,card,Contentor de página («card»),1,Não,Propostas Nenhuma proposta disponível.,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,provider-optional-tool,Ação rápida,2,Não,Fotografias 0 fotos,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância 0 km Pacotes ,app/comum/simulacao-site.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,provider-pickup-pricing-status.is-warning,Indicador (KPI),1,Não,Adicione pelo menos um armazém nas Configurações. Sem tarifa de recolh,app/prestador/simulacao-direta.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,sim-total,Indicador (KPI),1,Não,"Total estimado 0,00 €",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Tipo de carga * Selecionar tipo de carga Mudança ,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,client-sim-section.destinatario-envio,Simulação / cotação,2,Não,Remetente Dados de quem envia a carga. ETAPA 01 Nome / Empresa * NIF T,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 03 Origem * Desti",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,client-volume-head,Simulação / cotação,1,Não,"Volume e dimensões Volume total: 0,000 m³ € Adicionar tarifa + Adicion",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,provider-volume-table-shell,Simulação / cotação,1,Não,Descrição da carga Tarifa Qtd. Cobrança Preço un. Peso (kg) Comp. (cm),app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Operador de terreno,providerDirectSimulation,Nova encomenda,sim-volume-row,Simulação / cotação,1,Não,"Sem tarifa: preço à mão Por unidade Por volume Por peso Preço fixo 0,0",app/administracao/paginas.js,Visto no ecrã,Por migrar
-Operador de terreno,providerFieldTeam,Painel,field-board-panel,Acompanhamento logístico,1,Não,Agenda do operador Próximos serviços Ver rota Ainda sem serviços atrib,app/prestador/equipa-terreno-1.js,Visto no ecrã,Por migrar
-Operador de terreno,providerFieldTeam,Painel,field-dashboard-actions,Acompanhamento logístico,1,Não,Abrir rota Consultar próximo destino Minhas recolhas 0 por concluir Mi,app/prestador/equipa-terreno-1.js,Visto no ecrã,Por migrar
-Operador de terreno,providerFieldTeam,Painel,field-dashboard-hero,Acompanhamento logístico,1,Não,"CENTRO DE OPERAÇÕES Serviços de hoje no terreno. domingo, 15 de novemb",app/prestador/equipa-terreno-1.js,Visto no ecrã,Por migrar
-Operador de terreno,providerFieldTeam,Painel,field-dashboard-kpis,Indicador (KPI),1,Não,Serviços de hoje 0 0 em execução Por realizar 0 Atribuídos a si Atrasa,app/prestador/equipa-terreno-1.js,Visto no ecrã,Por migrar
-Operador de terreno,providerFieldTeam,Painel,section (sem classe),Secção de página / formulário,2,Não,Prioridade atual Sem serviço pendente 0 Nada à sua espera Todas as ope,,Visto no ecrã,Por migrar
-Operador de terreno,tracking,Encomendas,card,Contentor de página («card»),1,Não,Encomendas Acompanhe os envios em curso ou consulte todos os registos ,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Site público,inicio,inicio,tracking-panel.fx-rev,Acompanhamento logístico,1,Não,Código da operação ⌕ Rastrear Exemplo de código: EL-8842-INT,partilhado/scripts/efeitos.js,Visto no ecrã,Por migrar
-Site público,inicio,inicio,sim-rapida,Ação rápida,1,Não,ORIGEM DESTINO PESO OU VOLUME kg m³ Simular,app/cliente/painel.js,Visto no ecrã,Por migrar
-Site público,inicio,inicio,service-card.service-visual-card,Site / janelas,3,Não,Transporte aéreo Para cargas urgentes e volumes pequenos. Simular,partilhado/scripts/efeitos.js,Visto no ecrã,Por migrar
-Site público,inicio,inicio,contact-form.fx-rev,Secção de página / formulário,1,Não,Como podemos ajudar? Nome completo * E-mail * Motivo do contacto * Sel,site/scripts/inicio-movimento.js,Visto no ecrã,Por migrar
-Site público,legal,legal,div (sem classe),Secção de página / formulário,7,Não,Denominação Elolog: Intermediação e Gestão Logística,,Visto no ecrã,Por migrar
-Site público,legal,legal,simulator-section-card.legal-bloco,Simulação / cotação,6,Não,1. Quem somos Identificação do prestador do serviço da sociedade da in,site/scripts/legal-pagina-1.js,Visto no ecrã,Por migrar
-Site público,simulador,simulador,div (sem classe),Secção de página / formulário,4,Não,Distância total 0 km,,Visto no ecrã,Por migrar
-Site público,simulador,simulador,cargo-subsection.observations-subsection,Secção de página / formulário,1,Não,Observações Informações adicionais sobre a carga.,site/scripts/simulador-pagina-1.js,Visto no ecrã,Por migrar
-Site público,simulador,simulador,quotation-panel,Secção de página / formulário,1,Não,Resumo da cotação Estimativa Distância total 0 km Total de pacotes 0 V,site/scripts/simulador-pagina-1.js,Visto no ecrã,Por migrar
-Site público,simulador,simulador,cargo-subsection.volume-subsection,Simulação / cotação,1,Não,"Volume e dimensões Volume total: 0,000 m³ + Adicionar Volume Carga / d",site/scripts/simulador-pagina-1.js,Visto no ecrã,Por migrar
-Site público,simulador,simulador,quote-policy,Simulação / cotação,1,Não,Propostas personalizadas Valor definido pelo prestador,site/scripts/simulador-pagina-1.js,Visto no ecrã,Por migrar
-Site público,simulador,simulador,simulation-progress,Simulação / cotação,1,Não,01 Remetente Quem envia 02 Destinatário Quem recebe 03 Rota e carga Co,site/scripts/simulador-pagina-1.js,Visto no ecrã,Por migrar
-Site público,simulador,simulador,simulator-heading,Simulação / cotação,1,Não,Simular envio Indique apenas os dados necessários para solicitar propo,site/scripts/simulador-pagina-1.js,Visto no ecrã,Por migrar
-Site público,simulador,simulador,simulator-section-card.cargo-main-card,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,site/scripts/legal-pagina-1.js,Visto no ecrã,Por migrar
-Site público,simulador,simulador,simulator-section-card.recipient-card,Simulação / cotação,1,Não,Destinatário da encomenda Dados de quem recebe a encomenda. Nome / Emp,site/scripts/legal-pagina-1.js,Visto no ecrã,Por migrar
-Site público,simulador,simulador,simulator-section-card.route-card,Simulação / cotação,1,Não,"Dados da rota Origem, destino e recolha. Origem Destino Morada para re",site/scripts/legal-pagina-1.js,Visto no ecrã,Por migrar
-Site público,simulador,simulador,simulator-section-card.sender-card,Simulação / cotação,1,Não,Remetente da encomenda Dados de quem envia a carga. Nome / Empresa NIF,site/scripts/legal-pagina-1.js,Visto no ecrã,Por migrar
-Site público,simulador,simulador,volume-item,Simulação / cotação,1,Não,Carga / descrição Qtd. Peso (kg) Comp. (cm) Larg. (cm) Alt. (cm) Volum,site/scripts/simulador.js,Visto no ecrã,Por migrar
-Site público,validar,validar,#valForm,Site / janelas,1,Não,Código de validação Validar,,Visto no ecrã,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,route-pickup-row,Acompanhamento logístico,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,tracking-input-row,Acompanhamento logístico,,,,site/scripts/inicio-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,tracking-section,Acompanhamento logístico,,,,site/scripts/inicio-movimento.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,providers-empty,Estado vazio,,,,site/scripts/simulador-ligacao.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,simulation-summary-status,Indicador (KPI),,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,cargo-classification-box,Encomenda / operação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,cargo-details-box,Encomenda / operação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,dn-rota-linha,Acompanhamento logístico,,,,site/scripts/inicio-movimento.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,elo-cartao,Site / janelas,,,,site/seguimento.html,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,legal-cartao,Site / janelas,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,process-card,Site / janelas,,,,site/scripts/inicio-movimento.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,process-card-copy,Site / janelas,,,,site/scripts/inicio-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,process-card-top,Site / janelas,,,,site/scripts/inicio-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,sl-cartao,Site / janelas,,,,site/scripts/simulador-ligacao.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,legal-hero,Painel (cabeçalho),,,,site/scripts/legal-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,service-hero-visual,Painel (cabeçalho),,,,site/scripts/inicio-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,prestadores-section,Prestador,,,,site/scripts/simulador-ligacao.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,contact-section,Secção de página / formulário,,,,site/scripts/inicio-movimento.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,process-section,Secção de página / formulário,,,,site/scripts/inicio-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,providers-section,Secção de página / formulário,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,section-card-title,Secção de página / formulário,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,section-card-title-row,Secção de página / formulário,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,services-section,Secção de página / formulário,,,,site/scripts/inicio-movimento.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,proposta-prestador-card,Simulação / cotação,,,,site/scripts/simulador.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,sim-card,Simulação / cotação,,,,site/scripts/simulador.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,simulation-summary,Simulação / cotação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,simulation-summary-grid,Simulação / cotação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,simulation-summary-header,Simulação / cotação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,simulation-summary-panel,Simulação / cotação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,simulator-hero,Simulação / cotação,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,simulator-hero-inner,Simulação / cotação,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,simulator-hero-pattern,Simulação / cotação,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,simulator-hero-trust,Simulação / cotação,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Por migrar
-Site público,"(só aparece com dados, numa janela ou num estado)",,volume-row-total,Simulação / cotação,,,,site/scripts/simulador.js,Encontrado no código,Por migrar
-Área de cliente,(global),Menu lateral e topo,sim-rapida,Ação rápida,1,Não,Origem Destino Simular agora,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área de cliente,(global),Menu lateral e topo,ca-vazio,Estado vazio,1,Não,Sem encomendas ativas Fazer uma simulação,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área de cliente,(global),Menu lateral e topo,pw-kpis.ck-grelha,Indicador (KPI),1,Não,Encomendas ativas 0 Em curso Em trânsito 0 A caminho Concluídas 0 Entr,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área de cliente,(global),Menu lateral e topo,client-next-step.cn-v2,Notificação / próximo passo,1,Não,Próximo passo Para onde vai a sua próxima carga? Diga-nos a origem e o,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área de cliente,(global),Menu lateral e topo,nv-proximo,Notificação / próximo passo,1,Sim,O seu próximo passo Simular um envio Preço e prazo das transportadoras,app/comum/navegacao-viva.js,Visto no ecrã,Por migrar
-Área de cliente,(global),Menu lateral e topo,client-dashboard-home.pnovo,Painel (cabeçalho),1,Não,"Olá, Ana Cliente domingo, 15 de novembro de 2026 Próximo passo Para on",app/comum/pagina-1.js,Visto no ecrã,Por migrar
-Área de cliente,(global),Menu lateral e topo,pa-cartao.pw,Prestador,3,Não,Encomendas ativas o percurso de cada uma Sem encomendas ativas Fazer u,app/administracao/simulacoes.js,Visto no ecrã,Por migrar
-Área de cliente,adminAccess,Funcionários e permissões,card,Contentor de página («card»),1,Não,"Funcionários e permissões Supervisão global de limites, funções, sessõ",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminActiveProviders,Prestadores ativos,card,Contentor de página («card»),1,Não,Prestadores ativos As transportadoras que trabalham na Elolog. Abra um,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminBilling,Faturação da plataforma,card,Contentor de página («card»),1,Não,Faturação da plataforma Subscrições Elolog: separadas dos pagamentos d,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminClients,Clientes,card,Contentor de página («card»),1,Não,Clientes,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminCommissions,Comissões e regras comerciais,card,Contentor de página («card»),1,Não,"As regras de comissão que o motor de preços usa (por prestador, modali",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminCompliance,Documentos e conformidade,card,Contentor de página («card»),1,Não,Documentos e conformidade,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminOperations,Supervisão de operações,card,Contentor de página («card»),1,Não,Supervisão de operações Selecione primeiro a empresa prestadora e cons,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminPlans,Planos e subscrições,card,Contentor de página («card»),1,Não,"Planos e subscrições Preços, limites, funcionalidades e contratos pers",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminProviderDocuments,Documentação dos prestadores,card,Contentor de página («card»),1,Não,Documentação dos prestadores,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminProviderRequests,Pedidos de inscrição de prestadores,card,Contentor de página («card»),1,Não,Pedidos de inscrição de prestadores,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminReports,Relatórios,admin-report-download,Ação rápida,1,Sim,"Relatório de operações Encomendas, estados, rotas e prestadores EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Por migrar
-Área de cliente,adminReports,Relatórios,admin-report-download.access,Ação rápida,1,Sim,"Relatório de acessos Sessões, utilizadores e tentativas de login EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Por migrar
-Área de cliente,adminReports,Relatórios,card,Contentor de página («card»),1,Não,Relatórios Descarregue os dados operacionais e de segurança da platafo,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminSecurity,Segurança e auditoria,card,Contentor de página («card»),1,Não,Segurança e auditoria,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminSettings,Configurações da plataforma,card,Contentor de página («card»),1,Não,"Configurações da plataforma Identidade, localização, processos, notifi",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminSupport,Apoio e reclamações,card,Contentor de página («card»),1,Não,"Apoio e reclamações Filas distintas para clientes e prestadores, com p",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminSuspendedProviders,Prestadores suspensos,card,Contentor de página («card»),1,Não,Prestadores suspensos,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,adminTariffs,,card.tf-pagina,Financeiro / pagamento,1,Não,,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,clientProfile,Dados do Cliente,card.client-profile-card,Cliente,1,Não,Dados do Cliente Nome / Empresa Ana Cliente NIF — Telefone — E-mail c@,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,clientProfile,Dados do Cliente,client-data-wide,Cliente,1,Não,Morada —,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,clientProfile,Dados do Cliente,div (sem classe),Secção de página / formulário,4,Não,Nome / Empresa Ana Cliente,,Visto no ecrã,Por migrar
-Área de cliente,clientSimulation,Simulação de cotação,client-optional-tool,Ação rápida,2,Não,Fotografias 0,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,clientSimulation,Simulação de cotação,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância total 0 km To,app/comum/simulacao-site.js,Visto no ecrã,Por migrar
-Área de cliente,clientSimulation,Simulação de cotação,sim-total,Indicador (KPI),1,Não,Preço A aguardar proposta,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,clientSimulation,Simulação de cotação,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Preço declarado (€),app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,clientSimulation,Simulação de cotação,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,clientSimulation,Simulação de cotação,client-sim-section.destinatario-envio,Simulação / cotação,1,Não,Destinatário da encomenda Dados de quem recebe a encomenda. ETAPA 02 U,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,clientSimulation,Simulação de cotação,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 01 Origem Destino",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,clientSimulation,Simulação de cotação,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,clientSupport,Apoio Cliente,card,Contentor de página («card»),1,Não,"ATENDIMENTO Apoio Cliente Precisa de ajuda com uma encomenda, pagament",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,dashboard,0,sim-rapida,Ação rápida,1,Não,Origem Destino Simular agora,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área de cliente,dashboard,0,ca-vazio,Estado vazio,1,Não,Sem encomendas ativas Fazer uma simulação,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área de cliente,dashboard,0,pw-kpis.ck-grelha,Indicador (KPI),1,Não,Encomendas ativas 0 Em curso Em trânsito 0 A caminho Concluídas 0 Entr,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área de cliente,dashboard,0,client-next-step.cn-v2,Notificação / próximo passo,1,Não,Próximo passo Para onde vai a sua próxima carga? Diga-nos a origem e o,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área de cliente,dashboard,0,client-dashboard-home.pnovo,Painel (cabeçalho),1,Não,"Olá, Ana Cliente domingo, 15 de novembro de 2026 Próximo passo Para on",app/comum/pagina-1.js,Visto no ecrã,Por migrar
-Área de cliente,dashboard,0,pa-cartao.pw,Prestador,3,Não,Encomendas ativas o percurso de cada uma Sem encomendas ativas Fazer u,app/administracao/simulacoes.js,Visto no ecrã,Por migrar
-Área de cliente,documents,Documentos,card,Contentor de página («card»),1,Não,Documentos Escolher ficheiro Enviar documento Carregue um documento e ,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,documents,Documentos,client-doc-toolbar,Documento,1,Não,Escolher ficheiro Enviar documento,app/comum/pagina-3.js,Visto no ecrã,Por migrar
-Área de cliente,documents,Documentos,client-doc-empty.vz,Estado vazio,1,Não,Ainda não há documentos As faturas e os comprovativos das suas encomen,app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área de cliente,operations,Operações,card,Contentor de página («card»),1,Não,Operações + Nova operação Nenhuma operação encontrada.,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,payments,Pagamentos,card,Contentor de página («card»),1,Não,"Pagamentos Total registado 0,00 € Por pagar 0,00 € Pago 0,00 € Pagamen",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,payments,Pagamentos,client-payment-empty.vz,Estado vazio,1,Não,Nada nesta categoria Escolha outro separador para ver os restantes pag,app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área de cliente,payments,Pagamentos,client-payment-panel,Financeiro / pagamento,1,Não,Pagamentos Todos (0) Pendentes (0) Concluídos (0) Nada nesta categoria,app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área de cliente,payments,Pagamentos,client-payment-kpi,Indicador (KPI),1,Não,"Total registado 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área de cliente,payments,Pagamentos,client-payment-kpi.paid,Indicador (KPI),1,Não,"Pago 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área de cliente,payments,Pagamentos,client-payment-kpi.pending,Indicador (KPI),1,Não,"Por pagar 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área de cliente,proposals,Propostas,card,Contentor de página («card»),1,Não,Propostas Nenhuma proposta disponível.,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,providerArmazenamento,Armazenamento,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 6 de 11 Receber a carga no armazém Confira a quantidade e o esta,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerClientProfile,Perfil Cliente,provider-client-inactivity,Cliente,1,Não,Observações internas Visíveis apenas para os funcionários autorizados ,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerClientProfile,Perfil Cliente,div (sem classe),Secção de página / formulário,4,Não,Cliente Selecione um cliente na lista,,Visto no ecrã,Por migrar
-Área de cliente,providerDestino,Destino,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 9 de 11 Confirmar a chegada Confirme que a carga chegou e em que,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerDirectSimulation,Nova encomenda,provider-optional-tool,Ação rápida,2,Não,Fotografias 0,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerDirectSimulation,Nova encomenda,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância 0 km Pacotes ,app/comum/simulacao-site.js,Visto no ecrã,Por migrar
-Área de cliente,providerDirectSimulation,Nova encomenda,provider-pickup-pricing-status,Indicador (KPI),1,Não,Configure os armazéns e uma tarifa financeira de recolha.,app/prestador/simulacao-direta.js,Visto no ecrã,Por migrar
-Área de cliente,providerDirectSimulation,Nova encomenda,sim-total,Indicador (KPI),1,Não,"Total estimado 0,00 €",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerDirectSimulation,Nova encomenda,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Tipo de carga * Selecionar tipo de carga Mudança ,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerDirectSimulation,Nova encomenda,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerDirectSimulation,Nova encomenda,client-sim-section.destinatario-envio,Simulação / cotação,2,Não,Remetente Dados de quem envia a carga. ETAPA 01 Nome / Empresa * NIF T,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerDirectSimulation,Nova encomenda,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 03 Origem * Desti",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerDirectSimulation,Nova encomenda,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerDirectSimulation,Nova encomenda,client-volume-head,Simulação / cotação,1,Não,"Volume e dimensões Volume total: 0,000 m³ € Adicionar tarifa + Adicion",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerDirectSimulation,Nova encomenda,provider-volume-table-shell,Simulação / cotação,1,Não,Descrição da carga Tarifa Qtd. Cobrança Preço un. Peso (kg) Comp. (cm),app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerDisponivel,Disponível,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 10 de 11 Pronto para levantar Diga ao cliente ou ao destinatário,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerEmployees,Gestão de Funcionários,provider-employee-list-head,Funcionários e acessos,1,Não,Funcionário Função Estado Último acesso Ação,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerEmployees,Gestão de Funcionários,provider-login-table-head,Funcionários e acessos,1,Não,Data e hora Funcionário Função Empresa Resultado,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerEmployees,Gestão de Funcionários,div (sem classe),Secção de página / formulário,4,Não,Total 0,,Visto no ecrã,Por migrar
-Área de cliente,providerExpedicao,Expedição,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 7 de 11 Preparar a saída Escolha a viagem, indique o contentor e",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerLevantamento,Levantamento,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 11 de 11 Entregar e fechar a encomenda Registe quem levantou, re",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerOrder,Consultar e alterar encomenda,provider-order-filters,Encomenda / operação,1,Não,Data prevista N.º do projeto / encomenda Cliente Estado Todos Recolha ,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerOrder,Consultar e alterar encomenda,provider-order-list-panel,Encomenda / operação,1,Não,Lista de encomendas Selecione uma encomenda para consultar os dados e ,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerOrder,Consultar e alterar encomenda,provider-order-search,Encomenda / operação,1,Não,Pesquisar encomenda,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerOrderHistory,Histórico de encomendas,provider-history-list-head,Secção de página / formulário,1,Não,Encomenda / cliente Rota Data prevista Estado Ação,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerRecolha,Recolha,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 4 de 11 Recolher a carga no cliente Combine o dia com o cliente,",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,providerTransito,Em trânsito,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 8 de 11 Acompanhar a viagem Mantenha a previsão de chegada atual,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área de cliente,tracking,Encomendas,card,Contentor de página («card»),1,Não,Encomendas Acompanhe os envios em curso ou consulte todos os registos ,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,cr-tile,Ação rápida,,,,app/cliente/painel.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-doc-card,Documento,,,,app/cliente/documentos-pagamentos.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-extra-doc-row,Documento,,,,app/cliente/simulacao.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-active-card,Encomenda / operação,,,,app/prestador/equipa-terreno-2.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-history-row,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-card,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-details-panel,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-summary,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-summary-action,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-summary-clickable,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-active-empty,Estado vazio,,,,app/comum/painel-vazio.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-home-empty,Estado vazio,,,,app/comum/painel-vazio.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,perfil-vazio,Estado vazio,,,,app/cliente/perfil-servidor.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,pf-vazio,Estado vazio,,,,app/cliente/painel.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-payment-item,Financeiro / pagamento,,,,app/cliente/documentos-pagamentos.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-payment-item-actions,Financeiro / pagamento,,,,app/cliente/documentos-pagamentos.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-summary-item,Indicador (KPI),,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,pw-kpi,Indicador (KPI),,,,app/cliente/painel.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,ca-linha,Encomenda / operação,,,,app/cliente/painel.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-danger-box,Cliente,,,,app/comum/pagina-5.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-home-card,Acompanhamento logístico,,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-home-result-card,Acompanhamento logístico,,,,app/prestador/equipa-terreno-2.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-metric-card,Acompanhamento logístico,,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-modal-card,Site / janelas,,,,app/comum/pagina-5.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,pw-linha,Encomenda / operação,,,,app/cliente/painel.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-dashboard-section,Secção de página / formulário,,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-dashboard-section-head,Secção de página / formulário,,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-history-section,Secção de página / formulário,,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-search-row,Secção de página / formulário,,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-section-note,Secção de página / formulário,,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-sim-card,Simulação / cotação,,,,app/cliente/criar-encomenda.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-sim-summary,Simulação / cotação,,,,app/cliente/criar-encomenda.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-simulation-summary,Simulação / cotação,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-simulation-summary-grid,Simulação / cotação,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-simulation-summary-head,Simulação / cotação,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-simulation-summary-note,Simulação / cotação,,,,app/comum/pagina-3.js,Encontrado no código,Por migrar
-Área de cliente,"(só aparece com dados, numa janela ou num estado)",,simulator-card,Simulação / cotação,,,,app/cliente/simulacao.js,Encontrado no código,Por migrar
-Área do prestador,(global),Menu lateral e topo,sim-rapida,Ação rápida,1,Não,Origem Destino Criar encomenda,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área do prestador,(global),Menu lateral e topo,ca-vazio,Estado vazio,1,Não,Sem encomendas em curso Criar encomenda,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área do prestador,(global),Menu lateral e topo,pw-kpis.ck-grelha,Indicador (KPI),1,Não,Novos pedidos 0 Aguardam proposta Por aprovar 0 Confirmar e encaminhar,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área do prestador,(global),Menu lateral e topo,client-next-step.cn-v2,Notificação / próximo passo,1,Não,Próximo passo Tudo em dia. Qual é a próxima carga? Indique a origem e ,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área do prestador,(global),Menu lateral e topo,pa-cartao.pw,Prestador,6,Não,Encomendas em curso as que precisam de atenção primeiro Sem encomendas,app/administracao/simulacoes.js,Visto no ecrã,Por migrar
-Área do prestador,(global),Menu lateral e topo,topbar,Secção de página / formulário,1,Não,Início PT 0,app/cliente/criar-encomenda.js,Visto no ecrã,Por migrar
-Área do prestador,adminAccess,Funcionários e permissões,card,Contentor de página («card»),1,Não,"Funcionários e permissões Supervisão global de limites, funções, sessõ",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminActiveProviders,Prestadores ativos,card,Contentor de página («card»),1,Não,Prestadores ativos As transportadoras que trabalham na Elolog. Abra um,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminBilling,Faturação da plataforma,card,Contentor de página («card»),1,Não,Faturação da plataforma Subscrições Elolog: separadas dos pagamentos d,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminClients,Clientes,card,Contentor de página («card»),1,Não,Clientes,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminCommissions,Comissões e regras comerciais,card,Contentor de página («card»),1,Não,"As regras de comissão que o motor de preços usa (por prestador, modali",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminCompliance,Documentos e conformidade,card,Contentor de página («card»),1,Não,Documentos e conformidade,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminOperations,Supervisão de operações,card,Contentor de página («card»),1,Não,Supervisão de operações Selecione primeiro a empresa prestadora e cons,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminPlans,Planos e subscrições,card,Contentor de página («card»),1,Não,"Planos e subscrições Preços, limites, funcionalidades e contratos pers",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminProviderDocuments,Documentação dos prestadores,card,Contentor de página («card»),1,Não,Documentação dos prestadores,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminProviderRequests,Pedidos de inscrição de prestadores,card,Contentor de página («card»),1,Não,Pedidos de inscrição de prestadores,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminReports,Relatórios,admin-report-download,Ação rápida,1,Sim,"Relatório de operações Encomendas, estados, rotas e prestadores EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Por migrar
-Área do prestador,adminReports,Relatórios,admin-report-download.access,Ação rápida,1,Sim,"Relatório de acessos Sessões, utilizadores e tentativas de login EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Por migrar
-Área do prestador,adminReports,Relatórios,card,Contentor de página («card»),1,Não,Relatórios Descarregue os dados operacionais e de segurança da platafo,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminSecurity,Segurança e auditoria,card,Contentor de página («card»),1,Não,Segurança e auditoria,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminSettings,Configurações da plataforma,card,Contentor de página («card»),1,Não,"Configurações da plataforma Identidade, localização, processos, notifi",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminSupport,Apoio e reclamações,card,Contentor de página («card»),1,Não,"Apoio e reclamações Filas distintas para clientes e prestadores, com p",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminSuspendedProviders,Prestadores suspensos,card,Contentor de página («card»),1,Não,Prestadores suspensos,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,adminTariffs,,card.tf-pagina,Financeiro / pagamento,1,Não,,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,clientProfile,Dados do Cliente,card.client-profile-card,Cliente,1,Não,Dados do Cliente Nome / Empresa Ana Cliente NIF — Telefone — E-mail c@,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,clientProfile,Dados do Cliente,client-data-wide,Cliente,1,Não,Morada —,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,clientProfile,Dados do Cliente,div (sem classe),Secção de página / formulário,4,Não,Nome / Empresa Ana Cliente,,Visto no ecrã,Por migrar
-Área do prestador,clientSimulation,Simulação de cotação,client-optional-tool,Ação rápida,2,Não,Fotografias 0,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,clientSimulation,Simulação de cotação,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância total 0 km To,app/comum/simulacao-site.js,Visto no ecrã,Por migrar
-Área do prestador,clientSimulation,Simulação de cotação,sim-total,Indicador (KPI),1,Não,Preço A aguardar proposta,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,clientSimulation,Simulação de cotação,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Preço declarado (€),app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,clientSimulation,Simulação de cotação,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,clientSimulation,Simulação de cotação,client-sim-section.destinatario-envio,Simulação / cotação,1,Não,Destinatário da encomenda Dados de quem recebe a encomenda. ETAPA 02 U,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,clientSimulation,Simulação de cotação,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 01 Origem Destino",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,clientSimulation,Simulação de cotação,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,clientSupport,Apoio Cliente,card,Contentor de página («card»),1,Não,"ATENDIMENTO Apoio Cliente Precisa de ajuda com uma encomenda, pagament",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,dashboard,0,sim-rapida,Ação rápida,1,Não,Origem Destino Criar encomenda,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área do prestador,dashboard,0,ca-vazio,Estado vazio,1,Não,Sem encomendas em curso Criar encomenda,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área do prestador,dashboard,0,pw-kpis.ck-grelha,Indicador (KPI),1,Não,Novos pedidos 0 Aguardam proposta Por aprovar 0 Confirmar e encaminhar,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área do prestador,dashboard,0,client-next-step.cn-v2,Notificação / próximo passo,1,Não,Próximo passo Tudo em dia. Qual é a próxima carga? Indique a origem e ,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área do prestador,dashboard,0,pa-cartao.pw,Prestador,6,Não,Encomendas em curso as que precisam de atenção primeiro Sem encomendas,app/administracao/simulacoes.js,Visto no ecrã,Por migrar
-Área do prestador,documents,Documentos,card,Contentor de página («card»),1,Não,Documentos Escolher ficheiro Enviar documento Carregue um documento e ,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,documents,Documentos,client-doc-toolbar,Documento,1,Não,Escolher ficheiro Enviar documento,app/comum/pagina-3.js,Visto no ecrã,Por migrar
-Área do prestador,documents,Documentos,client-doc-empty.vz,Estado vazio,1,Não,Ainda não há documentos As faturas e os comprovativos das suas encomen,app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área do prestador,operations,Operações,card,Contentor de página («card»),1,Não,Operações + Nova operação Nenhuma operação encontrada.,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,payments,Pagamentos,card,Contentor de página («card»),1,Não,"Pagamentos Total registado 0,00 € Por pagar 0,00 € Pago 0,00 € Pagamen",app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,payments,Pagamentos,client-payment-empty.vz,Estado vazio,1,Não,Nada nesta categoria Escolha outro separador para ver os restantes pag,app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área do prestador,payments,Pagamentos,client-payment-panel,Financeiro / pagamento,1,Não,Pagamentos Todos (0) Pendentes (0) Concluídos (0) Nada nesta categoria,app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área do prestador,payments,Pagamentos,client-payment-kpi,Indicador (KPI),1,Não,"Total registado 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área do prestador,payments,Pagamentos,client-payment-kpi.paid,Indicador (KPI),1,Não,"Pago 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área do prestador,payments,Pagamentos,client-payment-kpi.pending,Indicador (KPI),1,Não,"Por pagar 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Por migrar
-Área do prestador,proposals,Propostas,card,Contentor de página («card»),1,Não,Propostas Nenhuma proposta disponível.,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerAprovacao,Aprovação,provider-order-empty.vz,Estado vazio,1,Não,Não há pedidos à espera da sua aprovação Quando um cliente escolher a ,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerArmazenamento,Armazenamento,provider-order-empty.vz,Estado vazio,1,Não,O armazém está à espera da próxima carga Cada carga aparece aqui assim,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerArmazenamento,Armazenamento,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 6 de 11 Receber a carga no armazém Confira a quantidade e o esta,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerAutomation,O que a Elolog faz por si,automation-log,Configuração,1,Não,"Atividade recente O que a Elolog tratou por si, do mais recente para o",app/prestador/automacao.js,Visto no ecrã,Por migrar
-Área do prestador,providerAutomation,O que a Elolog faz por si,automation-rule.on,Configuração,9,Não,Registar o que se recebe no terreno Quando o operador recebe um pagame,app/prestador/automacao.js,Visto no ecrã,Por migrar
-Área do prestador,providerAutomation,O que a Elolog faz por si,automation-empty.vz,Estado vazio,1,Não,Ainda não houve nada para tratar Quando uma regra fizer alguma coisa p,app/comum/painel-vazio.js,Visto no ecrã,Por migrar
-Área do prestador,providerAutomation,O que a Elolog faz por si,article (sem classe),Secção de página / formulário,3,Não,Feito por si hoje 0 tarefas tratadas sem intervenção,,Visto no ecrã,Por migrar
-Área do prestador,providerClientList,Lista de clientes,provider-order-empty.vz,Estado vazio,1,Não,Ainda sem clientes próprios Os clientes que trabalharem só com esta em,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerClientProfile,Perfil Cliente,provider-client-inactivity,Cliente,1,Não,Observações internas Visíveis apenas para os funcionários autorizados ,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerClientProfile,Perfil Cliente,div (sem classe),Secção de página / formulário,4,Não,Cliente Selecione um cliente na lista,,Visto no ecrã,Por migrar
-Área do prestador,providerComplaints,Reclamações,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma reclamação aqui Escolha outra categoria para ver as restantes.,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerComplaints,Reclamações,div (sem classe),Secção de página / formulário,4,Não,Total 0,,Visto no ecrã,Por migrar
-Área do prestador,providerCotacao,Cotação / Propostas,provider-order-empty.vz,Estado vazio,1,Não,Ainda não chegou nenhuma simulação Quando um cliente pedir preço para ,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerDestino,Destino,provider-order-empty.vz,Estado vazio,1,Não,"Nada a chegar neste momento Quando um navio chegar com carga sua, conf",app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerDestino,Destino,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 9 de 11 Confirmar a chegada Confirme que a carga chegou e em que,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,provider-optional-tool,Ação rápida,2,Não,Fotografias 0 fotos,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância 0 km Pacotes ,app/comum/simulacao-site.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,provider-pickup-pricing-status.is-warning,Indicador (KPI),1,Não,Adicione pelo menos um armazém nas Configurações. Sem tarifa de recolh,app/prestador/simulacao-direta.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,sim-total,Indicador (KPI),1,Não,"Total estimado 0,00 €",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Tipo de carga * Selecionar tipo de carga Mudança ,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,client-sim-section.destinatario-envio,Simulação / cotação,2,Não,Remetente Dados de quem envia a carga. ETAPA 01 Nome / Empresa * NIF T,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 03 Origem * Desti",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,client-volume-head,Simulação / cotação,1,Não,"Volume e dimensões Volume total: 0,000 m³ € Adicionar tarifa + Adicion",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,provider-volume-table-shell,Simulação / cotação,1,Não,Descrição da carga Tarifa Qtd. Cobrança Preço un. Peso (kg) Comp. (cm),app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerDirectSimulation,Nova encomenda,sim-volume-row,Simulação / cotação,1,Não,"Sem tarifa: preço à mão Por unidade Por volume Por peso Preço fixo 0,0",app/administracao/paginas.js,Visto no ecrã,Por migrar
-Área do prestador,providerDisponivel,Disponível,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma encomenda à espera de levantamento Depois de confirmar a chega,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerDisponivel,Disponível,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 10 de 11 Pronto para levantar Diga ao cliente ou ao destinatário,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerDocumentos,Documentos,provider-declarations-section,Documento,1,Não,"Todas as encomendas Edite os pesos, volumes, valor a declarar e país d",app/prestador/manifestos.js,Visto no ecrã,Por migrar
-Área do prestador,providerDocumentos,Documentos,provider-declarations-section.provider-process-register,Documento,1,Não,Simulações e encomendas A encomenda aparece acima da simulação que lhe,app/prestador/manifestos.js,Visto no ecrã,Por migrar
-Área do prestador,providerDocumentos,Documentos,provider-doc-upload,Documento,1,Não,Selecionar encomenda/cliente ＋ Escolher documento Enviar ao perfil do ,app/prestador/manifestos.js,Visto no ecrã,Por migrar
-Área do prestador,providerDocumentos,Documentos,provider-other-documents,Documento,1,Não,Documentos do processo Selecionar encomenda/cliente ＋ Escolher documen,app/prestador/manifestos.js,Visto no ecrã,Por migrar
-Área do prestador,providerDocumentos,Documentos,provider-order-empty,Estado vazio,3,Não,▤ Nenhum registo nesta secção Ainda não existem registos.,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerDocumentos,Documentos,article (sem classe),Secção de página / formulário,4,Não,S Simulações 0 Registos de cálculo preservados,,Visto no ecrã,Por migrar
-Área do prestador,providerEmployees,Gestão de Funcionários,employee-empty.vz,Estado vazio,2,Não,Ainda não há ninguém na equipa Crie o primeiro acesso: cada pessoa ent,app/comum/painel-vazio.js,Visto no ecrã,Por migrar
-Área do prestador,providerEmployees,Gestão de Funcionários,provider-employee-list-head,Funcionários e acessos,1,Não,Funcionário Função Estado Último acesso Ação,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerEmployees,Gestão de Funcionários,provider-login-table-head,Funcionários e acessos,1,Não,Data e hora Funcionário Função Empresa Resultado,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerEmployees,Gestão de Funcionários,div (sem classe),Secção de página / formulário,4,Não,Total 0,,Visto no ecrã,Por migrar
-Área do prestador,providerExpedicao,Expedição,expedition-manifest-toolbar,Documento,1,Não,Preparar manifesto Selecione cargas da mesma rota. Criar manifesto com,app/prestador/manifestos.js,Visto no ecrã,Por migrar
-Área do prestador,providerExpedicao,Expedição,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma carga pronta para manifesto Só entram cargas já registadas no ,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerExpedicao,Expedição,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 7 de 11 Preparar a saída Escolha a viagem, indique o contentor e",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerFieldTeam,Painel,field-board-panel,Acompanhamento logístico,1,Não,Agenda de hoje Próximos serviços Ver planeamento Nada agendado para ho,app/prestador/equipa-terreno-1.js,Visto no ecrã,Por migrar
-Área do prestador,providerFieldTeam,Painel,field-dashboard-hero,Acompanhamento logístico,1,Não,"Centro de operações Serviços de hoje no terreno. domingo, 15 de novemb",app/prestador/equipa-terreno-1.js,Visto no ecrã,Por migrar
-Área do prestador,providerFieldTeam,Painel,button (sem classe),Secção de página / formulário,3,Sim,Agendar entrega Definir equipa e horário,,Visto no ecrã,Por migrar
-Área do prestador,providerFieldTeam,Painel,primary,Secção de página / formulário,1,Sim,Agendar recolha Criar e atribuir serviço,app/cliente/encomenda-direta.js,Visto no ecrã,Por migrar
-Área do prestador,providerFieldTeam,Painel,section (sem classe),Secção de página / formulário,2,Não,Fila operacional Sem atribuição 0 Todos os serviços têm responsável Ni,,Visto no ecrã,Por migrar
-Área do prestador,providerFinanceiro,Financeiro,finance-empty.vz,Estado vazio,1,Não,"Ainda não há nada registado aqui Assim que criar o primeiro registo, e",app/comum/painel-vazio.js,Visto no ecrã,Por migrar
-Área do prestador,providerLevantamento,Levantamento,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma entrega por fechar As encomendas prontas a levantar aparecem a,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerLevantamento,Levantamento,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 11 de 11 Entregar e fechar a encomenda Registe quem levantou, re",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerManifestos,Manifestos de carga,provider-order-empty.vz,Estado vazio,1,Não,"Nenhum manifesto com estes dados Limpe a pesquisa ou a data, ou crie o",app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerManifestos,Manifestos de carga,manifest-kpi,Indicador (KPI),5,Não,Rascunho 0,app/prestador/manifestos.js,Visto no ecrã,Por migrar
-Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-calendar,Acompanhamento logístico,1,Não,SEG TER QUA QUI SEX SÁB DOM 26 27 28 29 30 31 1 2 3 4 5 6 7 8 9 10 11 ,app/prestador/calendario-maritimo.js,Visto no ecrã,Por migrar
-Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-day,Acompanhamento logístico,29,Não,1,app/prestador/calendario-maritimo.js,Visto no ecrã,Por migrar
-Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-day.outside,Acompanhamento logístico,12,Não,26,app/prestador/calendario-maritimo.js,Visto no ecrã,Por migrar
-Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-day.today,Acompanhamento logístico,1,Não,15,app/prestador/calendario-maritimo.js,Visto no ecrã,Por migrar
-Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-list,Acompanhamento logístico,1,Não,Programação Próximas viagens 0 registo(s) Ainda não há viagens planead,app/prestador/calendario-maritimo.js,Visto no ecrã,Por migrar
-Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-toolbar,Acompanhamento logístico,1,Não,‹ Novembro De 2026 › Hoje Todos os estados Planeada Confirmada Em viag,app/prestador/calendario-maritimo.js,Visto no ecrã,Por migrar
-Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,provider-order-empty.vz,Estado vazio,1,Não,Ainda não há viagens planeadas Agende a próxima saída para ligar as ca,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,arrival,Acompanhamento logístico,1,Não,Chegadas previstas 0 Em acompanhamento,app/prestador/automacao.js,Visto no ecrã,Por migrar
-Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,delay,Acompanhamento logístico,1,Não,Atrasos 0 Exigem atualização,app/cliente/painel.js,Visto no ecrã,Por migrar
-Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,departure,Acompanhamento logístico,1,Não,Saídas previstas 0 0 neste mês,app/prestador/automacao.js,Visto no ecrã,Por migrar
-Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,next,Secção de página / formulário,1,Não,Próximo barco Não agendado Crie a próxima viagem,app/cliente/sincronizar.js,Visto no ecrã,Por migrar
-Área do prestador,providerOrder,Consultar e alterar encomenda,provider-order-filters,Encomenda / operação,1,Não,Data prevista N.º do projeto / encomenda Cliente Estado Todos Recolha ,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerOrder,Consultar e alterar encomenda,provider-order-list-panel,Encomenda / operação,1,Não,Lista de encomendas Selecione uma encomenda para consultar os dados e ,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerOrder,Consultar e alterar encomenda,provider-order-search,Encomenda / operação,1,Não,Pesquisar encomenda,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerOrder,Consultar e alterar encomenda,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma encomenda com estes filtros Limpe a pesquisa ou escolha outro ,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerOrderHistory,Histórico de encomendas,provider-order-empty.vz,Estado vazio,1,Não,Nada nesta categoria Escolha outra categoria ou volte a «Todas» para v,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerOrderHistory,Histórico de encomendas,provider-history-summary,Indicador (KPI),1,Não,Total de encomendas 0 Encomendas ativas 0 Entregues / levantadas 0 Out,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerOrderHistory,Histórico de encomendas,provider-history-list,Encomenda / operação,1,Não,Nada nesta categoria Escolha outra categoria ou volte a «Todas» para v,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerOrderHistory,Histórico de encomendas,provider-history-list-head,Secção de página / formulário,1,Não,Encomenda / cliente Rota Data prevista Estado Ação,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerPagamento,Pagamento,provider-order-empty.vz,Estado vazio,1,Não,Nada nesta categoria Escolha outro separador para ver os restantes pag,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerRecolha,Recolha,provider-order-empty.vz,Estado vazio,1,Não,"Não há recolhas por fazer Quando aprovar um pedido com recolha, ele ap",app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerRecolha,Recolha,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 4 de 11 Recolher a carga no cliente Combine o dia com o cliente,",app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,providerReports,Relatórios,provider-report-kpis,Indicador (KPI),1,Não,"Total de encomendas 0 Encomendas ativas 0 Peso transportado 0,0 kg Vol",app/prestador/simulacao-direta.js,Visto no ecrã,Por migrar
-Área do prestador,providerSettings,Configurações,provider-warehouse-row,Acompanhamento logístico,1,Não,Nome do armazém Morada completa Validar morada Apagar Escreva a morada,app/prestador/armazens-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerSupport,Pedidos e reclamações,provider-order-empty.vz,Estado vazio,1,Não,Ninguém precisa de ajuda agora Quando um cliente ou prestador pedir ap,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerTransito,Em trânsito,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma carga em viagem As cargas que expedir aparecem aqui até chegar,app/administracao/clientes-servidor.js,Visto no ecrã,Por migrar
-Área do prestador,providerTransito,Em trânsito,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 8 de 11 Acompanhar a viagem Mantenha a previsão de chegada atual,app/comum/pagina-2.js,Visto no ecrã,Por migrar
-Área do prestador,tracking,Encomendas,card,Contentor de página («card»),1,Não,Encomendas Acompanhe os envios em curso ou consulte todos os registos ,app/cliente/servidor.js,Visto no ecrã,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,expedition-select-row,Acompanhamento logístico,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-board-item,Acompanhamento logístico,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-job-row,Acompanhamento logístico,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-service-card,Acompanhamento logístico,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-service-panel,Acompanhamento logístico,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-task-card,Acompanhamento logístico,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-team-card,Acompanhamento logístico,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,maritime-summary,Acompanhamento logístico,,,,app/prestador/calendario-maritimo.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,maritime-voyage-row,Acompanhamento logístico,,,,app/prestador/calendario-maritimo.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-support-hero,Apoio / reclamação,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-complaint-row,Apoio / reclamação,,,,app/prestador/simulacao-direta.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-complaint-summary,Apoio / reclamação,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-complaints-card,Apoio / reclamação,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,ac-cartao,Cliente,,,,app/prestador/auditoria-concluidos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,manifest-card,Documento,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,manifest-card-top,Documento,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,manifest-editor-section,Documento,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-document-declaration-card,Documento,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,oe-linha-fecho,Encomenda / operação,,,,app/prestador/estado-encomenda.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-history-row,Encomenda / operação,,,,app/prestador/encomendas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-order-result-card,Encomenda / operação,,,,app/prestador/encomendas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-recent-panel,Encomenda / operação,,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-recent-row,Encomenda / operação,,,,app/prestador/propostas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-work-card,Encomenda / operação,,,,app/comum/ficha-operacao.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-board-empty,Estado vazio,,,,app/comum/painel-vazio.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-dashboard-empty,Estado vazio,,,,app/prestador/propostas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-empty-icon,Estado vazio,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-cash-summary,Financeiro / pagamento,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-payment-row,Financeiro / pagamento,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-payment-section,Financeiro / pagamento,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,finance-audit-row,Financeiro / pagamento,,,,app/prestador/financeiro.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,finance-payment-summary,Financeiro / pagamento,,,,app/prestador/financeiro.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,finance-section-head,Financeiro / pagamento,,,,app/prestador/financeiro.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,financial-tariff-row,Financeiro / pagamento,,,,app/prestador/busca-tarifas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-payment-card,Financeiro / pagamento,,,,app/prestador/encomendas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-payment-summary,Financeiro / pagamento,,,,app/prestador/encomendas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,employee-row-actions,Funcionários e acessos,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-employee-row,Funcionários e acessos,,,,app/comum/acesso-por-funcao.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-employee-summary,Funcionários e acessos,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-employees-card,Funcionários e acessos,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-login-row,Funcionários e acessos,,,,app/prestador/acessos-servidor.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-kpi,Indicador (KPI),,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,finance-kpi,Indicador (KPI),,,,app/prestador/financeiro.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-doc-kpi-icon,Indicador (KPI),,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-hero-summary,Indicador (KPI),,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-kpi,Indicador (KPI),,,,app/prestador/propostas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-kpi-icon,Indicador (KPI),,,,app/prestador/propostas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-report-kpi,Indicador (KPI),,,,app/prestador/simulacao-direta.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-report-kpi-icon,Indicador (KPI),,,,app/prestador/simulacao-direta.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,cargo-editor-card,Encomenda / operação,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,cargo-editor-summary,Encomenda / operação,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,cargo-item-editor,Encomenda / operação,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,cargo-signature-card,Encomenda / operação,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,inline-block,Secção de página / formulário,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,pdv-row-value,Secção de página / formulário,,,,app/prestador/simulacao-direta.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-card,Prestador,,,,site/scripts/simulador.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-card-unavailable,Prestador,,,,site/scripts/simulador.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-history-card,Encomenda / operação,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-map-card,Prestador,,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-rail-card,Prestador,,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-reports-card,Prestador,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-dashboard-hero,Painel (cabeçalho),,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-hero-copy,Painel (cabeçalho),,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-hero-side,Painel (cabeçalho),,,,app/comum/pagina-1.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,cargo-list-panel,Secção de página / formulário,,,,app/prestador/manifestos.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-panel-grid,Secção de página / formulário,,,,app/administracao/paginas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-report-section-head,Secção de página / formulário,,,,app/prestador/simulacao-direta.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-section-top,Secção de página / formulário,,,,app/comum/pagina-2.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,pdv-row-volume,Simulação / cotação,,,,app/prestador/simulacao-direta.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,proposal-analysis-section,Simulação / cotação,,,,app/prestador/propostas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,proposal-analysis-summary,Simulação / cotação,,,,app/prestador/propostas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,proposal-file-box,Simulação / cotação,,,,app/prestador/propostas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,proposal-party-card,Simulação / cotação,,,,app/prestador/propostas.js,Encontrado no código,Por migrar
-Área do prestador,"(só aparece com dados, numa janela ou num estado)",,proposal-volume-row,Simulação / cotação,,,,app/prestador/propostas.js,Encontrado no código,Por migrar
+Operador de terreno,(global),Menu lateral e topo,field-board-panel,Acompanhamento logístico,1,Não,Agenda do operador Próximos serviços Ver rota Ainda sem serviços atrib,app/prestador/equipa-terreno-1.js,Visto no ecrã,Migrado
+Operador de terreno,(global),Menu lateral e topo,field-dashboard-actions,Acompanhamento logístico,1,Não,Abrir rota Consultar próximo destino Minhas recolhas 0 por concluir Mi,app/prestador/equipa-terreno-1.js,Visto no ecrã,Migrado
+Operador de terreno,(global),Menu lateral e topo,field-dashboard-hero,Acompanhamento logístico,1,Não,"CENTRO DE OPERAÇÕES Serviços de hoje no terreno. domingo, 15 de novemb",app/prestador/equipa-terreno-1.js,Visto no ecrã,Migrado
+Operador de terreno,(global),Menu lateral e topo,field-dashboard-kpis,Indicador (KPI),1,Não,Serviços de hoje 0 0 em execução Por realizar 0 Atribuídos a si Atrasa,app/prestador/equipa-terreno-1.js,Visto no ecrã,Migrado
+Operador de terreno,(global),Menu lateral e topo,section (sem classe),Secção de página / formulário,2,Não,Prioridade atual Sem serviço pendente 0 Nada à sua espera Todas as ope,,Visto no ecrã,Sem cartão próprio
+Operador de terreno,(global),Menu lateral e topo,topbar,Secção de página / formulário,1,Não,Painel PT 0,app/cliente/criar-encomenda.js,Visto no ecrã,Sem cartão próprio
+Operador de terreno,adminAccess,Funcionários e permissões,card,Contentor de página («card»),1,Não,"Funcionários e permissões Supervisão global de limites, funções, sessõ",app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminActiveProviders,Prestadores ativos,card,Contentor de página («card»),1,Não,Prestadores ativos As transportadoras que trabalham na Elolog. Abra um,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminBilling,Faturação da plataforma,card,Contentor de página («card»),1,Não,Faturação da plataforma Subscrições Elolog: separadas dos pagamentos d,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminClients,Clientes,card,Contentor de página («card»),1,Não,Clientes,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminCommissions,Comissões e regras comerciais,card,Contentor de página («card»),1,Não,"As regras de comissão que o motor de preços usa (por prestador, modali",app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminCompliance,Documentos e conformidade,card,Contentor de página («card»),1,Não,Documentos e conformidade,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminOperations,Supervisão de operações,card,Contentor de página («card»),1,Não,Supervisão de operações Selecione primeiro a empresa prestadora e cons,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminPlans,Planos e subscrições,card,Contentor de página («card»),1,Não,"Planos e subscrições Preços, limites, funcionalidades e contratos pers",app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminProviderDocuments,Documentação dos prestadores,card,Contentor de página («card»),1,Não,Documentação dos prestadores,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminProviderRequests,Pedidos de inscrição de prestadores,card,Contentor de página («card»),1,Não,Pedidos de inscrição de prestadores,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminReports,Relatórios,admin-report-download,Ação rápida,1,Sim,"Relatório de operações Encomendas, estados, rotas e prestadores EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Migrado
+Operador de terreno,adminReports,Relatórios,admin-report-download.access,Ação rápida,1,Sim,"Relatório de acessos Sessões, utilizadores e tentativas de login EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Migrado
+Operador de terreno,adminReports,Relatórios,card,Contentor de página («card»),1,Não,Relatórios Descarregue os dados operacionais e de segurança da platafo,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminSecurity,Segurança e auditoria,card,Contentor de página («card»),1,Não,Segurança e auditoria,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminSettings,Configurações da plataforma,card,Contentor de página («card»),1,Não,"Configurações da plataforma Identidade, localização, processos, notifi",app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminSupport,Apoio e reclamações,card,Contentor de página («card»),1,Não,"Apoio e reclamações Filas distintas para clientes e prestadores, com p",app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminSuspendedProviders,Prestadores suspensos,card,Contentor de página («card»),1,Não,Prestadores suspensos,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,adminTariffs,,card.tf-pagina,Financeiro / pagamento,1,Não,,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,clientProfile,Dados do Cliente,card.client-profile-card,Cliente,1,Não,Dados do Cliente Nome / Empresa João Silva NIF — Telefone — E-mail — M,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,clientProfile,Dados do Cliente,client-data-wide,Cliente,1,Não,Morada —,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,clientProfile,Dados do Cliente,div (sem classe),Secção de página / formulário,4,Não,Nome / Empresa João Silva,,Visto no ecrã,Sem cartão próprio
+Operador de terreno,clientSimulation,Simulação de cotação,client-optional-tool,Ação rápida,2,Não,Fotografias 0,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,clientSimulation,Simulação de cotação,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância total 0 km To,app/comum/simulacao-site.js,Visto no ecrã,Migrado
+Operador de terreno,clientSimulation,Simulação de cotação,sim-total,Indicador (KPI),1,Não,Preço A aguardar proposta,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,clientSimulation,Simulação de cotação,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Preço declarado (€),app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,clientSimulation,Simulação de cotação,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,clientSimulation,Simulação de cotação,client-sim-section.destinatario-envio,Simulação / cotação,1,Não,Destinatário da encomenda Dados de quem recebe a encomenda. ETAPA 02 U,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,clientSimulation,Simulação de cotação,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 01 Origem Destino",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,clientSimulation,Simulação de cotação,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,clientSupport,Apoio Cliente,card,Contentor de página («card»),1,Não,"ATENDIMENTO Apoio Cliente Precisa de ajuda com uma encomenda, pagament",app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,dashboard,0,pa-cartao.pw,Prestador,2,Não,As minhas recolhas de hoje atribuídas a si Nenhuma recolha para si hoj,app/administracao/simulacoes.js,Visto no ecrã,Migrado
+Operador de terreno,documents,Documentos,card,Contentor de página («card»),1,Não,Documentos Escolher ficheiro Enviar documento Carregue um documento e ,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,documents,Documentos,client-doc-toolbar,Documento,1,Não,Escolher ficheiro Enviar documento,app/comum/pagina-3.js,Visto no ecrã,Migrado
+Operador de terreno,documents,Documentos,client-doc-empty.vz,Estado vazio,1,Não,Ainda não há documentos As faturas e os comprovativos das suas encomen,app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Operador de terreno,operations,Operações,card,Contentor de página («card»),1,Não,Operações + Nova operação Nenhuma operação encontrada.,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,payments,Pagamentos,card,Contentor de página («card»),1,Não,"Pagamentos Total registado 0,00 € Por pagar 0,00 € Pago 0,00 € Pagamen",app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,payments,Pagamentos,client-payment-empty.vz,Estado vazio,1,Não,Nada nesta categoria Escolha outro separador para ver os restantes pag,app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Operador de terreno,payments,Pagamentos,client-payment-panel,Financeiro / pagamento,1,Não,Pagamentos Todos (0) Pendentes (0) Concluídos (0) Nada nesta categoria,app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Operador de terreno,payments,Pagamentos,client-payment-kpi,Indicador (KPI),1,Não,"Total registado 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Operador de terreno,payments,Pagamentos,client-payment-kpi.paid,Indicador (KPI),1,Não,"Pago 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Operador de terreno,payments,Pagamentos,client-payment-kpi.pending,Indicador (KPI),1,Não,"Por pagar 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Operador de terreno,proposals,Propostas,card,Contentor de página («card»),1,Não,Propostas Nenhuma proposta disponível.,app/cliente/servidor.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,provider-optional-tool,Ação rápida,2,Não,Fotografias 0 fotos,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância 0 km Pacotes ,app/comum/simulacao-site.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,provider-pickup-pricing-status.is-warning,Indicador (KPI),1,Não,Adicione pelo menos um armazém nas Configurações. Sem tarifa de recolh,app/prestador/simulacao-direta.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,sim-total,Indicador (KPI),1,Não,"Total estimado 0,00 €",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Tipo de carga * Selecionar tipo de carga Mudança ,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,client-sim-section.destinatario-envio,Simulação / cotação,2,Não,Remetente Dados de quem envia a carga. ETAPA 01 Nome / Empresa * NIF T,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 03 Origem * Desti",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,client-volume-head,Simulação / cotação,1,Não,"Volume e dimensões Volume total: 0,000 m³ € Adicionar tarifa + Adicion",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,provider-volume-table-shell,Simulação / cotação,1,Não,Descrição da carga Tarifa Qtd. Cobrança Preço un. Peso (kg) Comp. (cm),app/comum/pagina-2.js,Visto no ecrã,Migrado
+Operador de terreno,providerDirectSimulation,Nova encomenda,sim-volume-row,Simulação / cotação,1,Não,"Sem tarifa: preço à mão Por unidade Por volume Por peso Preço fixo 0,0",app/administracao/paginas.js,Visto no ecrã,Migrado
+Operador de terreno,providerFieldTeam,Painel,field-board-panel,Acompanhamento logístico,1,Não,Agenda do operador Próximos serviços Ver rota Ainda sem serviços atrib,app/prestador/equipa-terreno-1.js,Visto no ecrã,Migrado
+Operador de terreno,providerFieldTeam,Painel,field-dashboard-actions,Acompanhamento logístico,1,Não,Abrir rota Consultar próximo destino Minhas recolhas 0 por concluir Mi,app/prestador/equipa-terreno-1.js,Visto no ecrã,Migrado
+Operador de terreno,providerFieldTeam,Painel,field-dashboard-hero,Acompanhamento logístico,1,Não,"CENTRO DE OPERAÇÕES Serviços de hoje no terreno. domingo, 15 de novemb",app/prestador/equipa-terreno-1.js,Visto no ecrã,Migrado
+Operador de terreno,providerFieldTeam,Painel,field-dashboard-kpis,Indicador (KPI),1,Não,Serviços de hoje 0 0 em execução Por realizar 0 Atribuídos a si Atrasa,app/prestador/equipa-terreno-1.js,Visto no ecrã,Migrado
+Operador de terreno,providerFieldTeam,Painel,section (sem classe),Secção de página / formulário,2,Não,Prioridade atual Sem serviço pendente 0 Nada à sua espera Todas as ope,,Visto no ecrã,Sem cartão próprio
+Operador de terreno,tracking,Encomendas,card,Contentor de página («card»),1,Não,Encomendas Acompanhe os envios em curso ou consulte todos os registos ,app/cliente/servidor.js,Visto no ecrã,Migrado
+Site público,inicio,inicio,tracking-panel.fx-rev,Acompanhamento logístico,1,Não,Código da operação ⌕ Rastrear Exemplo de código: EL-8842-INT,partilhado/scripts/efeitos.js,Visto no ecrã,Migrado
+Site público,inicio,inicio,sim-rapida,Ação rápida,1,Não,ORIGEM DESTINO PESO OU VOLUME kg m³ Simular,app/cliente/painel.js,Visto no ecrã,Migrado
+Site público,inicio,inicio,service-card.service-visual-card,Site / janelas,3,Não,Transporte aéreo Para cargas urgentes e volumes pequenos. Simular,partilhado/scripts/efeitos.js,Visto no ecrã,Migrado
+Site público,inicio,inicio,contact-form.fx-rev,Secção de página / formulário,1,Não,Como podemos ajudar? Nome completo * E-mail * Motivo do contacto * Sel,site/scripts/inicio-movimento.js,Visto no ecrã,Migrado
+Site público,legal,legal,div (sem classe),Secção de página / formulário,7,Não,Denominação Elolog: Intermediação e Gestão Logística,,Visto no ecrã,Sem cartão próprio
+Site público,legal,legal,simulator-section-card.legal-bloco,Simulação / cotação,6,Não,1. Quem somos Identificação do prestador do serviço da sociedade da in,site/scripts/legal-pagina-1.js,Visto no ecrã,Migrado
+Site público,simulador,simulador,div (sem classe),Secção de página / formulário,4,Não,Distância total 0 km,,Visto no ecrã,Sem cartão próprio
+Site público,simulador,simulador,cargo-subsection.observations-subsection,Secção de página / formulário,1,Não,Observações Informações adicionais sobre a carga.,site/scripts/simulador-pagina-1.js,Visto no ecrã,Migrado
+Site público,simulador,simulador,quotation-panel,Secção de página / formulário,1,Não,Resumo da cotação Estimativa Distância total 0 km Total de pacotes 0 V,site/scripts/simulador-pagina-1.js,Visto no ecrã,Migrado
+Site público,simulador,simulador,cargo-subsection.volume-subsection,Simulação / cotação,1,Não,"Volume e dimensões Volume total: 0,000 m³ + Adicionar Volume Carga / d",site/scripts/simulador-pagina-1.js,Visto no ecrã,Migrado
+Site público,simulador,simulador,quote-policy,Simulação / cotação,1,Não,Propostas personalizadas Valor definido pelo prestador,site/scripts/simulador-pagina-1.js,Visto no ecrã,Migrado
+Site público,simulador,simulador,simulation-progress,Simulação / cotação,1,Não,01 Remetente Quem envia 02 Destinatário Quem recebe 03 Rota e carga Co,site/scripts/simulador-pagina-1.js,Visto no ecrã,Migrado
+Site público,simulador,simulador,simulator-heading,Simulação / cotação,1,Não,Simular envio Indique apenas os dados necessários para solicitar propo,site/scripts/simulador-pagina-1.js,Visto no ecrã,Migrado
+Site público,simulador,simulador,simulator-section-card.cargo-main-card,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,site/scripts/legal-pagina-1.js,Visto no ecrã,Migrado
+Site público,simulador,simulador,simulator-section-card.recipient-card,Simulação / cotação,1,Não,Destinatário da encomenda Dados de quem recebe a encomenda. Nome / Emp,site/scripts/legal-pagina-1.js,Visto no ecrã,Migrado
+Site público,simulador,simulador,simulator-section-card.route-card,Simulação / cotação,1,Não,"Dados da rota Origem, destino e recolha. Origem Destino Morada para re",site/scripts/legal-pagina-1.js,Visto no ecrã,Migrado
+Site público,simulador,simulador,simulator-section-card.sender-card,Simulação / cotação,1,Não,Remetente da encomenda Dados de quem envia a carga. Nome / Empresa NIF,site/scripts/legal-pagina-1.js,Visto no ecrã,Migrado
+Site público,simulador,simulador,volume-item,Simulação / cotação,1,Não,Carga / descrição Qtd. Peso (kg) Comp. (cm) Larg. (cm) Alt. (cm) Volum,site/scripts/simulador.js,Visto no ecrã,Migrado
+Site público,validar,validar,#valForm,Site / janelas,1,Não,Código de validação Validar,,Visto no ecrã,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,route-pickup-row,Acompanhamento logístico,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,tracking-input-row,Acompanhamento logístico,,,,site/scripts/inicio-pagina-1.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,tracking-section,Acompanhamento logístico,,,,site/scripts/inicio-movimento.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,providers-empty,Estado vazio,,,,site/scripts/simulador-ligacao.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,simulation-summary-status,Indicador (KPI),,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,cargo-classification-box,Encomenda / operação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,cargo-details-box,Encomenda / operação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,dn-rota-linha,Acompanhamento logístico,,,,site/scripts/inicio-movimento.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,elo-cartao,Site / janelas,,,,site/seguimento.html,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,legal-cartao,Site / janelas,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,process-card,Site / janelas,,,,site/scripts/inicio-movimento.js,Encontrado no código,Mantido de propósito
+Site público,"(só aparece com dados, numa janela ou num estado)",,process-card-copy,Site / janelas,,,,site/scripts/inicio-pagina-1.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,process-card-top,Site / janelas,,,,site/scripts/inicio-pagina-1.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,sl-cartao,Site / janelas,,,,site/scripts/simulador-ligacao.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,legal-hero,Painel (cabeçalho),,,,site/scripts/legal-pagina-1.js,Encontrado no código,Mantido de propósito
+Site público,"(só aparece com dados, numa janela ou num estado)",,service-hero-visual,Painel (cabeçalho),,,,site/scripts/inicio-pagina-1.js,Encontrado no código,Mantido de propósito
+Site público,"(só aparece com dados, numa janela ou num estado)",,prestadores-section,Prestador,,,,site/scripts/simulador-ligacao.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,contact-section,Secção de página / formulário,,,,site/scripts/inicio-movimento.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,process-section,Secção de página / formulário,,,,site/scripts/inicio-pagina-1.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,providers-section,Secção de página / formulário,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,section-card-title,Secção de página / formulário,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,section-card-title-row,Secção de página / formulário,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,services-section,Secção de página / formulário,,,,site/scripts/inicio-movimento.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,proposta-prestador-card,Simulação / cotação,,,,site/scripts/simulador.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,sim-card,Simulação / cotação,,,,site/scripts/simulador.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,simulation-summary,Simulação / cotação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,simulation-summary-grid,Simulação / cotação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,simulation-summary-header,Simulação / cotação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,simulation-summary-panel,Simulação / cotação,,,,site/scripts/simulador-pagina-1.js,Encontrado no código,Migrado
+Site público,"(só aparece com dados, numa janela ou num estado)",,simulator-hero,Simulação / cotação,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Mantido de propósito
+Site público,"(só aparece com dados, numa janela ou num estado)",,simulator-hero-inner,Simulação / cotação,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,simulator-hero-pattern,Simulação / cotação,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,simulator-hero-trust,Simulação / cotação,,,,site/scripts/legal-pagina-1.js,Encontrado no código,Sem cartão próprio
+Site público,"(só aparece com dados, numa janela ou num estado)",,volume-row-total,Simulação / cotação,,,,site/scripts/simulador.js,Encontrado no código,Sem cartão próprio
+Área de cliente,(global),Menu lateral e topo,sim-rapida,Ação rápida,1,Não,Origem Destino Simular agora,app/cliente/painel.js,Visto no ecrã,Migrado
+Área de cliente,(global),Menu lateral e topo,ca-vazio,Estado vazio,1,Não,Sem encomendas ativas Fazer uma simulação,app/cliente/painel.js,Visto no ecrã,Migrado
+Área de cliente,(global),Menu lateral e topo,pw-kpis.ck-grelha,Indicador (KPI),1,Não,Encomendas ativas 0 Em curso Em trânsito 0 A caminho Concluídas 0 Entr,app/cliente/painel.js,Visto no ecrã,Migrado
+Área de cliente,(global),Menu lateral e topo,client-next-step.cn-v2,Notificação / próximo passo,1,Não,Próximo passo Para onde vai a sua próxima carga? Diga-nos a origem e o,app/cliente/painel.js,Visto no ecrã,Migrado
+Área de cliente,(global),Menu lateral e topo,nv-proximo,Notificação / próximo passo,1,Sim,O seu próximo passo Simular um envio Preço e prazo das transportadoras,app/comum/navegacao-viva.js,Visto no ecrã,Mantido de propósito
+Área de cliente,(global),Menu lateral e topo,client-dashboard-home.pnovo,Painel (cabeçalho),1,Não,"Olá, Ana Cliente domingo, 15 de novembro de 2026 Próximo passo Para on",app/comum/pagina-1.js,Visto no ecrã,Sem cartão próprio
+Área de cliente,(global),Menu lateral e topo,pa-cartao.pw,Prestador,3,Não,Encomendas ativas o percurso de cada uma Sem encomendas ativas Fazer u,app/administracao/simulacoes.js,Visto no ecrã,Migrado
+Área de cliente,adminAccess,Funcionários e permissões,card,Contentor de página («card»),1,Não,"Funcionários e permissões Supervisão global de limites, funções, sessõ",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminActiveProviders,Prestadores ativos,card,Contentor de página («card»),1,Não,Prestadores ativos As transportadoras que trabalham na Elolog. Abra um,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminBilling,Faturação da plataforma,card,Contentor de página («card»),1,Não,Faturação da plataforma Subscrições Elolog: separadas dos pagamentos d,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminClients,Clientes,card,Contentor de página («card»),1,Não,Clientes,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminCommissions,Comissões e regras comerciais,card,Contentor de página («card»),1,Não,"As regras de comissão que o motor de preços usa (por prestador, modali",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminCompliance,Documentos e conformidade,card,Contentor de página («card»),1,Não,Documentos e conformidade,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminOperations,Supervisão de operações,card,Contentor de página («card»),1,Não,Supervisão de operações Selecione primeiro a empresa prestadora e cons,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminPlans,Planos e subscrições,card,Contentor de página («card»),1,Não,"Planos e subscrições Preços, limites, funcionalidades e contratos pers",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminProviderDocuments,Documentação dos prestadores,card,Contentor de página («card»),1,Não,Documentação dos prestadores,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminProviderRequests,Pedidos de inscrição de prestadores,card,Contentor de página («card»),1,Não,Pedidos de inscrição de prestadores,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminReports,Relatórios,admin-report-download,Ação rápida,1,Sim,"Relatório de operações Encomendas, estados, rotas e prestadores EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Migrado
+Área de cliente,adminReports,Relatórios,admin-report-download.access,Ação rápida,1,Sim,"Relatório de acessos Sessões, utilizadores e tentativas de login EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Migrado
+Área de cliente,adminReports,Relatórios,card,Contentor de página («card»),1,Não,Relatórios Descarregue os dados operacionais e de segurança da platafo,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminSecurity,Segurança e auditoria,card,Contentor de página («card»),1,Não,Segurança e auditoria,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminSettings,Configurações da plataforma,card,Contentor de página («card»),1,Não,"Configurações da plataforma Identidade, localização, processos, notifi",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminSupport,Apoio e reclamações,card,Contentor de página («card»),1,Não,"Apoio e reclamações Filas distintas para clientes e prestadores, com p",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminSuspendedProviders,Prestadores suspensos,card,Contentor de página («card»),1,Não,Prestadores suspensos,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,adminTariffs,,card.tf-pagina,Financeiro / pagamento,1,Não,,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,clientProfile,Dados do Cliente,card.client-profile-card,Cliente,1,Não,Dados do Cliente Nome / Empresa Ana Cliente NIF — Telefone — E-mail c@,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,clientProfile,Dados do Cliente,client-data-wide,Cliente,1,Não,Morada —,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,clientProfile,Dados do Cliente,div (sem classe),Secção de página / formulário,4,Não,Nome / Empresa Ana Cliente,,Visto no ecrã,Sem cartão próprio
+Área de cliente,clientSimulation,Simulação de cotação,client-optional-tool,Ação rápida,2,Não,Fotografias 0,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,clientSimulation,Simulação de cotação,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância total 0 km To,app/comum/simulacao-site.js,Visto no ecrã,Migrado
+Área de cliente,clientSimulation,Simulação de cotação,sim-total,Indicador (KPI),1,Não,Preço A aguardar proposta,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,clientSimulation,Simulação de cotação,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Preço declarado (€),app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,clientSimulation,Simulação de cotação,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,clientSimulation,Simulação de cotação,client-sim-section.destinatario-envio,Simulação / cotação,1,Não,Destinatário da encomenda Dados de quem recebe a encomenda. ETAPA 02 U,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,clientSimulation,Simulação de cotação,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 01 Origem Destino",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,clientSimulation,Simulação de cotação,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,clientSupport,Apoio Cliente,card,Contentor de página («card»),1,Não,"ATENDIMENTO Apoio Cliente Precisa de ajuda com uma encomenda, pagament",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,dashboard,0,sim-rapida,Ação rápida,1,Não,Origem Destino Simular agora,app/cliente/painel.js,Visto no ecrã,Migrado
+Área de cliente,dashboard,0,ca-vazio,Estado vazio,1,Não,Sem encomendas ativas Fazer uma simulação,app/cliente/painel.js,Visto no ecrã,Migrado
+Área de cliente,dashboard,0,pw-kpis.ck-grelha,Indicador (KPI),1,Não,Encomendas ativas 0 Em curso Em trânsito 0 A caminho Concluídas 0 Entr,app/cliente/painel.js,Visto no ecrã,Migrado
+Área de cliente,dashboard,0,client-next-step.cn-v2,Notificação / próximo passo,1,Não,Próximo passo Para onde vai a sua próxima carga? Diga-nos a origem e o,app/cliente/painel.js,Visto no ecrã,Migrado
+Área de cliente,dashboard,0,client-dashboard-home.pnovo,Painel (cabeçalho),1,Não,"Olá, Ana Cliente domingo, 15 de novembro de 2026 Próximo passo Para on",app/comum/pagina-1.js,Visto no ecrã,Sem cartão próprio
+Área de cliente,dashboard,0,pa-cartao.pw,Prestador,3,Não,Encomendas ativas o percurso de cada uma Sem encomendas ativas Fazer u,app/administracao/simulacoes.js,Visto no ecrã,Migrado
+Área de cliente,documents,Documentos,card,Contentor de página («card»),1,Não,Documentos Escolher ficheiro Enviar documento Carregue um documento e ,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,documents,Documentos,client-doc-toolbar,Documento,1,Não,Escolher ficheiro Enviar documento,app/comum/pagina-3.js,Visto no ecrã,Migrado
+Área de cliente,documents,Documentos,client-doc-empty.vz,Estado vazio,1,Não,Ainda não há documentos As faturas e os comprovativos das suas encomen,app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área de cliente,operations,Operações,card,Contentor de página («card»),1,Não,Operações + Nova operação Nenhuma operação encontrada.,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,payments,Pagamentos,card,Contentor de página («card»),1,Não,"Pagamentos Total registado 0,00 € Por pagar 0,00 € Pago 0,00 € Pagamen",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,payments,Pagamentos,client-payment-empty.vz,Estado vazio,1,Não,Nada nesta categoria Escolha outro separador para ver os restantes pag,app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área de cliente,payments,Pagamentos,client-payment-panel,Financeiro / pagamento,1,Não,Pagamentos Todos (0) Pendentes (0) Concluídos (0) Nada nesta categoria,app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área de cliente,payments,Pagamentos,client-payment-kpi,Indicador (KPI),1,Não,"Total registado 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área de cliente,payments,Pagamentos,client-payment-kpi.paid,Indicador (KPI),1,Não,"Pago 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área de cliente,payments,Pagamentos,client-payment-kpi.pending,Indicador (KPI),1,Não,"Por pagar 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área de cliente,proposals,Propostas,card,Contentor de página («card»),1,Não,Propostas Nenhuma proposta disponível.,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,providerArmazenamento,Armazenamento,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 6 de 11 Receber a carga no armazém Confira a quantidade e o esta,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerClientProfile,Perfil Cliente,provider-client-inactivity,Cliente,1,Não,Observações internas Visíveis apenas para os funcionários autorizados ,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerClientProfile,Perfil Cliente,div (sem classe),Secção de página / formulário,4,Não,Cliente Selecione um cliente na lista,,Visto no ecrã,Sem cartão próprio
+Área de cliente,providerDestino,Destino,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 9 de 11 Confirmar a chegada Confirme que a carga chegou e em que,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerDirectSimulation,Nova encomenda,provider-optional-tool,Ação rápida,2,Não,Fotografias 0,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerDirectSimulation,Nova encomenda,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância 0 km Pacotes ,app/comum/simulacao-site.js,Visto no ecrã,Migrado
+Área de cliente,providerDirectSimulation,Nova encomenda,provider-pickup-pricing-status,Indicador (KPI),1,Não,Configure os armazéns e uma tarifa financeira de recolha.,app/prestador/simulacao-direta.js,Visto no ecrã,Migrado
+Área de cliente,providerDirectSimulation,Nova encomenda,sim-total,Indicador (KPI),1,Não,"Total estimado 0,00 €",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerDirectSimulation,Nova encomenda,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Tipo de carga * Selecionar tipo de carga Mudança ,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerDirectSimulation,Nova encomenda,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerDirectSimulation,Nova encomenda,client-sim-section.destinatario-envio,Simulação / cotação,2,Não,Remetente Dados de quem envia a carga. ETAPA 01 Nome / Empresa * NIF T,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerDirectSimulation,Nova encomenda,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 03 Origem * Desti",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerDirectSimulation,Nova encomenda,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerDirectSimulation,Nova encomenda,client-volume-head,Simulação / cotação,1,Não,"Volume e dimensões Volume total: 0,000 m³ € Adicionar tarifa + Adicion",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerDirectSimulation,Nova encomenda,provider-volume-table-shell,Simulação / cotação,1,Não,Descrição da carga Tarifa Qtd. Cobrança Preço un. Peso (kg) Comp. (cm),app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerDisponivel,Disponível,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 10 de 11 Pronto para levantar Diga ao cliente ou ao destinatário,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerEmployees,Gestão de Funcionários,provider-employee-list-head,Funcionários e acessos,1,Não,Funcionário Função Estado Último acesso Ação,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerEmployees,Gestão de Funcionários,provider-login-table-head,Funcionários e acessos,1,Não,Data e hora Funcionário Função Empresa Resultado,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerEmployees,Gestão de Funcionários,div (sem classe),Secção de página / formulário,4,Não,Total 0,,Visto no ecrã,Sem cartão próprio
+Área de cliente,providerExpedicao,Expedição,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 7 de 11 Preparar a saída Escolha a viagem, indique o contentor e",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerLevantamento,Levantamento,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 11 de 11 Entregar e fechar a encomenda Registe quem levantou, re",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerOrder,Consultar e alterar encomenda,provider-order-filters,Encomenda / operação,1,Não,Data prevista N.º do projeto / encomenda Cliente Estado Todos Recolha ,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerOrder,Consultar e alterar encomenda,provider-order-list-panel,Encomenda / operação,1,Não,Lista de encomendas Selecione uma encomenda para consultar os dados e ,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerOrder,Consultar e alterar encomenda,provider-order-search,Encomenda / operação,1,Não,Pesquisar encomenda,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerOrderHistory,Histórico de encomendas,provider-history-list-head,Secção de página / formulário,1,Não,Encomenda / cliente Rota Data prevista Estado Ação,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerRecolha,Recolha,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 4 de 11 Recolher a carga no cliente Combine o dia com o cliente,",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,providerTransito,Em trânsito,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 8 de 11 Acompanhar a viagem Mantenha a previsão de chegada atual,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área de cliente,tracking,Encomendas,card,Contentor de página («card»),1,Não,Encomendas Acompanhe os envios em curso ou consulte todos os registos ,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,cr-tile,Ação rápida,,,,app/cliente/painel.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-doc-card,Documento,,,,app/cliente/documentos-pagamentos.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-extra-doc-row,Documento,,,,app/cliente/simulacao.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-active-card,Encomenda / operação,,,,app/prestador/equipa-terreno-2.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-history-row,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-card,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-details-panel,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-summary,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-summary-action,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-summary-clickable,Encomenda / operação,,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-active-empty,Estado vazio,,,,app/comum/painel-vazio.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-home-empty,Estado vazio,,,,app/comum/painel-vazio.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,perfil-vazio,Estado vazio,,,,app/cliente/perfil-servidor.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,pf-vazio,Estado vazio,,,,app/cliente/painel.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-payment-item,Financeiro / pagamento,,,,app/cliente/documentos-pagamentos.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-payment-item-actions,Financeiro / pagamento,,,,app/cliente/documentos-pagamentos.js,Encontrado no código,Sem cartão próprio
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-order-summary-item,Indicador (KPI),,,,app/cliente/apoio-acompanhamento.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,pw-kpi,Indicador (KPI),,,,app/cliente/painel.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,ca-linha,Encomenda / operação,,,,app/cliente/painel.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-danger-box,Cliente,,,,app/comum/pagina-5.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-home-card,Acompanhamento logístico,,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-home-result-card,Acompanhamento logístico,,,,app/prestador/equipa-terreno-2.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-metric-card,Acompanhamento logístico,,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-modal-card,Site / janelas,,,,app/comum/pagina-5.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,pw-linha,Encomenda / operação,,,,app/cliente/painel.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-dashboard-section,Secção de página / formulário,,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-dashboard-section-head,Secção de página / formulário,,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-history-section,Secção de página / formulário,,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-search-row,Secção de página / formulário,,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-section-note,Secção de página / formulário,,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-sim-card,Simulação / cotação,,,,app/cliente/criar-encomenda.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-sim-summary,Simulação / cotação,,,,app/cliente/criar-encomenda.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-simulation-summary,Simulação / cotação,,,,app/comum/pagina-2.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-simulation-summary-grid,Simulação / cotação,,,,app/comum/pagina-2.js,Encontrado no código,Sem cartão próprio
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-simulation-summary-head,Simulação / cotação,,,,app/comum/pagina-2.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,client-simulation-summary-note,Simulação / cotação,,,,app/comum/pagina-3.js,Encontrado no código,Migrado
+Área de cliente,"(só aparece com dados, numa janela ou num estado)",,simulator-card,Simulação / cotação,,,,app/cliente/simulacao.js,Encontrado no código,Migrado
+Área do prestador,(global),Menu lateral e topo,sim-rapida,Ação rápida,1,Não,Origem Destino Criar encomenda,app/cliente/painel.js,Visto no ecrã,Migrado
+Área do prestador,(global),Menu lateral e topo,ca-vazio,Estado vazio,1,Não,Sem encomendas em curso Criar encomenda,app/cliente/painel.js,Visto no ecrã,Migrado
+Área do prestador,(global),Menu lateral e topo,pw-kpis.ck-grelha,Indicador (KPI),1,Não,Novos pedidos 0 Aguardam proposta Por aprovar 0 Confirmar e encaminhar,app/cliente/painel.js,Visto no ecrã,Migrado
+Área do prestador,(global),Menu lateral e topo,client-next-step.cn-v2,Notificação / próximo passo,1,Não,Próximo passo Tudo em dia. Qual é a próxima carga? Indique a origem e ,app/cliente/painel.js,Visto no ecrã,Migrado
+Área do prestador,(global),Menu lateral e topo,pa-cartao.pw,Prestador,6,Não,Encomendas em curso as que precisam de atenção primeiro Sem encomendas,app/administracao/simulacoes.js,Visto no ecrã,Migrado
+Área do prestador,(global),Menu lateral e topo,topbar,Secção de página / formulário,1,Não,Início PT 0,app/cliente/criar-encomenda.js,Visto no ecrã,Sem cartão próprio
+Área do prestador,adminAccess,Funcionários e permissões,card,Contentor de página («card»),1,Não,"Funcionários e permissões Supervisão global de limites, funções, sessõ",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminActiveProviders,Prestadores ativos,card,Contentor de página («card»),1,Não,Prestadores ativos As transportadoras que trabalham na Elolog. Abra um,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminBilling,Faturação da plataforma,card,Contentor de página («card»),1,Não,Faturação da plataforma Subscrições Elolog: separadas dos pagamentos d,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminClients,Clientes,card,Contentor de página («card»),1,Não,Clientes,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminCommissions,Comissões e regras comerciais,card,Contentor de página («card»),1,Não,"As regras de comissão que o motor de preços usa (por prestador, modali",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminCompliance,Documentos e conformidade,card,Contentor de página («card»),1,Não,Documentos e conformidade,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminOperations,Supervisão de operações,card,Contentor de página («card»),1,Não,Supervisão de operações Selecione primeiro a empresa prestadora e cons,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminPlans,Planos e subscrições,card,Contentor de página («card»),1,Não,"Planos e subscrições Preços, limites, funcionalidades e contratos pers",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminProviderDocuments,Documentação dos prestadores,card,Contentor de página («card»),1,Não,Documentação dos prestadores,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminProviderRequests,Pedidos de inscrição de prestadores,card,Contentor de página («card»),1,Não,Pedidos de inscrição de prestadores,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminReports,Relatórios,admin-report-download,Ação rápida,1,Sim,"Relatório de operações Encomendas, estados, rotas e prestadores EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Migrado
+Área do prestador,adminReports,Relatórios,admin-report-download.access,Ação rápida,1,Sim,"Relatório de acessos Sessões, utilizadores e tentativas de login EXCEL",app/prestador/simulacao-direta.js,Visto no ecrã,Migrado
+Área do prestador,adminReports,Relatórios,card,Contentor de página («card»),1,Não,Relatórios Descarregue os dados operacionais e de segurança da platafo,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminSecurity,Segurança e auditoria,card,Contentor de página («card»),1,Não,Segurança e auditoria,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminSettings,Configurações da plataforma,card,Contentor de página («card»),1,Não,"Configurações da plataforma Identidade, localização, processos, notifi",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminSupport,Apoio e reclamações,card,Contentor de página («card»),1,Não,"Apoio e reclamações Filas distintas para clientes e prestadores, com p",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminSuspendedProviders,Prestadores suspensos,card,Contentor de página («card»),1,Não,Prestadores suspensos,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,adminTariffs,,card.tf-pagina,Financeiro / pagamento,1,Não,,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,clientProfile,Dados do Cliente,card.client-profile-card,Cliente,1,Não,Dados do Cliente Nome / Empresa Ana Cliente NIF — Telefone — E-mail c@,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,clientProfile,Dados do Cliente,client-data-wide,Cliente,1,Não,Morada —,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,clientProfile,Dados do Cliente,div (sem classe),Secção de página / formulário,4,Não,Nome / Empresa Ana Cliente,,Visto no ecrã,Sem cartão próprio
+Área do prestador,clientSimulation,Simulação de cotação,client-optional-tool,Ação rápida,2,Não,Fotografias 0,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,clientSimulation,Simulação de cotação,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância total 0 km To,app/comum/simulacao-site.js,Visto no ecrã,Migrado
+Área do prestador,clientSimulation,Simulação de cotação,sim-total,Indicador (KPI),1,Não,Preço A aguardar proposta,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,clientSimulation,Simulação de cotação,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Preço declarado (€),app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,clientSimulation,Simulação de cotação,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,clientSimulation,Simulação de cotação,client-sim-section.destinatario-envio,Simulação / cotação,1,Não,Destinatário da encomenda Dados de quem recebe a encomenda. ETAPA 02 U,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,clientSimulation,Simulação de cotação,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 01 Origem Destino",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,clientSimulation,Simulação de cotação,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,clientSupport,Apoio Cliente,card,Contentor de página («card»),1,Não,"ATENDIMENTO Apoio Cliente Precisa de ajuda com uma encomenda, pagament",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,dashboard,0,sim-rapida,Ação rápida,1,Não,Origem Destino Criar encomenda,app/cliente/painel.js,Visto no ecrã,Migrado
+Área do prestador,dashboard,0,ca-vazio,Estado vazio,1,Não,Sem encomendas em curso Criar encomenda,app/cliente/painel.js,Visto no ecrã,Migrado
+Área do prestador,dashboard,0,pw-kpis.ck-grelha,Indicador (KPI),1,Não,Novos pedidos 0 Aguardam proposta Por aprovar 0 Confirmar e encaminhar,app/cliente/painel.js,Visto no ecrã,Migrado
+Área do prestador,dashboard,0,client-next-step.cn-v2,Notificação / próximo passo,1,Não,Próximo passo Tudo em dia. Qual é a próxima carga? Indique a origem e ,app/cliente/painel.js,Visto no ecrã,Migrado
+Área do prestador,dashboard,0,pa-cartao.pw,Prestador,6,Não,Encomendas em curso as que precisam de atenção primeiro Sem encomendas,app/administracao/simulacoes.js,Visto no ecrã,Migrado
+Área do prestador,documents,Documentos,card,Contentor de página («card»),1,Não,Documentos Escolher ficheiro Enviar documento Carregue um documento e ,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,documents,Documentos,client-doc-toolbar,Documento,1,Não,Escolher ficheiro Enviar documento,app/comum/pagina-3.js,Visto no ecrã,Migrado
+Área do prestador,documents,Documentos,client-doc-empty.vz,Estado vazio,1,Não,Ainda não há documentos As faturas e os comprovativos das suas encomen,app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área do prestador,operations,Operações,card,Contentor de página («card»),1,Não,Operações + Nova operação Nenhuma operação encontrada.,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,payments,Pagamentos,card,Contentor de página («card»),1,Não,"Pagamentos Total registado 0,00 € Por pagar 0,00 € Pago 0,00 € Pagamen",app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,payments,Pagamentos,client-payment-empty.vz,Estado vazio,1,Não,Nada nesta categoria Escolha outro separador para ver os restantes pag,app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área do prestador,payments,Pagamentos,client-payment-panel,Financeiro / pagamento,1,Não,Pagamentos Todos (0) Pendentes (0) Concluídos (0) Nada nesta categoria,app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área do prestador,payments,Pagamentos,client-payment-kpi,Indicador (KPI),1,Não,"Total registado 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área do prestador,payments,Pagamentos,client-payment-kpi.paid,Indicador (KPI),1,Não,"Pago 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área do prestador,payments,Pagamentos,client-payment-kpi.pending,Indicador (KPI),1,Não,"Por pagar 0,00 €",app/cliente/documentos-pagamentos.js,Visto no ecrã,Migrado
+Área do prestador,proposals,Propostas,card,Contentor de página («card»),1,Não,Propostas Nenhuma proposta disponível.,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerAprovacao,Aprovação,provider-order-empty.vz,Estado vazio,1,Não,Não há pedidos à espera da sua aprovação Quando um cliente escolher a ,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerArmazenamento,Armazenamento,provider-order-empty.vz,Estado vazio,1,Não,O armazém está à espera da próxima carga Cada carga aparece aqui assim,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerArmazenamento,Armazenamento,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 6 de 11 Receber a carga no armazém Confira a quantidade e o esta,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerAutomation,O que a Elolog faz por si,automation-log,Configuração,1,Não,"Atividade recente O que a Elolog tratou por si, do mais recente para o",app/prestador/automacao.js,Visto no ecrã,Migrado
+Área do prestador,providerAutomation,O que a Elolog faz por si,automation-rule.on,Configuração,9,Não,Registar o que se recebe no terreno Quando o operador recebe um pagame,app/prestador/automacao.js,Visto no ecrã,Migrado
+Área do prestador,providerAutomation,O que a Elolog faz por si,automation-empty.vz,Estado vazio,1,Não,Ainda não houve nada para tratar Quando uma regra fizer alguma coisa p,app/comum/painel-vazio.js,Visto no ecrã,Migrado
+Área do prestador,providerAutomation,O que a Elolog faz por si,article (sem classe),Secção de página / formulário,3,Não,Feito por si hoje 0 tarefas tratadas sem intervenção,,Visto no ecrã,Sem cartão próprio
+Área do prestador,providerClientList,Lista de clientes,provider-order-empty.vz,Estado vazio,1,Não,Ainda sem clientes próprios Os clientes que trabalharem só com esta em,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerClientProfile,Perfil Cliente,provider-client-inactivity,Cliente,1,Não,Observações internas Visíveis apenas para os funcionários autorizados ,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerClientProfile,Perfil Cliente,div (sem classe),Secção de página / formulário,4,Não,Cliente Selecione um cliente na lista,,Visto no ecrã,Sem cartão próprio
+Área do prestador,providerComplaints,Reclamações,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma reclamação aqui Escolha outra categoria para ver as restantes.,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerComplaints,Reclamações,div (sem classe),Secção de página / formulário,4,Não,Total 0,,Visto no ecrã,Sem cartão próprio
+Área do prestador,providerCotacao,Cotação / Propostas,provider-order-empty.vz,Estado vazio,1,Não,Ainda não chegou nenhuma simulação Quando um cliente pedir preço para ,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerDestino,Destino,provider-order-empty.vz,Estado vazio,1,Não,"Nada a chegar neste momento Quando um navio chegar com carga sua, conf",app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerDestino,Destino,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 9 de 11 Confirmar a chegada Confirme que a carga chegou e em que,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,provider-optional-tool,Ação rápida,2,Não,Fotografias 0 fotos,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,client-sim-results.ss-resumo,Indicador (KPI),1,Não,Resumo da simulação Muda à medida que preenche Distância 0 km Pacotes ,app/comum/simulacao-site.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,provider-pickup-pricing-status.is-warning,Indicador (KPI),1,Não,Adicione pelo menos um armazém nas Configurações. Sem tarifa de recolh,app/prestador/simulacao-direta.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,sim-total,Indicador (KPI),1,Não,"Total estimado 0,00 €",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,client-cargo-information,Secção de página / formulário,1,Não,Informações da carga Tipo de carga * Selecionar tipo de carga Mudança ,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,client-cargo-observations.form-group,Secção de página / formulário,1,Não,Observações,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,client-sim-section.destinatario-envio,Simulação / cotação,2,Não,Remetente Dados de quem envia a carga. ETAPA 01 Nome / Empresa * NIF T,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,client-sim-section.sim-route-section,Simulação / cotação,1,Não,"Dados da rota Origem, destino, data e recolha. ETAPA 03 Origem * Desti",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,client-sim-section.sim-volumes-section,Simulação / cotação,1,Não,Volumes / carga Registe cada carga. O volume é calculado por Comprimen,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,client-volume-head,Simulação / cotação,1,Não,"Volume e dimensões Volume total: 0,000 m³ € Adicionar tarifa + Adicion",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,provider-volume-table-shell,Simulação / cotação,1,Não,Descrição da carga Tarifa Qtd. Cobrança Preço un. Peso (kg) Comp. (cm),app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerDirectSimulation,Nova encomenda,sim-volume-row,Simulação / cotação,1,Não,"Sem tarifa: preço à mão Por unidade Por volume Por peso Preço fixo 0,0",app/administracao/paginas.js,Visto no ecrã,Migrado
+Área do prestador,providerDisponivel,Disponível,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma encomenda à espera de levantamento Depois de confirmar a chega,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerDisponivel,Disponível,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 10 de 11 Pronto para levantar Diga ao cliente ou ao destinatário,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerDocumentos,Documentos,provider-declarations-section,Documento,1,Não,"Todas as encomendas Edite os pesos, volumes, valor a declarar e país d",app/prestador/manifestos.js,Visto no ecrã,Migrado
+Área do prestador,providerDocumentos,Documentos,provider-declarations-section.provider-process-register,Documento,1,Não,Simulações e encomendas A encomenda aparece acima da simulação que lhe,app/prestador/manifestos.js,Visto no ecrã,Migrado
+Área do prestador,providerDocumentos,Documentos,provider-doc-upload,Documento,1,Não,Selecionar encomenda/cliente ＋ Escolher documento Enviar ao perfil do ,app/prestador/manifestos.js,Visto no ecrã,Migrado
+Área do prestador,providerDocumentos,Documentos,provider-other-documents,Documento,1,Não,Documentos do processo Selecionar encomenda/cliente ＋ Escolher documen,app/prestador/manifestos.js,Visto no ecrã,Migrado
+Área do prestador,providerDocumentos,Documentos,provider-order-empty,Estado vazio,3,Não,▤ Nenhum registo nesta secção Ainda não existem registos.,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerDocumentos,Documentos,article (sem classe),Secção de página / formulário,4,Não,S Simulações 0 Registos de cálculo preservados,,Visto no ecrã,Sem cartão próprio
+Área do prestador,providerEmployees,Gestão de Funcionários,employee-empty.vz,Estado vazio,2,Não,Ainda não há ninguém na equipa Crie o primeiro acesso: cada pessoa ent,app/comum/painel-vazio.js,Visto no ecrã,Migrado
+Área do prestador,providerEmployees,Gestão de Funcionários,provider-employee-list-head,Funcionários e acessos,1,Não,Funcionário Função Estado Último acesso Ação,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerEmployees,Gestão de Funcionários,provider-login-table-head,Funcionários e acessos,1,Não,Data e hora Funcionário Função Empresa Resultado,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerEmployees,Gestão de Funcionários,div (sem classe),Secção de página / formulário,4,Não,Total 0,,Visto no ecrã,Sem cartão próprio
+Área do prestador,providerExpedicao,Expedição,expedition-manifest-toolbar,Documento,1,Não,Preparar manifesto Selecione cargas da mesma rota. Criar manifesto com,app/prestador/manifestos.js,Visto no ecrã,Migrado
+Área do prestador,providerExpedicao,Expedição,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma carga pronta para manifesto Só entram cargas já registadas no ,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerExpedicao,Expedição,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 7 de 11 Preparar a saída Escolha a viagem, indique o contentor e",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerFieldTeam,Painel,field-board-panel,Acompanhamento logístico,1,Não,Agenda de hoje Próximos serviços Ver planeamento Nada agendado para ho,app/prestador/equipa-terreno-1.js,Visto no ecrã,Migrado
+Área do prestador,providerFieldTeam,Painel,field-dashboard-hero,Acompanhamento logístico,1,Não,"Centro de operações Serviços de hoje no terreno. domingo, 15 de novemb",app/prestador/equipa-terreno-1.js,Visto no ecrã,Migrado
+Área do prestador,providerFieldTeam,Painel,button (sem classe),Secção de página / formulário,3,Sim,Agendar entrega Definir equipa e horário,,Visto no ecrã,Sem cartão próprio
+Área do prestador,providerFieldTeam,Painel,primary,Secção de página / formulário,1,Sim,Agendar recolha Criar e atribuir serviço,app/cliente/encomenda-direta.js,Visto no ecrã,Sem cartão próprio
+Área do prestador,providerFieldTeam,Painel,section (sem classe),Secção de página / formulário,2,Não,Fila operacional Sem atribuição 0 Todos os serviços têm responsável Ni,,Visto no ecrã,Sem cartão próprio
+Área do prestador,providerFinanceiro,Financeiro,finance-empty.vz,Estado vazio,1,Não,"Ainda não há nada registado aqui Assim que criar o primeiro registo, e",app/comum/painel-vazio.js,Visto no ecrã,Migrado
+Área do prestador,providerLevantamento,Levantamento,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma entrega por fechar As encomendas prontas a levantar aparecem a,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerLevantamento,Levantamento,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 11 de 11 Entregar e fechar a encomenda Registe quem levantou, re",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerManifestos,Manifestos de carga,provider-order-empty.vz,Estado vazio,1,Não,"Nenhum manifesto com estes dados Limpe a pesquisa ou a data, ou crie o",app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerManifestos,Manifestos de carga,manifest-kpi,Indicador (KPI),5,Não,Rascunho 0,app/prestador/manifestos.js,Visto no ecrã,Migrado
+Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-calendar,Acompanhamento logístico,1,Não,SEG TER QUA QUI SEX SÁB DOM 26 27 28 29 30 31 1 2 3 4 5 6 7 8 9 10 11 ,app/prestador/calendario-maritimo.js,Visto no ecrã,Migrado
+Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-day,Acompanhamento logístico,29,Não,1,app/prestador/calendario-maritimo.js,Visto no ecrã,Migrado
+Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-day.outside,Acompanhamento logístico,12,Não,26,app/prestador/calendario-maritimo.js,Visto no ecrã,Migrado
+Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-day.today,Acompanhamento logístico,1,Não,15,app/prestador/calendario-maritimo.js,Visto no ecrã,Migrado
+Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-list,Acompanhamento logístico,1,Não,Programação Próximas viagens 0 registo(s) Ainda não há viagens planead,app/prestador/calendario-maritimo.js,Visto no ecrã,Migrado
+Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,maritime-toolbar,Acompanhamento logístico,1,Não,‹ Novembro De 2026 › Hoje Todos os estados Planeada Confirmada Em viag,app/prestador/calendario-maritimo.js,Visto no ecrã,Migrado
+Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,provider-order-empty.vz,Estado vazio,1,Não,Ainda não há viagens planeadas Agende a próxima saída para ligar as ca,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,arrival,Acompanhamento logístico,1,Não,Chegadas previstas 0 Em acompanhamento,app/prestador/automacao.js,Visto no ecrã,Migrado
+Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,delay,Acompanhamento logístico,1,Não,Atrasos 0 Exigem atualização,app/cliente/painel.js,Visto no ecrã,Migrado
+Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,departure,Acompanhamento logístico,1,Não,Saídas previstas 0 0 neste mês,app/prestador/automacao.js,Visto no ecrã,Migrado
+Área do prestador,providerMaritimeCalendar,Calendário de saídas e chegadas,next,Secção de página / formulário,1,Não,Próximo barco Não agendado Crie a próxima viagem,app/cliente/sincronizar.js,Visto no ecrã,Sem cartão próprio
+Área do prestador,providerOrder,Consultar e alterar encomenda,provider-order-filters,Encomenda / operação,1,Não,Data prevista N.º do projeto / encomenda Cliente Estado Todos Recolha ,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerOrder,Consultar e alterar encomenda,provider-order-list-panel,Encomenda / operação,1,Não,Lista de encomendas Selecione uma encomenda para consultar os dados e ,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerOrder,Consultar e alterar encomenda,provider-order-search,Encomenda / operação,1,Não,Pesquisar encomenda,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerOrder,Consultar e alterar encomenda,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma encomenda com estes filtros Limpe a pesquisa ou escolha outro ,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerOrderHistory,Histórico de encomendas,provider-order-empty.vz,Estado vazio,1,Não,Nada nesta categoria Escolha outra categoria ou volte a «Todas» para v,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerOrderHistory,Histórico de encomendas,provider-history-summary,Indicador (KPI),1,Não,Total de encomendas 0 Encomendas ativas 0 Entregues / levantadas 0 Out,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerOrderHistory,Histórico de encomendas,provider-history-list,Encomenda / operação,1,Não,Nada nesta categoria Escolha outra categoria ou volte a «Todas» para v,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerOrderHistory,Histórico de encomendas,provider-history-list-head,Secção de página / formulário,1,Não,Encomenda / cliente Rota Data prevista Estado Ação,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerPagamento,Pagamento,provider-order-empty.vz,Estado vazio,1,Não,Nada nesta categoria Escolha outro separador para ver os restantes pag,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerRecolha,Recolha,provider-order-empty.vz,Estado vazio,1,Não,"Não há recolhas por fazer Quando aprovar um pedido com recolha, ele ap",app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerRecolha,Recolha,provider-status-card.et-cartao,Indicador (KPI),1,Não,"Etapa 4 de 11 Recolher a carga no cliente Combine o dia com o cliente,",app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,providerReports,Relatórios,provider-report-kpis,Indicador (KPI),1,Não,"Total de encomendas 0 Encomendas ativas 0 Peso transportado 0,0 kg Vol",app/prestador/simulacao-direta.js,Visto no ecrã,Migrado
+Área do prestador,providerSettings,Configurações,provider-warehouse-row,Acompanhamento logístico,1,Não,Nome do armazém Morada completa Validar morada Apagar Escreva a morada,app/prestador/armazens-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerSupport,Pedidos e reclamações,provider-order-empty.vz,Estado vazio,1,Não,Ninguém precisa de ajuda agora Quando um cliente ou prestador pedir ap,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerTransito,Em trânsito,provider-order-empty.vz,Estado vazio,1,Não,Nenhuma carga em viagem As cargas que expedir aparecem aqui até chegar,app/administracao/clientes-servidor.js,Visto no ecrã,Migrado
+Área do prestador,providerTransito,Em trânsito,provider-status-card.et-cartao,Indicador (KPI),1,Não,Etapa 8 de 11 Acompanhar a viagem Mantenha a previsão de chegada atual,app/comum/pagina-2.js,Visto no ecrã,Migrado
+Área do prestador,tracking,Encomendas,card,Contentor de página («card»),1,Não,Encomendas Acompanhe os envios em curso ou consulte todos os registos ,app/cliente/servidor.js,Visto no ecrã,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,expedition-select-row,Acompanhamento logístico,,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-board-item,Acompanhamento logístico,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-job-row,Acompanhamento logístico,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-service-card,Acompanhamento logístico,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-service-panel,Acompanhamento logístico,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-task-card,Acompanhamento logístico,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-team-card,Acompanhamento logístico,,,,app/comum/pagina-2.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,maritime-summary,Acompanhamento logístico,,,,app/prestador/calendario-maritimo.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,maritime-voyage-row,Acompanhamento logístico,,,,app/prestador/calendario-maritimo.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-support-hero,Apoio / reclamação,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-complaint-row,Apoio / reclamação,,,,app/prestador/simulacao-direta.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-complaint-summary,Apoio / reclamação,,,,app/comum/pagina-2.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-complaints-card,Apoio / reclamação,,,,app/comum/pagina-2.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,ac-cartao,Cliente,,,,app/prestador/auditoria-concluidos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,manifest-card,Documento,,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,manifest-card-top,Documento,,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,manifest-editor-section,Documento,,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-document-declaration-card,Documento,,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,oe-linha-fecho,Encomenda / operação,,,,app/prestador/estado-encomenda.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-history-row,Encomenda / operação,,,,app/prestador/encomendas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-order-result-card,Encomenda / operação,,,,app/prestador/encomendas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-recent-panel,Encomenda / operação,,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-recent-row,Encomenda / operação,,,,app/prestador/propostas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-work-card,Encomenda / operação,,,,app/comum/ficha-operacao.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-board-empty,Estado vazio,,,,app/comum/painel-vazio.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-dashboard-empty,Estado vazio,,,,app/prestador/propostas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-empty-icon,Estado vazio,,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-cash-summary,Financeiro / pagamento,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-payment-row,Financeiro / pagamento,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-payment-section,Financeiro / pagamento,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,finance-audit-row,Financeiro / pagamento,,,,app/prestador/financeiro.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,finance-payment-summary,Financeiro / pagamento,,,,app/prestador/financeiro.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,finance-section-head,Financeiro / pagamento,,,,app/prestador/financeiro.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,financial-tariff-row,Financeiro / pagamento,,,,app/prestador/busca-tarifas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-payment-card,Financeiro / pagamento,,,,app/prestador/encomendas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-payment-summary,Financeiro / pagamento,,,,app/prestador/encomendas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,employee-row-actions,Funcionários e acessos,,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Sem cartão próprio
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-employee-row,Funcionários e acessos,,,,app/comum/acesso-por-funcao.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-employee-summary,Funcionários e acessos,,,,app/comum/pagina-2.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-employees-card,Funcionários e acessos,,,,app/comum/pagina-2.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-login-row,Funcionários e acessos,,,,app/prestador/acessos-servidor.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,field-kpi,Indicador (KPI),,,,app/prestador/equipa-terreno-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,finance-kpi,Indicador (KPI),,,,app/prestador/financeiro.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-doc-kpi-icon,Indicador (KPI),,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-hero-summary,Indicador (KPI),,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-kpi,Indicador (KPI),,,,app/prestador/propostas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-kpi-icon,Indicador (KPI),,,,app/prestador/propostas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-report-kpi,Indicador (KPI),,,,app/prestador/simulacao-direta.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-report-kpi-icon,Indicador (KPI),,,,app/prestador/simulacao-direta.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,cargo-editor-card,Encomenda / operação,,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,cargo-editor-summary,Encomenda / operação,,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,cargo-item-editor,Encomenda / operação,,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,cargo-signature-card,Encomenda / operação,,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,inline-block,Secção de página / formulário,,,,app/prestador/manifestos.js,Encontrado no código,Sem cartão próprio
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,pdv-row-value,Secção de página / formulário,,,,app/prestador/simulacao-direta.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-card,Prestador,,,,site/scripts/simulador.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-card-unavailable,Prestador,,,,site/scripts/simulador.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-history-card,Encomenda / operação,,,,app/comum/pagina-2.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-map-card,Prestador,,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-rail-card,Prestador,,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-reports-card,Prestador,,,,app/comum/pagina-2.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-dashboard-hero,Painel (cabeçalho),,,,app/comum/pagina-1.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-hero-copy,Painel (cabeçalho),,,,app/comum/pagina-1.js,Encontrado no código,Sem cartão próprio
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-hero-side,Painel (cabeçalho),,,,app/comum/pagina-1.js,Encontrado no código,Sem cartão próprio
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,cargo-list-panel,Secção de página / formulário,,,,app/prestador/manifestos.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-panel-grid,Secção de página / formulário,,,,app/administracao/paginas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-report-section-head,Secção de página / formulário,,,,app/prestador/simulacao-direta.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,provider-section-top,Secção de página / formulário,,,,app/comum/pagina-2.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,pdv-row-volume,Simulação / cotação,,,,app/prestador/simulacao-direta.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,proposal-analysis-section,Simulação / cotação,,,,app/prestador/propostas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,proposal-analysis-summary,Simulação / cotação,,,,app/prestador/propostas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,proposal-file-box,Simulação / cotação,,,,app/prestador/propostas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,proposal-party-card,Simulação / cotação,,,,app/prestador/propostas.js,Encontrado no código,Migrado
+Área do prestador,"(só aparece com dados, numa janela ou num estado)",,proposal-volume-row,Simulação / cotação,,,,app/prestador/propostas.js,Encontrado no código,Migrado

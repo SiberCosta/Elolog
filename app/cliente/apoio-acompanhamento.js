@@ -36,8 +36,8 @@ index)=>`
                             <strong>${o.status||"Recebido"}</strong>
                         </div>
                         <div class="client-order-summary-item">
-                            <small>Data prevista</small>
-                            <strong>${o.date||"—"}</strong>
+                            <small>Chegada prevista</small>
+                            <strong>${(()=>{const c=window.elologPrevisao?.chegada?.(o);return c?.data?window.elologPrevisao.dia(c.data):"A confirmar"})()}</strong>
                         </div>
                         <div class="client-order-summary-action">
                             <button type="button" class="client-order-toggle" onclick="event.stopPropagation(); toggleClientOrderDetails(this.closest('.client-order-card'))">Ver estado do pedido</button>

@@ -1,4 +1,6 @@
-# Inventário dos cartões (v148, 15/11/2026)
+# Inventário dos cartões (v148, 15/11/2026; estado atualizado em v150)
+
+Estado em v151: fases 1 e 2 concluídas (prestador, operador de terreno, cliente e site público). 396 «Migrado», 43 «Sem cartão próprio» (estruturas sem cartão, cobertas pelo contentor), 5 «Mantido de propósito» (capas com fotografia, linha temporal do início e «O seu próximo passo» no menu lateral). Faltam administração e janelas comuns: 205 «Por migrar».
 
 Base do redesign global dos cartões. «100%» = todos os componentes desta lista, em toda a plataforma.
 

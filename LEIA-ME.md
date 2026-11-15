@@ -1,6 +1,6 @@
 # Elolog
 
-**Versão de 11/11/2026 (v127).** Se esta pasta tem este ficheiro, é a versão nova.
+**Versão de 15/11/2026 (v149).** Se esta pasta tem este ficheiro, é a versão nova.
 
 Plataforma de intermediação logística: clientes simulam e comparam propostas; transitárias gerem encomendas, equipa e cobranças; a administração Elolog valida e acompanha a rede.
 
@@ -57,6 +57,101 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Código de confirmação ao ligar uma caixa:** ao ligar uma caixa nova (ou mudar o endereço), a plataforma envia um código de 6 dígitos para essa caixa e só guarda depois de o escrever (válido 10 minutos, máx. 8 tentativas por 10 min).
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
+
+## v151 (redesign dos cartões: fase 2, área de cliente e site público)
+- Área de cliente: as partes 1 a 3 passam a valer também para `body.modo-cliente`; novo `componentes-4.css` (encomendas, pagamentos, documentos, histórico, janelas, vazios). O painel do cliente (`#cdash`) usa o mesmo sistema do painel do prestador e os ícones Lucide.
+- «Ver estado do pedido» passou a botão de contorno. A lista de encomendas do cliente mostra a «Chegada prevista» do calendário marítimo («A confirmar» enquanto não há viagem), em vez da data de recolha.
+- Títulos «Apoio ao cliente» e «Perfil» no topo (estavam vazios); rótulos dos indicadores do painel já não são cortados.
+- Site público: novo `partilhado/estilos/cartoes/site.css` (com `base.css`) em início, simulador, seguimento, validar e legal. As capas com fotografia e a linha temporal «Como corre um envio» ficam como estão.
+- Simulador público: volume e peso com vírgula decimal (0,000 m³, 0,0 kg).
+
+## v150 (redesign dos cartões: fase 1, prestador e operador de terreno)
+- Novos `componentes-1.css`, `componentes-2.css` e `componentes-3.css` em `partilhado/estilos/cartoes/`: contentor de página, registos (encomendas, pagamentos, funcionários, serviços, manifestos, viagens), painéis interiores, indicadores, estados vazios, pílulas, tabelas e o que só aparece com dados ou em janelas. Âmbito: `body.provider-user-mode` (prestador e operador de terreno). Sem mudar HTML nem cores de estado.
+- Telemóvel: tabelas de pagamentos já não cortam os valores; indicadores do terreno em 2 colunas; barra «Preparar manifesto» e filtros de «Atualizar estados» numa coluna; registos das etapas com margem.
+- Operador de terreno: título do cartão «Serviços de hoje no terreno» voltou a ser visível (estava da cor do fundo).
+- Título da página já não junta o contador do menu (ex.: «Aprovar pedidos1») (`partilhado/scripts/componentes.js`).
+- Inventário: linhas do prestador e do operador de terreno marcadas como «Migrado» ou «Sem cartão próprio» (elementos sem classe, cobertos pelo contentor).
+
+## v149 (redesign dos cartões: sistema global e página-modelo)
+- Sistema de cartões em `partilhado/estilos/cartoes/`: `base.css` (raio, bordas, sombras, espaçamentos, tipografia, interação, movimento reduzido), `indicadores.css` (KPI), `listas.css` (linhas, ações rápidas, alertas, vazios), `tabelas.css` (tabelas em cartões; no telemóvel, blocos com rótulos) e `painel-prestador.css` (página-modelo). Carregam no fim e não mudam classes nem HTML.
+- `partilhado/scripts/cartoes.js`: cartões clicáveis funcionam pelo teclado; realce curto quando um indicador muda de valor.
+- Ícones Lucide (licença ISC) em `partilhado/estilos/icones.css`, com os mesmos nomes de antes, mais plus, chevron, inbox, x, trash, pencil, download, circle-check, phone e mail. Painel do prestador com ícones Lucide.
+- Painel do prestador: a data das encomendas em curso passa a ser a chegada prevista (ou o dia da recolha, se ainda não há viagem). Corrigido o Fluxo que mostrava «Simulação» numa encomenda em «Armazém».
+- Inventário dos cartões: `documentacao/INVENTARIO_CARTOES.md` e `.csv`; ferramenta `ferramentas/inventario-cartoes.cjs`.
+
+## v148 (testes reais: última fase)
+- Prestador: notas internas do cliente em `cliente_notas` (só clientes com conta); pedido de informação ao cliente como pedido de apoio que o cliente vê e responde; pagamentos e pré-pagamentos no terreno em `pagamentos` («numerário no terreno»: pago se registado pelo escritório, pendente se pelo operador) (`app/prestador/extras-servidor.js`).
+- Automação: com servidor, só corre no servidor; o motor local não executa regras (evita serviços e lembretes repetidos) (`app/prestador/automacao.js`).
+- Administração: planos, regras de conformidade, faturas e notas de crédito da plataforma gravam no servidor e as listas leem do servidor (`app/administracao/extras-servidor.js`).
+- Simulador público: o site não lê preços (o público não acede ao servidor); no fim leva o visitante à área de cliente com a simulação já preenchida, para ver os preços reais (`site/scripts/simulador-ligacao.js`, `app/cliente/simulacao-site.js`). A chave de passagem não começa por «elolog» para não ser apagada na primeira visita.
+- Ações que, por regra, não existem no servidor dizem o que fazer em vez disso: apagar pagamentos e histórico (usar reembolso ou cancelar), propostas antigas (responder a partir do pedido do cliente), definições fixas da plataforma, apagar prestador (suspender), palavra-passe do prestador (recuperar acesso) (`app/comum/so-servidor.js`).
+
+## v147 (testes reais: fases 2 a 4)
+- Manifestos de carga no servidor (`manifestos` + `manifesto_encomendas`; contentor, selo, viatura, notas, anexos e registo na nova coluna `detalhes`, migração 00193, só acrescenta). Só o administrador da empresa confirma ou anula; manifesto confirmado não muda (nova versão). As encomendas ficam marcadas com o manifesto em todos os aparelhos (`app/prestador/manifestos-servidor.js`).
+- Declarações de carga (com assinatura do declarante) guardadas com as declarações da encomenda (`declaracoes_gravar`/`declaracoes_ler`), lidas ao abrir a encomenda.
+- Reembolsos: linha «reembolso» em `pagamentos`, com motivo, valor até ao que foi pago. Faturas e comprovativos dos pagamentos: documentos no servidor visíveis ao cliente (`app/prestador/pagamentos-servidor.js`).
+- Apoio e reclamações em `tickets` com conversa em `ticket_mensagens`: cliente (com «Os meus pedidos»), prestador (apoio, reclamações, estado, escalar) e administração (todos) (`app/comum/apoio-servidor.js`). A reclamação do cliente ligada a uma encomenda chega à empresa dessa encomenda.
+- Continuam desativados em sessão real (próxima fase): notas internas e pedidos de informação do prestador, propostas locais, pagamentos e pré-pagamentos no terreno pelo escritório, automação, eliminar histórico e pagamentos, e as páginas de administração (planos, comissões, conformidade, faturação, definições, criar pedidos de apoio).
+
+## v146 (testes reais: tudo pelo servidor, fase 1)
+- Equipa de terreno do escritório: serviços de recolha e entrega em `trabalhos_terreno` (os mesmos que o operador vê no telemóvel) e viaturas em `veiculos` (`app/prestador/terreno-servidor.js`). A hora fica no início das notas («às 10:30.»), porque o servidor guarda só o dia.
+- Calendário marítimo: viagens em `viagens_maritimas`; o calendário e a previsão de chegada leem a cópia do servidor. Eliminar marca a viagem como cancelada (`app/prestador/calendario-servidor.js`).
+- Pagamentos: «Confirmar pagamento» regista o recebimento em `pagamentos` (valor, método, referência; permite prestações). Só administrador da empresa e financeiro (`app/prestador/pagamentos-servidor.js`).
+- Sessão real: as ações dos ecrãs ainda não ligados ao servidor ficam desativadas com aviso, em vez de gravarem só no navegador (`app/comum/so-servidor.js`, lista por perfil). Em demonstração tudo funciona como antes.
+- Ainda por ligar (próximas fases): manifestos e declarações de carga, reembolsos e faturas dos pagamentos, apoio e reclamações, notificações, notas e pedidos de informação, automação, páginas de administração (planos, comissões, conformidade, faturação, definições) e o simulador público.
+
+## v145 (mesma informação para todos os funcionários)
+- A encomenda criada num aparelho ficava com o estado desse aparelho (ex.: a operadora via «Aprovação» enquanto o servidor e o administrador já tinham «Recolha»). Agora todas as encomendas do servidor seguem o estado do servidor em todos os aparelhos (`app/prestador/encomendas-sincronizar.js`).
+- «Por receber» igual para todos: cada encomenda aberta no servidor tem o seu pagamento pendente com o valor do servidor, menos o que estiver pago no servidor.
+- Ficha da operação em «Recolha»: botão «Operador de recolha» para atribuir ou mudar o operador de terreno e o dia (atualiza o serviço em vez de criar outro).
+
+## v144 (fluxo da encomenda mais simples, previsão de chegada pelo calendário)
+- Simulação do cliente: as linhas de carga já não têm «Tarifação», «Preço un.» nem «Valor»; o cliente indica descrição, quantidade e peso ou medidas, e o preço vem das tarifas de cada prestador (`app/cliente/simulacao.js`). O simulador público já não tinha estes campos.
+- Encomenda criada pelo prestador passa logo para «Recolha por atribuir» (estado `agendamento`), sem ficar em aprovação (`app/prestador/encomendas-servidor.js`).
+- Ficha da operação em «Recolha por atribuir»: um só passo, «Atribuir operador de recolha» (operador de terreno, dia e indicações). Cria o serviço em `trabalhos_terreno` (o operador vê-o no telemóvel) e passa a encomenda para «Recolha» (`app/comum/ficha-operacao-acoes.js`).
+- Chegada prevista: vem da viagem associada à encomenda ou da primeira viagem do calendário para o mesmo destino depois do dia da recolha; sem viagem diz «por definir». A data da encomenda passa a chamar-se «Recolha prevista» (`app/comum/previsao-chegada.js`, `app/comum/fluxo-vivo.js`).
+- As encomendas do servidor atualizam o estado e a chegada prevista em todos os aparelhos do prestador e do cliente.
+
+## v143 (tarifa de cada linha de carga)
+- Simulação e criação de encomenda do prestador: a «Descrição da carga» já não escolhe a tarifa. Cada linha tem um campo «Tarifa» com as tarifas ativas da empresa (sem as de recolha) ou «Sem tarifa: preço à mão». Escolher a tarifa preenche a forma de cobrança e o preço; mudar o preço à mão desliga a tarifa da linha e diz isso na linha. Se a descrição se parecer com uma tarifa aparece só a sugestão «Usar esta tarifa». «Adicionar tarifa» já não copia o nome da tarifa para a descrição (`app/prestador/busca-tarifas.js`).
+- O preço automático das simulações dos clientes no servidor continua a poder usar as «palavras da descrição» definidas em cada tarifa; isso não mudou.
+
+## v142 (clientes com dados do servidor)
+- Administração › Clientes: mostra os clientes com conta (antes faltavam, por exemplo, quem se registou no site), os clientes sem conta indicados pelos prestadores e os pedidos dos clientes por tratar. «Histórico» abre as encomendas do cliente; «Bloquear»/«Desbloquear» e «Aprovar»/«Recusar» gravam no servidor (`app/administracao/clientes-servidor.js`).
+- Perfil do cliente: lê a ficha do servidor; o que falta diz «Por indicar» e o botão passa a «Completar os meus dados». Os pedidos de alteração e de eliminação vão para o servidor (`pedidos_cliente`) e o cliente vê o estado do pedido (`app/cliente/perfil-servidor.js`).
+- Conta bloqueada ou eliminada: o cliente vê um aviso e a sessão termina. Nota: o bloqueio é verificado na aplicação; para o servidor recusar também, falta uma regra na base de dados (precisa de autorização).
+
+## v141 (criar encomenda, encomendas canceladas e acessos da equipa)
+- Cliente: «Criar encomenda» no menu abre a página da simulação preparada para encomenda (título, passos e botões próprios), em vez do registo de encomenda direta. «Encomendas diretas» continua no seu menu. Ficheiro: `app/cliente/criar-encomenda.js`.
+- Prestador: encomenda cancelada, rejeitada ou entregue deixa de permitir mudar o estado e mostra o motivo, quem fechou e quando (`app/prestador/estado-encomenda.js`). O Fluxo diz «Encomenda cancelada» em vez de «passo 1 de 3».
+- Encomendas do servidor mudam de estado no servidor (`transitar_encomenda`), só com os passos permitidos; cancelar obriga a escrever o motivo. O histórico das alterações vem do servidor, com a observação de cada passo.
+- Funcionários: «Último acesso» e «Histórico completo de login» passam a vir da auditoria do servidor (`app/prestador/acessos-servidor.js`); a exportação usa a mesma lista.
+- Estilos novos em `app/prestador/estado-encomenda.css` (botões em contorno, quadro de encomenda fechada, tabela do histórico, botão de escolher ficheiro).
+
+## v140 (segunda cópia de segurança no Cloudflare R2)
+
+- **Duas cópias**: a do GitHub Actions (completa; o repositório passa a privado e fica só para isto) e uma nova no **Cloudflare** (Worker + R2, gratuito): todas as noites, os dados de todas as tabelas, cifrados no Supabase (AES-256-GCM), guardados 30 dias. Passos de instalação e reposição em `documentacao/COPIAS_DE_SEGURANCA.md`.
+- Servidor: migração `00192` (`servico_exportar_dados`, só service_role) e Edge Function `copia-dados` (segredos `COPIA_TOKEN` e `COPIA_SENHA`), já publicadas. Ferramentas: `ferramentas/cloudflare/copia-worker/worker.js` e `ferramentas/repor-copia.mjs`.
+- O site não mudou: continua a v139 (`Elolog_cloudflare_v139.zip`).
+
+## v139 (administração com dados do servidor; só Cloudflare)
+
+- **Administração** (`administracao/dados-servidor.js`, novo): com sessão real, a página «Clientes» mostra os clientes registados no servidor (contacto, data de registo, encomendas, prestadores) e o cartão de cada prestador em «Documentação dos prestadores» conta a equipa (funcionários ativos/registados) e a atividade (encomendas, clientes associados) a partir do servidor. Antes contava só o que estava no navegador (0 funcionários, «Ainda não há clientes»), em desacordo com o Centro de comando.
+- **Sem GitHub**: a publicação passa a ser por envio direto no Cloudflare Pages (Carregar ativos › conteúdo de `Elolog_cloudflare_vNNN.zip`). A cópia de segurança diária da base de dados corria no GitHub Actions (`.github/workflows/copia-seguranca.yml`); sem GitHub deixa de correr.
+
+## v138 (alojamento no Cloudflare Pages)
+
+**Publicar no Cloudflare Pages (plano gratuito)**
+- *Ligado ao GitHub* (recomendado; publica sozinho a cada envio): Cloudflare › Workers e Pages › Criar › Pages › Ligar ao Git › repositório `sibercosta/Elolog`. Predefinição: *Nenhuma*. **Comando de compilação:** `bash ferramentas/preparar-cloudflare.sh`. **Pasta de saída:** `dist`.
+- *Envio direto* (sem GitHub): Criar › Pages › Carregar ativos › arrastar o conteúdo de `Elolog_cloudflare_vNNN.zip` (já é a pasta `dist`).
+- Domínio: no projeto Pages › Domínios personalizados › `www.elolog.pt` (e `elolog.pt` a redirecionar para `www`). Depois de o domínio responder no Cloudflare, apagar o `CNAME` do GitHub e desligar o GitHub Pages.
+- Supabase › Authentication › URL Configuration: confirmar que `https://www.elolog.pt` está em *Site URL* / *Redirect URLs* (não muda se o domínio for o mesmo).
+
+**O que muda**
+- `ferramentas/preparar-cloudflare.sh` (novo): cria `dist/` só com o que o site usa (`app`, `partilhado`, `site`, `admin`, `prestador`, páginas da raiz). Ficam **fora do site publicado** `servidor/` (SQL e funções), `documentacao/`, `ferramentas/`, `LEIA-ME.md` e `package.json`.
+- `ferramentas/cloudflare/_headers`: cabeçalhos de segurança (HSTS, nosniff, referrer, frame, permissões) e cache (service worker e manifesto sempre atualizados; letras e imagens em cache). `_redirects`: atalhos `/app`, `/entrar`, `/simulador`, `/validar`, `/seguimento`.
+- **Service worker**: o Cloudflare tira o `.html` dos endereços (`/app/area-cliente.html` → `/app/area-cliente`); o service worker passou a aceitar esse redirecionamento e só guarda em cache a página da aplicação. Testado num servidor que imita o Cloudflare: site, 404, aplicação, sem rede e todos os botões dos 4 perfis.
+- **Apagados** (não usados): `mm1.png`, `painel.png`, `reserva.png` (capturas de ecrã), `partilhado/imagens/elolog-logo-email.png`, `partilhado/imagens/logo-elolog-icone.png`. `.gitignore` novo (`dist/`).
 
 ## v137 (Auditoria do prestador e Pedidos concluídos)
 

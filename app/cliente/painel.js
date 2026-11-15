@@ -4,11 +4,16 @@
 const minhas=()=>operations.filter(o=>!o.client||o.client===currentUser.name||o.client==="João Silva").sort((a,b)=>quando(b).localeCompare(quando(a)));const ativas=()=>minhas().filter(o=>!FINAIS.includes(String(o.status||"Recebido")));
 const meusPag=()=>payments.filter(p=>minhas().some(o=>o.id===p.operationId));const porPagar=()=>meusPag().filter(p=>p.status!=="Pago");const eur=v=>Number(v||0).toLocaleString("pt-PT",{style:"currency",currency:"EUR"});
 const rota=o=>`${escapeHtml(o.origin||"—")} → ${escapeHtml(o.destination||"—")}`;const SVG=(d,
-c="")=>`<svg class="${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;const IC={
-box:'<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',truck:'<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
-check:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9.5"/>',card:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18M7 15h4"/>',plus:'<path d="M12 5v14M5 12h14"/>',
-doc:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h4"/>',apoio:'<path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/>',
-navio:'<path d="M3 15h18l-2.5 4.5h-13z"/><path d="M6 15V9h12v6M10 9V5h4v4"/>',aviao:'<path d="M10.5 21 12 15l7.5 3V16l-7.5-6V4.5a1.5 1.5 0 0 0-3 0V10L1.5 16v2L9 15l1.5 6z"/>'};
+c="")=>`<svg class="${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;const IC={
+box:'<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/>',
+truck:'<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+check:'<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+card:'<rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/>',
+plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+doc:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+apoio:'<path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm0 0a9 9 0 1 1 18 0m0 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3Z"/><path d="M21 16v2a4 4 0 0 1-4 4h-5"/>',
+navio:'<path d="M12 10.189V14"/><path d="M12 2v3"/><path d="M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-8.188-3.639a2 2 0 0 0-1.624 0L3 14a11.6 11.6 0 0 0 2.81 7.76"/><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>',
+aviao:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'};
 const MAPA=`<svg class="cn-mapa" viewBox="0 0 460 220" aria-hidden="true"><defs><pattern id="cnp" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3"/></pattern><radialGradient id="cng" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#3FAE84" stop-opacity=".45"/><stop offset="1" stop-color="#3FAE84" stop-opacity="0"/></radialGradient></defs>
 <rect class="cn-pontos" width="460" height="220" fill="url(#cnp)"/><ellipse cx="300" cy="120" rx="150" ry="80" fill="url(#cng)"/>
 <path id="cnr1" class="cn-rota" d="M70 70 C 170 10, 280 20, 370 90"/><path id="cnr2" class="cn-rota" d="M70 70 C 140 150, 230 180, 300 160"/><path id="cnr3" class="cn-rota" d="M300 160 C 340 120, 380 110, 420 60"/>

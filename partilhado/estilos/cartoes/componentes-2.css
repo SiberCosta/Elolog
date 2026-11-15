@@ -1,0 +1,45 @@
+/* Elolog — componentes de cartão para as páginas internas, parte 2 (v150): destaques, vazios, pílulas e tabelas. */
+
+/* 5. destaques escuros (painel do terreno, apoio da equipa): cor sólida da marca, sem gradiente nem sombra */
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.field-dashboard-hero,.field-support-hero){background:var(--elo-mar,#13293D)!important;background-image:none!important;box-shadow:none!important;border-radius:var(--ec-raio)!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page :is(.field-dashboard-hero,.field-support-hero) :is(h2,h3,h4,p,small,strong){color:#fff!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page :is(.field-dashboard-hero,.field-support-hero) :is(p,small){color:rgba(255,255,255,.78)!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .provider-status-card{background:#F8FAFB!important;background-image:none!important;border:1px solid var(--ec-fio-leve)!important;border-left:3px solid var(--elo-azul,#1F5F8B)!important;
+  border-radius:var(--ec-raio-int)!important;box-shadow:none!important;padding:14px 16px!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .provider-status-card>span{font:600 12px/1.3 "Work Sans",system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:var(--ec-suave)!important}
+
+/* 6. estados vazios: fundo suave, uma frase, sem moldura tracejada */
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-order-empty,.vz,.employee-empty,.field-board-empty,.provider-dashboard-empty,.automation-empty,.finance-empty,.client-doc-empty,.client-payment-empty){
+  background:#F8FAFB!important;background-image:none!important;border:0!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;color:var(--ec-suave)!important;font-size:13.5px!important}
+
+/* 7. pílulas de estado: mesma forma em todo o lado (as cores de cada estado mantêm-se) */
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.work-status,.employee-status,.login-result,.provider-complaint-state,.provider-complaint-priority,.ap-estado,.pf-pill,.status-pill){
+  display:inline-flex;align-items:center;padding:3px 10px!important;border-radius:var(--ec-raio-pilula)!important;font:600 12px/1.4 "Work Sans",system-ui,sans-serif!important;
+  letter-spacing:0!important;text-transform:none!important;box-shadow:none!important;white-space:nowrap}
+
+/* 8. tabelas e cabeçalhos de lista dentro de cartões */
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .card table{border-collapse:collapse}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .card table th{background:transparent!important;font:600 12px/1.3 "Work Sans",system-ui,sans-serif!important;color:var(--ec-suave)!important;text-transform:none!important;
+  letter-spacing:0!important;border-bottom:1px solid var(--ec-borda)!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .card table td{border-bottom:1px solid var(--ec-fio-leve)!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-employee-list-head,.provider-login-table-head,.provider-history-list-head,.client-volume-table-head){background:transparent!important;border:0!important;
+  border-bottom:1px solid var(--ec-borda)!important;border-radius:0!important;font:600 12px/1.3 "Work Sans",system-ui,sans-serif!important;color:var(--ec-suave)!important;text-transform:none!important;letter-spacing:0!important}
+
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .admin-record-row,html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .admin-record-row:hover{padding:12px 16px!important}
+
+/* 9. telemóvel: menos margem, nada cortado, ações ao toque */
+@media(max-width:640px){
+  html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page>.card{padding:16px!important;border-radius:var(--ec-raio-int)!important}
+  html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-work-card,.provider-payment-card,.manifest-card,.field-service-card,.field-task-card) :is(button,.btn-primary,.btn-secondary){min-height:42px}
+  html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.work-status,.employee-status,.login-result){white-space:normal}
+  html:not(#ec) body table.tabela-cartoes{min-width:0!important;width:100%!important}
+  html:not(#ec) body table.tabela-cartoes td>*{min-width:0;overflow-wrap:anywhere}
+  html:not(#ec) body table.tabela-cartoes td[data-label="Ações"]{flex-direction:column;align-items:stretch}
+  html:not(#ec) body :is(.finance-table-wrap){overflow:visible!important;border:0!important}
+  html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .field-dashboard-kpis{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}
+  html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .field-dashboard-kpis>button{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:2px!important;padding:10px 12px!important;min-width:0!important;text-align:left!important}
+  html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .expedition-manifest-toolbar{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+  html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .expedition-manifest-toolbar button{display:block!important;width:100%;white-space:normal!important;text-align:center}
+  html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .admin-record-row{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important;padding:14px 16px!important}
+  html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .provider-order-filters{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+  html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .provider-order-filters>*{min-width:0!important}}
