@@ -18,7 +18,7 @@ const porAcao=(raiz,re)=>raiz?[...raiz.querySelectorAll("button")].find(b=>re.te
 function cliente(){if(typeof currentUser==="undefined"||currentUser?.role!=="cliente")return;const nav=document.querySelector("#sidebar .menu");if(!nav)return;
   let criar=$("menuCriarEncomenda");
   if(!criar){criar=document.createElement("button");criar.type="button";criar.id="menuCriarEncomenda";criar.innerHTML=SVG(ICONE.criar)+"Criar encomenda";
-    criar.onclick=function(){if(window.elologEncDireta?.nova){window.elologEncDireta.abrir?.();setTimeout(()=>window.elologEncDireta.nova(),60)}else showPage("clientSimulation",this)};nav.appendChild(criar)}
+    criar.setAttribute("onclick","window.elologCriarEncomenda?elologCriarEncomenda.abrir(this):showPage('clientSimulation',this)");nav.appendChild(criar)}
   /* Pagamentos passa a ser uma entrada própria; o grupo fica só com Documentos e Centro documental */
   const pag=$("menuPayments");if(pag&&pag.parentElement?.id==="clientFinanceSubmenu"){pag.classList.add("menu-esq-topo");if(!pag.querySelector("svg"))pag.insertAdjacentHTML("afterbegin",SVG(ICONE.pagar));nav.appendChild(pag)}
   const fin=$("menuFinance");if(fin)rotulo(fin,"Documentos");

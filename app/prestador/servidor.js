@@ -7,7 +7,7 @@
    - Aceitar (cria a encomenda) ou recusar (com motivo) cada simulação
    - Aprovação: encomendas do servidor em "aprovação" (aprovar / rejeitar) e lista das restantes
    O resto das páginas do prestador (manifestos, documentos, equipa, financeiro…) continua local. */
-(function(){const S=window.ELOLogServidor;if(!S||!S.ativo())return;const ESTADOS={aprovacao:"A aguardar aprovação",agendamento:"Agendamento",recolha:"Recolha",armazenamento:"Armazenamento",expedicao:"Expedição",em_transito:"Em trânsito",destino:"No destino",
+(function(){const S=window.ELOLogServidor;if(!S||!S.ativo())return;const ESTADOS={aprovacao:"A aguardar aprovação",agendamento:"Recolha por atribuir",recolha:"Recolha",armazenamento:"Armazenamento",expedicao:"Expedição",em_transito:"Em trânsito",destino:"No destino",
 entregue:"Entregue",cancelada:"Cancelada"};const euros=v=>Number(v||0).toFixed(2).replace(".",",")+" €";const data=d=>d?new Date(d).toLocaleDateString("pt-PT"):"—";const t=v=>escapeHtml(v==null||v===""?"—":String(v));let credEmpresa=null;let cotacoes=[],
 encomendas=[];let assinatura="",temporizador=null,aAtualizar=false;window.providerCompanyStepServer=async function(){if(!validateProviderCompany())return;const nome=document.getElementById("providerCompanyName").value.trim();
 const nif=document.getElementById("providerCompanyNif").value.trim();const senha=document.getElementById("providerCompanyPassword").value;const botao=document.getElementById("providerCompanyContinue");botao.disabled=true;try{

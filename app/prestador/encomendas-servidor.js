@@ -46,9 +46,14 @@ function ficheiro(x){const m=/^data:([^;,]+)?(;base64)?,(.*)$/s.exec(String(x?.d
 async function anexos(o){if(!o?.servidor?.codigo||!P()?.enviarDocumento)return 0;const lista=[...(o.anomalyPhotos||[]),...(o.extraDocuments||[])].filter(x=>x&&x.data&&!x.noServidor);let n=0,falhou=0;
   for(const x of lista){try{const f=ficheiro(x);if(!f)continue;await P().enviarDocumento(f,{encomenda:o.servidor.codigo,categoria:"operacional",visibilidade:"interna"});x.noServidor=true;n++}catch(e){falhou++;console.warn("Anexo não enviado:",x.name,erroTexto(e))}}
   if(n&&typeof saveAll==="function")saveAll();if(falhou)avisar(`${falhou} anexo(s) da encomenda ${o.servidor.codigo} ficaram só neste navegador. Tentamos outra vez quando voltar a entrar.`,"warning");return n}
+/* v144: a encomenda criada pelo prestador já foi acordada com o cliente: passa logo para a recolha (estado «agendamento»,
+   «Recolha por atribuir»), onde fica à espera de um operador de terreno. Se o servidor recusar, fica em aprovação como antes. */
+async function paraRecolha(o,d){try{const sb=await P().sb();const{error}=await sb.rpc("transitar_encomenda",{p_encomenda:d.id,p_para:"agendamento",p_nota:"Encomenda criada pelo prestador: segue para recolha."});
+    if(error)throw error;o.status=o.stage="Recolha por atribuir";if(typeof saveAll==="function")saveAll();return true}catch(e){console.warn("Passagem para recolha:",erroTexto(e));return false}}
 function avisar(txt,tipo){if(typeof showPlatformNotice==="function")showPlatformNotice(txt,tipo);else console.warn(txt)}
 function depois(o,extra){if(!o||!P()?.online?.())return;
-  enviar(o,extra).then(async d=>{if(!d)return;avisar(`Encomenda ${d.codigo} gravada no servidor: já aparece a todos os funcionários em «Aprovar pedidos».`,"success");window.elologAtualizarCotacoes?.();const n=await anexos(o);if(n)avisar(`${n} anexo(s) guardado(s) no servidor com a encomenda ${d.codigo}.`,"success")})
+  enviar(o,extra).then(async d=>{if(!d)return;const rec=await paraRecolha(o,d);
+    avisar(rec?`Encomenda ${d.codigo} criada e pronta para recolha: escolha o operador de terreno na ficha da encomenda.`:`Encomenda ${d.codigo} gravada no servidor: já aparece a todos os funcionários em «Aprovar pedidos».`,"success");window.elologAtualizarCotacoes?.();const n=await anexos(o);if(n)avisar(`${n} anexo(s) guardado(s) no servidor com a encomenda ${d.codigo}.`,"success")})
     .catch(e=>avisar(`A encomenda ${o.id} ficou só neste navegador: ${erroTexto(e)} Volte a entrar para tentar outra vez.`,"warning"))}
 function envolver(nome){const f=window[nome];if(typeof f!=="function"||f.__servidor)return;
   const novo=function(){const antes=operations[0],t=typeof providerDirectPickupTariff==="function"?providerDirectPickupTariff():null,d=providerDirectSimulationData;

@@ -8,7 +8,7 @@ const online=()=>{try{return!!P()?.online?.()}catch(_){return false}};
 const erro=e=>window.ELOLogServidor?.mensagem?.(e)||e?.message||String(e);
 const ETAPAS=["Simulação","Cotação","Aprovação","Recolha","Pagamento","Armazenamento","Expedição","Em trânsito","Destino","Disponível","Levantado"];
 const IDX={aprovacao:2,agendamento:3,recolha:3,armazenamento:5,expedicao:6,em_transito:7,destino:8,disponivel:9,entregue:10};
-const NOME={aprovacao:"Aprovação",agendamento:"Agendamento da recolha",recolha:"Recolha",armazenamento:"Armazenamento",expedicao:"Expedição",em_transito:"Em trânsito",
+const NOME={aprovacao:"Aprovação",agendamento:"Recolha por atribuir",recolha:"Recolha",armazenamento:"Armazenamento",expedicao:"Expedição",em_transito:"Em trânsito",
   destino:"Destino",disponivel:"Disponível",entregue:"Levantado",cancelada:"Cancelada"};
 const RESP=["Cliente / Operador","Operador","Administração / Cliente","Prestador","Financeiro","Armazém","Operador","Operador","Prestador / Operador","Operador","Prestador / Operador"];
 const ACAO=["Registar pedido","Solicitar e comparar propostas","Validar proposta","Confirmar recolha","Registar e confirmar valores","Confirmar receção","Associar partida e carga",

@@ -71,7 +71,7 @@ detail.innerHTML=`
         <div><small>Cliente</small><strong>${order.client||"—"}</strong></div>
         <div><small>Estado atual</small><strong>${order.status||order.stage||"—"}</strong></div>
         <div><small>Origem → Destino</small><strong>${order.origin||"—"} → ${order.destination||"—"}</strong></div>
-        <div><small>Data prevista</small><strong>${order.date||"—"}</strong></div>
+        <div><small>Recolha prevista</small><strong>${order.date||"—"}</strong></div>
       </div>
       ${renderProviderOrderProgress(order)}
       <div class="provider-order-change">

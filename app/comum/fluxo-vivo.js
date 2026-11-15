@@ -10,7 +10,7 @@ const FASES=[["Acordo",[0,1,2]],["Origem",[3,4,5]],["No mar",[6,7]],["Chegada",[
 const FINAIS=/levantad|entregue|conclu/i,CANCEL=/cancel|rejeit|anulad/i;
 
 function indice(o){const v=String(o?.stage||o?.status||"").toLowerCase();if(FINAIS.test(v))return 10;
-  const P=[["dispon",9],["destino",8],["trânsito",7],["transito",7],["expedi",6],["armazen",5],["pag",4],["recol",3],["aprova",2],["cota",1],["propost",1]];
+  const P=[["dispon",9],["destino",8],["trânsito",7],["transito",7],["expedi",6],["armazen",5],["armaz",5],["pag",4],["recol",3],["aprova",2],["cota",1],["propost",1]];
   const h=P.find(([k])=>v.includes(k));return h?h[1]:0}
 function data(v){if(!v)return null;const s=String(v).trim(),m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?/.exec(s);
   const d=m?new Date(+m[3],m[2]-1,+m[1],+(m[4]||12),+(m[5]||0)):new Date(s);return isNaN(d)?null:d}
@@ -23,8 +23,10 @@ function movimento(o){const l=o?.lastStatusChange;if(l&&data(l.datetime))return{
 
 /* saúde do processo: ok (a bom ritmo), aviso (vale a pena olhar), erro (atrasada), neutro (sem dados para dizer) */
 function saude(o,i){const v=String(o?.status||o?.stage||"");if(CANCEL.test(v))return{k:"neutro",t:"Encomenda cancelada"};if(i>=10)return{k:"ok",t:"Concluída"};
-  const prev=data(o?.date),mv=movimento(o),parado=mv?dias(mv.d):null;
-  if(prev&&Date.now()>prev.getTime()+864e5&&i<8)return{k:"erro",t:`Passou da previsão de ${prev.toLocaleDateString("pt-PT")}`};
+  /* v144: a previsão de chegada vem da viagem/calendário; a data da encomenda é o dia da recolha */
+  const ch=window.elologPrevisao?.chegada(o),prev=ch?.data?data(ch.data):null,rec=data(o?.date),mv=movimento(o),parado=mv?dias(mv.d):null;
+  if(prev&&Date.now()>prev.getTime()+864e5&&i<8)return{k:"erro",t:`Passou da chegada prevista de ${prev.toLocaleDateString("pt-PT")}`};
+  if(rec&&i<=3&&Date.now()>rec.getTime()+864e5)return{k:"aviso",t:`Recolha prevista para ${rec.toLocaleDateString("pt-PT")} ainda por fazer`};
   if(parado!=null&&parado>7)return{k:"erro",t:`Sem movimento há ${parado} dias`};
   const pg=emAberto(o),pd=pg&&pg.d?dias(pg.d):0;if(pd>=2)return{k:"aviso",t:`Pagamento por fazer há ${pd} dias`};
   if(parado!=null&&parado>4)return{k:"aviso",t:`Sem movimento há ${parado} dias`};
@@ -39,6 +41,7 @@ function frase(o,i,papel){const mv=movimento(o),por=mv&&mv.quem&&new RegExp(ETAP
   const P=["O cliente fez uma simulação para uma rota sua.","O cliente espera a sua proposta de preço.","Confirme os dados da carga e aceite o pedido.","Combine a recolha com o cliente e registe-a no terreno.",
     "Confirme o pagamento para a carga seguir para o armazém.","Confira a carga no armazém e diga onde ficou guardada.","Feche a lista de carga e ligue-a a uma viagem.","Mantenha a previsão de chegada atualizada.",
     "Confirme a receção e o estado da carga.","Avise quem levanta e confirme a identificação.","Encomenda fechada. Fica tudo no histórico."];
+  if(i===3&&/por atribuir/i.test(String(o?.status||o?.stage||"")))return papel==="prestador"?"Escolha o operador de terreno que vai buscar a carga.":"A encomenda está criada. A transportadora vai marcar a recolha.";
   return(papel==="prestador"?P:C)[i]}
 
 /* pagamento em aberto desta encomenda (para o botão mudar com a urgência) */
@@ -53,17 +56,19 @@ const IR_P={2:["Rever e aceitar","providerAprovacao"],3:["Registar a recolha","p
   6:["Preparar a expedição","providerExpedicao"],7:["Atualizar a viagem","providerTransito"],8:["Confirmar a chegada","providerDestino"],9:["Avisar quem levanta","providerDisponivel"]};
 function proximaAcao(o,i,papel){const pg=emAberto(o);
   if(papel==="cliente"){if(pg){const n=pg.d?dias(pg.d):0;return n>=2?acao("Regularizar agora","showPage('payments')","urgente",pg.d):acao("Pagar agora","showPage('payments')","agora")}return""}
+  if(papel==="prestador"&&i===3&&/por atribuir/i.test(String(o?.status||o?.stage||""))){const cod=String(o?.servidor?.codigo||o?.id||"").replace(/'/g,"");
+    return document.querySelector(".fo-painel")?"":acao("Atribuir operador de recolha",`window.elologFicha?elologFicha.abrir('${cod}'):showProviderPage('providerRecolha')`,"agora")}
   if(papel==="prestador"&&IR_P[i]){const urg=i===4&&pg&&pg.d&&dias(pg.d)>=2;return acao(IR_P[i][0],`showProviderPage('${IR_P[i][1]}')`,urg?"urgente":"agora",urg?pg.d:null)}return""}
 
 /* Fluxo Vivo completo */
-function render(o,papel){papel=papel||(eu()?.role==="prestador"?"prestador":"cliente");const i=indice(o),s=saude(o,i),mv=movimento(o);
-  const fases=FASES.map(([nome,idx])=>{const ini=idx[0],fim=idx[idx.length-1],est=i>fim?"feito":i>=ini?"atual":"";
+function render(o,papel){papel=papel||(eu()?.role==="prestador"?"prestador":"cliente");const i=indice(o),s=saude(o,i),mv=movimento(o),cancel=CANCEL.test(String(o?.status||o?.stage||""));
+  const fases=FASES.map(([nome,idx])=>{const ini=idx[0],fim=idx[idx.length-1],est=cancel?"":i>fim?"feito":i>=ini?"atual":"";
     const p=est==="feito"?100:est==="atual"?Math.round((idx.indexOf(i)+.5)*100/idx.length):0;
     const sub=est==="feito"?"Concluído":est==="atual"?`${ETAPAS[i]}, passo ${idx.indexOf(i)+1} de ${idx.length}`:idx.map(k=>ETAPAS[k]).join(", ");
     return`<li class="${est}"${est==="atual"?' aria-current="step"':""}><b>${nome}</b><span class="fv-pista"><i style="--p:${p}%"></i></span><small>${esc(sub)}</small></li>`}).join("");
   const ult=mv?`Última atualização ${quando(mv.d)}${mv.quem?` por ${esc(mv.quem)}`:""}.`:"";
-  return`<section class="fv fv-${s.k}" aria-label="Estado da encomenda ${esc(o?.id||"")}"><div class="fv-topo"><p class="fv-frase">${esc(frase(o,i,papel))}</p><span class="fv-saude"><i aria-hidden="true"></i>${esc(s.t)}</span></div>
-    <ol class="fv-fases">${fases}</ol><div class="fv-rodape"><small>${ult}${o?.date&&i<10?` Previsão de chegada: ${esc(o.date)}.`:""}</small>${proximaAcao(o,i,papel)}</div></section>`}
+  return`<section class="fv fv-${s.k}" aria-label="Estado da encomenda ${esc(o?.id||"")}"><div class="fv-topo"><p class="fv-frase">${esc(cancel?(papel==="prestador"?"Encomenda cancelada. Não há mais passos a fazer.":"Esta encomenda foi cancelada. Pode criar uma nova quando quiser."):frase(o,i,papel))}</p><span class="fv-saude"><i aria-hidden="true"></i>${esc(s.t)}</span></div>
+    <ol class="fv-fases">${fases}</ol><div class="fv-rodape"><small>${ult}${i<10&&!cancel?` ${i<=3&&o?.date?`Recolha prevista: ${esc(window.elologPrevisao?.dia(o.date)||o.date)}. `:""}${esc(window.elologPrevisao?.texto(o)||"")}`:""}</small>${cancel?"":proximaAcao(o,i,papel)}</div></section>`}
 
 /* versão compacta para listas e painéis: frase + saúde + fio de 4 fases */
 function compacto(o,papel){const i=indice(o),s=saude(o,i);const f=FASES.map(([,idx])=>`<i class="${i>idx[idx.length-1]?"feito":i>=idx[0]?"atual":""}"></i>`).join("");

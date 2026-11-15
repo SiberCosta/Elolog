@@ -27,7 +27,7 @@ function fluxoVivo(){const FV=window.elologFluxo;if(!FV)return"";const e=f.encom
     lastStatusChange:h?{datetime:h.em,employee:h.responsavel||"",previous:h.de?F().nomeEstado?.(h.de)||h.de:"",next:F().nomeEstado?.(h.para)||h.para||""}:null},papel).replace(/(<div class="fv-rodape">[\s\S]*?onclick=")/,"$1elologFicha.fechar();")}
 function resumo(){const e=f.encomenda,c=f.cliente||{};return`${fluxoVivo()}${e.suspensa?`<p class="fo-alerta">Suspensa: ${esc(e.suspensa_motivo||"ocorrência")}</p>`:""}
   <dl class="fo-dl">${linha("Estado",F().nomeEstado(e.estado)||e.etapa)}${linha("Prestador",f.prestador)}${linha("Rota",`${e.origem||"—"} → ${e.destino||"—"}`)}${linha("Morada de recolha",e.morada_recolha)}
-    ${linha("Data prevista",e.data_prevista?dia(e.data_prevista):"")}${linha("Simulação",f.simulacao?.codigo)}${linha("Proposta aceite",f.proposta?eur(f.proposta.preco):"")}</dl>
+    ${linha("Recolha prevista",e.data_prevista?dia(e.data_prevista):"")}${linha("Chegada prevista",(()=>{const c=window.elologPrevisao?.chegada({date:e.data_prevista,destination:e.destino,arrivalDate:e.chegada_prevista,vessel:e.navio});return c?.data?dia(c.data)+(c.fonte==="calendario"?" (calendário)":""):"Por definir"})())}${linha("Simulação",f.simulacao?.codigo)}${linha("Proposta aceite",f.proposta?eur(f.proposta.preco):"")}</dl>
   <div class="fo-3"><section><h5>Cliente</h5><p>${pessoa({nome:c.nome,telefone:c.telefone,email:c.email})}${c.nif?`<br>NIF ${esc(c.nif)}`:""}</p></section>
     <section><h5>Remetente</h5><p>${pessoa(e.remetente)}</p></section><section><h5>Destinatário</h5><p>${pessoa(e.destinatario)}</p></section></div>`}
 

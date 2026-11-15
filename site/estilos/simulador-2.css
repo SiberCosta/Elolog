@@ -94,3 +94,8 @@ box-shadow:0 6px 24px rgba(14,36,51,.08)!important;backdrop-filter:blur(10px)!im
 @media(prefers-reduced-motion:reduce){html.sim-capa .navbar{transition:none!important}}
 html.sim-capa .simulator-hero{padding-top:9.5rem!important}@media(max-width:900px){html.sim-capa .simulator-hero{padding-top:7.5rem!important}}
 html.sim-capa .navbar .nav-links>a,html.sim-capa .navbar .nav-dropdown-toggle{white-space:nowrap}
+
+/* v148: simulador público ligado à área de cliente */
+.sl-cartao{display:grid;gap:10px;justify-items:start;text-align:left}.sl-cartao p{margin:0;max-width:60ch;line-height:1.5}
+.sl-botao{background:transparent!important;color:#13293D!important;border:1.5px solid #13293D!important;border-radius:10px;padding:10px 18px;font-weight:800;cursor:pointer}
+.sl-botao:hover{background:#13293D!important;color:#fff!important}

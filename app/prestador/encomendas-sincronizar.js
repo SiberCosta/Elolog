@@ -6,7 +6,7 @@
       passam a aparecer no painel, nas listas e no quadro de qualquer aparelho (telemóvel incluído), com a etapa do servidor. */
 (function(){"use strict";
 const P=()=>window.elologProducao,FECHADA=/rejeit|cancel|anulad/i;
-const ETAPA={aprovacao:"Aprovação",agendamento:"Agendamento",recolha:"Recolha",armazenamento:"Armazém",expedicao:"Expedição",em_transito:"Em trânsito",
+const ETAPA={aprovacao:"Aprovação",agendamento:"Recolha por atribuir",recolha:"Recolha",armazenamento:"Armazém",expedicao:"Expedição",em_transito:"Em trânsito",
   destino:"No destino",disponivel:"Disponível",levantada:"Levantada",entregue:"Entregue",cancelada:"Cancelada"};
 const ler=k=>{try{return JSON.parse(localStorage.getItem(k)||"[]")}catch(_){return[]}};
 const redesenhar=()=>{["renderProviderDashboardForCompany","renderProviderAprovacao","renderProviderPagamentos","renderProviderOrderList"].forEach(f=>{try{window[f]?.()}catch(_){}})};
@@ -33,22 +33,34 @@ function ligarDecisao(){const f=window.submitProviderApprovalDecision;if(typeof 
 let aSincronizar=false;
 async function sincronizar(){if(aSincronizar||!P()?.online?.()||typeof operations==="undefined")return;aSincronizar=true;
   try{const emp=await P().minhaEmpresa?.().catch(()=>null);if(!emp?.empresa_id)return;const sb=await P().sb();
-    const{data,error}=await sb.from("encomendas").select("id,codigo,estado,cliente_nome,clientes(nome),origem,destino,tipo_carga,descricao,quantidade,peso_kg,volume_m3,preco_total,data_prevista,created_at,morada_recolha,remetente,destinatario")
+    const{data,error}=await sb.from("encomendas").select("id,codigo,estado,cliente_nome,clientes(nome),origem,destino,tipo_carga,descricao,quantidade,peso_kg,volume_m3,preco_total,data_prevista,created_at,morada_recolha,remetente,destinatario,chegada_prevista,partida_prevista,navio")
       .eq("empresa_id",emp.empresa_id).order("created_at",{ascending:false}).limit(200);if(error||!data)return;
     const empresa=typeof currentProviderCompanyName==="function"?currentProviderCompanyName():"";let mudou=false;
     for(const r of data){const etapa=ETAPA[r.estado]||r.estado;
       const o=operations.find(x=>x.servidor?.id===r.id||String(x.id)===String(r.codigo));
       if(o){o.servidor=o.servidor||{id:r.id,codigo:r.codigo};
         if(r.estado==="cancelada"&&!FECHADA.test(String(o.status||""))){o.status=o.stage="Cancelada";o.updatedAt=new Date().toISOString();mudou=true}
-        else if(o.doServidor&&o.status!==etapa){o.status=o.stage=etapa;mudou=true}continue}
+        else if((o.doServidor||o.servidor?.id===r.id)&&o.status!==etapa){o.status=o.stage=etapa;o.arrivalDate=r.chegada_prevista||o.arrivalDate;mudou=true}
+        if(r.chegada_prevista&&o.arrivalDate!==r.chegada_prevista){o.arrivalDate=r.chegada_prevista;o.departureDate=r.partida_prevista;o.vessel=r.navio;mudou=true}continue}
       const rem=r.remetente||{},dest=r.destinatario||{};
       operations.push({id:r.codigo,servidor:{id:r.id,codigo:r.codigo},doServidor:true,client:r.clientes?.nome||r.cliente_nome||rem.nome||"Cliente",origin:r.origem,destination:r.destino,
         cargo:r.tipo_carga,goods:r.descricao,quantity:r.quantidade,weight:Number(r.peso_kg||0),volume:Number(r.volume_m3||0),estimatedPrice:Number(r.preco_total||0),date:r.data_prevista,
         createdAt:r.created_at,status:etapa,stage:etapa,pickupAddress:r.morada_recolha||"",senderName:rem.nome||"",senderPhone:rem.telefone||"",recipientName:dest.nome||"",
-        recipientPhone:dest.telefone||"",deliveryAddress:dest.morada||"",provider:empresa,history:[]});mudou=true}
+        recipientPhone:dest.telefone||"",deliveryAddress:dest.morada||"",provider:empresa,history:[],arrivalDate:r.chegada_prevista||null,departureDate:r.partida_prevista||null,vessel:r.navio||""});mudou=true}
+    if(pagamentosServidor(data,await lerPagos(sb,emp.empresa_id)))mudou=true;
     if(mudou){arquivarPagamentos();if(typeof saveAll==="function")saveAll();redesenhar()}}
   catch(e){console.warn("Sincronização das encomendas:",e)}finally{aSincronizar=false}}
 
+/* v145: «Por receber» igual em todos os aparelhos: cada encomenda do servidor ainda aberta tem o seu pagamento pendente,
+   com o valor do servidor menos o que já está pago no servidor (antes só existia no aparelho de quem criou a encomenda). */
+async function lerPagos(sb,emp){try{const{data}=await sb.from("pagamentos").select("encomenda_id,valor,estado").eq("empresa_id",emp).limit(1000);
+    const m=new Map();(data||[]).filter(p=>p.estado==="pago").forEach(p=>m.set(p.encomenda_id,(m.get(p.encomenda_id)||0)+Number(p.valor||0)));return m}catch(_){return new Map()}}
+function pagamentosServidor(linhas,pagos){if(typeof payments==="undefined")return false;let mudou=false;
+  for(const r of linhas){if(["cancelada"].includes(r.estado)||!(Number(r.preco_total)>0))continue;const o=operations.find(x=>x.servidor?.id===r.id||String(x.id)===String(r.codigo));if(!o)continue;
+    const pago=pagos.get(r.id)||0,falta=Math.max(0,Math.round((Number(r.preco_total)-pago)*100)/100),meu=payments.find(p=>String(p.operationId)===String(o.id));
+    if(!meu){payments.push({id:"PAY-"+r.codigo,operationId:o.id,client:o.client,provider:o.provider,amount:Number(r.preco_total),status:falta>0?"Pendente":"Pago",createdAt:r.created_at,servidor:true});mudou=true}
+    else if(falta===0&&meu.status!=="Pago"){meu.status="Pago";mudou=true}}
+  return mudou}
 function arrancar(){ligarDecisao();if(arquivarPagamentos())redesenhar()}
 arrancar();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",arrancar);
 window.addEventListener("load",()=>{arrancar();setTimeout(()=>sincronizar(),2500)});

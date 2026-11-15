@@ -1,0 +1,7 @@
+# Elolog — atalhos (Cloudflare Pages). Formato: origem destino código
+/app            /app/area-cliente.html   302
+/app/           /app/area-cliente.html   302
+/entrar         /app/area-cliente.html   302
+/simulador      /site/simulador.html     301
+/validar        /site/validar.html       301
+/seguimento     /site/seguimento.html    301
