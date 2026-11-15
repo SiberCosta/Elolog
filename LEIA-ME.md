@@ -58,6 +58,13 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v154 (funcionários, cliente só com os seus dados, corrigir simulação, ecrã estável)
+- Funcionários: alterar a função (e os restantes dados) grava no servidor (`app/prestador/funcionarios-servidor.js`); antes só mudava a cópia local. Operador de terreno criado com PIN de 6 a 8 dígitos (antes pedia palavra-passe forte e não deixava criar).
+- Cliente: numa sessão real só vê as encomendas e pagamentos da sua conta, mesmo que o aparelho tenha dados de outras contas (`app/cliente/so-meus.js`, sem apagar nada); o quadro «O seu próximo passo» só aparece quando há algo a fazer (pagar ou levantar).
+- Prestador: «Corrigir simulação» em «Pedidos recebidos» abre o simulador preenchido; «Guardar correção» grava no servidor (migração `00197_prestador_corrigir_simulacao.sql`, autorizada), avisa o cliente e regista na auditoria (`app/prestador/corrigir-simulacao.js`).
+- Sem o aviso «Dados atualizados por outro utilizador»; ao chegarem dados novos, a página não salta (posição, listas e campo com o cursor ficam onde estavam) (`app/comum/sem-saltos.js`).
+- Avisos sempre por cima das janelas abertas. Menu: o total de cada submenu aparece na opção principal. Botões de ações iguais, em contorno, sem cortes; «Mais ações» abre por cima (`acoes.css`).
+
 ## v153 (simulação, novidades, tempo real, dispositivo de confiança)
 - Simulação do cliente: depois de «Avançar para propostas» esse botão sai (ficam «Rever simulação» e «Criar encomenda»); depois de criar, o cartão mostra só o registo do pedido (número, prestador, valor e próximo passo) (`app/cliente/simulacao-fluxo.js`).
 - Prestador: «Pedidos recebidos» mostra os pedidos do servidor com «Aceitar e criar encomenda» (depois passam para «Aprovar pedidos»). Corrigido: abrir as propostas convertia a empresa em texto e desligava o modo servidor até recarregar. No painel, os pedidos aparecem como «Pedido recebido» e abrem a lista certa.

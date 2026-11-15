@@ -8,7 +8,7 @@ let canal=null,ligado=false,espera=null,reserva=null,pendentes=new Set();
 const S=()=>window.ELOLogServidor;
 const comSessao=()=>{try{const u=typeof currentUser!=="undefined"?currentUser:window.currentUser;return !!(u&&S()?.ativo?.()&&(u.role==="cliente"||u.providerCompany?.server||u.role==="admin"))}catch(e){return false}};
 function atualizarTudo(origem){
-  const tabelas=[...pendentes];pendentes.clear();
+  const tabelas=[...pendentes];pendentes.clear();window.elologSemSaltos?.proteger();
   try{window.elologAtualizarCotacoes?.()}catch(e){}
   try{window.elologAtualizarCliente?.()}catch(e){}
   try{const u=typeof currentUser!=="undefined"?currentUser:null;if(u?.role==="prestador")window.elologSincronizarEncomendas?.sincronizar?.()}catch(e){}

@@ -28,7 +28,7 @@
       else if(!antes&&l.antigo&&estados[l.antigo])showPlatformNotice?.(`O prestador aceitou o seu pedido: encomenda ${l.codigo} criada.`,"success")});
     estados=agora}
 
-  function redesenhar(){try{renderClientTracking?.()}catch(e){}try{renderClientDashboard?.()}catch(e){}}
+  function redesenhar(){window.elologSemSaltos?.proteger();try{renderClientTracking?.()}catch(e){}try{renderClientDashboard?.()}catch(e){}}
 
   async function atualizar(forcar){if(ocupado||!ativo())return;ocupado=true;
     try{const c=await S().cliente(),{data:u}=await c.auth.getUser();if(!u?.user)return;

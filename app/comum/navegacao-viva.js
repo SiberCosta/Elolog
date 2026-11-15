@@ -26,10 +26,12 @@ function contagem(lista){const c={};if(!F())return c;lista.forEach(o=>{const i=F
 
 /* o próximo passo de cada papel: {t: texto, d: detalhe, js: ação, nivel: normal|agora|urgente} */
 function proximo(papel){
-  if(papel==="cliente"){const minhas=ops().filter(o=>!/levantad|entregue|conclu|cancel/i.test(o.status||o.stage||"")),pg=abertos(ops()).sort((a,b)=>new Date(a.createdAt||a.date)-new Date(b.createdAt||b.date))[0];
+  /* v154: só as encomendas do próprio cliente; o quadro só aparece quando há algo a fazer (pagar ou levantar) */
+  if(papel==="cliente"){const dono=o=>typeof window.elologDoCliente==="function"?window.elologDoCliente(o):true,meus=ops().filter(dono);
+    const pg=abertos(meus).sort((a,b)=>new Date(a.createdAt||a.date)-new Date(b.createdAt||b.date))[0];
     if(pg){const n=dias(pg.createdAt||pg.date);return{t:n>=2?"Regularizar um pagamento":"Pagar uma encomenda",d:`${pg.operationId}${n>=2?`, pendente há ${n} dias`:""}`,js:"showPage('payments')",nivel:n>=2?"urgente":"agora"}}
-    if(minhas.length){const o=minhas[0];return{t:`Acompanhar ${o.id}`,d:F()?F().saude(o,F().indice(o)).t:(o.status||""),js:"openClientOrderSection('status')",nivel:"normal"}}
-    return{t:"Simular um envio",d:"Preço e prazo das transportadoras",js:"showPage('clientSimulation')",nivel:"normal"}}
+    const lev=meus.find(o=>/dispon/i.test(o.status||o.stage||""));if(lev)return{t:`Levantar ${lev.id}`,d:"A encomenda está pronta a ser levantada",js:"openClientOrderSection('status')",nivel:"agora"};
+    return null}
   if(papel==="prestador"){const c=contagem(doPrestador());for(const [i,v,um,pg] of PRIORIDADE)if(c[i])return{t:`${c[i]} ${c[i]===1?"encomenda "+um:"encomendas "+v}`,d:"Abrir e tratar",js:`showProviderPage('${pg}')`,nivel:i===2||i===4?"agora":"normal"};
     return{t:"Tudo em dia",d:"Veja se chegaram novas simulações",js:"document.querySelector('#sidebar [onclick*=showProviderProposalTab]')?.click()",nivel:"calmo"}}
   if(papel==="admin"){/* v112: as mesmas regras do Centro de comando, do mais urgente para o menos urgente */
@@ -54,7 +56,13 @@ function desenhar(){const u=eu(),papel=u?.role==="admin"?"admin":u?.role==="pres
   el.innerHTML=p.nivel==="calmo"?`<strong><i class="ic ic-check" aria-hidden="true"></i>${esc(p.t)}</strong><span>${esc(p.d)}</span>`:`<small>O seu próximo passo</small><strong>${esc(p.t)}</strong><span>${esc(p.d)}</span>`;
   if(papel==="prestador"){const c=contagem(doPrestador());Object.entries(ETAPA_PAG).forEach(([pg,i])=>sb.querySelectorAll(`button[onclick*="'${pg}'"]:not(.nv-proximo)`).forEach(b=>{
     let s=b.querySelector(".nv-conta");if(!s){s=document.createElement("span");s.className="nv-conta";b.appendChild(s)}const n=c[i]||0;s.textContent=n?String(n):"";b.classList.remove("nv-zero");
-    b.setAttribute("aria-label",`${b.textContent.replace(/\d+$/,"").trim()}: ${n?pl(n,"encomenda","encomendas"):"sem encomendas"}`)}))}}
+    b.setAttribute("aria-label",`${b.textContent.replace(/\d+$/,"").trim()}: ${n?pl(n,"encomenda","encomendas"):"sem encomendas"}`)}))}
+  grupos(sb)}
+/* v154: o total de cada submenu aparece também na opção principal (vê-se com o grupo fechado) */
+function grupos(sb){sb.querySelectorAll(".provider-submenu,.client-submenu").forEach(sub=>{const cab=sub.previousElementSibling;if(!cab||cab.tagName!=="BUTTON")return;
+  const tot=[...sub.querySelectorAll(".nv-conta:not(.nv-conta-grupo)")].reduce((a,e)=>a+(parseInt(e.textContent,10)||0),0);let s=cab.querySelector(".nv-conta-grupo");
+  if(!tot){s?.remove();return}if(!s){s=document.createElement("span");s.className="nv-conta nv-conta-grupo";s.setAttribute("aria-hidden","true");const ch=cab.querySelector("span:last-child:not(.nv-conta)");ch?cab.insertBefore(s,ch):cab.appendChild(s)}
+  s.textContent=tot>99?"99+":String(tot)})}
 
 let t=null;const agendar=()=>{clearTimeout(t);t=setTimeout(desenhar,250)};
 document.addEventListener("DOMContentLoaded",()=>{const ini=window.startApp;if(typeof ini==="function")window.startApp=function(){const r=ini.apply(this,arguments);setTimeout(desenhar,600);return r};setTimeout(desenhar,1200);setInterval(desenhar,20000);document.addEventListener("click",e=>{if(e.target.closest?.("#sidebar,.btn-primary,.btn-success"))agendar()})});

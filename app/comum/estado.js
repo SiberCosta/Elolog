@@ -25,7 +25,7 @@ function refreshSharedOperationalData(){try{operations=JSON.parse(localStorage.g
 documents=JSON.parse(localStorage.getItem("th_documents")||"[]")}catch(e){}try{payments=JSON.parse(localStorage.getItem("th_payments")||"[]")}catch(e){}try{renderEverything()}catch(e){}try{refreshProviderWorkflowViews()}catch(e){}try{
 renderProviderPagamentos()}catch(e){}try{renderProviderDocumentos()}catch(e){}try{renderClientDashboard();renderClientTracking();renderClientHistory()}catch(e){}try{renderNotificationCenter()}catch(e){}if(providerFunction?.()==="field_operator"){try{
 renderProviderFieldTeam();appendFieldPrepaymentAction();appendFieldAbsenceAction()}catch(e){}}}window.addEventListener("storage",event=>{if(!ELOLOG_SHARED_KEYS.has(event.key))return;clearTimeout(elologSyncTimer);elologSyncTimer=setTimeout(()=>{
-refreshSharedOperationalData();showPlatformNotice?.("Dados atualizados por outro utilizador.","success")},120)});
+window.elologSemSaltos?.proteger();refreshSharedOperationalData()},120)});/* v154: sem aviso; atualiza sem mexer o ecrã */
 
 /* v72 — referências: encomendas ELO_<REF. DO PRESTADOR>-000123 e simulações ELO_SM-000045 (no servidor são dadas pela base de dados). */
 window.elologRef=function(nome){const b=String(nome||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/\b(LDA|LIMITADA|SA|S\.A|UNIPESSOAL|SOCIEDADE|COMPANHIA|CIA)\b/g,"").replace(/[^A-Z]/g,"").slice(0,4);return b.length<3?(b||"PRS").padEnd(3,"X"):b};
