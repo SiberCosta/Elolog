@@ -58,6 +58,13 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v152 (simulação do cliente: correções)
+- O cliente deixa de ver dados internos do prestador: a proposta mostra só o prestador, o valor e «Inclui a recolha» (sem distância ao armazém); a mensagem da distância já não diz o nome do armazém.
+- «Avançar para propostas» repetido mantém o mesmo número de simulação e o mesmo código de encomenda até a simulação ser enviada ao prestador; no servidor atualiza o mesmo rascunho (pedidos em fila, sem duplicados).
+- Servidor: migração `00194_simulacoes_recolha_permissoes.sql` (aplicada com autorização) — o cliente pode gravar as coordenadas e distâncias da recolha. Antes, com recolha na morada, a simulação era recusada (403) e não chegava ao prestador.
+- Cartões «Próximo passo: Criar envio» e «Resumo da simulação» em linhas (rótulo à esquerda, valor à direita), sem cortar texto (`componentes-5.css`).
+- Volumes e pesos com vírgula decimal em todo o cliente e prestador.
+
 ## v151 (redesign dos cartões: fase 2, área de cliente e site público)
 - Área de cliente: as partes 1 a 3 passam a valer também para `body.modo-cliente`; novo `componentes-4.css` (encomendas, pagamentos, documentos, histórico, janelas, vazios). O painel do cliente (`#cdash`) usa o mesmo sistema do painel do prestador e os ícones Lucide.
 - «Ver estado do pedido» passou a botão de contorno. A lista de encomendas do cliente mostra a «Chegada prevista» do calendário marítimo («A confirmar» enquanto não há viagem), em vez da data de recolha.

@@ -17,7 +17,7 @@ window.atualizarDistanciaRecolhaCliente=async function(){const pickup=document.g
     const r=D()?await D().recolha(a):null;if(id!==pedido)return;
     if(r&&r.melhor){const sel=escolhido(),meu=sel&&r.porEmpresa[sel],km=meu?meu.km:r.melhor.km,arm=meu?meu.armazem:r.melhor.armazem;
       window.elologRecolha={lat:a.lat,lon:a.lon,kms:r.kms};kmManual(false);if(input)input.value=String(km);
-      dizer(`Cerca de ${km.toLocaleString("pt-PT")} km ${r.metodo==="estrada"?"por estrada":"(aproximado)"} desde ${meu?"o armazém do prestador escolhido":"o armazém mais próximo"} (${arm}).${Object.keys(r.kms).length>1&&!meu?" Cada prestador calcula a partir do seu armazém.":""}`,"is-ready");return recalcular()}
+      dizer(`Cerca de ${km.toLocaleString("pt-PT")} km ${r.metodo==="estrada"?"por estrada":"(aproximado)"} ${typeof currentUser!=="undefined"&&currentUser?.role==="cliente"?"até ao armazém do prestador.":`desde ${meu?"o armazém do prestador escolhido":"o armazém mais próximo"} (${arm}).${Object.keys(r.kms).length>1&&!meu?" Cada prestador calcula a partir do seu armazém.":""}`}`,"is-ready");return recalcular()}
     const ponto=pontoDeRecolha();if(!ponto){dizer("Indique primeiro a origem do envio: sem armazém configurado, a distância é medida até lá.","is-error");return}
     const b=await obterCoordenadas(ponto.local);if(id!==pedido)return;const e=D()?await D().estrada(a,b):{km:calcularDistanciaKm(a,b),metodo:"aproximada"};if(id!==pedido)return;
     window.elologRecolha={lat:a.lat,lon:a.lon,kms:{}};kmManual(false);if(input)input.value=String(e.km);
@@ -27,5 +27,5 @@ window.atualizarDistanciaRecolhaCliente=async function(){const pickup=document.g
       :"Não encontrámos esta morada. Experimente só a localidade e o código postal, ou escreva a distância aproximada em km.","is-error");recalcular()}};
 /* ao escolher outro prestador, a distância passa a ser a do armazém dele */
 document.addEventListener("click",e=>{if(!e.target.closest?.(".sim-provider-proposal")||!window.elologRecolha)return;setTimeout(()=>{const r=window.elologRecolha,sel=escolhido(),input=document.getElementById("clientSimDistance");
-  if(sel&&r.kms[sel]!=null&&input&&input.value!==String(r.kms[sel])){input.value=String(r.kms[sel]);const s=document.getElementById("clientSimDistanceStatus");if(s)s.textContent=`Cerca de ${r.kms[sel].toLocaleString("pt-PT")} km por estrada desde o armazém do prestador escolhido.`}},0)});
+  if(sel&&r.kms[sel]!=null&&input&&input.value!==String(r.kms[sel])){input.value=String(r.kms[sel]);const s=document.getElementById("clientSimDistanceStatus");if(s)s.textContent=`Cerca de ${r.kms[sel].toLocaleString("pt-PT")} km por estrada${typeof currentUser!=="undefined"&&currentUser?.role==="cliente"?"":" desde o armazém do prestador escolhido"}.`}},0)});
 })();
