@@ -1,0 +1,26 @@
+/* Elolog — botões de ações nas linhas e cartões (v154). Todos com o mesmo tamanho, contorno e espaço; nunca cortados.
+   A ação principal fica em traço escuro; as perigosas em vermelho; «Mais ações» abre um menu por cima da linha. */
+html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions,.provider-payment-actions,.admin-record-actions,.field-service-actions,.manifest-card-actions,.ap-acoes,.ac-acoes){
+  display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:flex-end!important;gap:8px!important;min-width:0}
+html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions,.provider-payment-actions,.admin-record-actions,.field-service-actions,.manifest-card-actions,.ap-acoes,.ac-acoes)
+  :is(button,.employee-action,summary,a.btn-secondary,a.btn-primary){display:inline-flex!important;align-items:center;justify-content:center;gap:6px;min-height:38px!important;height:auto!important;
+  padding:8px 14px!important;border-radius:8px!important;font:600 13px/1.2 "Work Sans",system-ui,sans-serif!important;white-space:nowrap!important;box-shadow:none!important;cursor:pointer;
+  background:#fff!important;color:var(--ec-tinta,#13293D)!important;border:1px solid #C9D4DC!important;transition:border-color .15s,background-color .15s}
+html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions,.provider-payment-actions,.admin-record-actions,.field-service-actions,.manifest-card-actions,.ap-acoes,.ac-acoes)
+  :is(.btn-primary,.btn-success){border-color:var(--ec-tinta,#13293D)!important}
+html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions,.provider-payment-actions,.admin-record-actions,.field-service-actions,.manifest-card-actions,.ap-acoes,.ac-acoes)
+  :is(button,a,summary):is(.btn-danger,.danger,[class*="eliminar"],[class*="apagar"]):is(*){color:#B42318!important;border-color:#F2B8B5!important}
+@media(hover:hover){html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions,.provider-payment-actions,.admin-record-actions,.field-service-actions,.manifest-card-actions,.ap-acoes,.ac-acoes)
+  :is(button,.employee-action,summary):hover{background:#F4F7F9!important;border-color:#9FB0BD!important}}
+html:not(#ec) body :is(.pr-acoes,.employee-row-actions) summary{list-style:none}
+html:not(#ec) body :is(.pr-acoes,.employee-row-actions) summary::-webkit-details-marker{display:none}
+html:not(#ec) body :is(.pr-acoes,.employee-row-actions) summary::after{content:"";width:7px;height:7px;margin-left:4px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+/* menu de «Mais ações» por cima, alinhado à direita */
+html:not(#ec) body .pr-mais>div[role="menu"]{position:absolute;right:0;top:calc(100% + 6px);z-index:60;min-width:240px;display:flex;flex-direction:column;padding:6px;background:#fff;border:1px solid var(--ec-borda,#DCE3E8);border-radius:10px;box-shadow:0 12px 32px rgba(19,41,61,.16)}
+html:not(#ec) body .pr-mais>div[role="menu"]>button{display:block!important;width:100%;text-align:left!important;justify-content:flex-start!important;border:0!important;min-height:38px!important;background:transparent!important}
+html:not(#ec) body .pr-mais>div[role="menu"]>button:hover{background:#F4F7F9!important}
+/* funcionários: a coluna das ações cabe os dois botões */
+@media(min-width:901px){html:not(#ec) body :is(.provider-employee-row,.provider-employee-list-head){grid-template-columns:minmax(200px,1.6fr) minmax(120px,1fr) 90px minmax(140px,1fr) minmax(250px,auto)!important}}
+@media(max-width:640px){html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions){justify-content:stretch!important}
+  html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions)>:is(button,details,a){flex:1 1 auto}
+  html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions) :is(button,summary){min-height:42px!important;width:100%}}

@@ -14,3 +14,9 @@ html:not(#ec) body .ec-sino-novo #notificationCount,html:not(#ec) body .ec-sino-
 @keyframes ecSino{0%,100%{transform:rotate(0)}15%{transform:rotate(14deg)}30%{transform:rotate(-12deg)}45%{transform:rotate(9deg)}60%{transform:rotate(-6deg)}75%{transform:rotate(3deg)}}
 @keyframes ecPulso{50%{transform:scale(1.35)}}
 @media(prefers-reduced-motion:reduce){html:not(#ec) body .ec-sino-novo,html:not(#ec) body .ec-sino-novo *,html:not(#ec) body .ec-novo-etiqueta{animation:none!important}}
+/* v154: os avisos ficam sempre por cima das janelas abertas (formulários, fichas), para se lerem sem as fechar */
+html:not(#ec) body .platform-toast-stack{position:fixed!important;z-index:2147483000!important;pointer-events:none}
+html:not(#ec) body .platform-toast-stack>*{pointer-events:auto}
+/* v154: total do submenu na opção principal do menu */
+html:not(#ec) body #sidebar .nv-conta.nv-conta-grupo{margin-left:auto;background:#D6452F!important;color:#fff!important;box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+html:not(#ec) body #sidebar .nv-conta.nv-conta-grupo+span{margin-left:6px}
