@@ -58,6 +58,16 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v153 (simulação, novidades, tempo real, dispositivo de confiança)
+- Simulação do cliente: depois de «Avançar para propostas» esse botão sai (ficam «Rever simulação» e «Criar encomenda»); depois de criar, o cartão mostra só o registo do pedido (número, prestador, valor e próximo passo) (`app/cliente/simulacao-fluxo.js`).
+- Prestador: «Pedidos recebidos» mostra os pedidos do servidor com «Aceitar e criar encomenda» (depois passam para «Aprovar pedidos»). Corrigido: abrir as propostas convertia a empresa em texto e desligava o modo servidor até recarregar. No painel, os pedidos aparecem como «Pedido recebido» e abrem a lista certa.
+- Servidor: a atualização de um rascunho de simulação já não envia `cliente_id` (sem permissão), por isso o envio usa o mesmo número em vez de criar outro.
+- Novidades: encomendas, pedidos, pagamentos e pedidos de apoio novos ou com estado novo ficam com outra cor e a etiqueta «Novo»; o sino abana, o título do separador mostra «(n)» e aparece um aviso (`app/comum/novidades.js`, `novidades.css`).
+- Tempo real (migração `00195_tempo_real.sql`, autorizada): as páginas atualizam-se logo que algo muda; se o canal falhar, perguntam ao servidor a cada 5 s (`app/comum/tempo-real.js`).
+- «Lembrar este dispositivo durante 30 dias» no 2.º passo do administrador (migração `00196_dispositivos_confiaveis.sql`, autorizada; só o resumo SHA-256 no servidor, máx. 5 por pessoa, auditoria). Em «Segurança e histórico»: «Esquecer todos os dispositivos» (`app/comum/dispositivo-confiavel.js`).
+- Ao recarregar, a página volta ao mesmo ecrã (`app/comum/manter-ecra.js`).
+- O ELO deixou de mostrar o contador vermelho (os avisos ficam no sino). Site no telemóvel: o botão do menu passou para a direita.
+
 ## v152 (simulação do cliente: correções)
 - O cliente deixa de ver dados internos do prestador: a proposta mostra só o prestador, o valor e «Inclui a recolha» (sem distância ao armazém); a mensagem da distância já não diz o nome do armazém.
 - «Avançar para propostas» repetido mantém o mesmo número de simulação e o mesmo código de encomenda até a simulação ser enviada ao prestador; no servidor atualiza o mesmo rascunho (pedidos em fila, sem duplicados).

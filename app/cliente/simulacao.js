@@ -53,7 +53,7 @@ email:document.getElementById("destinatario-email")?.value.trim()||"",address:do
 const shipments=JSON.parse(localStorage.getItem("elologClientShipments")||"[]");shipments.unshift(shipment);localStorage.setItem("elologClientShipments",JSON.stringify(shipments));const simulations=getClientSimulations(),
 sentSimulation=simulations.find(s=>String(s.registro||"")===String(clienteSimulacaoAtual?.registro||""));if(sentSimulation){sentSimulation.provider=provider;sentSimulation.sentToProviderAt=new Date().toISOString();sentSimulation.requestId=code;
 sentSimulation.status="Enviada ao prestador";saveClientSimulations(simulations)}registerExtraDocuments(code,shipment.sender?.name||currentUser?.name,provider,shipment.extraDocuments,"cliente");saveAll();renderDocuments()}catch(e){
-console.warn("Não foi possível guardar o envio localmente.",e)}}let clientGoodsId=0;function adicionarBemCliente(descricao="",quantidade=1){clientGoodsId++;const box=document.getElementById("clientSimGoodsList");if(!box)return;
+console.warn("Não foi possível guardar o envio localmente.",e)}window.elologSimFinal?.({codigo:clienteSimulacaoAtual?.registro||code,prestador:provider,valor:shipment.total})}let clientGoodsId=0;function adicionarBemCliente(descricao="",quantidade=1){clientGoodsId++;const box=document.getElementById("clientSimGoodsList");if(!box)return;
 const tr=document.createElement("tr");tr.id="client-goods-"+clientGoodsId;tr.innerHTML=`
       <td><input class="csg-descricao" type="text" value="${String(descricao).replace(/"/g,
 "&quot;")}" placeholder="Ex.: Roupas" oninput="atualizarBensCliente()"></td>

@@ -56,6 +56,8 @@ async function prepararApp(){const sb=await S().cliente();const{data:f}=await sb
 window.elologMfaEmpresa=async function(c){cred=c;erro("");info("");
   ["authPage1","providerCompanyPage","providerEmployeePage","providerFuncPage"].forEach(id=>{const el=$(id);if(el)el.style.display="none"});pag.style.display="block";
   temApp=false;fator=null;
+  /* v153: dispositivo de confiança (30 dias) — entra sem pedir código */
+  if(await window.elologDispositivo?.reconhecer?.()){$("mfaTexto").textContent="Dispositivo reconhecido. A entrar…";try{await concluir();return}catch(e){erro(msg(e))}}
   try{const sb=await S().cliente(),{data:f}=await sb.auth.mfa.listFactors(),v=(f?.totp||[]).find(x=>x.status==="verified");if(v){temApp=true;fator=v.id}}catch(_){}
   canais=null;try{canais=await S().chamarFuncao("recuperar-acesso",{acao:"canais_codigo"})}catch(_){}
   if(temApp)return ecra("app");   // quem já usa a aplicação continua a usá-la (e pode pedir o código por email ou SMS)
@@ -71,6 +73,7 @@ async function verificar(){const codigo=$("mfaCodigo").value.trim(),b=$("mfaVeri
     else{const{data:ch,error}=await sb.auth.mfa.challenge({factorId:fator});if(error)throw error;
       const{error:e2}=await sb.auth.mfa.verify({factorId:fator,challengeId:ch.id,code:codigo});if(e2)return erro("Código errado ou expirado. Use o código que está agora na aplicação.");
       await window.elologReserva?.depoisDoTelemovel()}
+    await window.elologDispositivo?.lembrarSePedido?.();
     await concluir()}
   catch(e){erro(msg(e))}finally{b.disabled=false}}
 /** Abre a sessão da empresa depois do 2.º passo (código por email, da aplicação OU de reserva). */
