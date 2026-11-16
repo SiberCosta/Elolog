@@ -13,13 +13,16 @@
   function juntar(sims,encs){const porSim={};encs.forEach(e=>{if(e.simulacao_id)porSim[e.simulacao_id]=e});
     const linhas=[...encs.map(e=>({codigo:e.codigo,antigo:sims.find(x=>x.id===e.simulacao_id)?.codigo,origem:e.origem,destino:e.destino,carga:e.tipo_carga,peso:e.peso_kg,volume:e.volume_m3,data:e.data_prevista,
         total:eur(e.preco_total),uid:e.id,atualizada:e.updated_at,etapa:ETAPA[e.estado]||e.estado,status:e.estado==="cancelada"?"Cancelada":e.suspensa?"Suspensa":ETAPA[e.estado]||e.estado,criado:e.created_at,estado:e.estado,suspensa:!!e.suspensa,chegada:e.chegada_prevista||null,partida:e.partida_prevista||null,navio:e.navio||""})),
-      ...sims.filter(x=>!porSim[x.id]&&x.estado!=="rascunho").map(x=>({codigo:x.codigo,origem:x.origem,destino:x.destino,carga:x.tipo_carga,peso:x.peso_kg,volume:x.volume_m3,data:x.data_prevista,
+      ...sims.filter(x=>!porSim[x.id]&&!["rascunho","convertida"].includes(x.estado)).map(x=>({codigo:x.codigo,origem:x.origem,destino:x.destino,carga:x.tipo_carga,peso:x.peso_kg,volume:x.volume_m3,data:x.data_prevista,
         total:x.preco_estimado==null?"Por cotação":eur(x.preco_estimado),etapa:"Cotação",status:x.estado==="cancelada"?"Cancelada":"Cotação",criado:x.created_at,estado:"sim_"+x.estado}))];
     linhas.forEach(l=>{let o=operations.find(x=>x.id===l.codigo)||(l.antigo&&operations.find(x=>x.id===l.antigo));
       if(!o){o={id:l.codigo,client:currentUser.name,createdAt:l.criado};operations.unshift(o)}
       Object.assign(o,{id:l.codigo,client:o.client||currentUser.name,origin:l.origem,destination:l.destino,cargo:o.cargo||l.carga||"",weight:l.peso!=null?`${Number(l.peso)} kg`:o.weight,
         volume:l.volume!=null?Number(l.volume):o.volume,date:l.data||o.date,total:l.total,stage:l.etapa,status:l.status,suspended:!!l.suspensa,servidor:true,updatedAt:l.atualizada||o.updatedAt,arrivalDate:l.chegada||null,departureDate:l.partida||null,vessel:l.navio||""});
       /* v112: a última mudança de etapa registada no servidor (quem, quando, de onde para onde) alimenta o Fluxo Vivo */
+      /* v155: a simulação aceite passa a ser esta encomenda: sai o registo antigo, fica o número anterior */
+      if(l.antigo){o.simulationId=l.antigo;for(let i=operations.length-1;i>=0;i--){if(operations[i]!==o&&String(operations[i].id)===l.antigo)operations.splice(i,1)}
+        if(typeof payments!=="undefined"&&Array.isArray(payments))payments.forEach(p=>{if(String(p.operationId)===l.antigo)p.operationId=o.id})}
       const h=l.uid&&historico[l.uid];if(h)o.lastStatusChange={datetime:h.created_at,employee:h.responsavel||"",previous:ETAPA[h.de]||h.de,next:ETAPA[h.para]||h.para,note:h.nota||""}});
     return linhas}
 

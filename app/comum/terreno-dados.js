@@ -37,7 +37,11 @@ async function aoMover(p){const c={lat:+p.coords.latitude.toFixed(6),lon:+p.coor
   if(online()){try{const sb=await P().sb();await sb.rpc("registar_posicao",{p_trabalho:S.trabalho.id,p_lat:c.lat,p_lon:c.lon,p_precisao:c.prec,p_velocidade:c.vel,p_eta:S.eta,p_distancia:S.dist})}catch(_){}}}
 const posicaoAgora=()=>new Promise((ok,falha)=>{if(!navigator.geolocation)return falha(new Error("Este aparelho não tem localização."));
   navigator.geolocation.getCurrentPosition(ok,e=>falha(new Error(e.code===1?"A localização está bloqueada. Autorize a localização para a Elolog nas definições do telemóvel.":"Não foi possível obter a localização. Vá para um local aberto e tente outra vez.")),{enableHighAccuracy:true,timeout:20000,maximumAge:15000})});
-async function iniciar(t,previsto){const p=await posicaoAgora();const c={lat:+p.coords.latitude.toFixed(6),lon:+p.coords.longitude.toFixed(6)};
+/* v158: só uma rota de cada vez (o servidor também recusa; aqui avisa antes de pedir a localização) */
+async function rotaAtiva(){if(S.trabalho)return{trabalho_id:S.trabalho.id,codigo:S.trabalho.encomenda?.codigo||"",tipo:S.trabalho.tipo};if(!online())return null;
+  try{const sb=await P().sb(),{data}=await sb.rpc("rota_ativa");return data&&data.trabalho_id?data:null}catch(_){return null}}
+async function iniciar(t,previsto){const a=await rotaAtiva();if(a&&String(a.trabalho_id)!==String(t.id))throw new Error(`Termine primeiro a rota ${a.tipo==="entrega"?"de entrega":"de recolha"}${a.codigo?" da encomenda "+a.codigo:""}: só pode ter uma rota a decorrer.`);
+  const p=await posicaoAgora();const c={lat:+p.coords.latitude.toFixed(6),lon:+p.coords.longitude.toFixed(6)};
   if(online()){const sb=await P().sb();const{error}=await sb.rpc("iniciar_percurso",{p_trabalho:t.id,p_lat:c.lat,p_lon:c.lon,p_precisao:Math.round(p.coords.accuracy||0),p_previsto_ate:previsto||null});if(error)throw error}
   else{const l=demoLer();const x=l.find(y=>y.id===t.id);if(x){x.estado="em_curso";demoGravar(l)}}
   parar(true);S.trabalho=t;S.ultima={lat:c.lat,lon:c.lon};S.ultimoEnvio=Date.now();S.ultimaEta=0;S.eta=null;S.dist=null;S.destino=null;
@@ -69,5 +73,5 @@ function demoRegistar(p){const l=demoLer(),t=l.find(x=>x.id===p.trabalho);if(!t)
   if(t.tipo==="entrega"&&p.resultado==="entregue")try{window.elologDocDemo?.entrega?.(t.encomenda.codigo,p)}catch(_){}return{id:"demo-"+p.id_local,repetido:false}}
 window.addEventListener("online",()=>enviarPendentes());setInterval(()=>{if(navigator.onLine)enviarPendentes()},45000);setTimeout(()=>enviarPendentes(),3000);
 
-window.elologTerrenoDados={servicos,morada,pessoa,iniciar,parar,estado,ouvir:f=>{S.ouvintes.add(f);return()=>S.ouvintes.delete(f)},aCaminho,guardar,pendentes,enviarPendentes,descartar,uuid,erroTexto,online,_demoLer:demoLer};
+window.elologTerrenoDados={rotaAtiva,servicos,morada,pessoa,iniciar,parar,estado,ouvir:f=>{S.ouvintes.add(f);return()=>S.ouvintes.delete(f)},aCaminho,guardar,pendentes,enviarPendentes,descartar,uuid,erroTexto,online,_demoLer:demoLer};
 })();

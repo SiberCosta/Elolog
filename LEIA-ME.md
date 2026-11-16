@@ -58,6 +58,25 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v158 (uma rota de cada vez; ficha simples para o operador)
+- Só uma rota a decorrer por operador: `iniciar_percurso` recusa a segunda («Termine primeiro a rota REC-…») e `rota_ativa()` deixa o telemóvel avisar antes de pedir a localização (migração `00199_uma_rota_de_cada_vez.sql`, autorizada). «Cheguei» termina a rota; em «Serviços ao vivo», «Iniciar percurso» some dos outros serviços enquanto há uma rota a decorrer.
+- Ficha do serviço para o operador simplificada (`app/prestador/terreno-ficha-simples.js`, `terreno-ficha.css`): 3 passos (A caminho · No local · Registado), quem/onde/quando/viatura/volumes, «Ligar» e «Navegar», e um só botão grande com o próximo passo (Iniciar rota → Cheguei ao local → Registar recolha/entrega); «Comunicar um problema» à parte. Se houver outra rota a decorrer, leva a ela.
+
+## v157 (botões do serviço de terreno)
+- Na ficha do serviço (REC-…/ENT-…), com servidor, os botões fazem a ação real (`app/prestador/terreno-acoes-servidor.js`): «Iniciar rota» partilha a posição e calcula a chegada prevista; «Cheguei» pára a partilha e abre o comprovativo; «Conferir carga», «Assinatura / PIN» e «Concluir» abrem o comprovativo (volumes, fotografias, assinatura no ecrã); «Ocorrência» abre as ocorrências da encomenda. Antes só mostravam um aviso ou nada.
+
+## v156 (recolhas agendadas, contador, rastreio real no site)
+- Agendar a recolha (com responsável) passa a encomenda para «Recolha» no servidor; as que já tinham recolha marcada e ficaram em «agendamento» são acertadas ao abrir a área do prestador (`app/prestador/terreno-servidor.js`).
+- «Programar recolhas» e o contador do menu mostram só as encomendas ainda por agendar (`app/prestador/recolhas-por-agendar.js`); o painel diz «recolhas por agendar».
+- Rastreio do site com o estado real: nova função pública `rastrear_encomenda` (migração `00198_rastrear_encomenda.sql`, exceção autorizada à regra «o público só executa validar_empresa»): só etapa, origem e destino, datas e etapas passadas; nada pessoal; limite de 20 pesquisas por 10 minutos. Ecrã com 6 fases, datas e fase atual (`site/scripts/rastreio.js`, `site/estilos/rastreio.css`). O exemplo inventado («Em Trânsito», 22 de agosto) desapareceu.
+
+## v155 (simulação aceite = uma só encomenda, viaturas, «Mais ações», aprovar pedidos)
+- A simulação aceite passa a ser a encomenda do prestador (ex.: ELO_SM-000005 → ELO_SOIM-000005): sai o registo repetido no cliente e no prestador, e o número anterior fica guardado («Simulação anterior», pesquisável). Com servidor, os ELO_SM não entram nas listas de encomendas da empresa (ficam só em «Pedidos recebidos»).
+- Barra de fluxo: a fase «Acordo» fica concluída quando a simulação foi aceite.
+- Viaturas: botão «Atribuir a funcionário» (grava a viatura habitual no servidor, com auditoria) (`app/prestador/viaturas-atribuir.js`).
+- «Mais ações» abre sempre por cima e inteiro; se não couber em baixo, abre para cima (`app/comum/menus-acoes.js`).
+- «Aprovar pedidos»: valor e estado no topo, dados em grupos, lista «Antes de aprovar» e decisão (Rejeitar / Aprovar) separada das consultas (`app/prestador/aprovacao-visual.js`, `aprovacao.css`).
+
 ## v154 (funcionários, cliente só com os seus dados, corrigir simulação, ecrã estável)
 - Funcionários: alterar a função (e os restantes dados) grava no servidor (`app/prestador/funcionarios-servidor.js`); antes só mudava a cópia local. Operador de terreno criado com PIN de 6 a 8 dígitos (antes pedia palavra-passe forte e não deixava criar).
 - Cliente: numa sessão real só vê as encomendas e pagamentos da sua conta, mesmo que o aparelho tenha dados de outras contas (`app/cliente/so-meus.js`, sem apagar nada); o quadro «O seu próximo passo» só aparece quando há algo a fazer (pagar ou levantar).

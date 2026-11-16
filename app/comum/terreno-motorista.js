@@ -27,11 +27,11 @@ async function desenhar(){const s=document.getElementById("terrenoMotorista");if
     <span class="tv-rede ${rede?"ok":"sem"}">${rede?"Com rede":"Sem rede: o que registar fica guardado"}</span></div><div class="tv-faixa" id="tvFaixa" hidden></div><div id="tvFila">${await filaHtml()}</div>
     <div class="tv-lista">${lista.length?lista.map(cartao).join(""):'<p class="tv-vazio">Não tem serviços planeados para hoje. Quando a empresa lhe atribuir uma recolha ou entrega, aparece aqui.</p>'}</div></div>`;
   faixa();ligar(s)}
-function cartao(t){const e=t.encomenda||{},p=D().pessoa(t),m=D().morada(t),ativo=D().estado().trabalho?.id===t.id;
+function cartao(t){const e=t.encomenda||{},p=D().pessoa(t),m=D().morada(t),ativo=D().estado().trabalho?.id===t.id,outra=!!D().estado().trabalho&&!ativo;
   return`<article class="tv-cartao${ativo?" tv-ativo":""}" data-id="${esc(t.id)}"><header><span class="tv-tipo tv-${esc(t.tipo)}">${NOME[t.tipo]||esc(t.tipo)}</span><b class="tv-cod">${esc(e.codigo||"")}</b>${t.estado==="em_curso"?'<span class="tv-curso">Em curso</span>':""}</header>
     <strong class="tv-nome">${esc(p.nome||"—")}</strong>${p.telefone?`<a class="tv-tel" href="tel:${esc(String(p.telefone).replace(/[^\d+]/g,""))}">${esc(p.telefone)}</a>`:""}
     <p class="tv-morada">${esc(m||"Morada por indicar")}</p>${e.quantidade?`<p class="tv-vol">${esc(e.quantidade)} volume(s)</p>`:""}${t.notas?`<p class="tv-nota">${esc(t.notas)}</p>`:""}
-    <div class="tv-acoes">${ativo?"":`<label class="tv-hora">Combinado até <input type="time" data-tv-hora aria-label="Hora combinada com o cliente"></label><button type="button" class="btn-secondary" data-tv="iniciar">Iniciar percurso</button>`}
+    <div class="tv-acoes">${ativo?"":outra?`<p class="tv-nota">Termine a rota em curso antes de iniciar esta.</p>`:`<label class="tv-hora">Combinado até <input type="time" data-tv-hora aria-label="Hora combinada com o cliente"></label><button type="button" class="btn-secondary" data-tv="iniciar">Iniciar percurso</button>`}
       ${m?`<a class="btn-secondary" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(m)}">Navegar</a>`:""}
       <button type="button" class="btn-primary" data-tv="registar">Registar ${t.tipo==="recolha"?"recolha":"entrega"}</button></div></article>`}
 function ligar(s){s.onclick=async ev=>{const b=ev.target.closest("[data-tv],[data-tv-descartar]");if(!b)return;

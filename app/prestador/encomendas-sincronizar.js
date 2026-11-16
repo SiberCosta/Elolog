@@ -33,17 +33,19 @@ function ligarDecisao(){const f=window.submitProviderApprovalDecision;if(typeof 
 let aSincronizar=false;
 async function sincronizar(){if(aSincronizar||!P()?.online?.()||typeof operations==="undefined")return;aSincronizar=true;
   try{const emp=await P().minhaEmpresa?.().catch(()=>null);if(!emp?.empresa_id)return;const sb=await P().sb();
-    const{data,error}=await sb.from("encomendas").select("id,codigo,estado,cliente_nome,clientes(nome),origem,destino,tipo_carga,descricao,quantidade,peso_kg,volume_m3,preco_total,data_prevista,created_at,morada_recolha,remetente,destinatario,chegada_prevista,partida_prevista,navio")
+    const{data,error}=await sb.from("encomendas").select("id,codigo,estado,simulacao_id,simulacoes(codigo),cliente_nome,clientes(nome),origem,destino,tipo_carga,descricao,quantidade,peso_kg,volume_m3,preco_total,data_prevista,created_at,morada_recolha,remetente,destinatario,chegada_prevista,partida_prevista,navio")
       .eq("empresa_id",emp.empresa_id).order("created_at",{ascending:false}).limit(200);if(error||!data)return;
     const empresa=typeof currentProviderCompanyName==="function"?currentProviderCompanyName():"";let mudou=false;
-    for(const r of data){const etapa=ETAPA[r.estado]||r.estado;
+    for(const r of data){const etapa=ETAPA[r.estado]||r.estado,anterior=r.simulacoes?.codigo||"";
+      /* v155: a encomenda nascida de uma simulação substitui o registo da simulação (fica o número anterior guardado) */
+      if(anterior){for(let i=operations.length-1;i>=0;i--){if(String(operations[i].id)===anterior){operations.splice(i,1);mudou=true}}}
       const o=operations.find(x=>x.servidor?.id===r.id||String(x.id)===String(r.codigo));
-      if(o){o.servidor=o.servidor||{id:r.id,codigo:r.codigo};
+      if(o){o.servidor=o.servidor||{id:r.id,codigo:r.codigo};if(anterior&&o.simulationId!==anterior){o.simulationId=anterior;mudou=true}
         if(r.estado==="cancelada"&&!FECHADA.test(String(o.status||""))){o.status=o.stage="Cancelada";o.updatedAt=new Date().toISOString();mudou=true}
         else if((o.doServidor||o.servidor?.id===r.id)&&o.status!==etapa){o.status=o.stage=etapa;o.arrivalDate=r.chegada_prevista||o.arrivalDate;mudou=true}
         if(r.chegada_prevista&&o.arrivalDate!==r.chegada_prevista){o.arrivalDate=r.chegada_prevista;o.departureDate=r.partida_prevista;o.vessel=r.navio;mudou=true}continue}
       const rem=r.remetente||{},dest=r.destinatario||{};
-      operations.push({id:r.codigo,servidor:{id:r.id,codigo:r.codigo},doServidor:true,client:r.clientes?.nome||r.cliente_nome||rem.nome||"Cliente",origin:r.origem,destination:r.destino,
+      operations.push({id:r.codigo,simulationId:anterior||undefined,servidor:{id:r.id,codigo:r.codigo},doServidor:true,client:r.clientes?.nome||r.cliente_nome||rem.nome||"Cliente",origin:r.origem,destination:r.destino,
         cargo:r.tipo_carga,goods:r.descricao,quantity:r.quantidade,weight:Number(r.peso_kg||0),volume:Number(r.volume_m3||0),estimatedPrice:Number(r.preco_total||0),date:r.data_prevista,
         createdAt:r.created_at,status:etapa,stage:etapa,pickupAddress:r.morada_recolha||"",senderName:rem.nome||"",senderPhone:rem.telefone||"",recipientName:dest.nome||"",
         recipientPhone:dest.telefone||"",deliveryAddress:dest.morada||"",provider:empresa,history:[],arrivalDate:r.chegada_prevista||null,departureDate:r.partida_prevista||null,vessel:r.navio||""});mudou=true}
@@ -67,3 +69,11 @@ window.addEventListener("load",()=>{arrancar();setTimeout(()=>sincronizar(),2500
 setInterval(()=>sincronizar(),60000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)sincronizar()});
 window.elologSincronizarEncomendas={sincronizar,arquivarPagamentos,cancelarNoServidor};
 })();
+/* v155: com servidor, os pedidos de simulação (ELO_SM-…) não são encomendas: ficam só em «Pedidos recebidos».
+   Registos ELO_SM guardados neste aparelho (por exemplo, de testes como cliente) não entram nas listas da empresa. */
+window.addEventListener("load",()=>{const f=window.providerCompanyOperations;if(typeof f!=="function"||f.__semSim)return;
+  const g=function(){const l=f.apply(this,arguments);const u=typeof currentUser!=="undefined"?currentUser:null;
+    return u?.providerCompany?.server===true&&Array.isArray(l)?l.filter(o=>!/^ELO_SM-/i.test(String(o.id||""))):l};
+  Object.assign(g,f);g.__semSim=true;window.providerCompanyOperations=g;
+  const v=window.providerCanSeeOperation;if(typeof v==="function"&&!v.__semSim){const h=function(o){const u=typeof currentUser!=="undefined"?currentUser:null;
+    if(u?.providerCompany?.server===true&&/^ELO_SM-/i.test(String(o?.id||"")))return false;return v.apply(this,arguments)};Object.assign(h,v);h.__semSim=true;window.providerCanSeeOperation=h}});

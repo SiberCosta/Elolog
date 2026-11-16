@@ -22,7 +22,9 @@ const PRIORIDADE=[[2,"esperam a sua aprovação","espera a sua aprovação","pro
   [8,"chegaram e esperam confirmação","chegou e espera confirmação","providerDestino"],[9,"esperam ser levantadas","espera ser levantada","providerDisponivel"],[7,"estão em viagem","está em viagem","providerTransito"]];
 
 function doPrestador(){try{return typeof providerCompanyOperations==="function"?providerCompanyOperations():ops()}catch(_){return ops()}}
-function contagem(lista){const c={};if(!F())return c;lista.forEach(o=>{const i=F().indice(o);c[i]=(c[i]||0)+1});return c}
+function contagem(lista){const c={};if(!F())return c;lista.forEach(o=>{const i=F().indice(o);c[i]=(c[i]||0)+1});
+  /* v156: «esperam recolha» = só as que ainda não têm recolha agendada */
+  if(typeof window.elologPorAgendar==="function")c[3]=lista.filter(window.elologPorAgendar).length;return c}
 
 /* o próximo passo de cada papel: {t: texto, d: detalhe, js: ação, nivel: normal|agora|urgente} */
 function proximo(papel){

@@ -26,10 +26,16 @@ const vLocal=v=>({id:v.id,srvId:v.id,plate:v.matricula,type:v.descricao||"Viatur
 async function ler(){if(!ativo())return false;if(aLer)return aLer;aLer=(async()=>{try{const sb=await P().sb();empresa=empresa||(await P().minhaEmpresa())?.empresa_id;if(!empresa)return false;
     const desde=new Date(Date.now()-60*864e5).toISOString().slice(0,10);
     const[v,t]=await Promise.all([sb.from("veiculos").select("id,matricula,descricao,ativo").eq("empresa_id",empresa).order("matricula"),
-      sb.from("trabalhos_terreno").select("id,encomenda_id,tipo,operador_id,veiculo_id,data,estado,notas,created_at,encomenda:encomendas(codigo)").eq("empresa_id",empresa).in("tipo",["recolha","entrega"]).gte("data",desde).order("data",{ascending:false}).limit(300)]);
+      sb.from("trabalhos_terreno").select("id,encomenda_id,tipo,operador_id,veiculo_id,data,estado,notas,created_at,encomenda:encomendas(codigo,estado)").eq("empresa_id",empresa).in("tipo",["recolha","entrega"]).gte("data",desde).order("data",{ascending:false}).limit(300)]);
     if(v.error)throw v.error;if(t.error)throw t.error;
     veiculos=(v.data||[]).map(vLocal);fotoV=new Map(veiculos.map(x=>[x.id,JSON.stringify(x)]));
-    jobs=(t.data||[]).map(local);foto=new Map(jobs.map(j=>[j.id,chave(j)]));pronto=true;return true}
+    jobs=(t.data||[]).map(local);foto=new Map(jobs.map(j=>[j.id,chave(j)]));pronto=true;
+    /* acerta as que ficaram para trás: recolha com responsável mas encomenda ainda em «agendamento» */
+    const atrasadas=(t.data||[]).filter(x=>x.tipo==="recolha"&&x.operador_id&&x.encomenda?.estado==="agendamento"&&!/cancel|conclu/.test(x.estado||""));
+    if(atrasadas.length){let n=0;for(const x of atrasadas){const o=(typeof operations!=="undefined"?operations:[]).find(op=>op.servidor?.id===x.encomenda_id||String(op.id)===String(x.encomenda?.codigo));
+        if(await passarRecolha(sb,x.encomenda_id,o,"Recolha já tinha responsável: passa à etapa Recolha."))n++}
+      if(n){try{saveAll?.()}catch(_){}try{window.elologSincronizarEncomendas?.sincronizar?.()}catch(_){}setTimeout(()=>{try{redesenhar();window.elologNavegacao?.atualizar?.()}catch(_){}},300)}}
+    return true}
   catch(e){aviso("Não foi possível ler a equipa de terreno do servidor: "+erro(e),"warning");return false}finally{setTimeout(()=>{aLer=null},200)}})();return aLer}
 const redesenhar=()=>{["renderProviderFieldTeam","renderProviderDashboardForCompany"].forEach(f=>{try{window[f]?.()}catch(_){}})};
 
@@ -41,8 +47,13 @@ async function gravarServicos(lista){const sb=await P().sb();let n=0;
     if(!j.srvId&&jobs.some(x=>x.srvId&&x.operationId===j.operationId&&x.type===j.type&&!/Conclu|Cancel/.test(x.status))){aviso(`A encomenda ${j.operationId} já tem um serviço de ${j.type.toLowerCase()} ativo: edite esse.`,"warning");continue}
     if(!j.srvId){if(aEnviar.has(j.id))continue;aEnviar.add(j.id);try{const{error}=await sb.from("trabalhos_terreno").insert({empresa_id:empresa,encomenda_id:enc,tipo:j.type==="Entrega"?"entrega":"recolha",...reg});if(error)throw error;n++}
       catch(e){aEnviar.delete(j.id);throw e}}
-    else if(foto.get(j.srvId)!==chave(j)){const{error}=await sb.from("trabalhos_terreno").update(reg).eq("id",j.srvId);if(error)throw error;n++}}
+    else if(foto.get(j.srvId)!==chave(j)){const{error}=await sb.from("trabalhos_terreno").update(reg).eq("id",j.srvId);if(error)throw error;n++}
+    if(j.type!=="Entrega"&&reg.operador_id)await passarRecolha(sb,enc,o,`Recolha agendada para ${dia?new Date(dia+"T12:00").toLocaleDateString("pt-PT"):"data a combinar"}${hora?" às "+hora.slice(0,5):""}.`)}
   return n}
+/* v156: recolha com responsável = a encomenda sai de «Programar recolhas» e passa à etapa «Recolha» (no servidor) */
+async function passarRecolha(sb,enc,o,nota){try{const{data:e}=await sb.from("encomendas").select("estado").eq("id",enc).maybeSingle();if(e?.estado!=="agendamento")return false;
+    const{error}=await sb.rpc("transitar_encomenda",{p_encomenda:enc,p_para:"recolha",p_nota:nota});if(error)throw error;if(o){o.status=o.stage="Recolha";o.updatedAt=new Date().toISOString()}return true}
+  catch(err){console.warn("Não foi possível passar a encomenda para Recolha.",err?.message||err);return false}}
 
 async function gravarViaturas(lista){const sb=await P().sb();
   for(const v of lista){const reg={matricula:String(v.plate||"").trim().toUpperCase(),descricao:v.type||null,ativo:!/inativ|fora|abatid/i.test(v.status||"")};if(!reg.matricula)continue;

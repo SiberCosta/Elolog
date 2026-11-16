@@ -29,7 +29,7 @@ index)=>`
                     <div class="client-order-summary client-order-summary-clickable" onclick="toggleClientOrderDetails(this.closest('.client-order-card'))" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleClientOrderDetails(this.closest('.client-order-card'))}">
                         <div class="client-order-summary-item">
                             <small>Código da encomenda</small>
-                            <strong>${o.id||"—"}</strong>
+                            <strong>${o.id||"—"}</strong>${o.simulationId&&o.simulationId!==o.id?`<small class="cod-anterior">Simulação ${o.simulationId}</small>`:""}
                         </div>
                         <div class="client-order-summary-item">
                             <small>Estado</small>

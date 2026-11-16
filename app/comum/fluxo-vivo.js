@@ -71,7 +71,7 @@ function render(o,papel){papel=papel||(eu()?.role==="prestador"?"prestador":"cli
     <ol class="fv-fases">${fases}</ol><div class="fv-rodape"><small>${ult}${i<10&&!cancel?` ${i<=3&&o?.date?`Recolha prevista: ${esc(window.elologPrevisao?.dia(o.date)||o.date)}. `:""}${esc(window.elologPrevisao?.texto(o)||"")}`:""}</small>${cancel?"":proximaAcao(o,i,papel)}</div></section>`}
 
 /* versão compacta para listas e painéis: frase + saúde + fio de 4 fases */
-function compacto(o,papel){const i=indice(o),s=saude(o,i);const f=FASES.map(([,idx])=>`<i class="${i>idx[idx.length-1]?"feito":i>=idx[0]?"atual":""}"></i>`).join("");
+function compacto(o,papel){const i=indice(o),s=saude(o,i);/* v155: simulação já aceite pelo prestador = fase «Acordo» concluída */const aceite=!!o?.simulationId&&i>=2;const f=FASES.map(([,idx],n)=>`<i class="${i>idx[idx.length-1]||(n===0&&aceite)?"feito":i>=idx[0]?"atual":""}"></i>`).join("");
   return`<div class="fv-mini fv-${s.k}"><span class="fv-fio" aria-hidden="true">${f}</span><span><b>${esc(ETAPAS[i])}</b><small><i aria-hidden="true"></i>${esc(s.t)}</small></span></div>`}
 
 window.elologFluxo={render,compacto,acao,indice,saude,ETAPAS};
