@@ -7367,3 +7367,87 @@ begin
 end $$;
 revoke all on function public.prestador_corrigir_simulacao(uuid, jsonb) from public, anon;
 grant execute on function public.prestador_corrigir_simulacao(uuid, jsonb) to authenticated;
+
+-- Elolog v156: rastreio público no site («Rastrear carga»), autorizado só com o código.
+-- Devolve apenas: código, etapa, origem, destino, partida e chegada previstas e data da última mudança.
+-- Sem nomes, moradas, contactos, preços nem empresa. Limite: 30 consultas por 10 minutos por endereço.
+-- Um código de simulação já aceite (ELO_SM-…) devolve a encomenda em que se transformou. Não altera dados.
+create or replace function public.rastrear_encomenda(p_codigo text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v_c text := upper(trim(coalesce(p_codigo, ''))); v_ip text; e encomendas; s simulacoes;
+begin
+  if v_c !~ '^ELO_[A-Z0-9]{1,12}-[0-9]{1,9}$' then return jsonb_build_object('encontrada', false, 'motivo', 'formato'); end if;
+  begin v_ip := split_part(coalesce(current_setting('request.headers', true)::json ->> 'x-forwarded-for', ''), ',', 1); exception when others then v_ip := ''; end;
+  if not public.servico_limite('rastreio:' || coalesce(nullif(trim(v_ip), ''), 'sem-ip'), 30, 10) then
+    return jsonb_build_object('encontrada', false, 'motivo', 'limite'); end if;
+  select * into e from encomendas where codigo = v_c;
+  if not found then
+    select * into s from simulacoes where codigo = v_c and estado <> 'rascunho';
+    if not found then return jsonb_build_object('encontrada', false, 'motivo', 'inexistente'); end if;
+    select * into e from encomendas where simulacao_id = s.id order by created_at desc limit 1;
+    if not found then
+      return jsonb_build_object('encontrada', true, 'codigo', s.codigo, 'etapa', case when s.estado = 'cancelada' then 'cancelada' else 'cotacao' end,
+        'origem', s.origem, 'destino', s.destino, 'atualizada', s.updated_at);
+    end if;
+  end if;
+  return jsonb_build_object('encontrada', true, 'codigo', e.codigo, 'etapa', e.estado::text, 'suspensa', coalesce(e.suspensa, false),
+    'origem', e.origem, 'destino', e.destino, 'partida_prevista', e.partida_prevista, 'chegada_prevista', e.chegada_prevista, 'atualizada', e.updated_at);
+end $$;
+revoke all on function public.rastrear_encomenda(text) from public;
+grant execute on function public.rastrear_encomenda(text) to anon, authenticated;
+
+-- Elolog v156: rastreio público no site (exceção autorizada à regra «o público só executa validar_empresa»).
+-- Com o código completo devolve só: etapa atual, origem e destino, datas previstas, última atualização e as etapas
+-- já passadas com a data. Nunca devolve nomes, moradas, contactos, preços nem documentos.
+-- Limite: 20 pesquisas por 10 minutos por endereço. Não altera nem apaga dados.
+create or replace function public.rastrear_encomenda(p_codigo text)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v_cod text := upper(regexp_replace(coalesce(p_codigo, ''), '\s', '', 'g')); v_ip text; e encomendas; v_etapas jsonb;
+begin
+  if v_cod !~ '^ELO_[A-Z0-9]{2,12}-\d{6}$' then return jsonb_build_object('encontrada', false, 'motivo', 'formato'); end if;
+  begin v_ip := split_part(coalesce(current_setting('request.headers', true)::json ->> 'x-forwarded-for', ''), ',', 1); exception when others then v_ip := ''; end;
+  if not public.servico_limite('rastreio:' || coalesce(nullif(trim(v_ip), ''), 'sem-ip'), 20, 10) then
+    return jsonb_build_object('encontrada', false, 'motivo', 'limite'); end if;
+  select * into e from encomendas where codigo = v_cod;
+  if not found then return jsonb_build_object('encontrada', false, 'motivo', 'nao_existe'); end if;
+  select coalesce(jsonb_agg(jsonb_build_object('etapa', h.para, 'data', h.created_at) order by h.created_at), '[]'::jsonb) into v_etapas
+    from encomenda_historico h where h.encomenda_id = e.id and h.para is not null;
+  return jsonb_build_object('encontrada', true, 'codigo', e.codigo, 'estado', e.estado, 'suspensa', coalesce(e.suspensa, false),
+    'origem', left(e.origem, 80), 'destino', left(e.destino, 80), 'data_recolha', e.data_prevista,
+    'partida_prevista', e.partida_prevista, 'chegada_prevista', e.chegada_prevista, 'atualizada', e.updated_at, 'etapas', v_etapas);
+end $$;
+revoke all on function public.rastrear_encomenda(text) from public;
+grant execute on function public.rastrear_encomenda(text) to anon, authenticated;
+
+-- Elolog v158: cada operador só tem uma rota a decorrer. iniciar_percurso recusa uma rota nova enquanto houver outra
+-- do mesmo operador sem terminar (com sinal nas últimas 12 horas). rota_ativa() diz ao telemóvel qual é, antes de pedir
+-- a localização. Não apaga nem altera dados.
+create or replace function public.rota_ativa()
+returns jsonb language sql stable security definer set search_path = public as $$
+  select jsonb_build_object('trabalho_id', s.trabalho_id, 'tipo', t.tipo, 'codigo', e.codigo, 'iniciado_em', s.iniciado_em)
+    from trabalhos_seguimento s join trabalhos_terreno t on t.id = s.trabalho_id left join encomendas e on e.id = s.encomenda_id
+   where s.operador_id = auth.uid() and s.terminado_em is null and t.estado = 'em_curso' and s.atualizado_em > now() - interval '12 hours'
+   order by s.atualizado_em desc limit 1 $$;
+revoke all on function public.rota_ativa() from public, anon;
+grant execute on function public.rota_ativa() to authenticated;
+
+create or replace function public.iniciar_percurso(p_trabalho uuid, p_lat numeric, p_lon numeric, p_precisao integer DEFAULT NULL::integer, p_previsto_ate timestamp with time zone DEFAULT NULL::timestamp with time zone)
+returns jsonb language plpgsql security definer set search_path = public as $function$
+declare t trabalhos_terreno; v_outra text;
+begin
+  t := private.trabalho_meu(p_trabalho);
+  if t.estado not in ('planeada', 'em_curso') then raise exception 'Este serviço já está fechado.'; end if;
+  if p_previsto_ate is not null and (p_previsto_ate < now() - interval '1 day' or p_previsto_ate > now() + interval '14 days') then raise exception 'Hora combinada inválida.'; end if;
+  select upper(case when o.tipo = 'entrega' then 'ENT-' else 'REC-' end || left(o.id::text, 5)) || coalesce(' (' || e.codigo || ')', '') into v_outra
+    from trabalhos_seguimento s join trabalhos_terreno o on o.id = s.trabalho_id left join encomendas e on e.id = s.encomenda_id
+   where s.operador_id = coalesce(t.operador_id, auth.uid()) and s.trabalho_id <> t.id and s.terminado_em is null and o.estado = 'em_curso'
+     and s.atualizado_em > now() - interval '12 hours' limit 1;
+  if v_outra is not null then raise exception 'Termine primeiro a rota %: só pode ter uma rota a decorrer.', v_outra; end if;
+  update trabalhos_terreno set estado = 'em_curso', operador_id = coalesce(operador_id, auth.uid()), updated_at = now() where id = t.id;
+  insert into trabalhos_seguimento (trabalho_id, empresa_id, encomenda_id, operador_id, lat, lon, precisao_m, previsto_ate)
+  values (t.id, t.empresa_id, t.encomenda_id, coalesce(t.operador_id, auth.uid()), p_lat, p_lon, p_precisao, p_previsto_ate)
+  on conflict (trabalho_id) do update set lat = excluded.lat, lon = excluded.lon, precisao_m = excluded.precisao_m, atualizado_em = now(), terminado_em = null,
+    previsto_ate = coalesce(excluded.previsto_ate, trabalhos_seguimento.previsto_ate), alerta_sinal_em = null;
+  perform private.emitir_evento(t.empresa_id, 'percurso.iniciado', (select codigo from encomendas where id = t.encomenda_id), jsonb_build_object('servico', t.tipo, 'previsto_ate', p_previsto_ate));
+  return jsonb_build_object('ok', true);
+end $function$;

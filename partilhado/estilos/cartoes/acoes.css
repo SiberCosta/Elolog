@@ -16,7 +16,7 @@ html:not(#ec) body :is(.pr-acoes,.employee-row-actions) summary{list-style:none}
 html:not(#ec) body :is(.pr-acoes,.employee-row-actions) summary::-webkit-details-marker{display:none}
 html:not(#ec) body :is(.pr-acoes,.employee-row-actions) summary::after{content:"";width:7px;height:7px;margin-left:4px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:translateY(-2px) rotate(45deg)}
 /* menu de «Mais ações» por cima, alinhado à direita */
-html:not(#ec) body .pr-mais>div[role="menu"]{position:absolute;right:0;top:calc(100% + 6px);z-index:60;min-width:240px;display:flex;flex-direction:column;padding:6px;background:#fff;border:1px solid var(--ec-borda,#DCE3E8);border-radius:10px;box-shadow:0 12px 32px rgba(19,41,61,.16)}
+html:not(#ec) body .pr-mais>div[role="menu"]{position:absolute;right:0;top:calc(100% + 6px);z-index:2147482000;min-width:240px;display:flex;flex-direction:column;padding:6px;background:#fff;border:1px solid var(--ec-borda,#DCE3E8);border-radius:10px;box-shadow:0 12px 32px rgba(19,41,61,.16)}
 html:not(#ec) body .pr-mais>div[role="menu"]>button{display:block!important;width:100%;text-align:left!important;justify-content:flex-start!important;border:0!important;min-height:38px!important;background:transparent!important}
 html:not(#ec) body .pr-mais>div[role="menu"]>button:hover{background:#F4F7F9!important}
 /* funcionários: a coluna das ações cabe os dois botões */
@@ -24,3 +24,5 @@ html:not(#ec) body .pr-mais>div[role="menu"]>button:hover{background:#F4F7F9!imp
 @media(max-width:640px){html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions){justify-content:stretch!important}
   html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions)>:is(button,details,a){flex:1 1 auto}
   html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions) :is(button,summary){min-height:42px!important;width:100%}}
+/* com um menu de ações aberto, nenhum contentor por cima o pode recortar (transformações criam outro referencial) */
+html:not(#ec) body *:has(>details.pr-mais[open],>details.acoes-mais[open],* details.pr-mais[open],* details.acoes-mais[open]){transform:none!important;translate:none!important;filter:none!important;contain:none!important;will-change:auto!important;animation:none!important}
