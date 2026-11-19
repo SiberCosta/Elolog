@@ -63,3 +63,6 @@ Cor só com significado (estado, ação principal). Sem sombras nas superfícies
 | Estados | Etiqueta tingida: ok, informação, pendente, erro, neutro | `componentes.css` |
 | Janelas | Superfície, fio no cabeçalho e no rodapé, sombra própria | `componentes.css` |
 | Temas | Claro, escuro, sistema (`html[data-tema]`) | `tokens.css`, `tema.js` |
+| Assistente ELO | Botão fixo sem animação contínua; painel ancorado com cabeçalho marinho, mensagens em balões com fio, sugestões em linha, ecrã inteiro no telemóvel | `sobreposicoes.css` |
+| Notificações | Painel com título, ações em texto, separadores sublinhados, linhas com fio, vazio em linha; no telemóvel a toda a largura | `sobreposicoes.css` |
+| Janelas | Fundo escurecido igual em todas; recuperação de palavra-passe com a mesma superfície | `sobreposicoes.css` |

@@ -8,7 +8,7 @@
 
 /* 2. Cabeçalho de página: título forte, descrição curta, ação à direita, linha fina por baixo */
 #app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 20px;padding:0 0 16px;border:0;border-bottom:1px solid var(--v2-fio);background:none}
-#app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child :is(h1,h2){font:600 22px/1.25 var(--v2-letra);letter-spacing:-.015em;color:var(--v2-texto);margin:0}
+#app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child :is(h1,h2,h3){font:600 22px/1.25 var(--v2-letra);letter-spacing:-.015em;color:var(--v2-texto);margin:0}
 #app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child p{font:400 14px/1.5 var(--v2-letra);color:var(--v2-texto-2);margin:4px 0 0;max-width:72ch}
 #app .content>.page>.card>:is(h1,h2):first-child{font:600 22px/1.25 var(--v2-letra);letter-spacing:-.015em;color:var(--v2-texto);margin:0 0 6px}
 #app .content .provider-page-note{font:400 14px/1.5 var(--v2-letra);color:var(--v2-texto-2);margin:-8px 0 18px;max-width:72ch}
@@ -27,10 +27,10 @@ html:not(#elo) body #app .content .vz>.vz-ic::before,html:not(#elo) body #app .c
 html:not(#elo) body #app .content .vz :is(strong,p,span,small,div){text-align:left!important}
 
 /* 4. Separadores (tabs) de filtro: texto com sublinhado na opção ativa, numa só linha que desliza no telemóvel */
-html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs){display:flex;gap:2px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:0;margin:0 0 16px;background:none;border:0;border-bottom:1px solid var(--v2-fio);border-radius:0;box-shadow:none}
-html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs)>button{flex:0 0 auto;min-height:38px;padding:0 12px;margin:0 0 -1px;background:none!important;border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;box-shadow:none!important;color:var(--v2-texto-2)!important;font:600 13.5px/1 var(--v2-letra)}
-html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs)>button:hover{color:var(--v2-texto)!important}
-html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs)>button:is(.active,.ativa,.ativo,[aria-selected="true"],[aria-pressed="true"]){color:var(--v2-texto)!important;border-bottom-color:var(--v2-azul)!important}
+html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs,.client-payment-tabs){display:flex;gap:2px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:0;margin:0 0 16px;background:none;border:0;border-bottom:1px solid var(--v2-fio);border-radius:0;box-shadow:none}
+html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs,.client-payment-tabs)>button{flex:0 0 auto;min-height:38px;padding:0 12px;margin:0 0 -1px;background:none!important;border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;box-shadow:none!important;color:var(--v2-texto-2)!important;font:600 13.5px/1 var(--v2-letra)}
+html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs,.client-payment-tabs)>button:hover{color:var(--v2-texto)!important}
+html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs,.client-payment-tabs)>button:is(.active,.ativa,.ativo,[aria-selected="true"],[aria-pressed="true"]){color:var(--v2-texto)!important;border-bottom-color:var(--v2-azul)!important}
 
 /* 5. Listas operacionais: uma superfície com linhas separadas por fio, em vez de um cartão por registo */
 html:not(#elo) body #app .content :is(.provider-history-list,.provider-list,.cdoc-lista):has(>article){background:var(--v2-sup);border:1px solid var(--v2-fio);border-radius:var(--v2-r-3);overflow:hidden}
@@ -50,7 +50,7 @@ html:not(#elo) body #app .content :is(table,.provider-history-row,.finance-table
 /* 8. Telemóvel: margens próprias, cabeçalho compacto, ação principal a toda a largura */
 @media (max-width:720px){
 #app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child{margin-bottom:16px;padding-bottom:12px}
-#app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child :is(h1,h2){font-size:19px}
+#app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child :is(h1,h2,h3){font-size:19px}
 #app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child>:is(.btn-primary,button.btn-primary){width:100%;justify-content:center}
 html:not(#elo) body #app .content :is(.provider-history-summary,.provider-report-kpis,.finance-summary,.client-payment-dashboard)>*+*{border-left:0!important;border-top:1px solid var(--v2-fio-leve)!important}
 html:not(#elo) body #app .content :is(.provider-history-summary,.provider-report-kpis,.finance-summary,.client-payment-dashboard):not(:empty){grid-template-columns:1fr 1fr}
