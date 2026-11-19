@@ -24,3 +24,5 @@
 #app .main .topbar :is(.notification-bell,.elo-idioma-botao){background:var(--v2-sup);color:var(--v2-texto);border:1px solid var(--v2-fio);border-radius:var(--v2-r-2);box-shadow:none}
 #app .main .topbar :is(.notification-bell,.elo-idioma-botao):hover{background:var(--v2-sup-2);border:1px solid var(--v2-fio-2)}
 @media (max-width:768px){#app .main .topbar #pageTitle{font:650 17px/1.25 var(--v2-letra)}}
+/* no Painel o «Próximo passo» já está no topo da página: não se repete no menu lateral */
+body:has(#dashboard.page.active) #app .sidebar .nv-proximo{display:none}

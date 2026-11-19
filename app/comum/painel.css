@@ -73,7 +73,7 @@ background:rgba(31,95,139,calc(.07 + var(--n)*.93));animation:pa-calor .4s ease 
 .provider-page,.client-page{--tinta:#13293D;--sec:#566a78;--fio:#cfdbe4;--azul:#1F5F8B;--verde:#1F7A5C;font-variant-numeric:tabular-nums}.provider-page>.card,.provider-page>div>.card{padding:0}
 .provider-page .card-title{padding-bottom:10px;margin-bottom:18px}.provider-page .card-title h3,.provider-page h3{font-size:28px;letter-spacing:-.01em;color:var(--tinta);font-weight:700}
 .provider-page .section-eyebrow,.provider-page small.section-eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--azul)}
-.provider-page .finance-heading,.provider-page .provider-section-top,.provider-page .maritime-calendar-head,.provider-page .manifest-page-head{border-bottom:2px solid var(--tinta);padding-bottom:14px;margin-bottom:18px}
+.provider-page .finance-heading,.provider-page .provider-section-top,.provider-page .maritime-calendar-head,.provider-page .manifest-page-head{border-bottom:1px solid var(--v2-fio,#DDE3E9);padding-bottom:14px;margin-bottom:18px}
 .provider-status-card{padding:4px 0 4px 16px;margin-bottom:22px}.provider-status-card strong{font-size:20px;
 color:var(--tinta)}.provider-status-card span{color:var(--azul);font-weight:700;letter-spacing:.08em}.vz-trilho{display:flex;align-items:center;margin-top:14px;max-width:520px}.vz-trilho i{flex:1;height:2px;background:var(--fio);position:relative}
 .vz-trilho i:first-child{flex:0}.vz-trilho i::after{content:"";position:absolute;right:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--fio);box-sizing:border-box}
