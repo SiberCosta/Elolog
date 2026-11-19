@@ -4,7 +4,7 @@
 /* ---------- Etapas do percurso (stepper) ---------- */
 html:not(#bv) body .provider-page:has(.et-cartao)>.card>.card-title:has(>h3:only-child){display:none}
 html:not(#bv) body .et-cartao{display:grid;gap:6px;padding:18px 20px}
-html:not(#bv) body .et-cartao .et-num{color:var(--elo-azul,#1F5F8B);font-size:13px;font-weight:700;letter-spacing:0;text-transform:none}
+html:not(#bv) body .et-cartao .et-num{color:var(--v2-azul,var(--elo-azul,#1F5F8B));font-size:13px;font-weight:700;letter-spacing:0;text-transform:none}
 html:not(#bv) body .et-cartao strong{font-size:21px;line-height:1.25;color:var(--v2-texto,var(--elo-tinta,#13293D))}
 html:not(#bv) body .et-cartao p{margin:0;max-width:68ch;color:var(--v2-texto-2,var(--elo-texto,#4B5D6B));font-size:15px;line-height:1.55}
 html:not(#bv) body .et-barra{display:grid;grid-template-columns:repeat(11,1fr);gap:4px;margin:12px 0 0;padding:0;list-style:none}
@@ -31,7 +31,7 @@ html:not(#bv) body .automation-grupo>h4{margin:0 0 10px;color:var(--v2-texto,var
 html:not(#bv) body .automation-grupo .automation-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin:0}
 html:not(#bv) body .automation-rule{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:14px;padding:16px;border:1px solid var(--v2-fio,var(--elo-fio,#DCE4EA));border-radius:14px;background:var(--v2-sup,var(--elo-cartao,#fff))}
 html:not(#bv) body .automation-rule.off{background:var(--v2-sup-2,var(--elo-fundo,#F5F8FA))}
-html:not(#bv) body .automation-rule .ar-ic{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--v2-sup-3,var(--elo-info-fundo,#EAF2F8));color:var(--elo-azul,#1F5F8B)}
+html:not(#bv) body .automation-rule .ar-ic{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--v2-sup-3,var(--elo-info-fundo,#EAF2F8));color:var(--v2-azul,var(--elo-azul,#1F5F8B))}
 html:not(#bv) body .automation-rule.off .ar-ic{background:var(--v2-sup-2,#EDF1F4);color:var(--v2-texto-3,var(--elo-suave,#6B7D89))}
 html:not(#bv) body .automation-rule strong{display:block;color:var(--v2-texto,var(--elo-tinta,#13293D));font-size:15px;line-height:1.3}
 html:not(#bv) body .automation-rule small{display:block;margin-top:4px;color:var(--v2-texto-2,var(--elo-texto,#4B5D6B));font-size:13.5px;line-height:1.5}

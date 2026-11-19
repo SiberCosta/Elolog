@@ -8,7 +8,7 @@ html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck+.pw-kpi.ck{border-left:1px soli
 @media(hover:hover){html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck:hover{background:var(--v2-sup-2,var(--ec-fundo-hover))!important}}
 html:not(#ec) body :is(#pdash,#cdash) .ck-ic{width:36px!important;height:36px!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;background-image:none!important;display:grid;place-items:center}
 html:not(#ec) body :is(#pdash,#cdash) .ck-ic svg{width:19px!important;height:19px!important}
-html:not(#ec) body :is(#pdash,#cdash) .ck-azul .ck-ic{background:var(--v2-sup-3,var(--elo-info-fundo,#EAF1F7))!important;color:var(--elo-azul,#1F5F8B)!important}
+html:not(#ec) body :is(#pdash,#cdash) .ck-azul .ck-ic{background:var(--v2-sup-3,var(--elo-info-fundo,#EAF1F7))!important;color:var(--v2-azul,var(--elo-azul,#1F5F8B))!important}
 html:not(#ec) body :is(#pdash,#cdash) .ck-ambar .ck-ic{background:var(--v2-av-s,var(--elo-aviso-fundo,#FBEFD9))!important;color:var(--v2-av,var(--elo-aviso,#8A5300))!important}
 html:not(#ec) body :is(#pdash,#cdash) .ck-verde .ck-ic{background:var(--v2-sup-3,var(--elo-ok-fundo,#E6F2EC))!important;color:var(--v2-ok,var(--elo-ok,#1F6B50))!important}
 html:not(#ec) body :is(#pdash,#cdash) .ck-vermelho .ck-ic{background:var(--v2-er-s,var(--elo-erro-fundo,#FCEFEC))!important;color:var(--v2-er,var(--elo-erro,#A2392A))!important}

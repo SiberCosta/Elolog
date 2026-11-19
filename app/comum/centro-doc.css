@@ -15,7 +15,7 @@
 .cdoc-lista{display:grid;gap:8px}
 .cdoc-item{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--v2-fio,var(--elo-fio,#DCE4EA));border-radius:12px;background:var(--v2-sup,var(--elo-cartao,#fff))}
 .cdoc-item strong{display:block;font-variant-numeric:tabular-nums}.cdoc-item small{display:block;color:var(--v2-texto-3,var(--elo-suave,#5A6E7E))}
-.cdoc-tipo{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--elo-azul,#1F5F8B)}
+.cdoc-tipo{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--v2-azul,var(--elo-azul,#1F5F8B))}
 .cdoc-estado{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;background:var(--v2-sup-3,var(--elo-ok-fundo,#E6F2EC));color:var(--v2-ok,var(--elo-ok,#1F6B50))}
 .cdoc-estado.substituido,.cdoc-estado.anulado{background:var(--v2-er-s,var(--elo-erro-fundo,#FCEFEC));color:var(--v2-er,var(--elo-erro,#A2392A))}
 .cdoc-acoes{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}

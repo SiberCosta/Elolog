@@ -19,7 +19,7 @@
 --elo-tinta:var(--v2-texto);--elo-texto:var(--v2-texto-2);--elo-suave:var(--v2-texto-3);--elo-fio:var(--v2-fio);--elo-fio-leve:var(--v2-fio-leve);--elo-fundo:var(--v2-fundo);--elo-cartao:var(--v2-sup);
 --primary:var(--v2-azul);--primary-dark:var(--v2-azul-h);--primary-700:var(--v2-azul-h);--ink:var(--v2-texto);--muted:var(--v2-texto-3);--line:var(--v2-fio);--surface:var(--v2-sup);--canvas:var(--v2-fundo);
 --border:var(--v2-fio);--border-color:var(--v2-fio);--text:var(--v2-texto);--text-color:var(--v2-texto);--text-muted:var(--v2-texto-3);--background:var(--v2-fundo);--bg-light:var(--v2-fundo);--white:var(--v2-sup);
---success:var(--v2-ok);--warning:var(--v2-av);--danger:var(--v2-er);--radius:var(--v2-r-3);--shadow:none;--btn:var(--v2-azul);--btn-dark:var(--v2-azul-h)}
+--elo-texto-2:var(--v2-texto-2);--elo-linha:var(--v2-fio);--elo-superficie:var(--v2-sup);--elo-superficie-2:var(--v2-sup-2);--card-bg:var(--v2-sup);--success:var(--v2-ok);--warning:var(--v2-av);--danger:var(--v2-er);--radius:var(--v2-r-3);--shadow:none;--btn:var(--v2-azul);--btn-dark:var(--v2-azul-h)}
 html[data-tema="escuro"]{
 --v2-fundo:#0B151E;--v2-sup:#111E29;--v2-sup-2:#152533;--v2-sup-3:#1A2D3D;--v2-fio:#233A4D;--v2-fio-2:#2F4B62;--v2-fio-leve:#1B2F40;
 --v2-texto:#E2EAF0;--v2-texto-2:#AEBFCC;--v2-texto-3:#91A5B5;--v2-azul:#6AAEDD;--v2-azul-h:#8DC2E7;--v2-azul-s:rgba(106,174,221,.13);--v2-verde:#4FBF94;--v2-verde-s:rgba(79,191,148,.13);

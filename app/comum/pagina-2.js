@@ -9,7 +9,7 @@ document.write(['                            <div id="clientHomeHistoryList" cla
 "                </div>","","            </section>","","","            <!-- =================================================","                 TRACKING","            ================================================== -->","","","",
 "            <!-- =================================================","                 ESTRUTURA DO PERFIL PRESTADOR","            ================================================== -->",'            <section id="providerOrder" class="page provider-page">',
 '                <div class="card provider-order-manager">','                    <div class="card-title">',"                        <div>",
-'                            <small style="color:#224f6d;font-weight:800;letter-spacing:.08em;">PROCESSO / ENCOMENDA</small>',"                            <h3>Consultar e alterar encomenda</h3>",
+'                            <small style="color:var(--v2-azul,#224f6d);font-weight:700;letter-spacing:.08em;">PROCESSO / ENCOMENDA</small>',"                            <h3>Consultar e alterar encomenda</h3>",
 '                            <p class="provider-page-note">Introduza o código da encomenda. Depois de selecionar a encomenda, serão apresentadas as informações e a opção de alterar manualmente o estado.</p>',"                        </div>",
 "                    </div>",
 '                    <div class="provider-order-search">',`                        <input id="providerOrderSearch" type="text" placeholder="Ex.: ELO_TRAN-000185" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();searchProviderOrder();}">`,

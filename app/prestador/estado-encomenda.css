@@ -69,7 +69,7 @@
 #adminClientsList .acs-linha small{display:block;color:var(--v2-texto-3,var(--elo-suave));font-size:12px;margin-top:2px}
 .acs-estado,.acs-tipo{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:800;background:var(--v2-sup-2,var(--elo-fundo));color:var(--v2-texto-2,var(--elo-texto));vertical-align:middle}
 .acs-estado.acs-risco,.acs-tipo.acs-risco{background:var(--v2-er-s,var(--elo-erro-fundo));color:var(--v2-er,var(--elo-erro))}
-.acs-tipo{background:var(--v2-sup-3,var(--elo-info-fundo));color:var(--elo-info);margin-bottom:6px}
+.acs-tipo{background:var(--v2-sup-3,var(--elo-info-fundo));color:var(--v2-azul,var(--elo-info));margin-bottom:6px}
 .acs-pedido{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border:1px solid var(--v2-fio,var(--elo-fio));border-left:3px solid var(--elo-aviso-forte);border-radius:12px;padding:14px 16px;margin-bottom:10px;background:var(--v2-sup,var(--elo-cartao))}
 .acs-pedido strong{display:block;color:var(--v2-texto,var(--elo-tinta))}.acs-pedido small{display:block;color:var(--v2-texto-3,var(--elo-suave));font-size:12px;margin-top:2px}
 .acs-pedido ul{margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--v2-texto-2,var(--elo-texto))}.acs-pedido li b{color:var(--v2-texto-3,var(--elo-suave));font-weight:700;margin-right:4px}
@@ -80,7 +80,7 @@
 /* ---------- v143: tarifa de cada linha de carga ---------- */
 #providerDirectVolumes .pdv-tarifa-campo select{width:100%;min-width:0;text-overflow:ellipsis}
 #providerDirectVolumes .financial-tariff-row .pdv-tariff{border-color:var(--elo-verde);background:var(--v2-sup-3,var(--elo-ok-fundo));font-weight:700;color:var(--v2-texto,var(--elo-tinta))}
-#providerDirectVolumes .pdv-usar{margin-left:4px;padding:2px 10px;border:1.5px solid var(--elo-azul);border-radius:8px;background:transparent;color:var(--elo-azul);font:inherit;font-weight:700;cursor:pointer}
+#providerDirectVolumes .pdv-usar{margin-left:4px;padding:2px 10px;border:1.5px solid var(--elo-azul);border-radius:8px;background:transparent;color:var(--v2-azul,var(--elo-azul));font:inherit;font-weight:700;cursor:pointer}
 #providerDirectVolumes .pdv-usar:hover{background:var(--elo-azul);color:#fff}
 #providerDirectSimulation .provider-volume-table-shell .client-volume-table-head,#providerDirectSimulation .provider-volume-table-shell .sim-volume-row{
   grid-template-columns:minmax(150px,1.3fr) minmax(190px,1.5fr) 55px 110px 82px 78px repeat(3,minmax(64px,1fr)) 82px 86px 34px!important;min-width:1220px}
@@ -90,7 +90,7 @@
 .ap-linha{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:12px 14px;border:1px solid var(--v2-fio,var(--elo-fio));border-radius:12px;background:var(--v2-sup,var(--elo-cartao));margin-bottom:8px}
 .ap-linha strong{display:block;color:var(--v2-texto,var(--elo-tinta))}.ap-linha small{display:block;color:var(--v2-texto-3,var(--elo-suave));font-size:12px;margin-top:2px}
 .ap-estado{padding:3px 10px;border-radius:999px;font-size:12px;font-weight:800;background:var(--v2-av-s,var(--elo-aviso-fundo));color:var(--v2-av,var(--elo-aviso));white-space:nowrap}
-.ap-resolvido .ap-estado{background:var(--v2-sup-3,var(--elo-ok-fundo));color:var(--v2-ok,var(--elo-ok))}.ap-escalado .ap-estado{background:var(--v2-er-s,var(--elo-erro-fundo));color:var(--v2-er,var(--elo-erro))}.ap-em_tratamento .ap-estado{background:var(--v2-sup-3,var(--elo-info-fundo));color:var(--elo-info)}
+.ap-resolvido .ap-estado{background:var(--v2-sup-3,var(--elo-ok-fundo));color:var(--v2-ok,var(--elo-ok))}.ap-escalado .ap-estado{background:var(--v2-er-s,var(--elo-erro-fundo));color:var(--v2-er,var(--elo-erro))}.ap-em_tratamento .ap-estado{background:var(--v2-sup-3,var(--elo-info-fundo));color:var(--v2-azul,var(--elo-info))}
 .ap-meus{margin-top:18px}.ap-meus h3{margin:0 0 12px;font-size:16px;color:var(--v2-texto,var(--elo-tinta))}
 .ap-conversa{display:grid;gap:8px;max-height:320px;overflow:auto;margin:10px 0 14px}
 .ap-msg{padding:10px 12px;border-radius:12px;background:var(--v2-sup-2,var(--elo-fundo));max-width:85%}.ap-msg.eu{background:var(--v2-sup-3,var(--elo-info-fundo));justify-self:end}

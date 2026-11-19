@@ -66,7 +66,7 @@ html:not(#bv) body .tf-resultado{margin-top:14px}
 html:not(#bv) body .tf-passos{margin:0;padding:0;list-style:none;counter-reset:p;border:1px solid var(--elo-linha,#dfe3ea);border-radius:var(--vv-r3,12px);overflow:hidden}
 html:not(#bv) body .tf-passos li{counter-increment:p;display:grid;grid-template-columns:28px 190px 1fr;gap:10px;padding:10px 14px;border-top:1px solid var(--elo-linha,#dfe3ea)}
 html:not(#bv) body .tf-passos li:first-child{border-top:0}
-html:not(#bv) body .tf-passos li::before{content:counter(p);font-weight:700;color:var(--vv-acento,#1d4ed8)}
+html:not(#bv) body .tf-passos li::before{content:counter(p);font-weight:700;color:var(--v2-azul,var(--vv-acento,#1d4ed8))}
 html:not(#bv) body .tf-passos li.final{background:var(--elo-superficie-2,#f4f6f9);font-weight:700}
 @media (max-width:560px){html:not(#bv) body .tf-passos li{grid-template-columns:28px 1fr}html:not(#bv) body .tf-passos li>*:last-child{grid-column:2}}
 html:not(#bv) body .tf-aviso-comissoes{margin-bottom:14px;padding:12px 14px;border:1px solid var(--elo-linha,#dfe3ea);border-radius:var(--vv-r2,8px)}
@@ -91,9 +91,9 @@ html:not(#bv) body .tf-kpi.aviso{border-color:var(--elo-aviso,#b45309)}html:not(
 html:not(#bv) body .tf-kpi.erro{border-color:var(--elo-erro,#b91c1c)}html:not(#bv) body .tf-kpi.erro strong{color:var(--v2-er,var(--elo-erro,#b91c1c))}
 html:not(#bv) body .tf-sub{margin:8px 0 0;font-size:1rem}
 html:not(#bv) body .tf-nota{margin:0;font-size:.88rem;color:var(--elo-texto-2,#4b5563)}
-html:not(#bv) body .tf-palavras{color:var(--vv-acento,#1d4ed8)!important}
+html:not(#bv) body .tf-palavras{color:var(--v2-azul,var(--vv-acento,#1d4ed8))!important}
 html:not(#bv) body .tf-como ol{margin:6px 0 0;padding-left:20px;display:grid;gap:4px;color:var(--elo-texto-2,#4b5563)}
-html:not(#bv) body .pdv-busca{display:block;margin-top:4px;font-size:.8rem;font-weight:500;color:var(--vv-acento,#1d4ed8)}
+html:not(#bv) body .pdv-busca{display:block;margin-top:4px;font-size:.8rem;font-weight:500;color:var(--v2-azul,var(--vv-acento,#1d4ed8))}
 html:not(#bv) body .pdv-usar{margin-left:4px;padding:2px 8px;border:1px solid currentColor;border-radius:999px;background:transparent;color:inherit;font-size:.78rem;cursor:pointer}
 @media (max-width:560px){html:not(#bv) body .tf-busca-res li{grid-template-columns:1fr}html:not(#bv) body .tf-busca-res li small{grid-column:1}}
 html:not(#bv) body #rcCentro{display:grid;gap:14px}

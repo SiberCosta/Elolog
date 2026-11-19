@@ -11,9 +11,8 @@ html body.prov-lateral .cn-v2 p{margin:0 0 12px!important;color:var(--v2-texto-2
 body.prov-lateral #pdash .cn-mapa{width:100%;height:auto;margin:-28px 0 -28px;align-self:stretch}
 body.prov-lateral #pdash .cn-mapa pattern circle{fill:#8fb3c9}
 body.prov-lateral #pdash .cn-mapa .cn-pontos{opacity:.55}
-body.prov-lateral #pdash .cn-mapa .cn-rota{fill:none;stroke:#1F5F8B;stroke-width:1.6;
-stroke-dasharray:5 7;opacity:.55;animation:cvTraco 18s linear infinite}
-body.prov-lateral #pdash .cn-mapa .cn-no{fill:#1F5F8B}
+body.prov-lateral #pdash .cn-mapa .cn-rota{fill:none;stroke:var(--v2-azul,#1F5F8B);stroke-width:1.6;stroke-dasharray:5 7;opacity:.55;animation:cvTraco 18s linear infinite}
+body.prov-lateral #pdash .cn-mapa .cn-no{fill:var(--v2-azul,#1F5F8B)}
 body.prov-lateral #pdash .cn-mapa .cn-carga{fill:var(--v2-ok,#1F7A5C)}
 body.prov-lateral #pdash .cn-mapa .cn-onda{fill:none;stroke:#3FAE84;stroke-width:1.5;transform-box:fill-box;transform-origin:center;
 animation:cvOnda 2.8s ease-out infinite}
@@ -51,33 +50,33 @@ body.prov-lateral #pdash .ca-linha{display:grid;grid-template-columns:minmax(0,1
 body.prov-lateral #pdash .ca-id{display:flex;align-items:center;gap:12px;min-width:0}
 body.prov-lateral #pdash .ca-id b{display:block;color:var(--v2-texto,var(--cv-tinta))}
 body.prov-lateral #pdash .ca-id small{color:var(--v2-texto-3,var(--cv-suave))}
-body.prov-lateral #pdash .ca-modo{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:11px;background:var(--v2-sup-3,#e8f1f7);color:var(--cv-azul)}
+body.prov-lateral #pdash .ca-modo{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:11px;background:var(--v2-sup-3,#e8f1f7);color:var(--v2-azul,var(--cv-azul))}
 body.prov-lateral #pdash .ca-modo svg{width:20px;height:20px}
 body.prov-lateral #pdash .ca-etapas{position:relative;display:grid;grid-template-columns:repeat(4,1fr);margin:0;padding:0;list-style:none}
 body.prov-lateral #pdash .ca-etapas::before{content:"";position:absolute;left:12.5%;right:12.5%;top:8px;height:2px;background:var(--v2-sup-3,#dbe6ee)}
 body.prov-lateral #pdash .ca-etapas li{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--v2-texto-3,var(--cv-suave));font-size:12px;font-weight:600}
 body.prov-lateral #pdash .ca-etapas i{position:relative;z-index:1;width:18px;height:18px;border-radius:50%;background:var(--v2-sup,#fff);border:2px solid var(--v2-fio,#c8d6e0)}
 body.prov-lateral #pdash .ca-etapas li.feito i{background:var(--cv-azul);border-color:var(--cv-azul)}
-body.prov-lateral #pdash .ca-etapas li.feito{color:var(--cv-azul)}
+body.prov-lateral #pdash .ca-etapas li.feito{color:var(--v2-azul,var(--cv-azul))}
 body.prov-lateral #pdash .ca-etapas li.atual i{border-color:var(--cv-verde);box-shadow:0 0 0 5px rgba(31,122,92,.15)}
 body.prov-lateral #pdash .ca-etapas li.atual{color:var(--v2-ok,var(--cv-verde))}
 body.prov-lateral #pdash .ca-estado{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
 body.prov-lateral #pdash .ca-estado small{color:var(--v2-texto-3,var(--cv-suave));font-size:12px}
 body.prov-lateral #pdash .ca-vazio{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;padding:18px;border:1px dashed var(--v2-fio,#cfdce5);border-radius:14px;background:var(--v2-sup,#fbfdfe)}
-body.prov-lateral #pdash .ca-vazio>span{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--v2-sup-3,#e8f1f7);color:var(--cv-azul)}
+body.prov-lateral #pdash .ca-vazio>span{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--v2-sup-3,#e8f1f7);color:var(--v2-azul,var(--cv-azul))}
 body.prov-lateral #pdash .ca-vazio svg{width:24px;height:24px}
 body.prov-lateral #pdash .ca-vazio b{color:var(--v2-texto,var(--cv-tinta))}
 body.prov-lateral #pdash .ca-vazio p{margin:2px 0 0;color:var(--v2-texto-2,var(--cv-texto));font-size:14px}
 body.prov-lateral #pdash .cr-lista{display:flex;flex-direction:column}
 body.prov-lateral #pdash html body .cr-tile{display:flex;align-items:center;gap:12px;width:100%;padding:12px 4px;border:0;border-top:1px solid var(--v2-fio,var(--cv-fio));border-radius:0;background:transparent;color:var(--v2-texto,var(--cv-tinta));font:inherit;text-align:left;cursor:pointer;transition:background-color .2s,color .2s}
 body.prov-lateral #pdash html body .cr-tile:first-child{border-top:0}
-body.prov-lateral #pdash .cr-ic{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:10px;background:var(--v2-sup-3,#e8f1f7);color:var(--cv-azul);transition:background-color .2s,color .2s}
+body.prov-lateral #pdash .cr-ic{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:10px;background:var(--v2-sup-3,#e8f1f7);color:var(--v2-azul,var(--cv-azul));transition:background-color .2s,color .2s}
 body.prov-lateral #pdash .cr-ic svg{width:19px;height:19px}
 body.prov-lateral #pdash .cr-txt{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 body.prov-lateral #pdash .cr-txt b{font-size:14px}
 body.prov-lateral #pdash .cr-txt small{color:var(--v2-texto-3,var(--cv-suave));font-size:13px}
-body.prov-lateral #pdash .cr-seta{width:16px;height:16px;flex:none;color:#9db0bd;transition:transform .2s,color .2s}
-@media(hover:hover){body.prov-lateral #pdash html body .cr-tile:hover{color:var(--cv-azul)}body.prov-lateral #pdash html body .cr-tile:hover .cr-ic{background:var(--cv-azul);color:#fff}body.prov-lateral #pdash html body .cr-tile:hover .cr-seta{color:var(--cv-azul);transform:translateX(3px)}}
+body.prov-lateral #pdash .cr-seta{width:16px;height:16px;flex:none;color:var(--v2-texto-3,#9db0bd);transition:transform .2s,color .2s}
+@media(hover:hover){body.prov-lateral #pdash html body .cr-tile:hover{color:var(--v2-azul,var(--cv-azul))}body.prov-lateral #pdash html body .cr-tile:hover .cr-ic{background:var(--cv-azul);color:#fff}body.prov-lateral #pdash html body .cr-tile:hover .cr-seta{color:var(--v2-azul,var(--cv-azul));transform:translateX(3px)}}
 body.prov-lateral #pdash html body .cr-tile:focus-visible{outline:2px solid var(--cv-azul);outline-offset:2px}
 body.prov-lateral #pdash .ch-pesquisa{margin-bottom:14px}
 @media(max-width:1100px){html body.prov-lateral .client-next-step.cn-v2{grid-template-columns:1fr;padding:24px!important}body.prov-lateral #pdash .cn-mapa{display:none}}

@@ -9,7 +9,7 @@ html:not(#ec) body .tf .tf-passos li.atual{border-top-color:#1F5F8B!important;co
 html:not(#ec) body .tf-quem{display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid var(--v2-fio,var(--ec-borda,#DCE3E8));border-radius:12px;background:var(--v2-sup,#fff)}
 html:not(#ec) body .tf-quem strong{font:700 20px/1.25 "Work Sans",system-ui,sans-serif;color:var(--v2-texto,#13293D)}
 html:not(#ec) body .tf-atalhos{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
-html:not(#ec) body .tf-atalho{display:flex;align-items:center;justify-content:center;min-height:48px;border:1.5px solid #1F5F8B;border-radius:10px;color:#1F5F8B;font:700 16px/1 "Work Sans",system-ui,sans-serif;text-decoration:none;background:var(--v2-sup,#fff)}
+html:not(#ec) body .tf-atalho{display:flex;align-items:center;justify-content:center;min-height:48px;border:1.5px solid #1F5F8B;border-radius:10px;color:var(--v2-azul,#1F5F8B);font:700 16px/1 "Work Sans",system-ui,sans-serif;text-decoration:none;background:var(--v2-sup,#fff)}
 html:not(#ec) body .tf-dados{margin:0;border:1px solid var(--v2-fio,var(--ec-fio-leve,#E6ECF0));border-radius:12px;background:var(--v2-sup-2,#F8FAFB);overflow:hidden}
 html:not(#ec) body .tf-dados>div{display:grid;grid-template-columns:84px 1fr;gap:10px;padding:12px 14px;border-bottom:1px solid var(--v2-fio,var(--ec-fio-leve,#E6ECF0))}
 html:not(#ec) body .tf-dados>div:last-child{border-bottom:0}
