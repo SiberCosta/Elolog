@@ -1,0 +1,57 @@
+/* Elolog v2 — composição das páginas (fase 4). Só aspeto: ids, classes, ações e dados iguais.
+   Princípio: a página não é um cartão. O invólucro .card de cada página passa a ser o próprio ecrã (cabeçalho + conteúdo);
+   as superfícies ficam para o que agrupa trabalho (listas, tabelas, formulários, painéis). Menos caixas dentro de caixas. */
+
+/* 1. Página: o invólucro deixa de ser caixa (exceto quando é, ele próprio, um formulário) */
+#app .content>.page>.card:not(:has(>.form-group,>form,>.form-grid,>textarea,>.client-data-wide)){background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important}
+#app .content>.page>.card+.card{margin-top:28px}
+
+/* 2. Cabeçalho de página: título forte, descrição curta, ação à direita, linha fina por baixo */
+#app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 20px;padding:0 0 16px;border:0;border-bottom:1px solid var(--v2-fio);background:none}
+#app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child :is(h1,h2){font:600 22px/1.25 var(--v2-letra);letter-spacing:-.015em;color:var(--v2-texto);margin:0}
+#app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child p{font:400 14px/1.5 var(--v2-letra);color:var(--v2-texto-2);margin:4px 0 0;max-width:72ch}
+#app .content>.page>.card>:is(h1,h2):first-child{font:600 22px/1.25 var(--v2-letra);letter-spacing:-.015em;color:var(--v2-texto);margin:0 0 6px}
+#app .content .provider-page-note{font:400 14px/1.5 var(--v2-letra);color:var(--v2-texto-2);margin:-8px 0 18px;max-width:72ch}
+
+/* 3. Estado vazio: uma linha de trabalho, não um cartaz — ícone, frase, ação, alinhados à esquerda */
+html:not(#elo) body #app .content .vz{display:grid!important;width:100%!important;max-width:none!important;margin:0!important;grid-template-columns:auto 1fr;align-items:center!important;align-content:center!important;column-gap:14px;row-gap:2px;text-align:left!important;justify-items:start!important;justify-content:stretch!important;padding:18px 20px!important;min-height:0!important;background:var(--v2-sup)!important;border:1px dashed var(--v2-fio-2)!important;border-radius:var(--v2-r-3)!important;box-shadow:none!important}
+html:not(#elo) body #app .content .vz>.vz-ic{grid-row:1/span 3;width:36px;height:36px;margin:0!important;display:grid;place-items:center;border-radius:var(--v2-r-2);background:var(--v2-sup-3);color:var(--v2-texto-3)}
+html:not(#elo) body #app .content .vz>:not(.vz-ic){grid-column:2;margin:0!important;max-width:64ch;justify-self:start!important}
+html:not(#elo) body #app .content .vz>strong{font:600 14px/1.35 var(--v2-letra);color:var(--v2-texto)}
+html:not(#elo) body #app .content .vz>:is(p,small,span:not(.vz-ic)){font:400 13px/1.45 var(--v2-letra);color:var(--v2-texto-2)}
+html:not(#elo) body #app .content .vz>:is(button,a,.btn-primary,.btn-secondary){margin-top:8px!important;width:auto}
+html:not(#elo) body #app .content .vz:not(:has(>.vz-ic)){grid-template-columns:1fr}
+html:not(#elo) body #app .content .vz:not(:has(>.vz-ic))>*{grid-column:1}
+
+html:not(#elo) body #app .content .vz>.vz-ic::before,html:not(#elo) body #app .content .vz>.vz-ic::after{display:none!important}
+html:not(#elo) body #app .content .vz :is(strong,p,span,small,div){text-align:left!important}
+
+/* 4. Separadores (tabs) de filtro: texto com sublinhado na opção ativa, numa só linha que desliza no telemóvel */
+html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs){display:flex;gap:2px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:0;margin:0 0 16px;background:none;border:0;border-bottom:1px solid var(--v2-fio);border-radius:0;box-shadow:none}
+html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs)>button{flex:0 0 auto;min-height:38px;padding:0 12px;margin:0 0 -1px;background:none!important;border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;box-shadow:none!important;color:var(--v2-texto-2)!important;font:600 13.5px/1 var(--v2-letra)}
+html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs)>button:hover{color:var(--v2-texto)!important}
+html:not(#elo) body #app .content :is(.finance-tabs,.provider-history-tabs,.cdoc-filtros,.provider-work-tabs,.provider-pickup-tabs)>button:is(.active,.ativa,.ativo,[aria-selected="true"],[aria-pressed="true"]){color:var(--v2-texto)!important;border-bottom-color:var(--v2-azul)!important}
+
+/* 5. Listas operacionais: uma superfície com linhas separadas por fio, em vez de um cartão por registo */
+html:not(#elo) body #app .content :is(.provider-history-list,.provider-list,.cdoc-lista):has(>article){background:var(--v2-sup);border:1px solid var(--v2-fio);border-radius:var(--v2-r-3);overflow:hidden}
+html:not(#elo) body #app .content :is(.provider-history-list,.provider-list,.cdoc-lista)>article{margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important}
+html:not(#elo) body #app .content :is(.provider-history-list,.provider-list,.cdoc-lista)>article+article{border-top:1px solid var(--v2-fio-leve)!important}
+html:not(#elo) body #app .content :is(.provider-history-list,.provider-list,.cdoc-lista)>article:hover{background:var(--v2-sup-2)!important}
+html:not(#elo) body #app .content .provider-history-list-head{padding:0 16px 8px;color:var(--v2-texto-3);font:600 12px/1.3 var(--v2-letra);border:0;background:none}
+
+/* 6. Indicadores de resumo: uma régua com divisórias, não uma grelha de cartões */
+html:not(#elo) body #app .content :is(.provider-history-summary,.provider-report-kpis,.finance-summary,.client-payment-dashboard):not(:empty){display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;margin:0 0 20px;background:var(--v2-sup);border:1px solid var(--v2-fio);border-radius:var(--v2-r-3);overflow:hidden}
+html:not(#elo) body #app .content :is(.provider-history-summary,.provider-report-kpis,.finance-summary,.client-payment-dashboard)>*{margin:0!important;padding:14px 16px!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+html:not(#elo) body #app .content :is(.provider-history-summary,.provider-report-kpis,.finance-summary,.client-payment-dashboard)>*+*{border-left:1px solid var(--v2-fio-leve)!important}
+
+/* 7. Tabelas: números alinhados e legíveis */
+html:not(#elo) body #app .content :is(table,.provider-history-row,.finance-table){font-variant-numeric:tabular-nums}
+
+/* 8. Telemóvel: margens próprias, cabeçalho compacto, ação principal a toda a largura */
+@media (max-width:720px){
+#app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child{margin-bottom:16px;padding-bottom:12px}
+#app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child :is(h1,h2){font-size:19px}
+#app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child>:is(.btn-primary,button.btn-primary){width:100%;justify-content:center}
+html:not(#elo) body #app .content :is(.provider-history-summary,.provider-report-kpis,.finance-summary,.client-payment-dashboard)>*+*{border-left:0!important;border-top:1px solid var(--v2-fio-leve)!important}
+html:not(#elo) body #app .content :is(.provider-history-summary,.provider-report-kpis,.finance-summary,.client-payment-dashboard):not(:empty){grid-template-columns:1fr 1fr}
+}

@@ -41,3 +41,25 @@ Modo de demonstração local (`?demo=1`, sem servidor), clique real em cada entr
 
 Retirar as três folhas `v2/` e `tema.js`/`foto-perfil.js` do HTML não repõe o aspeto antigo, porque as declarações substituídas
 foram apagadas das folhas antigas. Para voltar atrás, usar o `main` (o ramo `redesign` é independente).
+
+## Sistema de design Elolog (v2) — referência
+
+**Princípios.** A página não é um cartão: o ecrã é o cabeçalho (título, frase curta, ação principal à direita, fio por baixo) e o conteúdo.
+Superfícies só para o que agrupa trabalho (listas, tabelas, formulários, painéis). Um registo = uma linha, não um cartão.
+Cor só com significado (estado, ação principal). Sem sombras nas superfícies; sombra apenas em janelas e no cartão de entrada.
+
+| Elemento | Regra | Onde |
+|---|---|---|
+| Cor | Marinho `#0E2232` (menu, marca), azul `#1F5F8B` (ação), verde `#1F7A5C` (sucesso), âmbar `#875200` (pendente), vermelho `#A33326` (erro); neutros `--v2-texto*`, `--v2-fio*`, `--v2-sup*` | `tokens.css` |
+| Letra | Work Sans (interface), algarismos tabulares em valores; título com serifa só no ecrã de entrada | `tokens.css`, `entrada.css` |
+| Escala | Título de página 22 px/600 · secção 16 px/600 · corpo 14 px · etiqueta 12–13 px | `composicao.css` |
+| Espaço | Base 4 px; 16 entre campos, 20 após cabeçalho, 28 entre secções | `composicao.css` |
+| Cantos | 4 (etiquetas), 6 (botões, campos), 8 (superfícies); 22 só no cartão de entrada | `tokens.css` |
+| Botões | Principal (azul), secundário (contorno), sucesso, perigo; altura 38 px | `componentes.css` |
+| Separadores | Texto com sublinhado azul na opção ativa, deslizam no telemóvel | `composicao.css` |
+| Listas | Uma superfície, linhas separadas por fio, realce ao passar | `composicao.css` |
+| Indicadores | Régua única com divisórias (2 colunas no telemóvel) | `composicao.css` |
+| Vazio | Linha com ícone, frase e ação, alinhada à esquerda, contorno tracejado | `composicao.css` |
+| Estados | Etiqueta tingida: ok, informação, pendente, erro, neutro | `componentes.css` |
+| Janelas | Superfície, fio no cabeçalho e no rodapé, sombra própria | `componentes.css` |
+| Temas | Claro, escuro, sistema (`html[data-tema]`) | `tokens.css`, `tema.js` |
