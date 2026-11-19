@@ -55,3 +55,22 @@ html:not(#elo) body #app .content :is(table,.provider-history-row,.finance-table
 html:not(#elo) body #app .content :is(.provider-history-summary,.provider-report-kpis,.finance-summary,.client-payment-dashboard)>*+*{border-left:0!important;border-top:1px solid var(--v2-fio-leve)!important}
 html:not(#elo) body #app .content :is(.provider-history-summary,.provider-report-kpis,.finance-summary,.client-payment-dashboard):not(:empty){grid-template-columns:1fr 1fr}
 }
+
+/* 9. Painéis por perfil */
+/* encomendas por etapa: régua de colunas com número e nome; a etapa com encomendas fica marcada por cima; sem bolas decorativas */
+html:not(#elo) body #app .content .ct-fluxo{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:0!important;padding:0!important;margin:4px 0 0!important;border:1px solid var(--v2-fio);border-radius:var(--v2-r-3);overflow:hidden;background:var(--v2-sup)}
+html:not(#elo) body #app .content .ct-fluxo>.ct-etapa{display:flex!important;flex-direction:column;align-items:flex-start!important;gap:2px;padding:12px 12px 10px!important;margin:0!important;border:0!important;border-top:3px solid var(--v2-azul)!important;background:var(--v2-sup)!important;text-align:left!important;cursor:pointer;min-width:0}
+html:not(#elo) body #app .content .ct-fluxo>.ct-etapa+.ct-etapa{border-left:1px solid var(--v2-fio-leve)!important}
+html:not(#elo) body #app .content .ct-fluxo>.ct-etapa.pa-zero{border-top-color:var(--v2-fio-leve)!important}
+html:not(#elo) body #app .content .ct-fluxo>.ct-etapa:hover{background:var(--v2-sup-2)!important}
+html:not(#elo) body #app .content .ct-fluxo .ct-bola{display:none!important}
+html:not(#elo) body #app .content .ct-fluxo>.ct-etapa>b{order:2;font:600 12px/1.25 var(--v2-letra)!important;color:var(--v2-texto-2)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+html:not(#elo) body #app .content .ct-fluxo>.ct-etapa>.pa-etapa-n{order:1;font:600 22px/1.1 var(--v2-letra)!important;color:var(--v2-texto)!important;font-variant-numeric:tabular-nums}
+html:not(#elo) body #app .content .ct-fluxo>.ct-etapa.pa-zero>.pa-etapa-n{color:var(--v2-texto-3)!important;font-weight:500!important}
+html:not(#elo) body #app .content .ct-fluxo::before,html:not(#elo) body #app .content .ct-fluxo::after,html:not(#elo) body #app .content .ct-fluxo>.ct-etapa::before,html:not(#elo) body #app .content .ct-fluxo>.ct-etapa::after{display:none!important}
+/* terreno: atalhos com ícone neutro; só o principal leva a cor de ação */
+html:not(#elo) body #app .content .field-dashboard-actions>button>span{background:var(--v2-sup-3)!important;color:var(--v2-texto-2)!important;box-shadow:none!important;border:0!important}
+html:not(#elo) body #app .content .field-dashboard-actions>button.primary>span{background:var(--v2-azul-s)!important;color:var(--v2-azul)!important}
+html:not(#elo) body #app .content .field-dashboard-actions>button{box-shadow:none!important}
+html:not(#elo) body #app .content .ct-fluxo>.ct-etapa>:not(b):not(.pa-etapa-n){display:none!important}
+html:not(#elo) body #app .content .field-dashboard-actions>button>span :is(i,.ic){color:inherit!important;background-color:currentColor!important;filter:none!important;opacity:1!important}
