@@ -1,0 +1,32 @@
+/* Elolog v2 — ecrã de entrada (cliente e prestador): cabe num ecrã de portátil sem deslocar, hierarquia mais calma,
+   painel da marca com a fotografia atual e texto legível. Só aspeto: campos, ids e ações iguais. */
+#loginScreen.login-screen{background:var(--v2-fundo);padding:24px 24px 32px;min-height:auto}
+#loginScreen .auth-shell{max-width:1080px;min-height:0;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);background:var(--v2-sup);border:1px solid var(--v2-fio);border-radius:12px;box-shadow:0 1px 2px rgba(8,22,33,.05);overflow:hidden}
+#loginScreen .auth-brand-panel{min-height:0;border-radius:0}
+#loginScreen .auth-brand-overlay{background:linear-gradient(180deg,rgba(7,30,43,.35) 0%,rgba(7,30,43,.55) 45%,rgba(7,30,43,.92) 100%)}
+#loginScreen .auth-brand-content{padding:32px 36px;justify-content:space-between}
+#loginScreen .auth-brand-logo{width:150px;height:auto}
+#loginScreen .auth-brand-copy h2{font:700 30px/1.15 var(--v2-letra);letter-spacing:-.02em;color:#FFFFFF;margin:0 0 10px}
+#loginScreen .auth-brand-copy p{font:400 15px/1.5 var(--v2-letra);color:rgba(255,255,255,.82);margin:0}
+#loginScreen .auth-brand-trust span{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#FFFFFF;border-radius:999px;font:600 12px/1 var(--v2-letra)}
+#loginScreen .login-card{padding:28px 48px 24px;min-height:0;display:flex;flex-direction:column;justify-content:center;box-shadow:none;border:0;border-radius:0;background:var(--v2-sup)}
+#loginScreen .login-card>*{width:100%;max-width:420px;margin-left:auto;margin-right:auto}
+#loginScreen .porta-tabs{margin-bottom:18px;padding:3px;background:var(--v2-sup-2);border:1px solid var(--v2-fio);border-radius:var(--v2-r-3)}
+#loginScreen .porta-tabs button{min-height:36px;border-radius:var(--v2-r-2);font:600 14px/1 var(--v2-letra);color:var(--v2-texto-2);background:transparent;box-shadow:none;border:0}
+#loginScreen .porta-tabs button.ativa{background:var(--v2-sup);color:var(--v2-texto);box-shadow:0 1px 2px rgba(8,22,33,.08),inset 0 0 0 1px var(--v2-fio)}
+#loginScreen .auth-step-label{background:none;border:0;padding:0;color:var(--v2-verde);font:600 12px/1.3 var(--v2-letra);letter-spacing:.06em;text-transform:uppercase}
+#loginScreen .login-card h1{font:700 26px/1.2 var(--v2-letra);letter-spacing:-.02em;color:var(--v2-texto);margin:6px 0 4px}
+#loginScreen .login-card h1+p{font:400 14px/1.45 var(--v2-letra);color:var(--v2-texto-2);margin:0 0 16px}
+#loginScreen .login-card .form-group{margin:0 0 12px}
+#loginScreen .login-card .form-group>label{margin-bottom:5px}
+#loginScreen .login-card .form-group input:not([type="checkbox"]){min-height:42px;height:42px}
+#loginScreen .porta-lembrar{margin:2px 0 14px;font:500 13px/1.3 var(--v2-letra);color:var(--v2-texto-2)}
+#loginScreen .login-card .btn-primary.full{min-height:44px;font:600 15px/1 var(--v2-letra)}
+#loginScreen .auth-forgot-password{min-height:0;margin:10px 0 0;padding:4px 0;background:none;border:0;color:var(--v2-azul);font:600 13px/1.3 var(--v2-letra)}
+#loginScreen .func-admin{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--v2-fio);text-align:center}
+#loginScreen .func-admin>span{font:400 13px/1.3 var(--v2-letra);color:var(--v2-texto-2)}
+#loginScreen .func-admin .btn-secondary.full{width:auto;min-height:0;padding:2px 0;background:none;border:0;box-shadow:none;color:var(--v2-azul);font:600 13px/1.3 var(--v2-letra);text-decoration:underline;text-underline-offset:3px}
+#loginScreen .auth-register-actions{margin-top:16px;padding:14px 0 0;background:none;border:0;border-top:1px solid var(--v2-fio);border-radius:0;box-shadow:none}
+#loginScreen .auth-register-actions strong{font:600 13px/1.3 var(--v2-letra);color:var(--v2-texto)}
+#loginScreen .auth-register-actions small{font:400 12.5px/1.4 var(--v2-letra);color:var(--v2-texto-2)}
+@media (max-width:900px){#loginScreen .auth-shell{grid-template-columns:1fr}#loginScreen .auth-brand-panel{min-height:200px}#loginScreen .auth-brand-copy h2{font-size:24px}#loginScreen .login-card{padding:24px 20px}}
