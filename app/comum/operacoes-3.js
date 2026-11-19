@@ -13,7 +13,7 @@ container.innerHTML=list.map(p=>`
                     </strong>
 
                     <div>
-                        ⭐ ${p.rating}
+                        ${p.rating!=null&&p.rating!==""?"★ "+p.rating:""}
                     </div>
 
                 </div>

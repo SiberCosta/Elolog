@@ -3,7 +3,7 @@
    pagamentos por receber e pesquisa. Blocos por função (administrador, operador, terreno, armazém, financeiro), personalizáveis e
    atualizados sozinhos (Painel.vigiar). Só mostra dados reais da empresa. */
 (function(){const{ETAPAS,etapa}=EtapasPrestador,{pendentes,idade,abrir,botao,linhas,rota}=FilaPrestador,$=id=>document.getElementById(id);
-const PADRAO={admin:["proximo","kpis","curso","atalhos","fila","alertas","pagamentos","historico"],operador:["proximo","kpis","curso","atalhos","fila","etapas"],
+const PADRAO={admin:["proximo","kpis","curso","atalhos","fila","alertas","historico"],operador:["proximo","kpis","curso","atalhos","fila","etapas"],
   field_operator:["recolhas","fila"],armazem:["proximo","etapas","curso","historico"],financeiro:["kpis","pagamentos","alertas","historico"]};
 const FUNCOES={admin:"Administrador",operador:"Operador",field_operator:"Operador de terreno",armazem:"Armazém",financeiro:"Financeiro"};
 const eur=v=>Number(v||0).toLocaleString("pt-PT",{style:"currency",currency:"EUR"}),esc=v=>escapeHtml(String(v??""));

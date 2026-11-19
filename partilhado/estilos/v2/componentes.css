@@ -35,3 +35,5 @@ html[data-tema="escuro"] :is(.btn-primary,.primary-btn,.btn-simulate,.btn-search
 .ct-alertas>li{background:var(--v2-sup);border:1px solid var(--v2-fio);border-radius:var(--v2-r-3);box-shadow:none}
 .ct-alertas>li.alta{background:var(--v2-av-s);border:1px solid rgba(135,82,0,.22)}
 .field-operator-center .field-dashboard-hero{background:var(--v2-marinho-2);border:0;border-radius:var(--v2-r-3);box-shadow:none}
+#app .content .card-title{border:0;border-bottom:1px solid var(--v2-fio);color:var(--v2-texto)}
+.pw-grelha:not(:has(#pw-pagamentos)) #pw-alertas,.pw-grelha:not(:has(#pw-alertas)) #pw-pagamentos{grid-column:span 12}

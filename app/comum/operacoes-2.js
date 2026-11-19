@@ -157,7 +157,7 @@ document.getElementById("detailContent").innerHTML=`
                     <p>
                         ${p.days} dias ·
                         <span class="stars">
-                            ⭐ ${p.rating}
+                            ${p.rating!=null&&p.rating!==""?"★ "+p.rating:""}
                         </span>
                     </p>
 

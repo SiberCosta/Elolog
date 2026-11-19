@@ -13,11 +13,11 @@ text-transform:none;color:#566a78}.sim-result-grid strong{display:block;font-siz
 gap:0 8px!important}.provider-more-menu>button{border-radius:4px!important;padding:11px 12px!important;border:0!important;background:none!important;gap:12px}.provider-more-menu>button:hover{background:#F2F6F9!important}
 .provider-more-menu>button>span{display:grid;place-items:center;width:34px!important;height:34px!important;border-radius:4px!important;background:#eaf1f6!important;color:#1F5F8B!important;font-size:0}.provider-more-menu>button>span .ic{width:18px;height:18px}
 .provider-more-menu strong{font-size:14px;color:#13293D}.provider-more-menu small{font-size:13px;color:#566a78}.client-sim-card .client-sim-section{border:0!important;border-top:2px solid #13293D!important;border-radius:0!important;margin-top:18px}
-.client-sim-card>.card-title,.client-sim-card .card-title{background:none!important;border:0!important;padding:0 0 6px!important}.provider-page.active{padding-top:30px}
+.client-sim-card>.card-title,.client-sim-card .card-title{background:none!important;padding:0 0 6px!important}.provider-page.active{padding-top:30px}
 .client-sim-card .sim-goods-list-section,.client-sim-card .sim-goods-table-wrap{border-radius:4px!important;box-shadow:none!important}
 /* v60 — Simulação da área de cliente com o mesmo desenho do simulador do site: cartões por etapa com ícone, resumo lateral em linhas. */
 #clientSimulation#clientSimulation .client-sim-card{padding:0!important}
-#clientSimulation#clientSimulation .client-sim-card>.card-title{grid-column:1;margin:0!important;padding:0!important;background:none!important;border:0!important}
+#clientSimulation#clientSimulation .client-sim-card>.card-title{grid-column:1;margin:0!important;padding:0!important;background:none!important}
 #clientSimulation#clientSimulation .client-sim-intro{grid-column:1;margin:4px 0 16px!important;padding:0!important;background:none!important;border:0!important}
 #clientSimulation#clientSimulation .client-sim-card>.card-title h3{font-size:20px!important;margin:0!important}
 #clientSimulation#clientSimulation .client-sim-section{background:#fff!important;border:1px solid #dfe8ee!important;border-top:1px solid #dfe8ee!important;border-radius:14px!important;padding:18px 20px 20px!important;box-shadow:0 8px 22px rgba(14,36,51,.05)!important;margin:0!important}
