@@ -53,8 +53,8 @@ html:not(#bv) body .fv-mini.fv-erro small i{background:var(--elo-erro,#B42318)}
 
 /* ---------- Botões contextuais ---------- */
 html:not(#bv) body .bt-ctx{display:inline-flex;align-items:center;justify-content:center;gap:8px}
-html:not(#bv) body .bt-urgente{padding:0 18px;border:2px solid #B7791F;border-radius:var(--vv-r2);background:#FBE3B0;color:var(--v2-av,#4A2E04);font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:var(--vv-sombra-1);animation:bt-chama 1.6s ease-out 2;transition:background var(--vv-mov),transform var(--vv-mov)}
-html:not(#bv) body .bt-urgente:hover{background:#F7D28A;transform:translateY(-1px)}
+html:not(#bv) body .bt-urgente{padding:0 18px;border:1px solid #B7791F;border-radius:var(--vv-r2);background:var(--v2-av-s,#FBE3B0);color:var(--v2-av,#4A2E04);font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:var(--vv-sombra-1);animation:bt-chama 1.6s ease-out 2;transition:background var(--vv-mov),transform var(--vv-mov)}
+html:not(#bv) body .bt-urgente:hover{background:var(--v2-av-s,#F7D28A);border-color:var(--v2-av,#B7791F)}
 html:not(#bv) body .bt-urgente small{padding:2px 8px;border-radius:999px;background:rgba(74,46,4,.12);font-size:12px;font-weight:700}
 @keyframes bt-chama{0%{box-shadow:0 0 0 0 rgba(183,121,31,.5)}80%,100%{box-shadow:0 0 0 10px rgba(183,121,31,0)}}
 
