@@ -37,3 +37,6 @@ html[data-tema="escuro"] :is(.btn-primary,.primary-btn,.btn-simulate,.btn-search
 .field-operator-center .field-dashboard-hero{background:var(--v2-marinho-2);border:0;border-radius:var(--v2-r-3);box-shadow:none}
 #app .content .card-title{border:0;border-bottom:1px solid var(--v2-fio);color:var(--v2-texto)}
 .pw-grelha:not(:has(#pw-pagamentos)) #pw-alertas,.pw-grelha:not(:has(#pw-alertas)) #pw-pagamentos{grid-column:span 12}
+/* campo de ficheiro: o botão do navegador com o mesmo aspeto dos botões secundários */
+#app input[type="file"]::file-selector-button{background:var(--v2-sup);color:var(--v2-texto);border:1px solid var(--v2-fio-2);border-radius:var(--v2-r-2);min-height:32px;padding:0 12px;margin-right:10px;font:600 13px/1 var(--v2-letra);cursor:pointer}
+#app input[type="file"]::file-selector-button:hover{background:var(--v2-sup-2)}

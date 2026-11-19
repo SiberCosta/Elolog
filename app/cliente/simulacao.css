@@ -1,6 +1,6 @@
 /* Simulação / nova encomenda: secções com filete, campos de 44px, resumo em folha fixa. Carrega no fim. */
 .client-sim-card{padding:0!important}.client-sim-card>.card-title h3{font-size:32px;letter-spacing:-.01em;color:#13293D}.client-sim-intro{color:#4b6070;font-size:15px;max-width:46rem}
-.client-sim-card .client-sim-section,.client-sim-section{background:none!important;border:0!important;border-top:2px solid #13293D!important;border-radius:0!important;box-shadow:none!important;padding:16px 0 4px!important}
+.client-sim-card .client-sim-section,.client-sim-section{background:none!important;border:0!important;border-top:1px solid var(--v2-fio,#DDE3E9)!important;border-radius:0!important;box-shadow:none!important;padding:16px 0 4px!important}
 .client-sim-section .section-kicker{display:none}.client-sim-section>h3,.client-sim-section>h4{display:flex;align-items:center;gap:8px;margin:0 0 14px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#13293D}
 .client-sim-section .ic{color:#1F7A5C}.client-sim-section .destinatario-help{font-size:14px;color:#4b6070;margin:-6px 0 14px}.client-sim-section label,.client-sim-section .form-group>label{font-size:13px;font-weight:700;color:#13293D}
 .client-sim-section input,.client-sim-section select,.client-sim-section textarea{min-height:44px;border:1px solid #9fb2c0!important;border-radius:4px!important;background:#fff;font-size:15px;color:#13293D;box-shadow:none}
@@ -12,7 +12,7 @@ text-transform:none;color:#566a78}.sim-result-grid strong{display:block;font-siz
 .provider-more-menu{border-radius:4px!important;border:1px solid #9fb2c0!important;box-shadow:0 18px 40px rgba(14,36,51,.22)!important;padding:8px!important;
 gap:0 8px!important}.provider-more-menu>button{border-radius:4px!important;padding:11px 12px!important;border:0!important;background:none!important;gap:12px}.provider-more-menu>button:hover{background:#F2F6F9!important}
 .provider-more-menu>button>span{display:grid;place-items:center;width:34px!important;height:34px!important;border-radius:4px!important;background:#eaf1f6!important;color:#1F5F8B!important;font-size:0}.provider-more-menu>button>span .ic{width:18px;height:18px}
-.provider-more-menu strong{font-size:14px;color:#13293D}.provider-more-menu small{font-size:13px;color:#566a78}.client-sim-card .client-sim-section{border:0!important;border-top:2px solid #13293D!important;border-radius:0!important;margin-top:18px}
+.provider-more-menu strong{font-size:14px;color:#13293D}.provider-more-menu small{font-size:13px;color:#566a78}.client-sim-card .client-sim-section{border:0!important;border-top:1px solid var(--v2-fio,#DDE3E9)!important;border-radius:0!important;margin-top:18px}
 .client-sim-card>.card-title,.client-sim-card .card-title{background:none!important;padding:0 0 6px!important}.provider-page.active{padding-top:30px}
 .client-sim-card .sim-goods-list-section,.client-sim-card .sim-goods-table-wrap{border-radius:4px!important;box-shadow:none!important}
 /* v60 — Simulação da área de cliente com o mesmo desenho do simulador do site: cartões por etapa com ícone, resumo lateral em linhas. */

@@ -37,7 +37,7 @@ container.innerHTML=visible.map(operation=>`
                 </span>
 
                 <span>
-                    ⚖️ ${operation.weight||"-"}
+                    <i class="ic ic-box" aria-hidden="true"></i> ${operation.weight||"-"}
                 </span>
 
                 <span>
