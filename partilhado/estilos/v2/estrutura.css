@@ -32,3 +32,7 @@ body:has(#dashboard.page.active) #app .sidebar .nv-proximo{display:none}
 @media (max-width:560px){#app .main .topbar .elo-tema-botao span{display:none}}
 html:is([data-tema="escuro"]) body,html:is([data-tema="escuro"]) #app,html:is([data-tema="escuro"]) #app .content{background:var(--v2-fundo);color:var(--v2-texto)}
 @media (prefers-color-scheme:dark){html[data-tema="sistema"] body,html[data-tema="sistema"] #app,html[data-tema="sistema"] #app .content{background:var(--v2-fundo);color:var(--v2-texto)}}
+/* fotografia de perfil: a imagem preenche o avatar; no cliente e na administração o avatar mostra que se pode alterar */
+#app .sidebar .field-sidebar-avatar.tem-foto{background-color:var(--v2-marinho-3);background-size:cover;background-position:center;color:transparent;text-indent:-9999px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+#app .sidebar .field-sidebar-avatar.foto-editavel{cursor:pointer;position:relative}
+#app .sidebar .field-sidebar-avatar.foto-editavel:hover,#app .sidebar .field-sidebar-avatar.foto-editavel:focus-visible{outline:none;box-shadow:0 0 0 2px var(--v2-menu-marca)}
