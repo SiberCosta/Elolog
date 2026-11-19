@@ -47,3 +47,24 @@
 #loginScreen:has(#providerFuncPage:not([hidden]):not([style*="none"])) .auth-register-actions{margin-top:14px;padding-top:12px}
 #loginScreen:has(#providerFuncPage:not([hidden]):not([style*="none"])) .auth-register-actions small{display:none}
 @media (max-width:520px){#providerFuncPage>.form-group:has(#funcNif),#providerFuncPage>.form-group:has(#funcNumero){grid-column:1 / -1}}
+/* novo ecrã de entrada: escolha do tipo de acesso e barra «A entrar como … · Mudar» (entrada-v2.js) */
+#loginScreen #portaTabs{display:none!important}
+#loginScreen .login-card.elo-a-escolher>*:not(#eloEscolha):not(.auth-register-actions){display:none!important}
+#loginScreen .elo-escolha h1{font:700 26px/1.2 var(--v2-letra);letter-spacing:-.02em;color:var(--v2-texto);margin:0 0 4px}
+#loginScreen .elo-escolha>p{font:400 14px/1.45 var(--v2-letra);color:var(--v2-texto-2);margin:0 0 18px}
+#loginScreen .elo-escolha-opcoes{display:grid;gap:10px}
+#loginScreen .elo-opcao{display:grid;grid-template-columns:44px minmax(0,1fr) 18px;align-items:center;gap:14px;width:100%;min-height:76px;padding:14px 16px;text-align:left;background:var(--v2-sup);color:var(--v2-texto);border:1px solid var(--v2-fio-2);border-radius:var(--v2-r-3);box-shadow:none;cursor:pointer;transition:border-color .12s ease,background-color .12s ease}
+#loginScreen .elo-opcao:hover{border-color:var(--v2-azul);background:var(--v2-sup-2)}
+#loginScreen .elo-opcao:focus-visible{outline:none;box-shadow:var(--v2-foco)}
+#loginScreen .elo-opcao.ultima{border-color:var(--v2-azul)}
+#loginScreen .elo-opcao-ic{width:44px;height:44px;border-radius:var(--v2-r-3);display:flex;align-items:center;justify-content:center;background:var(--v2-azul-s);color:var(--v2-azul)}
+#loginScreen .elo-opcao-ic .ic{width:22px;height:22px}
+#loginScreen .elo-opcao-tx{display:flex;flex-direction:column;gap:3px;min-width:0}
+#loginScreen .elo-opcao-tx strong{font:600 15px/1.3 var(--v2-letra);color:var(--v2-texto)}
+#loginScreen .elo-opcao-tx small{font:400 13px/1.4 var(--v2-letra);color:var(--v2-texto-2)}
+#loginScreen .elo-opcao>.ic{color:var(--v2-texto-3)}
+#loginScreen .elo-contexto{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 auto 16px;padding:8px 12px;background:var(--v2-sup-2);border:1px solid var(--v2-fio);border-radius:var(--v2-r-2);font:400 13px/1.3 var(--v2-letra);color:var(--v2-texto-2)}
+#loginScreen .elo-contexto[hidden],#loginScreen .elo-escolha[hidden]{display:none!important}
+#loginScreen .elo-contexto b{color:var(--v2-texto);font-weight:600}
+#loginScreen .elo-mudar{background:none;border:0;padding:0;min-height:0;color:var(--v2-azul);font:600 13px/1.3 var(--v2-letra);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+#loginScreen #providerFuncPage:not([hidden]):not([style*="none"]){display:grid!important}
