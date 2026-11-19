@@ -21,8 +21,7 @@ font-weight:600!important}
 .client-volume-table-head,.client-history-table-head,.cargo-editor-table-head,.provider-employee-list-head,.provider-history-list-head,.provider-login-table-head,.provider-recent-head,.finance-table th,.provider-order-history th,.sim-goods-table th,.provider-history-filters label{text-transform:none!important;
 letter-spacing:0!important;font-size:12px!important;font-weight:600!important;color:var(--pf-suave)!important}.hero-title strong,.hero h1 em,.hero h1 strong,.process-heading h2 span,.section-header h2 span,.centered-header h2 span{color:inherit!important;
 background:none!important;-webkit-text-fill-color:currentColor!important;font-style:normal!important}
-.hero-btn.hero-btn-primary,.btn-simulate,.contact-form-actions button[type=submit],.footer-support-card a,.cta-actions .hero-btn-primary,.btn-client{background:var(--pf-azul)!important;border-color:var(--pf-azul-esc)!important;color:#fff!important;
-box-shadow:0 1px 2px rgba(14,36,51,.18)!important}.hero-btn.hero-btn-primary:hover,.btn-simulate:hover,.contact-form-actions button[type=submit]:hover,.footer-support-card a:hover,.btn-client:hover{background:var(--pf-azul-esc)!important}
+.hero-btn.hero-btn-primary:hover,.btn-simulate:hover,.contact-form-actions button[type=submit]:hover,.footer-support-card a:hover,.btn-client:hover{background:var(--pf-azul-esc)!important}
 .hero-btn.hero-btn-primary::before,.hero-btn.hero-btn-primary::after{display:none!important}.hero-btn.hero-btn-primary.fx-brilho{-webkit-text-fill-color:#fff!important;animation:none!important}
 .hero-btn span,.btn-client span,.contact-form-actions button span,.footer-support-card a b{display:none!important}:focus-visible{outline:3px solid rgba(31,95,139,.45)!important;outline-offset:2px!important}.elo-assistant{right:18px!important;
 bottom:18px!important}.elo-assistant-launcher{width:48px!important;height:48px!important;border-radius:12px!important;box-shadow:0 4px 12px rgba(14,36,51,.22)!important}.elo-assistant-launcher svg,.elo-assistant-launcher img{transform:scale(.86)}
@@ -48,7 +47,6 @@ border-radius:6px 6px 0 0!important}.provider-desktop-nav>button.active:after,.p
 .provider-desktop-nav>button:focus-visible{background:var(--pf-azul)!important;color:#fff!important}.elo-lang span.on{background:transparent!important;color:var(--pf-azul)!important;font-weight:800!important;box-shadow:inset 0 -2px 0 var(--pf-azul)!important;
 border-radius:0!important}@media(hover:hover){.elo-lang span:hover{background:#E3EEF5!important;color:var(--pf-azul)!important;border-radius:99px!important;box-shadow:none!important}}
 
-.navbar .btn-client,.hero .sim-rapida .hero-btn-primary,.hero .hero-btn-primary,#form-rastreio button[type=submit],.contact-form-actions button[type=submit]{background:#FFFFFF!important;color:var(--pf-azul)!important;border:2px solid var(--pf-azul)!important;
-box-shadow:none!important;transition:background .2s ease,color .2s ease!important}
+
 .navbar .btn-client:hover,.navbar .btn-client:focus-visible,.hero .hero-btn-primary:hover,.hero .hero-btn-primary:focus-visible,#form-rastreio button[type=submit]:hover,#form-rastreio button[type=submit]:focus-visible,.contact-form-actions button[type=submit]:hover,.contact-form-actions button[type=submit]:focus-visible{background:var(--pf-azul)!important;
 color:#FFFFFF!important}.navbar .btn-client *,.hero .hero-btn-primary *,#form-rastreio button *,.contact-form-actions button *{color:inherit!important}.bt-onda{display:none!important}

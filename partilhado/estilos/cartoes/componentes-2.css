@@ -1,7 +1,7 @@
 /* Elolog — componentes de cartão para as páginas internas, parte 2 (v150): destaques, vazios, pílulas e tabelas. */
 
 /* 5. destaques escuros (painel do terreno, apoio da equipa): cor sólida da marca, sem gradiente nem sombra */
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.field-dashboard-hero,.field-support-hero){background:var(--elo-mar,#13293D)!important;background-image:none!important;box-shadow:none!important;border-radius:var(--ec-raio)!important}
+
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page :is(.field-dashboard-hero,.field-support-hero) :is(h2,h3,h4,p,small,strong){color:#fff!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page :is(.field-dashboard-hero,.field-support-hero) :is(p,small){color:rgba(255,255,255,.78)!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .provider-status-card{padding:14px 16px!important}

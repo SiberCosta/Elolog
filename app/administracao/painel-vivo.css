@@ -4,7 +4,7 @@
 .pv{display:flex;flex-direction:column;gap:20px;color:#13293D;font-variant-numeric:tabular-nums;text-align:left}
 .pv-corpo{display:flex;flex-direction:column;gap:20px;min-width:0}
 .pv-fim:empty{display:none}.pv-fim #paSimulacoes{margin:0}
-.pv button{font:inherit;color:inherit;cursor:pointer;text-align:left}
+:where(.pv) button{font:inherit;color:inherit;cursor:pointer;text-align:left}
 .pv button:focus-visible,.pv input:focus-visible,.pv .pv-tr:focus-visible{outline:2px solid #1F5F8B;outline-offset:2px}
 .pv-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .pv-vazio{margin:0;padding:16px 4px;color:#4D6172;font-size:14px}
@@ -24,11 +24,10 @@
 .pv-heroi-n{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:40px;align-items:center;margin:30px 0 30px}
 /* frase grande: o estado da plataforma por extenso, uma de cada vez */
 .pv-frases{display:flex;flex-direction:column;gap:18px;min-width:0}
-.pv-frases-l{list-style:none;margin:0;padding:0;display:grid;min-height:3.5em;font-size:clamp(30px,3.3vw,48px)}
+.pv-frases-l{list-style:none;margin:0;padding:0;display:grid;min-height:3.5em;font-size:clamp(24px,2.1vw,30px)}
 .pv-frases-l li{grid-area:1/1;align-self:center;opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .45s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
 .pv-frases-l li.on{opacity:1;transform:none;pointer-events:auto}.pv-frases-l li.sai{opacity:0;transform:translateY(-16px)}
-.pv .pv-frase{display:block;background:none;border:0;padding:0;font-size:1em!important;line-height:1.12;font-weight:600;letter-spacing:-.022em;color:#13293D;text-wrap:balance;
-  text-decoration:underline;text-decoration-color:transparent;text-decoration-thickness:2px;text-underline-offset:.14em;transition:text-decoration-color .25s,color .25s}
+.pv .pv-frase{display:block;background:none;border:0;padding:0;color:#13293D;text-wrap:balance;text-decoration:underline;text-decoration-color:transparent;text-decoration-thickness:2px;text-underline-offset:.14em;transition:text-decoration-color .25s,color .25s}
 .pv .pv-frase:hover{color:#1F5F8B;text-decoration-color:rgba(31,95,139,.35)}
 .pv-frases-p{display:flex;align-items:center;gap:6px}
 .pv .pv-frases-p button{width:22px;height:4px;min-height:0;padding:0;border:0;border-radius:2px;background:#D5DFE7;transition:background-color .2s,width .25s}

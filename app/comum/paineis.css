@@ -1,10 +1,8 @@
 /* Elolog — visual dos painéis do prestador e da administração (v54), na mesma linha do painel do cliente:
    cabeçalho claro, faixas únicas em vez de muitas caixas, ícones com cor, cartões com cantos de 18px e sombra suave.
    Carrega por último em area-cliente.html. */
-:root{--pv-tinta:#13293D;--pv-texto:#4b5d6b;--pv-suave:#7a8d99;--pv-fio:#e1e9ef;--pv-azul:#1F5F8B;--pv-verde:#1F7A5C}html body .field-operator-center .field-dashboard-hero{position:relative;overflow:hidden;isolation:isolate;padding:26px 28px!important;
-border:1px solid var(--pv-fio)!important;border-radius:22px!important;background:linear-gradient(120deg,#ffffff 0%,#f4f8fb 55%,#e8f1f7 100%)!important;color:var(--pv-tinta)!important;box-shadow:0 18px 40px rgba(14,36,51,.07)!important}
-html body .field-operator-center .field-dashboard-hero::after{content:"";position:absolute;z-index:-1;top:0;right:0;bottom:0;width:46%;
-background:radial-gradient(circle at 60% 55%,rgba(63,174,132,.28),transparent 55%),radial-gradient(#9fbfd4 1.2px,transparent 1.5px) 0 0/12px 12px;-webkit-mask:linear-gradient(90deg,transparent,#000 35%);mask:linear-gradient(90deg,transparent,#000 35%)}
+:root{--pv-tinta:#13293D;--pv-texto:#4b5d6b;--pv-suave:#7a8d99;--pv-fio:#e1e9ef;--pv-azul:#1F5F8B;--pv-verde:#1F7A5C}html body .field-operator-center .field-dashboard-hero{position:relative;overflow:hidden;isolation:isolate;padding:26px 28px!important;color:var(--pv-tinta)!important}
+
 html body .field-operator-center .field-dashboard-hero small{color:var(--pv-verde)!important;font-size:12px!important;font-weight:700!important;letter-spacing:.1em!important;text-transform:uppercase!important}
 html body .field-operator-center .field-dashboard-hero h3{color:var(--pv-tinta)!important;font-size:28px!important}html body .field-operator-center .field-dashboard-hero p{color:var(--pv-texto)!important}
 html body .field-operator-center .field-live-pill{background:#fff!important;color:var(--pv-tinta)!important}html body .field-operator-center .field-dashboard-actions{display:grid!important;
@@ -12,10 +10,10 @@ grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0!important;border:1
 html body .field-operator-center .field-dashboard-actions button,html body .field-operator-center .field-dashboard-actions button.primary{margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;
 box-shadow:none!important;padding:18px 20px!important;color:var(--pv-tinta)!important;transition:background-color .2s!important}html body .field-operator-center .field-dashboard-actions button+button{border-left:1px solid var(--pv-fio)!important}
 html body .field-operator-center .field-dashboard-actions button>span{width:44px!important;height:44px!important;border-radius:13px!important;color:#fff!important;box-shadow:0 8px 16px rgba(31,95,139,.22)}
-html body .field-operator-center .field-dashboard-actions button>span .ic{background:#fff!important}html body .field-operator-center .field-dashboard-actions button:nth-child(1)>span{background:linear-gradient(145deg,#5aa6d6,#1F5F8B)!important}
-html body .field-operator-center .field-dashboard-actions button:nth-child(2)>span{background:linear-gradient(145deg,#5ccf9b,#1F7A5C)!important}
-html body .field-operator-center .field-dashboard-actions button:nth-child(3)>span{background:linear-gradient(145deg,#f7c96a,#d98e1c)!important}
-html body .field-operator-center .field-dashboard-actions button:nth-child(4)>span{background:linear-gradient(145deg,#7f9fd0,#3d5f9a)!important}html body .field-operator-center .field-dashboard-actions button small{color:var(--pv-suave)!important}
+html body .field-operator-center .field-dashboard-actions button>span .ic{background:#fff!important}html body .field-operator-center .field-dashboard-actions button:nth-child(1)>span{background:#1F5F8B!important}
+html body .field-operator-center .field-dashboard-actions button:nth-child(2)>span{background:#1F7A5C!important}
+html body .field-operator-center .field-dashboard-actions button:nth-child(3)>span{background:#9A6410!important}
+html body .field-operator-center .field-dashboard-actions button:nth-child(4)>span{background:#3D5F9A!important}html body .field-operator-center .field-dashboard-actions button small{color:var(--pv-suave)!important}
 @media(hover:hover){html body .field-operator-center .field-dashboard-actions button:hover{background:#f5f9fc!important;color:var(--pv-azul)!important}html body .field-operator-center .field-dashboard-actions button:hover *{color:inherit!important}
 html body .field-operator-center .field-dashboard-actions button:hover small{color:var(--pv-suave)!important}html body .field-operator-center .field-dashboard-actions button:hover>span{color:#fff!important}}
 html body .field-operator-center .field-dashboard-kpis{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:0!important;border:1px solid var(--pv-fio);border-radius:18px;background:#fff;overflow:hidden;
@@ -31,9 +29,9 @@ html body .field-operator-center :is(.field-board-panel,.field-board-side>*,.pa-
 html body .field-operator-center .field-alert-strip{border-radius:18px!important}html body.modo-admin .pa-centro .pa-kpis{gap:0!important;border:1px solid var(--pv-fio)!important;border-radius:18px!important;background:#fff!important;overflow:hidden;
 box-shadow:0 8px 22px rgba(14,36,51,.05)}html body.modo-admin .pa-centro .pa-kpis .pa-kpi{border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;transition:background-color .2s}
 html body.modo-admin .pa-centro .pa-kpis .pa-kpi+.pa-kpi{border-left:1px solid var(--pv-fio)!important}@media(hover:hover){html body.modo-admin .pa-centro .pa-kpis .pa-kpi:hover{background:#f7fafc!important;transform:none!important}}
-html body .pa-centro .ct-kpi .ct-ic{width:48px;height:48px;border-radius:14px;color:#fff!important;background:linear-gradient(145deg,#5aa6d6,#1F5F8B)!important;box-shadow:0 10px 20px rgba(31,95,139,.28),inset 0 1px 0 rgba(255,255,255,.35)}
-html body .pa-centro .ct-kpi .ct-ic .ic{background:#fff!important}html body .pa-centro .ct-kpi .ct-ic.amb{background:linear-gradient(145deg,#f7c96a,#d98e1c)!important;box-shadow:0 10px 20px rgba(217,142,28,.3)}
-html body .pa-centro .ct-kpi .ct-ic.ver{background:linear-gradient(145deg,#5ccf9b,#1F7A5C)!important;box-shadow:0 10px 20px rgba(31,122,92,.3)}html body .pa-centro .ct-kpi .ct-ic.verm{background:linear-gradient(145deg,#f58a8a,#c63f49)!important;
+html body .pa-centro .ct-kpi .ct-ic{width:48px;height:48px;border-radius:14px;color:#fff!important;background:#1F5F8B!important;box-shadow:0 10px 20px rgba(31,95,139,.28),inset 0 1px 0 rgba(255,255,255,.35)}
+html body .pa-centro .ct-kpi .ct-ic .ic{background:#fff!important}html body .pa-centro .ct-kpi .ct-ic.amb{background:#9A6410!important;box-shadow:0 10px 20px rgba(217,142,28,.3)}
+html body .pa-centro .ct-kpi .ct-ic.ver{background:#1F7A5C!important;box-shadow:0 10px 20px rgba(31,122,92,.3)}html body .pa-centro .ct-kpi .ct-ic.verm{background:linear-gradient(145deg,#f58a8a,#c63f49)!important;
 box-shadow:0 10px 20px rgba(198,63,73,.28)}html body .ct-bola{background:radial-gradient(circle at 32% 28%,#5aa6d6,#1F5F8B 70%)!important;box-shadow:0 10px 22px rgba(31,95,139,.32),inset 0 1px 0 rgba(255,255,255,.3)!important}
 html body .ct-etapa.fim .ct-bola{background:radial-gradient(circle at 32% 28%,#5ccf9b,#1F7A5C 70%)!important;box-shadow:0 10px 22px rgba(31,122,92,.32)!important}html body.modo-admin .pa-centro .pa-cartao{border:1px solid var(--pv-fio)!important;
 border-radius:18px!important;box-shadow:0 8px 22px rgba(14,36,51,.05)!important}@media(max-width:1200px){html body .field-operator-center .field-dashboard-kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important}
@@ -43,7 +41,7 @@ html body .field-operator-center .field-dashboard-kpis button:nth-child(4){borde
 html body .field-operator-center .field-dashboard-actions button:nth-child(n+3){border-top:1px solid var(--pv-fio)!important}}
 @media(max-width:640px){html body .field-operator-center .field-dashboard-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}html body .field-operator-center .field-dashboard-kpis button:nth-child(odd){border-left:0!important}
 html body .field-operator-center .field-dashboard-kpis button:nth-child(4){border-left:1px solid var(--pv-fio)!important}html body .field-operator-center .field-dashboard-kpis button:nth-child(n+3){border-top:1px solid var(--pv-fio)!important}
-html body.modo-admin .pa-centro .pa-kpis .pa-kpi{border-left:0!important}html body.modo-admin .pa-centro .pa-kpis .pa-kpi+.pa-kpi{border-top:1px solid var(--pv-fio)!important}html body .field-operator-center .field-dashboard-hero::after{width:100%;opacity:.5}}
+html body.modo-admin .pa-centro .pa-kpis .pa-kpi{border-left:0!important}html body.modo-admin .pa-centro .pa-kpis .pa-kpi+.pa-kpi{border-top:1px solid var(--pv-fio)!important}}
 /* v60 — Perfil na barra lateral: avatar + nome (máx. 2 linhas) + função, em todos os painéis. */
 #sidebar#sidebar .user-box.user-box{display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;column-gap:12px!important;row-gap:2px!important;align-items:center!important;padding:12px 14px!important;min-height:0!important;margin:14px 12px 18px!important;text-align:left!important}
 #sidebar#sidebar .user-box #fieldSidebarAvatar#fieldSidebarAvatar{position:static!important;grid-row:1/span 2!important;grid-column:1!important;width:42px!important;height:42px!important;margin:0!important;transform:none!important}

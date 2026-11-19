@@ -17,7 +17,7 @@ html:not(#ec) body .shipment-create-card{display:block!important;height:auto!imp
 html:not(#ec) body .shipment-create-card>*+*{margin-top:14px}
 html:not(#ec) body .shipment-create-top,html:not(#ec) body .shipment-create-top>*{height:auto!important;min-height:0!important}
 html:not(#ec) body .shipment-create-actions{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;align-items:start!important;height:auto!important}
-html:not(#ec) body .shipment-create-actions>button{height:auto!important;min-height:44px!important;flex:none!important}
+html:not(#ec) body .shipment-create-actions>button{height:auto!important;flex:none!important}
 
 /* «Resumo da simulação» (registo, data, volume, valor): mesma leitura em linhas, sem partir o número de registo */
 html:not(#ec) body .client-simulation-summary-grid{display:grid!important;grid-template-columns:1fr!important;gap:0!important;background:var(--ec-fundo)!important;border:1px solid var(--ec-fio-leve)!important;border-radius:var(--ec-raio-int)!important;overflow:hidden}

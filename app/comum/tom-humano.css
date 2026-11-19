@@ -17,4 +17,4 @@ html:not(#bv) body .sim-rapida input:focus{outline:2px solid var(--elo-azul,#1F5
 html:not(#bv) body .sim-rapida button{white-space:nowrap}
 @media(max-width:620px){html:not(#bv) body .sim-rapida{grid-template-columns:1fr}html:not(#bv) body .sim-rapida button{width:100%}}
 html:not(#bv) body .shipment-create-actions{flex-wrap:wrap}
-html:not(#bv) body .shipment-create-actions button{flex:1 1 140px;white-space:normal;line-height:1.25;padding-left:12px;padding-right:12px}
+html:not(#bv) body .shipment-create-actions button{flex:1 1 140px;white-space:normal}

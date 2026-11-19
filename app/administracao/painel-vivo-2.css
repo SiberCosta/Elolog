@@ -23,8 +23,8 @@
 /* atenção necessária (regras do painel da administração) */
 .pv-atencao .ct-resumo{margin:0;font-size:14px;color:#4D6172}
 .pv-atencao .ct-alertas{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
-.pv-atencao .ct-alertas li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;align-items:start;padding:14px;border:1px solid #EBDDC2;border-left:4px solid #E0951A;border-radius:12px;background:#FFFBF3;cursor:pointer;margin:0}
-.pv-atencao .ct-alertas li.alta{border-color:#EFC9C1;border-left-color:#C2412D;background:#FFF7F5}
+.pv-atencao .ct-alertas li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;align-items:start;padding:14px;cursor:pointer;margin:0}
+
 .pv-atencao .ct-alertas li:hover{box-shadow:0 8px 20px -12px rgba(19,41,61,.35)}
 .pv-atencao .ct-alertas strong{display:block;font-size:14.5px;color:#13293D}.pv-atencao .ct-alertas small{display:block;font-size:13px;color:#5A6E7E;margin-top:2px}
 .pv-atencao .ct-alertas li>:last-child{grid-column:2;justify-self:start;font-size:13px;font-weight:600;color:#1F5F8B}
@@ -54,7 +54,7 @@
 @media(max-width:900px){.pv-mapa-g,.pv-neg-g{grid-template-columns:1fr}.pv-acomp,.pv-mapa.grande+.pv-acomp{max-height:none}.pv-mapa{height:340px}}
 @media(max-width:760px){.pv,.pv-corpo{gap:14px}.pv-serie{gap:5px}.pv-serie small{font-size:10px}.pv-escuro{border-radius:18px;padding:16px 16px 18px}.pv-faixa{padding:16px}.pv-cartao{padding:14px}
   .pv-acoes{margin-left:0;width:100%}.pv .pv-bt{flex:1 1 auto;justify-content:center}.pv .pv-bt-i{flex:0 0 36px}
-  .pv .pv-sec{padding:10px 12px;grid-template-areas:"r" "n" "d" "s";grid-template-columns:1fr}.pv .pv-sec>.pv-delta{justify-self:start}.pv-frases-l{font-size:28px;min-height:4.6em}
+  .pv .pv-sec{padding:10px 12px;grid-template-areas:"r" "n" "d" "s";grid-template-columns:1fr}.pv .pv-sec>.pv-delta{justify-self:start}.pv-frases-l{font-size:clamp(24px,2.1vw,30px);min-height:4.6em}
   .pv-mapa{height:280px}.pv-mapa.grande{height:420px}.pv-legenda,.pv-mapa-t{display:none}
   .pv-neg-n{grid-template-columns:1fr 1fr}.pv .pv-neg{padding:12px 10px 12px 0!important;border-left:0!important}.pv-etapas{grid-template-columns:repeat(2,minmax(0,1fr))}
   .pv-faixa-tot strong{font-size:22px}.pv-q{width:100%}.pv-cab{flex-wrap:wrap}
@@ -79,12 +79,12 @@
 .pv .pv-negocio h3::before{background:var(--elo-area-rede,#1F7A5C)}
 .pv-fim #paSimulacoes h4::before{background:var(--elo-area-clientes,#5A6E7E)}
 /* frase grande sozinha no topo (sem a grelha de números, que repetia os blocos de baixo) */
-.pv-heroi-n.pv-heroi-so{grid-template-columns:1fr;margin:22px 0 20px}.pv-heroi-so .pv-frases-l{font-size:clamp(30px,3.6vw,52px);min-height:2.5em}
+.pv-heroi-n.pv-heroi-so{grid-template-columns:1fr;margin:22px 0 20px}.pv-heroi-so .pv-frases-l{font-size:clamp(24px,2.1vw,30px);min-height:2.5em}
 .pv-heroi-so .pv-frase{max-width:24ch}
 /* posição real do navio escolhido */
 .pv .pv-real{flex-basis:100%;margin-top:4px;font-size:12.5px;font-weight:600;color:var(--elo-azul,#1F5F8B);text-decoration:underline;text-underline-offset:3px}
 .pv .pv-real:hover{color:var(--elo-mar,#13293D)}
 .pv .pv-pend-t{margin-left:6px;padding:2px 8px}
 /* v108 — decisões em âmbar (o vermelho fica só para erros, como manda a paleta) */
-.pv-atencao .ct-alertas li,.pv-atencao .ct-alertas li.alta{border-color:#EBDDC2;border-left-color:var(--elo-area-decisoes,#C27A12);background:#FFFBF3}
-.pv-atencao .ct-alertas li.alta{background:var(--elo-aviso-fundo,#FBEFD9)}
+
+

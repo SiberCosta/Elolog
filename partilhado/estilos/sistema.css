@@ -4,7 +4,7 @@ font-style:normal;font-display:swap}:root{--elo-primary:#1F5F8B;--elo-primary-70
 text-rendering:optimizeLegibility}button,input,select,textarea{font:inherit}button{transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease,transform .08s ease}button:active{transform:translateY(1px)}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid rgba(31,95,139,.22)!important;outline-offset:2px}
 .card,.provider-work-card,.admin-record-row,.client-sim-section{border-color:var(--elo-line)!important;border-radius:var(--elo-radius)!important;box-shadow:none!important}
-.btn-primary,.btn-success{border:1px solid var(--elo-primary)!important;border-radius:8px!important;background:var(--elo-primary)!important;color:#fff!important;box-shadow:none!important}
+
 .btn-primary:hover,.btn-success:hover{background:var(--elo-primary-700)!important}
 input,select,textarea{border-color:#cbd6de!important;border-radius:8px!important;background:#fff!important;
 color:var(--elo-ink)!important}table{border-collapse:separate!important;border-spacing:0!important}.section-eyebrow,.work-code,.card-title small{letter-spacing:.08em!important}.platform-toast{border-radius:12px!important;box-shadow:var(--elo-shadow)!important}
