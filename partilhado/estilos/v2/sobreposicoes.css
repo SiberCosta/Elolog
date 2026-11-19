@@ -65,3 +65,21 @@ html:not(#elo) body .password-recovery-dialog{background:var(--v2-sup);color:var
 #app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child>div:first-child{margin-right:auto;text-align:left!important}
 #app .content>.page>.card>:is(.card-title,[class$="-heading"],[class*="-heading "],.provider-section-top,[class$="-header"]):first-child>:is(h1,h2,h3):first-child{margin:0 auto 0 0!important;text-align:left!important}
 html:not(#elo) body #notificationPanel .nt-vazio>*{text-align:left!important;justify-self:start!important}
+
+/* BARRA INFERIOR (telemóvel): 4 destinos do perfil + Menu. Só aparece até 720 px. */
+.barra-movel{display:none}
+@media (max-width:720px){
+body.tem-barra-movel .barra-movel{position:fixed;left:0;right:0;bottom:0;z-index:900;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;height:calc(60px + env(safe-area-inset-bottom));padding:0 4px env(safe-area-inset-bottom);background:var(--v2-sup);border-top:1px solid var(--v2-fio);box-shadow:0 -4px 16px rgba(8,22,33,.06)}
+body.tem-barra-movel .barra-movel>button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;height:60px;padding:0 2px;background:none;border:0;border-radius:0;box-shadow:none;color:var(--v2-texto-3);font:600 11px/1.1 var(--v2-letra);letter-spacing:0}
+body.tem-barra-movel .barra-movel>button>:first-child{width:22px;height:22px;font-size:20px;line-height:22px;flex:0 0 auto}
+body.tem-barra-movel .barra-movel>button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body.tem-barra-movel .barra-movel>button>span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.tem-barra-movel .barra-movel>button.ativo{color:var(--v2-azul)}
+body.tem-barra-movel .barra-movel>button.ativo::before{content:"";position:absolute;top:0;left:22%;right:22%;height:2px;border-radius:0 0 2px 2px;background:var(--v2-azul)}
+body.tem-barra-movel .barra-movel>button:focus-visible{outline:2px solid var(--v2-azul);outline-offset:-4px}
+body.tem-barra-movel #app .content{padding-bottom:calc(84px + env(safe-area-inset-bottom))!important}
+body.tem-barra-movel :is(#nav-toggle,.mobile-menu){display:none!important}
+html:not(#elo) body.tem-barra-movel .elo-assistant:not(.open){bottom:calc(72px + env(safe-area-inset-bottom))!important}
+html:not(#elo) body.tem-barra-movel .elo-assistant:not(.open) .elo-assistant-launcher{width:44px;height:44px}
+}
+@media (max-width:720px){body.tem-barra-movel .barra-movel .bm-n{position:absolute;top:6px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--v2-er);color:#FFFFFF;font:700 10px/16px var(--v2-letra);text-align:center}}
