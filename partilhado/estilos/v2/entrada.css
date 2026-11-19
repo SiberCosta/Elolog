@@ -30,3 +30,20 @@
 #loginScreen .auth-register-actions strong{font:600 13px/1.3 var(--v2-letra);color:var(--v2-texto)}
 #loginScreen .auth-register-actions small{font:400 12.5px/1.4 var(--v2-letra);color:var(--v2-texto-2)}
 @media (max-width:900px){#loginScreen .auth-shell{grid-template-columns:1fr}#loginScreen .auth-brand-panel{min-height:200px}#loginScreen .auth-brand-copy h2{font-size:24px}#loginScreen .login-card{padding:24px 20px}}
+/* entrada do prestador (funcionários): menos texto, NIF e n.º lado a lado, «lembrar» e «esqueceu-se» na mesma linha */
+#providerFuncPage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:12px;align-content:start}
+#providerFuncPage>*{grid-column:1 / -1}
+#loginScreen #providerFuncPage>.auth-step-label,#loginScreen #providerFuncPage>h1+p{display:none!important}
+#providerFuncPage>h1{margin:2px 0 18px;font:700 24px/1.2 var(--v2-letra);letter-spacing:-.02em}
+#providerFuncPage>.form-group:has(#funcNif){grid-column:1;order:1}
+#providerFuncPage>.form-group:has(#funcNumero){grid-column:2;order:1}
+#providerFuncPage>.form-group:has(#funcSenha){order:2}
+#providerFuncPage>.porta-lembrar{order:3;margin:0 0 16px}
+#providerFuncPage>.auth-forgot-password{order:6;justify-self:center;margin:12px 0 0;padding:0}
+#providerFuncPage>.func-erro{order:4}
+#providerFuncPage>.btn-primary{order:5}
+#providerFuncPage>.func-admin{order:7;flex-wrap:nowrap;margin-top:6px;padding-top:0;border-top:0}
+#providerFuncPage>.func-admin>span{font-size:13px}
+#loginScreen:has(#providerFuncPage:not([hidden]):not([style*="none"])) .auth-register-actions{margin-top:14px;padding-top:12px}
+#loginScreen:has(#providerFuncPage:not([hidden]):not([style*="none"])) .auth-register-actions small{display:none}
+@media (max-width:520px){#providerFuncPage>.form-group:has(#funcNif),#providerFuncPage>.form-group:has(#funcNumero){grid-column:1 / -1}}
