@@ -68,3 +68,29 @@
 #loginScreen .elo-contexto b{color:var(--v2-texto);font-weight:600}
 #loginScreen .elo-mudar{background:none;border:0;padding:0;min-height:0;color:var(--v2-azul);font:600 13px/1.3 var(--v2-letra);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 #loginScreen #providerFuncPage:not([hidden]):not([style*="none"]){display:grid!important}
+/* v166 — entrada em vidro sobre fotografia (referência do utilizador): foto a toda a largura, cartão translúcido à direita,
+   legenda em vidro em baixo à esquerda, título com serifa. Só aspeto; a consola (/admin) mantém o seu próprio estilo. */
+html:not(.porta-consola){--elo-vidro:rgba(255,255,255,.76);--elo-vidro-fio:rgba(255,255,255,.7);--elo-vidro-campo:rgba(255,255,255,.72);--elo-vidro-borda:rgba(11,46,69,.38);--elo-serifa:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;--elo-botao:#0E2233}
+html[data-tema="escuro"]:not(.porta-consola){--elo-vidro:rgba(13,22,31,.74);--elo-vidro-fio:rgba(255,255,255,.12);--elo-vidro-campo:rgba(255,255,255,.06);--elo-vidro-borda:rgba(255,255,255,.22);--elo-botao:#2F7DB5}
+@media (prefers-color-scheme:dark){html[data-tema="sistema"]:not(.porta-consola){--elo-vidro:rgba(13,22,31,.74);--elo-vidro-fio:rgba(255,255,255,.12);--elo-vidro-campo:rgba(255,255,255,.06);--elo-vidro-borda:rgba(255,255,255,.22);--elo-botao:#2F7DB5}}
+html:not(.porta-consola) #loginScreen.login-screen{padding:20px 24px 28px}
+html:not(.porta-consola) #loginScreen .auth-shell{position:relative;display:flex;justify-content:flex-end;align-items:center;max-width:1200px;min-height:min(640px,calc(100vh - 124px));padding:26px;border:0;border-radius:24px;background:#0a1720;box-shadow:0 24px 60px rgba(8,22,33,.2);overflow:hidden}
+html:not(.porta-consola) #loginScreen .auth-brand-panel{position:absolute!important;inset:0;min-height:0!important;z-index:0;isolation:isolate}
+html:not(.porta-consola) #loginScreen .auth-brand-overlay{background:linear-gradient(0deg,rgba(6,20,30,.55) 0%,rgba(6,20,30,0) 46%),linear-gradient(90deg,rgba(6,20,30,.18),rgba(6,20,30,0) 50%)}
+html:not(.porta-consola) #loginScreen .auth-brand-content{position:absolute;left:0;bottom:0;top:0;width:calc(100% - 560px);padding:30px;display:flex;flex-direction:column;justify-content:flex-end}
+html:not(.porta-consola) #loginScreen .auth-brand-logo,html:not(.porta-consola) #loginScreen .auth-brand-trust{display:none}
+html:not(.porta-consola) #loginScreen .auth-brand-copy{margin:auto 0 0;max-width:440px;padding:18px 26px 20px;background:rgba(14,30,42,.34);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);border:1px solid rgba(255,255,255,.22);border-radius:18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+html:not(.porta-consola) #loginScreen .auth-brand-copy h2{font:600 26px/1.18 var(--elo-serifa);letter-spacing:0;margin:0 0 8px}
+html:not(.porta-consola) #loginScreen .auth-brand-copy p{font-size:14px;color:rgba(255,255,255,.88)}
+html:not(.porta-consola) #loginScreen .login-card{position:relative;z-index:1;flex:0 0 auto;width:min(510px,100%)!important;padding:26px 40px 22px!important;background:var(--elo-vidro)!important;-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);border:1px solid var(--elo-vidro-fio)!important;border-radius:22px!important;box-shadow:0 22px 50px rgba(6,20,30,.28)}
+html:not(.porta-consola) #loginScreen .login-card::before{content:"";display:block;flex:0 0 auto;width:136px;height:38px;margin:0 auto 14px;border-radius:999px;background:#0E2233 url(../../imagens/elolog-logo-negativo.svg) center/96px auto no-repeat;box-shadow:0 4px 12px rgba(6,20,30,.2)}
+html:not(.porta-consola) #loginScreen .login-card h1,html:not(.porta-consola) #loginScreen .elo-escolha h1{font:600 30px/1.15 var(--elo-serifa);letter-spacing:0;text-align:center}
+html:not(.porta-consola) #loginScreen .login-card h1+p,html:not(.porta-consola) #loginScreen .elo-escolha>p{text-align:center}
+html:not(.porta-consola) #loginScreen .login-card .form-group input:not([type="checkbox"]),html:not(.porta-consola) #loginScreen .login-card select{background:var(--elo-vidro-campo);border:1px solid var(--elo-vidro-borda);border-radius:10px}
+html:not(.porta-consola) #loginScreen .login-card .form-group input:not([type="checkbox"]):focus{border-color:var(--v2-azul);box-shadow:0 0 0 3px rgba(31,107,160,.18)}
+html:not(.porta-consola) #loginScreen .login-card .btn-primary.full{background:var(--elo-botao);border-color:var(--elo-botao);border-radius:10px;box-shadow:0 6px 16px rgba(6,20,30,.22)}
+html:not(.porta-consola) #loginScreen .elo-opcao,html:not(.porta-consola) #loginScreen .elo-contexto{background:var(--elo-vidro-campo);border-color:var(--elo-vidro-borda)}
+html:not(.porta-consola) #loginScreen .auth-register-actions,html:not(.porta-consola) #loginScreen .func-admin{border-top-color:var(--elo-vidro-borda)}
+@media (max-width:900px){html:not(.porta-consola) #loginScreen.login-screen{padding:12px}html:not(.porta-consola) #loginScreen .auth-shell{flex-direction:column;justify-content:flex-start;min-height:0;padding:120px 12px 12px;border-radius:20px}html:not(.porta-consola) #loginScreen .auth-brand-content{display:none}html:not(.porta-consola) #loginScreen .login-card{width:100%!important;padding:22px 18px 18px!important}html:not(.porta-consola) #loginScreen .login-card h1,html:not(.porta-consola) #loginScreen .elo-escolha h1{font-size:26px}}
+html:not(.porta-consola) #loginScreen .login-card .auth-step-label{text-align:center}
+html[data-tema="escuro"]:not(.porta-consola) #loginScreen .login-card::before{box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
