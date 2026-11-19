@@ -1,0 +1,18 @@
+/* Elolog v2 — área do cliente: «Próximo passo» em duas colunas (o que fazer agora | simular outro envio),
+   botão do próximo passo como ação principal, indicadores sem minigráficos decorativos, «Instalar aplicação» discreto no menu. */
+#app .client-next-step.cn-v2 h2{font:700 22px/1.25 var(--v2-letra);letter-spacing:-.015em;color:var(--v2-texto)}
+#app .client-next-step .bt-urgente{background:var(--v2-azul);color:#FFFFFF;border:1px solid var(--v2-azul);border-radius:var(--v2-r-2);box-shadow:none;min-height:40px;padding:0 18px;font:600 14px/1.2 var(--v2-letra);animation:none}
+#app .client-next-step .bt-urgente:hover{background:var(--v2-azul-h);border-color:var(--v2-azul-h);transform:none}
+html[data-tema="escuro"] #app .client-next-step .bt-urgente{color:#06131D}
+#app .client-next-step .bt-urgente small{background:rgba(255,255,255,.18);color:inherit}
+#app .pw-kpis .ck-barras{display:none}
+#app .sidebar .pwa-install-button{background:transparent;color:#FFFFFF;border:1px solid rgba(255,255,255,.18);box-shadow:none}
+#app .sidebar .pwa-install-button:hover{background:rgba(255,255,255,.06)}
+#app .sidebar .pwa-install-button small,#app .sidebar .pwa-install-button span{color:var(--v2-menu-tx)}
+#app .client-next-step.cn-v2{padding:24px 28px;grid-template-columns:minmax(0,1fr)}
+#app .client-next-step.cn-v2 .cn-texto{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);column-gap:32px;row-gap:8px;align-items:start;width:auto;max-width:none;min-width:0}
+#app .client-next-step.cn-v2 .cn-texto>*:not(form){grid-column:1}
+#app .client-next-step.cn-v2 .cn-texto>*:not(form):last-of-type{justify-self:start}
+#app .client-next-step.cn-v2 .cn-texto>form.sim-rapida{grid-column:2;grid-row:1 / span 4;align-self:center;margin:0;width:auto;max-width:none;background:var(--v2-sup-2);border:1px solid var(--v2-fio);border-radius:var(--v2-r-3);padding:16px;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}
+@media (max-width:1000px){#app .client-next-step.cn-v2 .cn-texto{grid-template-columns:1fr}#app .client-next-step.cn-v2 .cn-texto>form.sim-rapida{grid-column:1;grid-row:auto;margin-top:12px}}
+@media (max-width:700px){#app .client-next-step.cn-v2 .cn-texto>form.sim-rapida{grid-template-columns:minmax(0,1fr)}}

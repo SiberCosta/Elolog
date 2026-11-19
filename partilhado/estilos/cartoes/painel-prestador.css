@@ -4,7 +4,7 @@ html:not(#ec) body :is(#pdash,#cdash) .pa-cabecalho h3{font:700 26px/1.2 "Work S
 html:not(#ec) body :is(#pdash,#cdash) .pa-cabecalho p{color:var(--v2-texto-3,var(--ec-suave))!important;font-size:13.5px!important}
 html:not(#ec) body :is(#pdash,#cdash) .pa-centro{display:flex;flex-direction:column;gap:var(--ec-gap)!important}
 /* «Próximo passo»: cartão plano, sem gradiente nem sombra pesada; o desenho da rota fica, mais discreto e parado */
-html:not(#ec) body:is(.prov-lateral,.modo-cliente) :is(#pdash,#cdash) .client-next-step.cn-v2{background:var(--v2-sup,var(--ec-fundo))!important;background-image:none!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio)!important;box-shadow:var(--ec-sombra)!important;padding:22px 0 22px 24px!important;grid-template-columns:minmax(0,1fr) minmax(0,380px)!important}
+html:not(#ec) body:is(.prov-lateral,.modo-cliente) :is(#pdash,#cdash) .client-next-step.cn-v2{background:var(--v2-sup,var(--ec-fundo))!important;background-image:none!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio)!important;box-shadow:var(--ec-sombra)!important;padding:22px 24px!important;grid-template-columns:minmax(0,1fr)!important}
 html:not(#ec) body:is(.prov-lateral,.modo-cliente) :is(#pdash,#cdash) .cn-v2 h2{font:700 22px/1.25 "Work Sans",system-ui,sans-serif!important;letter-spacing:-.01em}
 html:not(#ec) body:is(.prov-lateral,.modo-cliente) :is(#pdash,#cdash) .cn-v2 .cn-texto>span{font:600 12.5px/1.3 "Work Sans",system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:var(--v2-ok,var(--elo-verde,#1F7A5C))!important}
 html:not(#ec) body:is(.prov-lateral,.modo-cliente) :is(#pdash,#cdash) .cn-mapa{opacity:.6}
