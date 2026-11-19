@@ -3,8 +3,7 @@
    As fases seguintes só acrescentam a classe da área ao :is(). Cores de estado ficam as que cada componente já tinha. */
 
 /* 1. contentor de página */
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page>.card,html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page>section.card{background:var(--ec-fundo)!important;background-image:none!important;
-  border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio)!important;box-shadow:var(--ec-sombra)!important;padding:22px 24px!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page>.card,html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page>section.card{padding:22px 24px!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .card-title h3,html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .provider-section-top h3{font:600 18px/1.3 "Work Sans",system-ui,sans-serif!important;color:var(--ec-tinta)!important;letter-spacing:-.01em}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .section-eyebrow{font:600 12.5px/1.3 "Work Sans",system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:var(--ec-suave)!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page :is(.provider-page-note,.provider-section-top p){color:var(--ec-texto)!important;font-size:14px!important;line-height:1.5}

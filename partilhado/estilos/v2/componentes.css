@@ -1,0 +1,29 @@
+/* Elolog v2 — componentes partilhados: botões, campos, tabelas, estados, cartões e janelas. Uma só definição para cada um. */
+.btn-primary,.primary-btn{background:var(--v2-azul);color:#FFFFFF;border:1px solid var(--v2-azul);border-radius:var(--v2-r-2);box-shadow:none;min-height:var(--v2-controlo);padding:0 16px;font:600 14px/1.2 var(--v2-letra);letter-spacing:0;text-transform:none;transform:none;transition:background-color .12s ease,border-color .12s ease,color .12s ease}
+.btn-primary:hover,.primary-btn:hover{background:var(--v2-azul-h);color:#FFFFFF;border:1px solid var(--v2-azul-h);box-shadow:none;transform:none}
+html[data-tema="escuro"] :is(.btn-primary,.primary-btn){color:#06131D}
+.btn-secondary{background:var(--v2-sup);color:var(--v2-texto);border:1px solid var(--v2-fio-2);border-radius:var(--v2-r-2);box-shadow:none;min-height:var(--v2-controlo);padding:0 14px;font:600 14px/1.2 var(--v2-letra);letter-spacing:0;text-transform:none;transform:none;transition:background-color .12s ease,border-color .12s ease,color .12s ease}
+.btn-secondary:hover{background:var(--v2-sup-2);color:var(--v2-texto);border:1px solid var(--v2-texto-3);box-shadow:none;transform:none}
+.btn-danger{background:var(--v2-sup);color:var(--v2-er);border:1px solid var(--v2-er);border-radius:var(--v2-r-2);box-shadow:none;min-height:var(--v2-controlo);padding:0 14px;font:600 14px/1.2 var(--v2-letra);letter-spacing:0;text-transform:none;transform:none}
+.btn-danger:hover{background:var(--v2-er-s);color:var(--v2-er);border:1px solid var(--v2-er);box-shadow:none;transform:none}
+:is(.btn-primary,.primary-btn,.btn-secondary,.btn-danger):focus-visible{outline:none;box-shadow:var(--v2-foco)}
+:is(.btn-primary,.primary-btn,.btn-secondary,.btn-danger):disabled{opacity:.5;cursor:not-allowed}
+:is(.form-group,.form-grid,.admin-toolbar,.manifest-toolbar,.provider-work-filters,.client-doc-toolbar,.admin-setting-card,.provider-order-search,.admin-operation-provider-search,.destinatario-full) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),select,textarea){background:var(--v2-sup);color:var(--v2-texto);border:1px solid var(--v2-fio-2);border-radius:var(--v2-r-2);box-shadow:none;min-height:var(--v2-controlo);font:400 14px/1.4 var(--v2-letra);letter-spacing:0;text-transform:none}
+:is(.form-group,.form-grid,.admin-toolbar,.manifest-toolbar,.provider-work-filters,.client-doc-toolbar,.admin-setting-card,.provider-order-search,.admin-operation-provider-search,.destinatario-full) :is(input,select,textarea):focus{outline:none;border:1px solid var(--v2-azul);box-shadow:var(--v2-foco)}
+.form-group>label{color:var(--v2-texto);font:600 13px/1.35 var(--v2-letra);letter-spacing:0;text-transform:none}
+#app .content table th{background:var(--v2-sup-2);color:var(--v2-texto-3);border:0;border-bottom:1px solid var(--v2-fio);box-shadow:none;font:600 12px/1.3 var(--v2-letra);letter-spacing:.01em;text-transform:none}
+#app .content table td{color:var(--v2-texto);border:0;border-bottom:1px solid var(--v2-fio-leve);box-shadow:none}
+#app .content table tr:last-child td{border:0}
+#app .content table tbody tr:hover td{background:var(--v2-sup-2)}
+:is(.status,.badge,.elo-badge,.status-pill,.estado-pill,.admin-status-pill,.shipment-status-pill,.tracking-status-pill,.simulation-status-pill,.pf-pill,.pv-pill,.field-live-pill,.ca-estado){border:0;border-radius:var(--v2-r-1);box-shadow:none;font:600 12px/1.3 var(--v2-letra);letter-spacing:0;text-transform:none}
+:is(.status-entregue,.status-confirmado,.sa-ok){background:var(--v2-ok-s);color:var(--v2-ok)}
+:is(.status-transito,.status-propostas,.pv-azul,.sa-info){background:var(--v2-in-s);color:var(--v2-in)}
+:is(.status-recebido,.pv-amb){background:var(--v2-av-s);color:var(--v2-av)}
+:is(.pv-verm){background:var(--v2-er-s);color:var(--v2-er)}
+:is(.pv-cinza,.sa-neutro){background:var(--v2-ne-s);color:var(--v2-ne)}
+#app .content :is(.card,.provider-status-card,.stat-card){background:var(--v2-sup);border:1px solid var(--v2-fio);border-radius:var(--v2-r-3);box-shadow:none}
+#app .content :is(.card,.provider-status-card,.stat-card) :is(.card,.provider-status-card){border:1px solid var(--v2-fio-leve);background:var(--v2-sup)}
+#app .content :is(.stat-card-link,.stat-card-action):hover{border:1px solid var(--v2-azul);background:var(--v2-sup-2);box-shadow:none;transform:none}
+:is(.modal-box,.provider-modal-dialog,.client-modal-card){background:var(--v2-sup);color:var(--v2-texto);border:1px solid var(--v2-fio);border-radius:var(--v2-r-3);box-shadow:var(--v2-sombra-janela)}
+:is(.modal-header,.provider-modal-head){border:0;border-bottom:1px solid var(--v2-fio)}
+:is(.provider-modal-actions,.client-modal-actions){border:0;border-top:1px solid var(--v2-fio)}

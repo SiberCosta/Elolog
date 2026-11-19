@@ -7,7 +7,7 @@ html body .field-operator-center .field-dashboard-hero::after{content:"";positio
 background:radial-gradient(circle at 60% 55%,rgba(63,174,132,.28),transparent 55%),radial-gradient(#9fbfd4 1.2px,transparent 1.5px) 0 0/12px 12px;-webkit-mask:linear-gradient(90deg,transparent,#000 35%);mask:linear-gradient(90deg,transparent,#000 35%)}
 html body .field-operator-center .field-dashboard-hero small{color:var(--pv-verde)!important;font-size:12px!important;font-weight:700!important;letter-spacing:.1em!important;text-transform:uppercase!important}
 html body .field-operator-center .field-dashboard-hero h3{color:var(--pv-tinta)!important;font-size:28px!important}html body .field-operator-center .field-dashboard-hero p{color:var(--pv-texto)!important}
-html body .field-operator-center .field-live-pill{background:#fff!important;border:1px solid var(--pv-fio)!important;color:var(--pv-tinta)!important}html body .field-operator-center .field-dashboard-actions{display:grid!important;
+html body .field-operator-center .field-live-pill{background:#fff!important;color:var(--pv-tinta)!important}html body .field-operator-center .field-dashboard-actions{display:grid!important;
 grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0!important;border:1px solid var(--pv-fio);border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 8px 22px rgba(14,36,51,.05)}
 html body .field-operator-center .field-dashboard-actions button,html body .field-operator-center .field-dashboard-actions button.primary{margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;
 box-shadow:none!important;padding:18px 20px!important;color:var(--pv-tinta)!important;transition:background-color .2s!important}html body .field-operator-center .field-dashboard-actions button+button{border-left:1px solid var(--pv-fio)!important}
@@ -45,10 +45,10 @@ html body .field-operator-center .field-dashboard-actions button:nth-child(n+3){
 html body .field-operator-center .field-dashboard-kpis button:nth-child(4){border-left:1px solid var(--pv-fio)!important}html body .field-operator-center .field-dashboard-kpis button:nth-child(n+3){border-top:1px solid var(--pv-fio)!important}
 html body.modo-admin .pa-centro .pa-kpis .pa-kpi{border-left:0!important}html body.modo-admin .pa-centro .pa-kpis .pa-kpi+.pa-kpi{border-top:1px solid var(--pv-fio)!important}html body .field-operator-center .field-dashboard-hero::after{width:100%;opacity:.5}}
 /* v60 — Perfil na barra lateral: avatar + nome (máx. 2 linhas) + função, em todos os painéis. */
-#sidebar#sidebar .user-box.user-box{display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;column-gap:12px!important;row-gap:2px!important;align-items:center!important;padding:12px 14px!important;min-height:0!important;margin:14px 12px 18px!important;border-radius:12px!important;text-align:left!important}
-#sidebar#sidebar .user-box #fieldSidebarAvatar#fieldSidebarAvatar{position:static!important;grid-row:1/span 2!important;grid-column:1!important;width:42px!important;height:42px!important;margin:0!important;font-size:14px!important;transform:none!important}
-#sidebar#sidebar .user-box #userName#userName{grid-column:2!important;align-self:end!important;margin:0!important;font-size:15px!important;font-weight:700!important;line-height:1.25!important;letter-spacing:0!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden!important;overflow-wrap:break-word;word-break:normal!important;hyphens:none}
-#sidebar#sidebar .user-box #userRole#userRole{grid-column:2!important;align-self:start!important;margin:0!important;font-size:12px!important;line-height:1.3!important;opacity:.8}
+#sidebar#sidebar .user-box.user-box{display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;column-gap:12px!important;row-gap:2px!important;align-items:center!important;padding:12px 14px!important;min-height:0!important;margin:14px 12px 18px!important;text-align:left!important}
+#sidebar#sidebar .user-box #fieldSidebarAvatar#fieldSidebarAvatar{position:static!important;grid-row:1/span 2!important;grid-column:1!important;width:42px!important;height:42px!important;margin:0!important;transform:none!important}
+#sidebar#sidebar .user-box #userName#userName{grid-column:2!important;align-self:end!important;margin:0!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden!important;overflow-wrap:break-word;word-break:normal!important;hyphens:none}
+#sidebar#sidebar .user-box #userRole#userRole{grid-column:2!important;align-self:start!important;margin:0!important;opacity:.8}
 /* v60 — Simulação: resumo lateral mais largo, sem colunas espremidas nem barras de deslocamento. */
 @media(min-width:1101px){#clientSimulation .client-sim-card{grid-template-columns:minmax(0,1fr) clamp(320px,24vw,400px)!important}}
 #clientSimulation .client-sim-results{min-width:0!important;overflow-x:hidden!important}
@@ -79,8 +79,8 @@ html body.modo-admin .pa-centro .pa-kpis .pa-kpi{border-left:0!important}html bo
 .sa-lista{list-style:none;margin:0;padding:0;display:grid}
 .sa-lista li{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) minmax(0,.7fr) auto;gap:4px 16px;align-items:center;padding:10px 0;border-top:1px solid #e3ebf1}
 .sa-lista small{display:block;color:#607486;font-size:12px}.sa-lista b{display:block;overflow-wrap:anywhere}.sa-valor{text-align:right}
-.sa-lista .estado-pill{justify-self:end;white-space:nowrap}.sa-neutro{background:#eef2f5!important;color:#40566a!important}.sa-info{background:#e6f0f8!important;color:#1d5b85!important}
-.sa-ok{background:#e4f4ec!important;color:#1d6b4a!important}.sa-mau{background:#fbeaea!important;color:#9b2c2c!important}
+.sa-lista .estado-pill{justify-self:end;white-space:nowrap}
+.sa-mau{background:#fbeaea!important;color:#9b2c2c!important}
 @media(max-width:760px){.sa-lista li{grid-template-columns:minmax(0,1fr) auto}.sa-quem{grid-column:1}.sa-valor{grid-column:2;grid-row:1;text-align:right}.sa-lista .estado-pill{grid-column:2;grid-row:2}}
 #clientSimulation .client-sim-results{position:static!important;max-height:none!important;overflow:visible!important}
 @media(max-width:1500px){html body #clientSimulation .client-sim-grid{grid-template-columns:minmax(0,1fr)!important}
@@ -93,7 +93,7 @@ html body #clientSimulation .sim-volume-row{display:grid!important;grid-template
 #clientSimulation .sim-volume-row :is(input,select){width:100%!important;min-width:0!important;box-sizing:border-box}}
 @media(max-width:600px){html body #clientSimulation .sim-volume-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}#clientSimulation .sim-volume-row>label:first-child{grid-column:1/-1}
 #clientSimulation .client-volume-head{flex-wrap:wrap;gap:8px}#clientSimulation .client-volume-head .sim-add{max-width:100%;white-space:normal}}
-#sidebar#sidebar .user-box #fieldSidebarAvatar#fieldSidebarAvatar{display:grid!important;place-items:center;border-radius:50%;font-weight:800;background:linear-gradient(145deg,#2f8f8a,#1F5F8B)!important;color:#fff!important;box-shadow:0 0 0 3px rgba(255,255,255,.12)}
+#sidebar#sidebar .user-box #fieldSidebarAvatar#fieldSidebarAvatar{display:grid!important;place-items:center}
 #sidebar#sidebar .user-box :is(#providerAccessBadge,#fieldSidebarCompany,#fieldSidebarStatus){grid-column:2!important;justify-self:start;position:static!important;margin:4px 0 0!important}
 #sidebar#sidebar .user-box :is(#providerAccessBadge,#fieldSidebarCompany,#fieldSidebarStatus):empty{display:none!important}
 /* v61 — Equipa Elolog (Funcionários e acessos). */

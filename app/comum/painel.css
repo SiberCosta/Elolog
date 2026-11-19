@@ -15,17 +15,15 @@ align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bo
 border-radius:8px;background:#fff;cursor:pointer}.pw-pers li button:disabled{opacity:.4;cursor:default}.pw-pers-acoes{display:flex;gap:10px;flex-wrap:wrap}
 /* Tema Elolog 2026: menu lateral claro e cartões com o azul e o verde do logótipo.
    Só cores e formas; a estrutura e o comportamento não mudam. Carrega depois de todas as outras folhas. */
-.sidebar{background:#fff!important;color:#34505f!important;border-right:1px solid #d8e2e9!important;box-shadow:none!important}.sidebar .user-box{background:#e4eef5!important;border:1px solid #d3e2ec!important;box-shadow:none!important}
-.sidebar .user-box,.sidebar .user-box *{color:#13293D!important}.sidebar .user-box small,.sidebar .user-box span{color:#566f7e!important}.sidebar .menu button{color:#34505f!important;background:transparent!important;border-radius:10px;font-weight:500;
-box-shadow:none!important}.sidebar .menu button:hover{background:#f2f6f9!important;color:#13293D!important}
-.sidebar .menu button.active,.sidebar .menu button.client-menu-active,.sidebar .menu button[aria-current=page],.sidebar .menu button[aria-expanded=true]{background:#e4eef5!important;color:#17435f!important;font-weight:700}
-.sidebar .logout{background:#fff!important;color:#13293D!important;border:1px solid #c3d1db!important}.sidebar .logout:hover{background:#f2f6f9!important}.sidebar .menu svg.mi{width:20px;height:20px;flex:0 0 auto}
-.sidebar .provider-menu-main{display:flex!important;align-items:center;gap:12px;color:#34505f!important;background:transparent!important;font-weight:500}.sidebar .provider-menu-main .mi-l{display:flex;align-items:center;gap:12px;opacity:1;font-size:inherit}
+
+.sidebar .user-box,.sidebar .user-box *{color:#13293D!important}.sidebar .user-box small,.sidebar .user-box span{color:#566f7e!important}.sidebar .menu button:hover{background:#f2f6f9!important;color:#13293D!important}
+
+.sidebar .menu svg.mi{width:20px;height:20px;flex:0 0 auto}
+.sidebar .provider-menu-main{display:flex!important;align-items:center;gap:12px}.sidebar .provider-menu-main .mi-l{display:flex;align-items:center;gap:12px;opacity:1;font-size:inherit}
 .sidebar .provider-menu-main:hover{background:#f2f6f9!important;color:#13293D!important}.sidebar .provider-menu-main.active{background:#e4eef5!important;color:#17435f!important;font-weight:700}.sidebar .provider-submenu{border-left:2px solid #d8e2e9!important;
-margin:2px 0 8px 22px}.sidebar .provider-submenu button{color:#34505f!important;background:transparent!important;font-size:14px}.sidebar .provider-submenu button:hover{background:#f2f6f9!important;color:#13293D!important}
-.sidebar .provider-submenu button.active{background:#e4eef5!important;color:#17435f!important;font-weight:700}#sidebar.sidebar .user-box,#sidebar.sidebar .user-box.client-home-card{background:#e4eef5!important;background-image:none!important;
-border:1px solid #d3e2ec!important;box-shadow:none!important}.sidebar .provider-menu-main .mi-l{flex:1 1 auto;margin:0!important;text-align:left}#sidebar.sidebar .user-box,#sidebar.sidebar .user-box *{color:#13293D!important}
-#sidebar.sidebar .user-box small,#sidebar.sidebar .user-box span,#sidebar.sidebar .user-box .role{color:#566f7e!important}#sidebar .user-box #userName{color:#13293D!important}#sidebar .user-box #userRole,#sidebar .user-box small{color:#566f7e!important}
+margin:2px 0 8px 22px}.sidebar .provider-submenu button:hover{background:#f2f6f9!important;color:#13293D!important}
+.sidebar .provider-submenu button.active{background:#e4eef5!important;color:#17435f!important;font-weight:700}.sidebar .provider-menu-main .mi-l{flex:1 1 auto;margin:0!important;text-align:left}#sidebar.sidebar .user-box,#sidebar.sidebar .user-box *{color:#13293D!important}
+#sidebar.sidebar .user-box small,#sidebar.sidebar .user-box span,#sidebar.sidebar .user-box .role{color:#566f7e!important}
 /* Painéis como folha de operações: sem cartões flutuantes, secções separadas por filetes, números alinhados, percurso da encomenda em linha.
    Carrega depois de painel.css, administracao/painel.css e tema.css. */
 .painel-admin{--tinta:#13293D;--sec:#566a78;--fio:#cfdbe4;--azul:#1F5F8B;--verde:#1F7A5C;gap:26px;font-variant-numeric:tabular-nums}.painel-admin h3{font-size:32px;letter-spacing:-.01em;color:var(--tinta)}.painel-admin .section-eyebrow{font-size:12px;
@@ -72,11 +70,11 @@ grid-template-columns:42px repeat(6,1fr);gap:3px;align-items:center}.pa-calor b{
 background:rgba(31,95,139,calc(.07 + var(--n)*.93));animation:pa-calor .4s ease both;animation-delay:var(--d)}.pa-calor i:hover{outline:2px solid var(--tinta)}@keyframes pa-calor{from{opacity:0;transform:scale(.6)}}
 @media(prefers-reduced-motion:reduce){.pa-calor i{animation:none}}
 /* Páginas internas do prestador e cliente: mesma folha plana dos painéis (filetes, sem cartões flutuantes, estados vazios com percurso). */
-.provider-page,.client-page{--tinta:#13293D;--sec:#566a78;--fio:#cfdbe4;--azul:#1F5F8B;--verde:#1F7A5C;font-variant-numeric:tabular-nums}.provider-page>.card,.provider-page>div>.card{background:none;border:0;border-radius:0;box-shadow:none;padding:0}
+.provider-page,.client-page{--tinta:#13293D;--sec:#566a78;--fio:#cfdbe4;--azul:#1F5F8B;--verde:#1F7A5C;font-variant-numeric:tabular-nums}.provider-page>.card,.provider-page>div>.card{padding:0}
 .provider-page .card-title{border-bottom:2px solid var(--tinta);padding-bottom:10px;margin-bottom:18px}.provider-page .card-title h3,.provider-page h3{font-size:28px;letter-spacing:-.01em;color:var(--tinta);font-weight:700}
 .provider-page .section-eyebrow,.provider-page small.section-eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--azul)}
 .provider-page .finance-heading,.provider-page .provider-section-top,.provider-page .maritime-calendar-head,.provider-page .manifest-page-head{border-bottom:2px solid var(--tinta);padding-bottom:14px;margin-bottom:18px}
-.provider-page .btn-secondary,.provider-page .btn-primary{border-radius:4px}.provider-status-card{background:none;border:0;border-left:4px solid var(--azul);border-radius:0;padding:4px 0 4px 16px;margin-bottom:22px}.provider-status-card strong{font-size:20px;
+.provider-status-card{padding:4px 0 4px 16px;margin-bottom:22px}.provider-status-card strong{font-size:20px;
 color:var(--tinta)}.provider-status-card span{color:var(--azul);font-weight:700;letter-spacing:.08em}.vz-trilho{display:flex;align-items:center;margin-top:14px;max-width:520px}.vz-trilho i{flex:1;height:2px;background:var(--fio);position:relative}
 .vz-trilho i:first-child{flex:0}.vz-trilho i::after{content:"";position:absolute;right:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--fio);box-sizing:border-box}
 .vz-trilho i.feito,.vz-trilho i.feito::after{border-color:var(--azul)}.vz-trilho i.feito{background:var(--azul)}.vz-trilho i.feito::after{background:var(--azul)}.vz-trilho i.atual::after{border-color:var(--azul);box-shadow:0 0 0 4px rgba(31,95,139,.2);
@@ -87,11 +85,9 @@ background:none}.vz{display:grid;justify-items:start;gap:6px;padding:34px 0 40px
 stroke:var(--azul);stroke-width:2}.vz .vz-v{fill:var(--azul);animation:vz-anda 5s ease-in-out infinite}@keyframes vz-anda{0%{transform:translateX(0)}50%{transform:translateX(196px)}100%{transform:translateX(0)}}.vz strong{font-size:18px;color:var(--tinta)}
 .vz span{font-size:14px}.vz .btn-primary,.vz .btn-secondary{margin-top:10px}.page.active>.card>*,.page.active>.card .admin-record-row{animation:vz-entra .45s cubic-bezier(.2,.7,.2,1) both}.page.active>.card>*:nth-child(2){animation-delay:.05s}
 .page.active>.card>*:nth-child(3){animation-delay:.1s}.page.active>.card>*:nth-child(n+4){animation-delay:.15s}@keyframes vz-entra{from{opacity:0;transform:translateY(8px)}}
-@media(prefers-reduced-motion:reduce){.page.active>.card>*,.page.active>.card .admin-record-row,.vz .vz-v,.vz-trilho i.atual::after{animation:none}}.provider-page .provider-status-card{background:none!important;border:0!important;
-border-left:4px solid var(--azul)!important}.provider-page .vz{display:grid!important;justify-items:start;background:none!important;border:0!important;box-shadow:none!important;padding:34px 0 40px!important;text-align:left}
+@media(prefers-reduced-motion:reduce){.page.active>.card>*,.page.active>.card .admin-record-row,.vz .vz-v,.vz-trilho i.atual::after{animation:none}}.provider-page .vz{display:grid!important;justify-items:start;background:none!important;border:0!important;box-shadow:none!important;padding:34px 0 40px!important;text-align:left}
 .provider-page .finance-tabs button{background:none!important;border:0!important;border-bottom:3px solid transparent!important;border-radius:0!important;color:var(--sec)}.provider-page .finance-tabs button.active{border-bottom-color:var(--azul)!important;
-color:var(--tinta)!important}.provider-page .finance-table-wrap{border:0;border-top:1px solid var(--fio);border-radius:0}.provider-page .card,.provider-page .provider-reports-card{background:none!important;border:0!important;box-shadow:none!important;
-padding:0!important}.provider-page .provider-permission-note{background:none;border:0;padding:0;color:var(--sec);margin-bottom:14px}.provider-page .provider-report-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--fio);
+color:var(--tinta)!important}.provider-page .finance-table-wrap{border:0;border-top:1px solid var(--fio);border-radius:0}.provider-page .card,.provider-page .provider-reports-card{padding:0!important}.provider-page .provider-permission-note{background:none;border:0;padding:0;color:var(--sec);margin-bottom:14px}.provider-page .provider-report-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--fio);
 border-top:3px solid var(--tinta);background:#fff;border-radius:0 0 4px 4px}.provider-page .provider-report-kpi{background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:16px 20px}
 .provider-page .provider-report-kpi+.provider-report-kpi{border-left:1px solid var(--fio)!important}.provider-page .provider-report-kpi-icon,.provider-page .report-icon{display:none!important}.provider-page .provider-report-kpi strong{font-size:32px;
 color:var(--tinta)}.provider-page .provider-report-period{background:none!important;color:var(--sec);padding:0}.provider-page .admin-report-download{background:none!important;border:0!important;border-bottom:1px solid var(--fio)!important;

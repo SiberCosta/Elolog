@@ -18,5 +18,5 @@ html:not(#ec) body .ec-sino-novo #notificationCount,html:not(#ec) body .ec-sino-
 html:not(#ec) body .platform-toast-stack{position:fixed!important;z-index:2147483000!important;pointer-events:none}
 html:not(#ec) body .platform-toast-stack>*{pointer-events:auto}
 /* v154: total do submenu na opção principal do menu */
-html:not(#ec) body #sidebar .nv-conta.nv-conta-grupo{margin-left:auto;background:#D6452F!important;color:#fff!important;box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+html:not(#ec) body #sidebar .nv-conta.nv-conta-grupo{margin-left:auto}
 html:not(#ec) body #sidebar .nv-conta.nv-conta-grupo+span{margin-left:6px}

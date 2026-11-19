@@ -52,7 +52,7 @@ html:not(#bv) body .fv-mini.fv-erro small i{background:var(--elo-erro,#B42318)}
 @keyframes fv-pulsa{0%{box-shadow:0 0 0 0 rgba(19,41,61,.35)}70%,100%{box-shadow:0 0 0 8px rgba(19,41,61,0)}}
 
 /* ---------- Botões contextuais ---------- */
-html:not(#bv) body .bt-ctx{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px}
+html:not(#bv) body .bt-ctx{display:inline-flex;align-items:center;justify-content:center;gap:8px}
 html:not(#bv) body .bt-urgente{padding:0 18px;border:2px solid #B7791F;border-radius:var(--vv-r2);background:#FBE3B0;color:#4A2E04;font-weight:700;font-size:14.5px;cursor:pointer;
   box-shadow:var(--vv-sombra-1);animation:bt-chama 1.6s ease-out 2;transition:background var(--vv-mov),transform var(--vv-mov)}
 html:not(#bv) body .bt-urgente:hover{background:#F7D28A;transform:translateY(-1px)}
@@ -60,15 +60,14 @@ html:not(#bv) body .bt-urgente small{padding:2px 8px;border-radius:999px;backgro
 @keyframes bt-chama{0%{box-shadow:0 0 0 0 rgba(183,121,31,.5)}80%,100%{box-shadow:0 0 0 10px rgba(183,121,31,0)}}
 
 /* ---------- O seu próximo passo (menu lateral, os três papéis) ---------- */
-html:not(#bv) body #sidebar .nv-proximo{flex:none;display:grid;gap:2px;width:calc(100% - 28px);margin:12px 14px 6px;padding:12px 14px;border:1px solid rgba(255,255,255,.16);border-left:4px solid var(--vv-acento);
-  border-radius:var(--vv-r2);background:rgba(255,255,255,.07);color:#fff;text-align:left;cursor:pointer;transition:background var(--vv-mov),transform var(--vv-mov)}
+html:not(#bv) body #sidebar .nv-proximo{flex:none;display:grid;gap:2px;width:calc(100% - 28px);margin:12px 14px 6px;padding:12px 14px;text-align:left;cursor:pointer;transition:background var(--vv-mov),transform var(--vv-mov)}
 html:not(#bv) body #sidebar .nv-proximo:hover{background:rgba(255,255,255,.13);transform:translateX(2px)}
-html:not(#bv) body #sidebar .nv-proximo small{color:rgba(255,255,255,.72);font-size:12px;font-weight:600;letter-spacing:0;text-transform:none}
-html:not(#bv) body #sidebar .nv-proximo strong{color:#fff;font-size:14.5px;line-height:1.3}
-html:not(#bv) body #sidebar .nv-proximo span{color:rgba(255,255,255,.78);font-size:12.5px}
-html:not(#bv) body #sidebar .nv-proximo[data-nivel="urgente"]{border-left-color:#F2B544;background:rgba(242,181,68,.16)}
-html:not(#bv) body #sidebar .nv-proximo[data-nivel="agora"]{border-left-color:#6FD3A8}
-html:not(#bv) body #sidebar .nv-conta{margin-left:auto;min-width:22px;padding:1px 7px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font-size:12px;font-weight:700;text-align:center}
+
+
+
+
+
+html:not(#bv) body #sidebar .nv-conta{margin-left:auto;min-width:22px;padding:1px 7px;text-align:center}
 html:not(#bv) body #sidebar .nv-conta:empty{display:none}
 html:not(#bv) body #sidebar button.nv-zero{opacity:.62}
 html:not(#bv) body #sidebar button:has(>.nv-conta){display:flex;align-items:center;gap:8px}
@@ -127,7 +126,7 @@ html:not(#bv) body #sidebar .nv-proximo[data-nivel="calmo"] span{padding-left:24
 html:not(#bv) body #sidebar button.nv-zero{opacity:1}
 
 /* ---------- v113: cartão de etapa com superfície própria ---------- */
-html:not(#bv) body .provider-status-card.et-cartao{background:var(--elo-cartao,#fff)!important;border:1px solid var(--elo-fio,#DCE4EA)!important;border-radius:var(--vv-r3)!important;padding:20px 22px!important;box-shadow:var(--vv-sombra-1);margin-bottom:22px}
+html:not(#bv) body .provider-status-card.et-cartao{padding:20px 22px!important;margin-bottom:22px}
 html:not(#bv) body .provider-status-card.et-cartao::before,html:not(#bv) body .provider-status-card.et-cartao::after{display:none!important}
 html:not(#bv) body .provider-status-card.et-cartao .et-num{justify-self:start;padding:3px 10px;border-radius:999px;background:var(--elo-info-fundo,#EAF2F8);font-size:12.5px!important}
 

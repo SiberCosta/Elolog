@@ -30,10 +30,10 @@ html body :is(.painel-admin,.provider-page>.card,.provider-page>div.card){max-wi
 html body .field-operator-center .field-dashboard-hero{margin-top:var(--s-5)!important}
 
 /* ---------- navegação: só a secção ativa é realçada ---------- */
-html body .sidebar .menu button[aria-expanded=true]:not([aria-current]):not(.secao-ativa):not(.active){background:transparent!important;box-shadow:none!important;font-weight:inherit}
-html body .sidebar .menu button.secao-ativa{position:relative;color:#fff!important;font-weight:700!important}
-html body .sidebar .menu button.secao-ativa::before{content:"";position:absolute;left:4px;top:50%;width:4px;height:22px;margin-top:-11px;border-radius:4px;background:#5ccf9b}
-html body .sidebar .menu :is(.client-submenu,.provider-submenu) button[aria-current=page]{background:rgba(255,255,255,.14)!important;color:#fff!important;font-weight:700!important;box-shadow:none!important}
+
+html body .sidebar .menu button.secao-ativa{position:relative}
+
+
 html body .provider-desktop-nav .provider-more-trigger.active{color:var(--e-azul)!important;box-shadow:inset 0 -2px 0 var(--e-azul)!important}
 html body .provider-more-trigger[aria-expanded=true] span{transform:rotate(180deg)}
 
@@ -102,7 +102,7 @@ html body .admin-provider-item{display:grid!important;grid-template-columns:minm
 html body .admin-provider-item>div{display:grid;gap:2px;min-width:0}html body .admin-provider-item small{color:var(--e-suave);font-size:var(--t-xs)}
 html body .admin-provider-item strong{color:var(--e-tinta);font-size:var(--t-base);overflow-wrap:anywhere}
 html body .admin-provider-item .admin-provider-actions{display:flex!important;justify-content:flex-end;gap:var(--s-2);grid-column:auto!important;margin:0!important}
-.estado-pill{justify-self:start;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--r-pill);font-size:var(--t-xs);font-weight:700;background:var(--e-fundo);color:var(--e-texto)}
+.estado-pill{justify-self:start;display:inline-flex;align-items:center;gap:6px;padding:4px 10px}
 .estado-pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
 .estado-pill.approved{background:var(--e-verde-claro);color:var(--e-verde)}.estado-pill.pending{background:var(--e-aviso-claro);color:var(--e-aviso)}
 .estado-pill:is(.rejected,.suspended){background:var(--e-erro-claro);color:var(--e-erro)}
@@ -185,5 +185,5 @@ html body.prov-lateral #sidebar .field-sidebar-company{display:none!important}ht
 html body.prov-lateral .topbar :is(.elo-lang,.elo-idioma){position:static!important;transform:none!important;margin-left:auto!important}
 html body.prov-lateral .topbar :is(.elo-lang,.elo-idioma)~.notification-center,html body.prov-lateral .topbar .notification-center{margin-left:0}
 html body .pd-grelha .field-board-item{grid-template-columns:minmax(52px,auto) minmax(0,1fr) auto!important;gap:var(--s-4)!important}
-html body.modo-lat #sidebar .menu button[aria-current=page]:not(.provider-menu-main){background:rgba(255,255,255,.14)!important;color:#fff!important;font-weight:700!important;box-shadow:none!important}
+
 html body .field-operator-center .field-dashboard-kpis:not(.pd-kpis){grid-template-columns:repeat(auto-fit,minmax(160px,1fr))!important}html body .field-dashboard-kpis>button{min-width:0!important}

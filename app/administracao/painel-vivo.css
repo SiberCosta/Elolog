@@ -17,7 +17,7 @@
 .pv-vivo i{width:8px;height:8px;border-radius:50%;background:#1F7A5C}
 .pv-erro{font-size:13px;color:#A2392A}
 .pv-acoes{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
-.pv .pv-bt-i{width:40px;padding:0!important;justify-content:center}
+.pv .pv-bt-i{width:40px;justify-content:center}
 .pv-bt svg,.pv-btn-i svg{display:block;flex:0 0 auto;max-width:none}
 
 /* números de agora: a receita em grande, os outros ao lado */
@@ -45,7 +45,7 @@
 .pv-sec span{font-size:13px;color:#4D6172}.pv-sec strong{font-size:clamp(26px,2.4vw,34px);line-height:1.05;font-weight:600;letter-spacing:-.02em;transition:color .2s}
 .pv-sec small{font-size:12.5px;color:#5A6E7E;line-height:1.35}
 .pv-delta{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 8px;white-space:nowrap}
-.pv-delta.pv-ok{background:#E6F2EC;color:#1F6B50}.pv-delta.pv-verm{background:#FCEFEC;color:#A2392A}.pv-delta.pv-amb{background:#FBEFD9;color:#8A5300}.pv-delta.pv-cinza{background:#F3F6F8;color:#4D6172}
+.pv-delta.pv-ok{background:#E6F2EC;color:#1F6B50}.pv-delta.pv-amb{background:#FBEFD9;color:#8A5300}.pv-delta.pv-cinza{background:#F3F6F8;color:#4D6172}
 
 /* mapa (terra em trama de pontos) e navios */
 .pv-mapa-g{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px}

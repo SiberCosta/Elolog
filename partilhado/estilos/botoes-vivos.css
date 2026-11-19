@@ -20,7 +20,7 @@ html:not(#bv) body :is(.btn-secondary,.btn-ghost,.pa-botao:not(.pa-botao-forte),
   color:var(--bv-tinta)!important;border:1px solid var(--bv-fio)!important;background-color:#fff!important;background-image:linear-gradient(var(--bv-fundo),var(--bv-fundo))!important}
 /* confirmar e perigo: a mesma lógica, com a cor da intenção */
 html:not(#bv) body .btn-success{color:var(--bv-ok)!important;border:1.5px solid var(--bv-ok)!important;background-color:#fff!important;background-image:linear-gradient(var(--bv-ok),var(--bv-ok))!important}
-html:not(#bv) body .btn-danger{color:var(--bv-perigo)!important;border:1.5px solid #E2B4B4!important;background-color:#fff!important;background-image:linear-gradient(var(--bv-perigo),var(--bv-perigo))!important}
+
 
 @media (hover:hover){
   html:not(#bv) body :is(.btn-primary,.primary-btn,.btn-search,.btn-register-profile,.pa-botao-forte,.btn-selecionar-prestador,.btn-simulate:not(.hero *),.btn-success,.btn-danger):not(:disabled):not([aria-disabled=true]):hover{

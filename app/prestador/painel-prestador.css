@@ -8,7 +8,7 @@ z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
 html body.prov-lateral .cn-v2 span{color:var(--cv-verde)!important;font-size:12px!important;font-weight:700;letter-spacing:.1em!important;text-transform:uppercase}
 html body.prov-lateral .cn-v2 h2{margin:0!important;color:var(--cv-tinta)!important;font-size:28px!important;line-height:1.2}
 html body.prov-lateral .cn-v2 p{margin:0 0 12px!important;color:var(--cv-texto)!important}
-html body.prov-lateral .cn-v2 button{background-color:#fff}
+
 body.prov-lateral #pdash .cn-mapa{width:100%;height:auto;margin:-28px 0 -28px;align-self:stretch}
 body.prov-lateral #pdash .cn-mapa pattern circle{fill:#8fb3c9}
 body.prov-lateral #pdash .cn-mapa .cn-pontos{opacity:.55}

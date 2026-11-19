@@ -6,8 +6,7 @@ html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.f
   :is(button,.employee-action,summary,a.btn-secondary,a.btn-primary){display:inline-flex!important;align-items:center;justify-content:center;gap:6px;min-height:38px!important;height:auto!important;
   padding:8px 14px!important;border-radius:8px!important;font:600 13px/1.2 "Work Sans",system-ui,sans-serif!important;white-space:nowrap!important;box-shadow:none!important;cursor:pointer;
   background:#fff!important;color:var(--ec-tinta,#13293D)!important;border:1px solid #C9D4DC!important;transition:border-color .15s,background-color .15s}
-html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions,.provider-payment-actions,.admin-record-actions,.field-service-actions,.manifest-card-actions,.ap-acoes,.ac-acoes)
-  :is(.btn-primary,.btn-success){border-color:var(--ec-tinta,#13293D)!important}
+
 html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions,.provider-payment-actions,.admin-record-actions,.field-service-actions,.manifest-card-actions,.ap-acoes,.ac-acoes)
   :is(button,a,summary):is(.btn-danger,.danger,[class*="eliminar"],[class*="apagar"]):is(*){color:#B42318!important;border-color:#F2B8B5!important}
 @media(hover:hover){html:not(#ec) body :is(.pr-acoes,.employee-row-actions,.provider-work-actions,.finance-actions,.client-payment-item-actions,.provider-payment-actions,.admin-record-actions,.field-service-actions,.manifest-card-actions,.ap-acoes,.ac-acoes)

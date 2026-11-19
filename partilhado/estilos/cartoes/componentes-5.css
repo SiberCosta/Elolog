@@ -5,7 +5,7 @@ html:not(#ec) body .shipment-create-top{display:flex!important;flex-direction:ro
 html:not(#ec) body .shipment-create-top>div{flex:1 1 auto;min-width:0}
 html:not(#ec) body .shipment-create-top h4{display:flex;align-items:center;gap:8px;font:600 18px/1.3 "Work Sans",system-ui,sans-serif!important;color:var(--ec-tinta)!important;white-space:normal!important}
 html:not(#ec) body .shipment-create-top .eyebrow{text-transform:none!important;letter-spacing:0!important;font:600 12.5px/1.3 "Work Sans",system-ui,sans-serif!important}
-html:not(#ec) body .shipment-status-pill{flex:none;border-radius:999px!important;white-space:nowrap}
+html:not(#ec) body .shipment-status-pill{flex:none;white-space:nowrap}
 html:not(#ec) body .shipment-summary{display:grid!important;grid-template-columns:1fr!important;gap:0!important;background:var(--ec-fundo-suave)!important;border:1px solid var(--ec-fio-leve)!important;border-radius:var(--ec-raio-int)!important;overflow:hidden}
 html:not(#ec) body .shipment-summary>div{display:flex!important;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 14px!important;background:transparent!important;border:0!important;border-bottom:1px solid var(--ec-fio-leve)!important;grid-column:auto!important}
 html:not(#ec) body .shipment-summary>div:last-child{border-bottom:0!important}

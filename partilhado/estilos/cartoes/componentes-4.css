@@ -2,7 +2,7 @@
    Âmbito: body.modo-cliente (e o prestador quando abre os mesmos ecrãs, como a simulação). */
 
 /* 15. registos do cliente: encomendas, pagamentos, documentos, histórico */
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-order-card,.client-payment-item,.client-doc-card,.client-history-row,.client-active-card,.client-home-card,
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-order-card,.client-payment-item,.client-doc-card,.client-history-row,.client-active-card,.client-home-card:not(.user-box),
   .client-home-result-card,.client-sim-card,.simulator-card,.client-extra-doc-row){background:var(--ec-fundo)!important;background-image:none!important;
   border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;transition:background-color var(--ec-t),border-color var(--ec-t)}
 @media(hover:hover){html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-order-card,.client-home-result-card):hover{border-color:var(--ec-borda-ativa)!important}}
@@ -26,7 +26,7 @@ html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-section-not
 /* 17. indicadores e janelas */
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-metric-card{background:var(--ec-fundo)!important;background-image:none!important;border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-metric-card strong{font-variant-numeric:tabular-nums}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-modal-card{border-radius:var(--ec-raio)!important;border:1px solid var(--ec-borda)!important;box-shadow:0 16px 40px rgba(19,41,61,.18)!important}
+
 
 /* 18. estados vazios */
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-active-empty,.client-home-empty,.perfil-vazio){background:#F8FAFB!important;background-image:none!important;

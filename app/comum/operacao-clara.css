@@ -3,7 +3,7 @@
 
 /* ---------- Etapas do percurso (stepper) ---------- */
 html:not(#bv) body .provider-page:has(.et-cartao)>.card>.card-title:has(>h3:only-child){display:none}
-html:not(#bv) body .et-cartao{display:grid;gap:6px;padding:18px 20px;border:1px solid var(--elo-fio,#DCE4EA);border-left:4px solid var(--elo-area-operacao,#1F5F8B);border-radius:14px;background:var(--elo-cartao,#fff)}
+html:not(#bv) body .et-cartao{display:grid;gap:6px;padding:18px 20px}
 html:not(#bv) body .et-cartao .et-num{color:var(--elo-azul,#1F5F8B);font-size:13px;font-weight:700;letter-spacing:0;text-transform:none}
 html:not(#bv) body .et-cartao strong{font-size:21px;line-height:1.25;color:var(--elo-tinta,#13293D)}
 html:not(#bv) body .et-cartao p{margin:0;max-width:68ch;color:var(--elo-texto,#4B5D6B);font-size:15px;line-height:1.55}
@@ -45,7 +45,7 @@ html:not(#bv) body .automation-log header small{display:block;margin-top:2px;col
 
 /* ---------- Prestadores: duas ações à vista e o resto em «Mais ações» ---------- */
 html:not(#bv) body .pr-acoes{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}
-html:not(#bv) body .pr-suspender{border-color:var(--elo-aviso,#B7791F)!important;color:#8A5A12!important}
+
 html:not(#bv) body .pr-mais{position:relative}
 html:not(#bv) body .admin-record-row:has(.pr-mais[open]){position:relative;z-index:40}
 html:not(#bv) body .pr-mais>summary{list-style:none;cursor:pointer}
