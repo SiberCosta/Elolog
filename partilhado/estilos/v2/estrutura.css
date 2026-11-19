@@ -26,3 +26,9 @@
 @media (max-width:768px){#app .main .topbar #pageTitle{font:650 17px/1.25 var(--v2-letra)}}
 /* no Painel o «Próximo passo» já está no topo da página: não se repete no menu lateral */
 body:has(#dashboard.page.active) #app .sidebar .nv-proximo{display:none}
+#app .main .topbar .elo-tema-botao{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;background:var(--v2-sup);color:var(--v2-texto);border:1px solid var(--v2-fio);border-radius:var(--v2-r-2);box-shadow:none;font:600 13px/1 var(--v2-letra);cursor:pointer}
+#app .main .topbar .elo-tema-botao:hover{background:var(--v2-sup-2)}
+#app .main .topbar .elo-tema-botao:focus-visible{outline:none;box-shadow:var(--v2-foco)}
+@media (max-width:560px){#app .main .topbar .elo-tema-botao span{display:none}}
+html:is([data-tema="escuro"]) body,html:is([data-tema="escuro"]) #app,html:is([data-tema="escuro"]) #app .content{background:var(--v2-fundo);color:var(--v2-texto)}
+@media (prefers-color-scheme:dark){html[data-tema="sistema"] body,html[data-tema="sistema"] #app,html[data-tema="sistema"] #app .content{background:var(--v2-fundo);color:var(--v2-texto)}}

@@ -13,11 +13,10 @@
   --ec-numero:700 26px/1.1 "Work Sans",system-ui,sans-serif}
 
 /* cartão base (contentor de secção) */
-html:not(#ec) body .ec-cartao,html:not(#ec) body :is(#pdash,#cdash) .pa-cartao{background:var(--ec-fundo)!important;border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio)!important;
-  box-shadow:var(--ec-sombra)!important;padding:var(--ec-pad) calc(var(--ec-pad) + 2px)!important;background-image:none!important}
+html:not(#ec) body .ec-cartao,html:not(#ec) body :is(#pdash,#cdash) .pa-cartao{background:var(--v2-sup,var(--ec-fundo))!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio)!important;box-shadow:var(--ec-sombra)!important;padding:var(--ec-pad) calc(var(--ec-pad) + 2px)!important;background-image:none!important}
 html:not(#ec) body :is(#pdash,#cdash) .pa-cartao>header,html:not(#ec) body :is(#pdash,#cdash) .pa-cartao .pa-topo{margin-bottom:14px!important}
-html:not(#ec) body :is(#pdash,#cdash) .pa-cartao h4,html:not(#ec) body :is(#pdash,#cdash) .pa-cartao h3{font:var(--ec-titulo)!important;color:var(--ec-tinta)!important;letter-spacing:-.005em;margin:0!important}
-html:not(#ec) body :is(#pdash,#cdash) .pa-cartao header small,html:not(#ec) body :is(#pdash,#cdash) .pa-cartao header span{font-size:12.5px!important;color:var(--ec-suave)!important}
+html:not(#ec) body :is(#pdash,#cdash) .pa-cartao h4,html:not(#ec) body :is(#pdash,#cdash) .pa-cartao h3{font:var(--ec-titulo)!important;color:var(--v2-texto,var(--ec-tinta))!important;letter-spacing:-.005em;margin:0!important}
+html:not(#ec) body :is(#pdash,#cdash) .pa-cartao header small,html:not(#ec) body :is(#pdash,#cdash) .pa-cartao header span{font-size:12.5px!important;color:var(--v2-texto-3,var(--ec-suave))!important}
 
 /* cartões que se carregam: resposta discreta ao rato, ao toque e ao teclado */
 html:not(#ec) body :is(#pdash,#cdash) :is(.pw-kpi,.cr-tile,.ca-linha,.pd-alerta,.pw-linha){transition:background-color var(--ec-t),border-color var(--ec-t),box-shadow var(--ec-t),transform var(--ec-t)!important;cursor:pointer}
@@ -25,8 +24,7 @@ html:not(#ec) body :is(#pdash,#cdash) :is(.pw-kpi,.cr-tile,.ca-linha,.pd-alerta)
 html:not(#ec) body :is(.pw-kpi,.cr-tile,.ca-linha,.pd-alerta,.ec-clicavel):focus-visible{outline:2px solid var(--elo-azul,#1F5F8B)!important;outline-offset:2px;border-radius:var(--ec-raio-int)}
 
 /* pílulas de estado */
-html:not(#ec) body :is(#pdash,#cdash) :is(.pf-pill,.ck-selo){display:inline-flex;align-items:center;gap:6px;padding:3px 10px!important;border-radius:var(--ec-raio-pilula)!important;background:var(--ec-fundo-suave)!important;
-  color:var(--ec-texto)!important;font:600 12px/1.4 "Work Sans",system-ui,sans-serif!important;border:0!important;white-space:nowrap}
+html:not(#ec) body :is(#pdash,#cdash) :is(.pf-pill,.ck-selo){display:inline-flex;align-items:center;gap:6px;padding:3px 10px!important;border-radius:var(--ec-raio-pilula)!important;background:var(--v2-sup-2,var(--ec-fundo-suave))!important;color:var(--v2-texto-2,var(--ec-texto))!important;font:600 12px/1.4 "Work Sans",system-ui,sans-serif!important;border:0!important;white-space:nowrap}
 
 /* dados que mudaram: um realce curto, só quando o valor muda de facto (cartoes.js) */
 @keyframes ecMudou{from{background-color:var(--elo-info-fundo,#EAF1F7)}to{background-color:transparent}}

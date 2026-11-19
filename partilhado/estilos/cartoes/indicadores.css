@@ -1,29 +1,28 @@
 /* Elolog — cartões de indicadores (KPI), v149. Uma faixa só, com divisórias, em vez de quatro cartões soltos.
    Ícone plano numa pastilha da cor do estado; número grande com algarismos de largura fixa; a barra só existe onde há
    um valor real a mostrar (percentagem paga). */
-html:not(#ec) body :is(#pdash,#cdash) .pw-kpis.ck-grelha{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0!important;border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio)!important;
-  background:var(--ec-fundo)!important;box-shadow:var(--ec-sombra)!important;overflow:hidden}
+html:not(#ec) body :is(#pdash,#cdash) .pw-kpis.ck-grelha{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio)!important;background:var(--v2-sup,var(--ec-fundo))!important;box-shadow:var(--ec-sombra)!important;overflow:hidden}
 html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck{display:grid!important;grid-template-columns:36px minmax(0,1fr) auto!important;align-items:start!important;gap:12px!important;padding:18px 20px!important;border:0!important;border-radius:0!important;
   background:transparent!important;box-shadow:none!important;text-align:left;min-height:0!important}
-html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck+.pw-kpi.ck{border-left:1px solid var(--ec-fio-leve)!important}
-@media(hover:hover){html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck:hover{background:var(--ec-fundo-hover)!important}}
+html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck+.pw-kpi.ck{border-left:1px solid var(--v2-fio,var(--ec-fio-leve))!important}
+@media(hover:hover){html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck:hover{background:var(--v2-sup-2,var(--ec-fundo-hover))!important}}
 html:not(#ec) body :is(#pdash,#cdash) .ck-ic{width:36px!important;height:36px!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;background-image:none!important;display:grid;place-items:center}
 html:not(#ec) body :is(#pdash,#cdash) .ck-ic svg{width:19px!important;height:19px!important}
-html:not(#ec) body :is(#pdash,#cdash) .ck-azul .ck-ic{background:var(--elo-info-fundo,#EAF1F7)!important;color:var(--elo-azul,#1F5F8B)!important}
-html:not(#ec) body :is(#pdash,#cdash) .ck-ambar .ck-ic{background:var(--elo-aviso-fundo,#FBEFD9)!important;color:var(--elo-aviso,#8A5300)!important}
-html:not(#ec) body :is(#pdash,#cdash) .ck-verde .ck-ic{background:var(--elo-ok-fundo,#E6F2EC)!important;color:var(--elo-ok,#1F6B50)!important}
-html:not(#ec) body :is(#pdash,#cdash) .ck-vermelho .ck-ic{background:var(--elo-erro-fundo,#FCEFEC)!important;color:var(--elo-erro,#A2392A)!important}
+html:not(#ec) body :is(#pdash,#cdash) .ck-azul .ck-ic{background:var(--v2-sup-3,var(--elo-info-fundo,#EAF1F7))!important;color:var(--elo-azul,#1F5F8B)!important}
+html:not(#ec) body :is(#pdash,#cdash) .ck-ambar .ck-ic{background:var(--v2-av-s,var(--elo-aviso-fundo,#FBEFD9))!important;color:var(--v2-av,var(--elo-aviso,#8A5300))!important}
+html:not(#ec) body :is(#pdash,#cdash) .ck-verde .ck-ic{background:var(--v2-sup-3,var(--elo-ok-fundo,#E6F2EC))!important;color:var(--v2-ok,var(--elo-ok,#1F6B50))!important}
+html:not(#ec) body :is(#pdash,#cdash) .ck-vermelho .ck-ic{background:var(--v2-er-s,var(--elo-erro-fundo,#FCEFEC))!important;color:var(--v2-er,var(--elo-erro,#A2392A))!important}
 html:not(#ec) body :is(#pdash,#cdash) .ck-txt{display:flex!important;flex-direction:column!important;gap:3px!important;min-width:0}
-html:not(#ec) body :is(#pdash,#cdash) .ck-txt small{font:var(--ec-rotulo)!important;color:var(--ec-texto)!important;white-space:normal;overflow-wrap:anywhere;line-height:1.25}
-html:not(#ec) body :is(#pdash,#cdash) .ck-txt strong{font:var(--ec-numero)!important;color:var(--ec-tinta)!important;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-html:not(#ec) body :is(#pdash,#cdash) .ck-txt em{font:400 12.5px/1.35 "Work Sans",system-ui,sans-serif!important;font-style:normal!important;color:var(--ec-suave)!important}
-html:not(#ec) body :is(#pdash,#cdash) .ck-progresso{height:4px!important;margin-top:8px!important;border-radius:var(--ec-raio-pilula)!important;background:var(--ec-fio-leve)!important;overflow:hidden;box-shadow:none!important}
+html:not(#ec) body :is(#pdash,#cdash) .ck-txt small{font:var(--ec-rotulo)!important;color:var(--v2-texto-2,var(--ec-texto))!important;white-space:normal;overflow-wrap:anywhere;line-height:1.25}
+html:not(#ec) body :is(#pdash,#cdash) .ck-txt strong{font:var(--ec-numero)!important;color:var(--v2-texto,var(--ec-tinta))!important;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+html:not(#ec) body :is(#pdash,#cdash) .ck-txt em{font:400 12.5px/1.35 "Work Sans",system-ui,sans-serif!important;font-style:normal!important;color:var(--v2-texto-3,var(--ec-suave))!important}
+html:not(#ec) body :is(#pdash,#cdash) .ck-progresso{height:4px!important;margin-top:8px!important;border-radius:var(--ec-raio-pilula)!important;background:var(--v2-sup-3,var(--ec-fio-leve))!important;overflow:hidden;box-shadow:none!important}
 html:not(#ec) body :is(#pdash,#cdash) .ck-progresso i,html:not(#ec) body :is(#pdash,#cdash) .ck-progresso span{background:var(--elo-ok,#1F6B50)!important;background-image:none!important;border-radius:inherit}
 html:not(#ec) body :is(#pdash,#cdash) .ck-barras{opacity:.55;align-self:end}
 html:not(#ec) body :is(#pdash,#cdash) .ck-barras i{background:var(--elo-azul-claro,#7FA9C6)!important}
 html:not(#ec) body :is(#pdash,#cdash) .ck .ck-selo{position:static!important;align-self:start}
 @media(max-width:900px){html:not(#ec) body :is(#pdash,#cdash) .pw-kpis.ck-grelha{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck:nth-child(odd){border-left:0!important}html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck:nth-child(n+3){border-top:1px solid var(--ec-fio-leve)!important}
+  html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck:nth-child(odd){border-left:0!important}html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck:nth-child(n+3){border-top:1px solid var(--v2-fio,var(--ec-fio-leve))!important}
   html:not(#ec) body :is(#pdash,#cdash) .ck-barras{display:none!important}}
 @media(max-width:400px){html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck{grid-template-columns:30px minmax(0,1fr)!important;padding:14px 12px!important;gap:10px!important}
   html:not(#ec) body :is(#pdash,#cdash) .pw-kpi.ck>:nth-child(n+3){grid-column:1/-1;justify-self:start}html:not(#ec) body :is(#pdash,#cdash) .ck-txt em{white-space:normal}

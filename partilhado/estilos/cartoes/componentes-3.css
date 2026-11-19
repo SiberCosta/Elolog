@@ -2,29 +2,26 @@
    Mesmo âmbito das partes 1 e 2 (body.provider-user-mode); não muda HTML nem cores de estado. */
 
 /* 10. registos adicionais: relatórios, reclamações, funcionários, mapa */
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.admin-report-download,.client-optional-tool,.provider-complaints-card,.provider-employees-card,.provider-reports-card,.provider-map-card,.provider-rail-card,.provider-card-unavailable){
-  background:var(--ec-fundo)!important;background-image:none!important;border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.admin-report-download,.client-optional-tool,.provider-complaints-card,.provider-employees-card,.provider-reports-card,.provider-map-card,.provider-rail-card,.provider-card-unavailable){background:var(--v2-sup,var(--ec-fundo))!important;background-image:none!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .admin-report-download:hover{border-color:var(--ec-borda-ativa)!important}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .field-dashboard-actions>button{background:var(--ec-fundo)!important;border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .field-dashboard-actions>button{background:var(--v2-sup,var(--ec-fundo))!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
 
 /* 11. painéis interiores: secções de formulário, quadros de volumes, calendário */
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-cargo-information,.client-cargo-observations,.client-data-wide,.client-payment-panel,.provider-volume-table-shell,.provider-history-list,
-  .maritime-calendar,.maritime-list,.cargo-editor-summary,.proposal-analysis-summary,.provider-report-kpis){background:#F8FAFB!important;background-image:none!important;
-  border:1px solid var(--ec-fio-leve,#E6ECF0)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .maritime-calendar{overflow:hidden;background:var(--ec-fundo)!important}
+  .maritime-calendar,.maritime-list,.cargo-editor-summary,.proposal-analysis-summary,.provider-report-kpis){background:var(--v2-sup-2,#F8FAFB)!important;background-image:none!important;border:1px solid var(--v2-fio,var(--ec-fio-leve,#E6ECF0))!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .maritime-calendar{overflow:hidden;background:var(--v2-sup,var(--ec-fundo))!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .maritime-day.today{box-shadow:inset 0 0 0 2px var(--elo-azul,#265879)!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.maritime-day) :is(.arrival,.departure,.delay){border-radius:999px!important}
 
 /* 12. linhas dentro de cartões: volumes, tarifas, ações de funcionário */
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.sim-volume-row,.proposal-volume-row,.financial-tariff-row,.pdv-row-value,.pdv-row-volume,.oe-linha-fecho){
-  background:transparent!important;box-shadow:none!important;border:0!important;border-bottom:1px solid var(--ec-fio-leve,#E6ECF0)!important;border-radius:0!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.sim-volume-row,.proposal-volume-row,.financial-tariff-row,.pdv-row-value,.pdv-row-volume,.oe-linha-fecho){background:transparent!important;box-shadow:none!important;border:0!important;border-bottom:1px solid var(--v2-fio,var(--ec-fio-leve,#E6ECF0))!important;border-radius:0!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-volume-head,.finance-section-head,.provider-report-section-head,.manifest-card-top){background:transparent!important;border-radius:0!important;box-shadow:none!important;
   font-family:"Work Sans",system-ui,sans-serif!important;text-transform:none!important;letter-spacing:0!important}
 
 /* 13. totais e avisos de preço como indicadores */
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.sim-total,.provider-pickup-pricing-status){border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .sim-total strong{font-variant-numeric:tabular-nums}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .provider-report-kpis>*{background:var(--ec-fundo)!important;border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .provider-report-kpis>*{background:var(--v2-sup,var(--ec-fundo))!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
 
 /* 14. cabeçalho antigo do painel (só aparece sem o painel novo) */
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .provider-dashboard-hero{background:var(--elo-mar,#13293D)!important;background-image:none!important;border-radius:var(--ec-raio)!important;box-shadow:none!important}

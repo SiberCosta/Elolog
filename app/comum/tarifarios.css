@@ -19,14 +19,14 @@ html:not(#bv) body .tf-cartao p{margin:0;line-height:1.5}
 html:not(#bv) body .tf-cartao footer{display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}
 html:not(#bv) body .tf-mudanca{padding:8px 12px;border-radius:var(--vv-r2,8px);background:var(--elo-superficie-2,#f4f6f9)}
 html:not(#bv) body .tf-ref{font-size:.9rem;color:var(--elo-texto-2,#4b5563)}
-html:not(#bv) body .tf-ref.longe{color:var(--elo-aviso,#b45309);font-weight:600}
+html:not(#bv) body .tf-ref.longe{color:var(--v2-av,var(--elo-aviso,#b45309));font-weight:600}
 html:not(#bv) body .tf-ref.longe::before{content:"Atenção: ";}
 
 /* estados */
 html:not(#bv) body .tf-estado{display:inline-block;padding:3px 10px;border-radius:999px;border:1px solid currentColor;font-size:.8rem;font-weight:600;white-space:nowrap;background:transparent}
-html:not(#bv) body .tf-estado.ok{color:var(--elo-ok,#15803d)}
-html:not(#bv) body .tf-estado.aviso{color:var(--elo-aviso,#b45309)}
-html:not(#bv) body .tf-estado.erro{color:var(--elo-erro,#b91c1c)}
+html:not(#bv) body .tf-estado.ok{color:var(--v2-ok,var(--elo-ok,#15803d))}
+html:not(#bv) body .tf-estado.aviso{color:var(--v2-av,var(--elo-aviso,#b45309))}
+html:not(#bv) body .tf-estado.erro{color:var(--v2-er,var(--elo-erro,#b91c1c))}
 html:not(#bv) body .tf-estado.neutro{color:var(--elo-texto-2,#4b5563)}
 
 /* listas em grelha (passam a cartões no telemóvel) */
@@ -54,7 +54,7 @@ html:not(#bv) body .tf-hist p{margin:4px 0 0;font-style:italic}
 @media (max-width:560px){html:not(#bv) body .tf-hist li{grid-template-columns:1fr;gap:2px}}
 
 /* ações que tiram algo das simulações: contorno vermelho */
-html:not(#bv) body .btn-secondary.tf-perigo{color:var(--elo-erro,#b91c1c)!important;border-color:currentColor!important}
+html:not(#bv) body .btn-secondary.tf-perigo{color:var(--v2-er,var(--elo-erro,#b91c1c))!important;border-color:currentColor!important}
 
 /* formulários e teste do motor */
 html:not(#bv) body .tf-checks{display:flex;flex-wrap:wrap;gap:6px 16px;max-height:160px;overflow:auto}
@@ -87,8 +87,8 @@ html:not(#bv) body .tf-kpis{display:grid;grid-template-columns:repeat(auto-fit,m
 html:not(#bv) body .tf-kpi{display:grid;gap:2px;padding:12px 14px;border:1px solid var(--elo-linha,#dfe3ea);border-radius:var(--vv-r3,12px);background:var(--elo-superficie,#fff)}
 html:not(#bv) body .tf-kpi strong{font-size:1.6rem;line-height:1.1}
 html:not(#bv) body .tf-kpi span{color:var(--elo-texto-2,#4b5563);font-size:.86rem}
-html:not(#bv) body .tf-kpi.aviso{border-color:var(--elo-aviso,#b45309)}html:not(#bv) body .tf-kpi.aviso strong{color:var(--elo-aviso,#b45309)}
-html:not(#bv) body .tf-kpi.erro{border-color:var(--elo-erro,#b91c1c)}html:not(#bv) body .tf-kpi.erro strong{color:var(--elo-erro,#b91c1c)}
+html:not(#bv) body .tf-kpi.aviso{border-color:var(--elo-aviso,#b45309)}html:not(#bv) body .tf-kpi.aviso strong{color:var(--v2-av,var(--elo-aviso,#b45309))}
+html:not(#bv) body .tf-kpi.erro{border-color:var(--elo-erro,#b91c1c)}html:not(#bv) body .tf-kpi.erro strong{color:var(--v2-er,var(--elo-erro,#b91c1c))}
 html:not(#bv) body .tf-sub{margin:8px 0 0;font-size:1rem}
 html:not(#bv) body .tf-nota{margin:0;font-size:.88rem;color:var(--elo-texto-2,#4b5563)}
 html:not(#bv) body .tf-palavras{color:var(--vv-acento,#1d4ed8)!important}
@@ -110,8 +110,8 @@ html:not(#bv) body .tf-pagina,html:not(#bv) body .tf-pagina>*,html:not(#bv) body
 /* v121: validar a morada de cada armazém nas Configurações */
 .provider-warehouse-row{grid-template-columns:minmax(170px,.55fr) minmax(280px,1.45fr) auto auto}
 .provider-warehouse-row .arm-validar{white-space:nowrap}
-.provider-warehouse-row .arm-estado{grid-column:1/-1;margin:0;font-size:13px;color:#5b6b76}
-.provider-warehouse-row .arm-estado.ok{color:#1d6b45}.provider-warehouse-row .arm-estado.erro{color:#a33a2a}
+.provider-warehouse-row .arm-estado{grid-column:1/-1;margin:0;font-size:13px;color:var(--v2-texto-3,#5b6b76)}
+.provider-warehouse-row .arm-estado.ok{color:var(--v2-ok,#1d6b45)}.provider-warehouse-row .arm-estado.erro{color:var(--v2-er,#a33a2a)}
 .provider-warehouse-row .arm-estado a{color:inherit;font-weight:600}
 @media(max-width:720px){.provider-warehouse-row{grid-template-columns:1fr}.provider-warehouse-row .arm-validar{width:100%}}
 /* v122: armazéns fáceis de encontrar e validar */

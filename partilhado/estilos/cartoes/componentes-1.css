@@ -4,37 +4,31 @@
 
 /* 1. contentor de página */
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page>.card,html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page>section.card{padding:22px 24px!important}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .card-title h3,html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .provider-section-top h3{font:600 18px/1.3 "Work Sans",system-ui,sans-serif!important;color:var(--ec-tinta)!important;letter-spacing:-.01em}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .section-eyebrow{font:600 12.5px/1.3 "Work Sans",system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:var(--ec-suave)!important}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page :is(.provider-page-note,.provider-section-top p){color:var(--ec-texto)!important;font-size:14px!important;line-height:1.5}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .card-title h3,html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .provider-section-top h3{font:600 18px/1.3 "Work Sans",system-ui,sans-serif!important;color:var(--v2-texto,var(--ec-tinta))!important;letter-spacing:-.01em}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page .section-eyebrow{font:600 12.5px/1.3 "Work Sans",system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:var(--v2-texto-3,var(--ec-suave))!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .page :is(.provider-page-note,.provider-section-top p){color:var(--v2-texto-2,var(--ec-texto))!important;font-size:14px!important;line-height:1.5}
 
 /* 2. registos (um cartão por encomenda, pagamento, funcionário, serviço…) */
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-work-card,.provider-order-result-card,.provider-payment-card,.provider-complaint-row,.provider-history-row,.admin-record-row,.provider-employee-row,
   .provider-login-row,.field-job-row,.field-service-card,.field-task-card,.field-payment-row,.finance-audit-row,.provider-recent-row,.provider-warehouse-row,.maritime-voyage-row,.manifest-card,
-  .provider-document-declaration-card,.automation-rule,.expedition-select-row,.proposal-party-card,.provider-card,.field-team-card,.ac-cartao,.ap-linha,.field-board-item,.provider-history-card){
-  background:var(--ec-fundo)!important;background-image:none!important;border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;
-  transition:background-color var(--ec-t),border-color var(--ec-t),box-shadow var(--ec-t)}
-@media(hover:hover){html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-order-result-card,.provider-recent-row,.field-board-item,.expedition-select-row,.maritime-voyage-row,.ap-linha,[role=button].provider-work-card,button.provider-card):hover{
-  border-color:var(--ec-borda-ativa)!important;background:var(--ec-fundo-hover)!important}}
+  .provider-document-declaration-card,.automation-rule,.expedition-select-row,.proposal-party-card,.provider-card,.field-team-card,.ac-cartao,.ap-linha,.field-board-item,.provider-history-card){background:var(--v2-sup,var(--ec-fundo))!important;background-image:none!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;transition:background-color var(--ec-t),border-color var(--ec-t),box-shadow var(--ec-t)}
+@media(hover:hover){html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-order-result-card,.provider-recent-row,.field-board-item,.expedition-select-row,.maritime-voyage-row,.ap-linha,[role=button].provider-work-card,button.provider-card):hover{border-color:var(--ec-borda-ativa)!important;background:var(--v2-sup-2,var(--ec-fundo-hover))!important}}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-order-result-card,.provider-recent-row,.field-board-item,.expedition-select-row,.maritime-voyage-row):focus-visible{outline:2px solid var(--elo-azul,#1F5F8B);outline-offset:2px}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-work-card,.provider-payment-card,.manifest-card,.provider-document-declaration-card,.field-service-card,.field-task-card) h4{font:600 15px/1.35 "Work Sans",system-ui,sans-serif!important;color:var(--ec-tinta)!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-work-card,.provider-payment-card,.manifest-card,.provider-document-declaration-card,.field-service-card,.field-task-card) h4{font:600 15px/1.35 "Work Sans",system-ui,sans-serif!important;color:var(--v2-texto,var(--ec-tinta))!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.work-code){font:600 12.5px/1.3 "Work Sans",system-ui,sans-serif!important;color:var(--elo-azul,#1F5F8B)!important;letter-spacing:0!important;text-transform:none!important}
 
 /* 3. painéis dentro de cartões (filtros, secções de formulário, resumos) */
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-order-list-panel,.provider-recent-panel,.field-board-panel,.field-service-panel,.field-payment-section,.provider-declarations-section,.provider-other-documents,
   .provider-doc-upload,.cargo-list-panel,.proposal-analysis-section,.client-sim-section,.manifest-editor-section,.provider-order-filters,.provider-order-search,.maritime-toolbar,.client-doc-toolbar,
   .expedition-manifest-toolbar,.provider-client-inactivity,.automation-log,.field-cash-summary,.finance-payment-summary,.provider-payment-summary,.cargo-editor-card,.cargo-signature-card,.cargo-item-editor,
-  .proposal-file-box,.provider-order-change,.client-sim-results,.provider-optional-tool,.provider-history-controls){
-  background:#F8FAFB!important;background-image:none!important;border:1px solid var(--ec-fio-leve)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
+  .proposal-file-box,.provider-order-change,.client-sim-results,.provider-optional-tool,.provider-history-controls){background:var(--v2-sup-2,#F8FAFB)!important;background-image:none!important;border:1px solid var(--v2-fio,var(--ec-fio-leve))!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
 
 /* 4. indicadores e blocos de informação */
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-kpi,.provider-report-kpi,.field-kpi,.finance-kpi,.manifest-kpi,.client-payment-kpi,.provider-hero-summary,.provider-history-summary>div,
-  .provider-complaint-summary>div,.provider-employee-summary>div,.provider-panel-grid>div,.provider-order-info-grid>div,.field-dashboard-kpis>button,.maritime-summary>article){
-  background:var(--ec-fundo)!important;background-image:none!important;border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
+  .provider-complaint-summary>div,.provider-employee-summary>div,.provider-panel-grid>div,.provider-order-info-grid>div,.field-dashboard-kpis>button,.maritime-summary>article){background:var(--v2-sup,var(--ec-fundo))!important;background-image:none!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-kpi,.provider-report-kpi,.field-kpi,.finance-kpi,.manifest-kpi,.provider-history-summary>div,.provider-complaint-summary>div,.provider-employee-summary>div,
-  .provider-panel-grid>div,.provider-order-info-grid>div,.field-dashboard-kpis>button,.maritime-summary>article) small{font:600 12.5px/1.3 "Work Sans",system-ui,sans-serif!important;color:var(--ec-suave)!important;text-transform:none!important;letter-spacing:0!important}
+  .provider-panel-grid>div,.provider-order-info-grid>div,.field-dashboard-kpis>button,.maritime-summary>article) small{font:600 12.5px/1.3 "Work Sans",system-ui,sans-serif!important;color:var(--v2-texto-3,var(--ec-suave))!important;text-transform:none!important;letter-spacing:0!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-kpi,.provider-report-kpi,.field-kpi,.finance-kpi,.manifest-kpi,.provider-history-summary>div,.provider-complaint-summary>div,.provider-employee-summary>div,
-  .field-dashboard-kpis>button,.maritime-summary>article) strong{font:700 22px/1.15 "Work Sans",system-ui,sans-serif!important;color:var(--ec-tinta)!important;font-variant-numeric:tabular-nums}
-@media(hover:hover){html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .field-dashboard-kpis>button:hover{border-color:var(--ec-borda-ativa)!important;background:var(--ec-fundo-hover)!important}}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-kpi-icon,.provider-report-kpi-icon,.provider-doc-kpi-icon,.provider-empty-icon){background:var(--elo-info-fundo,#EAF1F7)!important;background-image:none!important;
-  color:var(--elo-azul,#1F5F8B)!important;box-shadow:none!important;border-radius:var(--ec-raio-int)!important}
+  .field-dashboard-kpis>button,.maritime-summary>article) strong{font:700 22px/1.15 "Work Sans",system-ui,sans-serif!important;color:var(--v2-texto,var(--ec-tinta))!important;font-variant-numeric:tabular-nums}
+@media(hover:hover){html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .field-dashboard-kpis>button:hover{border-color:var(--ec-borda-ativa)!important;background:var(--v2-sup-2,var(--ec-fundo-hover))!important}}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.provider-kpi-icon,.provider-report-kpi-icon,.provider-doc-kpi-icon,.provider-empty-icon){background:var(--v2-sup-3,var(--elo-info-fundo,#EAF1F7))!important;background-image:none!important;color:var(--elo-azul,#1F5F8B)!important;box-shadow:none!important;border-radius:var(--ec-raio-int)!important}
