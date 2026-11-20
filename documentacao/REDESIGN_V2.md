@@ -88,3 +88,5 @@ terreno no telemóvel — próximos serviços logo a seguir ao cabeçalho, atalh
   Páginas, textos, formulários e ligações iguais.
 - **Entrada com mais marca** (`entrada.css`): logótipo grande sobre a fotografia, assinatura «Elolog · Intermediação e gestão logística» e selos de confiança na legenda,
   faixa azul→verde (cores do logótipo) no topo do cartão.
+- **Entrada a ecrã inteiro (v175)**: fotografia em toda a área abaixo do cabeçalho; cartão quase opaco (legível) à direita; versão compacta para ecrãs baixos
+  (≤760 px de altura); tablet com cartão ao centro; telemóvel com faixa curta de fotografia e cartão sólido. Cabe sem deslocar de 1280×600 a 1920×950, em 768×1000 e 390×750.
