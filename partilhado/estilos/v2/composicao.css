@@ -74,3 +74,28 @@ html:not(#elo) body #app .content .field-dashboard-actions>button.primary>span{b
 html:not(#elo) body #app .content .field-dashboard-actions>button{box-shadow:none!important}
 html:not(#elo) body #app .content .ct-fluxo>.ct-etapa>:not(b):not(.pa-etapa-n){display:none!important}
 html:not(#elo) body #app .content .field-dashboard-actions>button>span :is(i,.ic){color:inherit!important;background-color:currentColor!important;filter:none!important;opacity:1!important}
+
+/* 10. Formulários longos (simulação, criar encomenda) */
+/* passos: uma linha com fio entre etapas, sem caixa; no telemóvel só números + nome da etapa atual */
+html:not(#elo) body #app .content .sim-steps{flex-wrap:nowrap!important;gap:0!important;padding:0 0 14px!important;margin:0 0 20px!important;background:none!important;border:0!important;border-bottom:1px solid var(--v2-fio)!important;border-radius:0!important;box-shadow:none!important;counter-reset:none}
+html:not(#elo) body #app .content .sim-steps li{flex:1 1 0!important;min-width:0;gap:8px!important;font:600 13.5px/1.2 var(--v2-letra)!important;white-space:nowrap}
+html:not(#elo) body #app .content .sim-steps li:not(:last-child)::after{content:"";flex:1 1 auto;min-width:12px;height:1px;margin:0 10px;background:var(--v2-fio-2)}
+html:not(#elo) body #app .content .sim-steps li b{flex:0 0 26px;width:26px!important;height:26px!important;border-width:1.5px!important;font:600 12.5px/1 var(--v2-letra)!important}
+/* secções: menos espaço morto entre campos; caixas interiores passam a sub-secções com título */
+html:not(#elo) body #app .content :is(.client-sim-section,.ss-cartao) .form-group{margin-bottom:14px!important}
+html:not(#elo) body #app .content :is(.client-sim-section,.ss-cartao) :is(.form-grid,.form-row){row-gap:14px!important}
+html:not(#elo) body #app .content :is(.client-cargo-information,.client-cargo-observations){background:none!important;border:0!important;border-top:1px solid var(--v2-fio-leve)!important;border-radius:0!important;box-shadow:none!important;padding:16px 0 0!important;margin-top:4px!important}
+/* resumo sempre à vista enquanto se preenche (computador) */
+@media (min-width:1000px){html:not(#elo) body #app .content :is(.client-sim-results,.ss-resumo){position:sticky!important;top:88px;align-self:start!important}}
+/* títulos dentro de cabeçalhos ficam à esquerda */
+html:not(#elo) body #app .content :is(.card-title,[class$="-heading"],[class$="-header"]) :is(h1,h2,h3){text-align:left!important}
+@media (max-width:720px){
+html:not(#elo) body #app .content .sim-steps li:not(.agora){font-size:0!important;gap:0!important}html:not(#elo) body #app .content .sim-steps li:not(.agora) b{font-size:12.5px!important}
+html:not(#elo) body #app .content .sim-steps li:not(.agora){flex:0 0 auto!important}
+html:not(#elo) body #app .content .sim-steps li.agora{flex:1 1 auto!important}
+html:not(#elo) body #app .content .sim-steps li:not(:last-child)::after{min-width:8px;margin:0 6px}
+}
+html:not(#elo) body #app .content :is(.card-title,[class$="-heading"],[class$="-header"])>:is(h1,h2,h3){flex:1 1 auto;margin-right:auto!important}
+html:not(#elo) body #app .content :is(.client-sim-section,.ss-cartao) :is(.form-grid,.form-row)>.form-group{margin-bottom:0!important}
+/* formulário que mantém a sua superfície: as secções de dentro passam a blocos separados por fio (sem caixa dentro de caixa) */
+html:not(#elo) body #app .content>.page>.card:has(>form,>.form-group,>.form-grid) :is(.client-sim-section,.ss-cartao){background:none!important;border:0!important;border-top:1px solid var(--v2-fio)!important;border-radius:0!important;box-shadow:none!important;padding:18px 0 4px!important;margin:0!important}
