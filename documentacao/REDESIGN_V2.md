@@ -80,3 +80,11 @@ Ficheiros: `v2/revisao.css`, `scripts/detalhes-v2.js`, `scripts/tema.js`, `v2/to
 **Pendentes tratados (v173):** terreno — «O seu próximo passo» passa a «Os seus serviços de hoje» (`navegacao-viva.js`) e a página Ocorrências tem descrição própria (`equipa-terreno-1.js`, também Planeamento, Operadores, Viaturas);
 centro de comando — frase mais urgente fixa, sem rotação automática (`painel-vivo.js`); datas aaaa-mm-dd mostradas como dd/mm/aaaa e título «Painel» genérico substituído pelo nome da entrada aberta (`scripts/detalhes-v2.js`, só texto visível);
 terreno no telemóvel — próximos serviços logo a seguir ao cabeçalho, atalhos e números depois (`revisao.css`).
+
+## Site público e ecrã de entrada (v174)
+
+- **Site público renovado com a identidade v2** (`site/estilos/v2-site.css`, carregado por último nas 5 páginas): cantos 8/6 px, superfícies sem sombra com fio,
+  campos e foco iguais à área interna, ações principais (Simular, Rastrear, Enviar mensagem, Área de Cliente, Obter propostas) em botão azul cheio, «Ver todos os serviços» em contorno.
+  Páginas, textos, formulários e ligações iguais.
+- **Entrada com mais marca** (`entrada.css`): logótipo grande sobre a fotografia, assinatura «Elolog · Intermediação e gestão logística» e selos de confiança na legenda,
+  faixa azul→verde (cores do logótipo) no topo do cartão.
