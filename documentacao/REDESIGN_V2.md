@@ -77,5 +77,6 @@ Cantos das superfícies a 8 px; texto secundário com contraste AA (`--v2-texto-
 botão de tema com ícone sol/lua/ecrã e alvo de 40 px; sino sem «0»; espaço no fim das páginas para o botão do assistente; «Alertas» vazio escondido.
 Ficheiros: `v2/revisao.css`, `scripts/detalhes-v2.js`, `scripts/tema.js`, `v2/tokens.css`.
 
-**Por tratar (pedem alterações de texto ou de lógica nos módulos):** textos do terreno (painel «O seu próximo passo» e página Ocorrências com texto/ação de Pagamentos);
-frase rotativa do centro de comando da administração; formato único de datas; título da barra superior igual à página ativa; no telemóvel do terreno, mostrar primeiro o próximo serviço.
+**Pendentes tratados (v173):** terreno — «O seu próximo passo» passa a «Os seus serviços de hoje» (`navegacao-viva.js`) e a página Ocorrências tem descrição própria (`equipa-terreno-1.js`, também Planeamento, Operadores, Viaturas);
+centro de comando — frase mais urgente fixa, sem rotação automática (`painel-vivo.js`); datas aaaa-mm-dd mostradas como dd/mm/aaaa e título «Painel» genérico substituído pelo nome da entrada aberta (`scripts/detalhes-v2.js`, só texto visível);
+terreno no telemóvel — próximos serviços logo a seguir ao cabeçalho, atalhos e números depois (`revisao.css`).

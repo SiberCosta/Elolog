@@ -31,3 +31,17 @@ html:not(#elo) body .elo-tema-botao svg{width:18px;height:18px;fill:none;stroke:
 html:not(#elo) body #app .content :is(.pv-th,.pv-per button,.pv-per>*){min-height:32px}
 /* «Alertas» sem nenhum alerta não ocupa um cartão inteiro */
 html:not(#elo) body #app .content #pw-alertas:not(:has(li,button,a[href],a[onclick])){display:none!important}
+/* centro de comando: frase fixa — sem barra de tempo; os traços de mudar frase com área de toque maior */
+html:not(#elo) body #app .content .pv-frases-t{display:none!important}
+html:not(#elo) body #app .content .pv-frases-p>button{padding:10px 0!important;background-clip:content-box!important;min-height:24px}
+/* terreno no telemóvel: o trabalho primeiro — próximos serviços logo após o cabeçalho, atalhos e números depois, números em 3 colunas */
+@media (max-width:720px){
+html:not(#elo) body #app .content :has(>.field-dashboard-hero){display:flex!important;flex-direction:column!important}
+html:not(#elo) body #app .content :has(>.field-dashboard-hero)>.field-dashboard-hero{order:0}
+html:not(#elo) body #app .content :has(>.field-dashboard-hero)>.field-alert-strip{order:1}
+html:not(#elo) body #app .content :has(>.field-dashboard-hero)>.field-dashboard-grid{order:2}
+html:not(#elo) body #app .content :has(>.field-dashboard-hero)>.field-dashboard-actions{order:3;margin-top:16px}
+html:not(#elo) body #app .content :has(>.field-dashboard-hero)>.field-dashboard-kpis{order:4;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+html:not(#elo) body #app .content :has(>.field-dashboard-hero)>:not(.field-dashboard-hero):not(.field-alert-strip):not(.field-dashboard-grid):not(.field-dashboard-actions):not(.field-dashboard-kpis){order:5}
+html:not(#elo) body #app .content .field-dashboard-hero .field-live-pill{display:none!important}
+}
