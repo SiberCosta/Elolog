@@ -5,6 +5,9 @@
   const ler=()=>{try{const t=localStorage.getItem(CHAVE);return TEMAS.includes(t)?t:"claro"}catch(e){return "claro"}};
   const aplicar=t=>{document.documentElement.setAttribute("data-tema",t);const b=document.getElementById("eloTemaBotao");if(b){b.querySelector("span").textContent=NOMES[t];const g=b.querySelector("svg");if(g)g.innerHTML=ICO[t];b.setAttribute("aria-label","Tema: "+NOMES[t]+". Mudar tema")}};
   aplicar(ler());
+  /* proposta de estilo «Carta náutica»: ?estilo=carta liga, ?estilo=v2 desliga (fica guardado neste navegador) */
+  try{const q=new URLSearchParams(location.search).get("estilo");if(q==="carta")localStorage.setItem("elolog_estilo","carta");else if(q==="v2")localStorage.removeItem("elolog_estilo");
+    if(localStorage.getItem("elolog_estilo")==="carta")document.documentElement.setAttribute("data-estilo","carta")}catch(e){}
   function botao(){
     if(document.getElementById("eloTemaBotao"))return;
     const barra=document.querySelector("#app .topbar");if(!barra)return;

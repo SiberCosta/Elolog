@@ -1,0 +1,66 @@
+/* ELOLog — direção «Carta náutica» (proposta, ativa só com html[data-estilo="carta"]; ?estilo=carta liga, ?estilo=v2 desliga).
+   Editorial e calmo: papel claro, tinta marinho, títulos com serifa, fios finos, réguas duplas nas tabelas, algarismos tabulares,
+   estados como sinais (● ○) e não como pastilhas, acento verde-mar. Só aspeto: funções, dados e marca iguais. */
+
+/* 1. Papel, tinta e sinais (só no tema claro; o escuro mantém a carta noturna da v2) */
+html[data-estilo="carta"]:not([data-tema="escuro"]){
+--v2-fundo:#F4F1EA;--v2-sup:#FBFAF6;--v2-sup-2:#F7F4EE;--v2-sup-3:#EEEAE0;
+--v2-fio:#DCD6C9;--v2-fio-2:#C9C2B3;--v2-fio-leve:#E8E3D8;
+--v2-texto:#0E2232;--v2-texto-2:#47545E;--v2-texto-3:#5E6870;
+--v2-azul:#0E2232;--v2-azul-h:#1B3A52;--v2-azul-s:#E6ECEF;--v2-in:#1F5F8B;--v2-in-s:#E6EEF4;
+--v2-verde:#1F7A5C;--v2-ok:#1A6B4C;--v2-ok-s:#E3EFE7;--v2-av:#8A5300;--v2-av-s:#F6EBD6;--v2-er:#A33326;--v2-er-s:#F7E5E1;
+--v2-r-1:2px;--v2-r-2:3px;--v2-r-3:4px;--v2-foco:0 0 0 3px rgba(31,122,92,.28)}
+@media (prefers-color-scheme:dark){html[data-estilo="carta"][data-tema="sistema"]{--v2-r-1:2px;--v2-r-2:3px;--v2-r-3:4px}}
+html[data-estilo="carta"]{--carta-serifa:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Noto Serif",serif;--carta-verde:#1F7A5C}
+html[data-estilo="carta"][data-tema="escuro"]{--v2-r-1:2px;--v2-r-2:3px;--v2-r-3:4px;--v2-azul:#E2EAF0;--v2-azul-h:#FFFFFF;--carta-verde:#4FBF94}
+html[data-estilo="carta"] body{font-feature-settings:"tnum" 1,"lnum" 1}
+
+/* 2. Moldura: menu em tinta com marca verde-mar; barra superior em papel, título com serifa */
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .sidebar{background:#0E2232!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .sidebar .menu :is(button,a):is(.active,.secao-ativa){background:rgba(255,255,255,.06)!important;box-shadow:inset 2px 0 0 var(--carta-verde)!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body .topbar{background:var(--v2-fundo)!important;border-bottom:1px solid var(--v2-fio)!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body .topbar #pageTitle{font:500 20px/1.2 var(--carta-serifa)!important;letter-spacing:0!important}
+
+/* 3. Tipografia: títulos de página e de secção com serifa; antetítulos em versaletes espaçados */
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content :is(h1,h2){font-family:var(--carta-serifa)!important;font-weight:500!important;letter-spacing:-.005em!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content>.page>.card>:first-child :is(h1,h2,h3),html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content .pa-saudacao :is(h1,h2){font:500 30px/1.15 var(--carta-serifa)!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content :is(.pa-titulo h4,.card-title h3,.pa-cartao h3,.pa-cartao h4,.field-board-title strong){font:500 19px/1.25 var(--carta-serifa)!important;letter-spacing:0!important;text-transform:none!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content :is(.pa-rotulo,.cn-rotulo,.eyebrow,[class*="kicker"],.auth-step-label,.pa-titulo span,.cn-etiqueta){font:600 11px/1.3 var(--v2-letra)!important;letter-spacing:.12em!important;text-transform:uppercase!important;color:var(--carta-verde)!important}
+
+/* 4. Superfícies: papel sobre papel, fio fino, cantos quase retos, sem sombras */
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content :is(.card,.pa-cartao,.pw,.client-next-step,.pw-kpis,.ck-grelha,.provider-status-card,.stat-card,.ct-fluxo,.vz,section[class*="pv-"]){border-radius:var(--v2-r-3)!important;box-shadow:none!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content .client-next-step{border-left:3px solid var(--carta-verde)!important}
+
+/* 5. Tabelas e listas: régua dupla sob o cabeçalho, linhas de fio, cabeçalhos em versaletes */
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content table th,html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content .provider-history-list-head{background:transparent!important;color:var(--v2-texto-2)!important;font:600 11px/1.3 var(--v2-letra)!important;letter-spacing:.1em!important;text-transform:uppercase!important;border-bottom:3px double var(--v2-texto)!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content table td{border-bottom:1px solid var(--v2-fio-leve)!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content table tbody tr:hover td{background:var(--v2-sup-2)!important}
+
+/* 6. Estados como sinais: ponto cheio (em curso/ok), ponto vazio (à espera), texto na cor do estado, sem pastilha */
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content :is(.status,.badge,.status-pill,.estado-pill,.shipment-status-pill,.tracking-status-pill,.simulation-status-pill,.pf-pill,.pv-pill,.ca-estado,.pa-estado){background:none!important;border:0!important;padding:0!important;font:600 12.5px/1.3 var(--v2-letra)!important;display:inline-flex!important;align-items:center;gap:6px}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content :is(.status,.badge,.status-pill,.estado-pill,.shipment-status-pill,.tracking-status-pill,.simulation-status-pill,.pf-pill,.pv-pill,.ca-estado,.pa-estado)::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:0 0 8px}
+
+/* 7. Botões: principal em tinta (texto papel), secundário em contorno de tinta, cantos de 3 px */
+html[data-estilo="carta"]:not(#c1):not(#c2) body :is(.btn-primary,.primary-btn,.btn-simulate,.btn-search,.btn-client,.pa-botao-forte,.btn-register-profile):not(#x){background:var(--v2-azul)!important;border-color:var(--v2-azul)!important;color:var(--v2-fundo)!important;border-radius:var(--v2-r-2)!important;letter-spacing:.01em}
+html[data-estilo="carta"]:not(#c1):not(#c2) body :is(.btn-primary,.primary-btn,.btn-simulate,.btn-search,.btn-client,.pa-botao-forte,.btn-register-profile):not(#x):hover{background:var(--v2-azul-h)!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body :is(.btn-secondary,.btn-ghost,.pa-botao,.ct-btn,.pv-btn):not(#x){border-color:var(--v2-texto)!important;border-radius:var(--v2-r-2)!important;background:transparent!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content a:not([class]){color:var(--v2-in);text-underline-offset:3px}
+
+/* 8. Indicadores: números grandes com serifa, rótulo em versaletes */
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content :is(.pw-kpi strong,.ck-txt strong,.pa-etapa-n,.provider-history-summary strong,.client-payment-kpi strong){font-family:var(--carta-serifa)!important;font-weight:500!important;font-size:28px!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content :is(.pw-kpi small,.ck-txt small,.ck-txt b,.provider-history-summary small,.client-payment-kpi small){letter-spacing:.08em!important;text-transform:uppercase!important;font-size:10.5px!important;font-weight:600!important}
+
+/* 9. Entrada: fotografia como carta (moldura fina), cartão em papel, título com serifa */
+html[data-estilo="carta"]:not(#c1):not(#c2) body #loginScreen .auth-shell{border-radius:4px!important;background:var(--v2-sup)!important;box-shadow:0 1px 0 var(--v2-fio)!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #loginScreen .auth-brand-panel{border-radius:2px!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #loginScreen .login-card{background:var(--v2-sup)!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #loginScreen .login-card :is(h1,.elo-escolha h1){font:500 30px/1.15 var(--carta-serifa)!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #loginScreen .login-card::before{background:var(--carta-verde)!important;width:40px!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #loginScreen .auth-brand-copy h2{font-family:var(--carta-serifa)!important;font-weight:500!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #loginScreen :is(.elo-opcao,.elo-contexto,input:not([type="checkbox"])){border-radius:3px!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #loginScreen .login-card .btn-primary.full{background:#0E2232!important;border-color:#0E2232!important;border-radius:3px!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content :is(.cm-ola,.cm-ola h1,.cm-ola h2,.cm-ola strong){font-family:var(--carta-serifa)!important;font-weight:500!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content :is(.cm-ola h1,.cm-ola h2){font-size:30px!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content .pa-cabecalho h3{font:500 30px/1.15 var(--carta-serifa)!important;letter-spacing:-.005em!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content .provider-history-row :is([class*="status"],[class*="estado"]):not(button):not(select):not(div){background:none!important;border:0!important;padding:0!important;display:inline-flex!important;align-items:center;gap:6px;font-weight:600!important}
+html[data-estilo="carta"]:not(#c1):not(#c2) body #app .content .provider-history-row :is([class*="status"],[class*="estado"]):not(button):not(select):not(div)::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
