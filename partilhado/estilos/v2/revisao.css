@@ -1,0 +1,33 @@
+/* Elolog v2 — correções da revisão crítica independente (20-11-2026). Só aspeto. */
+/* cantos: superfícies seguem o token (8 px); nada de 10–22 px nos painéis */
+html:not(#elo) body #app .content :is(.card,.pa-cartao,.pw,.client-next-step,.pw-kpis,.ck-grelha,.sim-rapida,.field-dashboard-hero,.field-dashboard-kpis,.field-dashboard-actions,.field-board,.field-board-item,.ct-alertas>li,section[class*="pv-"],div.pv-viagem,div.pv-acomp,.provider-status-card,.stat-card,.finance-module){border-radius:var(--v2-r-3)!important}
+/* indicadores: ícone neutro, sem azulejo colorido; a cor fica para os estados */
+html:not(#elo) body #app .content :is(.ck-ic,.pw-kpi-ic,.pw-kpis .ck-ic){background:transparent!important;color:var(--v2-texto-3)!important;box-shadow:none!important;border:0!important;width:auto!important;padding:0!important}
+html:not(#elo) body #app .content :is(.ck-ic,.pw-kpi-ic) :is(i,.ic){color:var(--v2-texto-3)!important;background-color:currentColor!important}
+/* dados decorativos sem série: barras e progresso vazios escondidos */
+html:not(#elo) body #app .content .ck-barras{display:none!important}
+html:not(#elo) body #app .content .ck-progresso:not(:has([style*="width"]:not([style*="width: 0"]):not([style*="width:0"]))){display:none!important}
+/* caixa dentro de caixa no «Próximo passo»: o formulário rápido passa a coluna separada por fio */
+html:not(#elo) body #app .content .client-next-step .sim-rapida{background:transparent!important;border:0!important;border-left:1px solid var(--v2-fio)!important;border-radius:0!important;box-shadow:none!important;padding:0 0 0 20px!important}
+@media (max-width:900px){html:not(#elo) body #app .content .client-next-step .sim-rapida{border-left:0!important;border-top:1px solid var(--v2-fio)!important;padding:16px 0 0!important}}
+/* terreno: o cabeçalho escuro passa a cabeçalho de página igual aos outros perfis */
+html:not(#elo) body #app .content .field-dashboard-hero{background:transparent!important;color:var(--v2-texto)!important;border:0!important;border-bottom:1px solid var(--v2-fio)!important;border-radius:0!important;padding:0 0 16px!important;margin-bottom:20px!important;box-shadow:none!important}
+html:not(#elo) body #app .content .field-dashboard-hero :is(h1,h2,h3,strong){color:var(--v2-texto)!important;font:600 22px/1.25 var(--v2-letra)!important;letter-spacing:-.015em!important}
+html:not(#elo) body #app .content .field-dashboard-hero :is(p,small,span:not([class*="dot"])){color:var(--v2-texto-2)!important}
+html:not(#elo) body #app .content .field-dashboard-hero :is(.eyebrow,[class*="kicker"],[class*="eyebrow"],small:first-child){color:var(--v2-verde)!important;font:600 12px/1.3 var(--v2-letra)!important}
+html:not(#elo) body #app .content .field-dashboard-hero::before,html:not(#elo) body #app .content .field-dashboard-hero::after{display:none!important}
+html:not(#elo) body #app .content .field-dashboard-hero button{background:var(--v2-sup)!important;color:var(--v2-texto)!important;border:1px solid var(--v2-fio-2)!important}
+/* linhas em vez de cartões dentro de painéis (terreno e navios da administração) */
+html:not(#elo) body #app .content :is(.field-board-item,.pv-viagem){box-shadow:none!important}
+/* botão do tema: ícone de sol/lua/ecrã, alvo de 40 px */
+html:not(#elo) body .elo-tema-botao{min-height:40px!important;min-width:40px;justify-content:center}
+html:not(#elo) body .elo-tema-botao svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:720px){html:not(#elo) body .elo-tema-botao>span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}html:not(#elo) body .elo-tema-botao{padding:0!important}}
+/* sino: sem «0» vermelho */
+#notificationCount.zero{display:none!important}
+/* assistente: o conteúdo deixa espaço no fim para o botão não tapar a última ação */
+@media (min-width:721px){html:not(#elo) body #app .content{padding-bottom:96px!important}}
+/* cabeçalhos de ordenação e seletor de período da administração com alvo adequado */
+html:not(#elo) body #app .content :is(.pv-th,.pv-per button,.pv-per>*){min-height:32px}
+/* «Alertas» sem nenhum alerta não ocupa um cartão inteiro */
+html:not(#elo) body #app .content #pw-alertas:not(:has(li,button,a[href],a[onclick])){display:none!important}

@@ -69,3 +69,13 @@ Cor só com significado (estado, ação principal). Sem sombras nas superfícies
 | Navegação no telemóvel | Barra inferior com 4 destinos do perfil + «Menu» (abre o menu lateral). Cliente: Início, Simular, Encomendas, Pagamentos · Administração do prestador/operador: Painel, Pedidos, Aprovar, Quadro · Terreno: Painel, Recolhas, Entregas, Rota · Armazém: Painel, Quadro, Receção, Expedição · Financeiro: Painel, Pedidos, Receber, Histórico · Administração Elolog: Centro, Operações, Ao vivo, Clientes. Cada botão carrega no botão real do menu (mesmas permissões) | `scripts/barra-movel.js`, `sobreposicoes.css` |
 | Painéis por perfil | Grelha sem buracos (um bloco sozinho numa linha alarga até ao fim); «Encomendas por etapa» passa a régua de colunas com número e nome, a etapa com encomendas marcada por cima; atalhos do terreno com ícone neutro e só o principal a azul | `scripts/grelha-painel.js`, `composicao.css` |
 | Formulários longos | Passos numa linha com fio (no telemóvel só a etapa atual com nome); resumo fixo à vista no computador; campos mais próximos; sem caixas dentro de caixas (secções separadas por fio); títulos sempre à esquerda | `composicao.css` §10 |
+
+## Revisão crítica independente (20-11-2026) — corrigido
+
+Cantos das superfícies a 8 px; texto secundário com contraste AA (`--v2-texto-3` #5A6D7E); ícones dos indicadores neutros e sem gráficos vazios;
+«Simular outro envio» como coluna separada por fio (sem caixa dentro de caixa); cabeçalho do terreno igual aos outros perfis (sem faixa escura);
+botão de tema com ícone sol/lua/ecrã e alvo de 40 px; sino sem «0»; espaço no fim das páginas para o botão do assistente; «Alertas» vazio escondido.
+Ficheiros: `v2/revisao.css`, `scripts/detalhes-v2.js`, `scripts/tema.js`, `v2/tokens.css`.
+
+**Por tratar (pedem alterações de texto ou de lógica nos módulos):** textos do terreno (painel «O seu próximo passo» e página Ocorrências com texto/ação de Pagamentos);
+frase rotativa do centro de comando da administração; formato único de datas; título da barra superior igual à página ativa; no telemóvel do terreno, mostrar primeiro o próximo serviço.
