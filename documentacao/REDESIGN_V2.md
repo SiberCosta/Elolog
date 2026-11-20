@@ -90,3 +90,5 @@ terreno no telemóvel — próximos serviços logo a seguir ao cabeçalho, atalh
   faixa azul→verde (cores do logótipo) no topo do cartão.
 - **Entrada a ecrã inteiro (v175)**: fotografia em toda a área abaixo do cabeçalho; cartão quase opaco (legível) à direita; versão compacta para ecrãs baixos
   (≤760 px de altura); tablet com cartão ao centro; telemóvel com faixa curta de fotografia e cartão sólido. Cabe sem deslocar de 1280×600 a 1920×950, em 768×1000 e 390×750.
+- **Entrada compacta lado a lado (v176)**: a fotografia fica num painel próprio à esquerda (com logótipo e legenda) e o cartão ao lado, sem tapar a imagem;
+  moldura única que cabe no ecrã; tablet e telemóvel com faixa curta de fotografia em cima e o cartão por baixo. Cabe sem deslocar nos 7 tamanhos testados.

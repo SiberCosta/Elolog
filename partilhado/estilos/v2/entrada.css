@@ -152,3 +152,43 @@ html:not(.porta-consola) #loginScreen .login-card :is(h1,.elo-escolha h1){font-s
 html:not(.porta-consola) #loginScreen .login-card .form-group{margin:0 0 10px!important}
 html:not(.porta-consola) #loginScreen .auth-shell{background:var(--v2-fundo)!important}
 }
+/* v176 — fotografia compacta e cartão ao lado (sem tapar a imagem): duas zonas lado a lado dentro de uma moldura que cabe no ecrã.
+   Telemóvel/tablet: fotografia numa faixa curta em cima e o cartão por baixo, nunca sobreposto. */
+html:not(.porta-consola) #loginScreen.login-screen{padding:clamp(12px,2.5vh,28px) clamp(12px,3vw,40px)!important;background:var(--v2-fundo)!important}
+html:not(.porta-consola) #loginScreen .auth-shell{display:grid!important;grid-template-columns:minmax(0,1.05fr) minmax(380px,.95fr)!important;gap:0!important;max-width:1180px!important;margin:0 auto!important;min-height:0!important;height:min(calc(100dvh - 77px - 2*clamp(12px,2.5vh,28px)),700px)!important;padding:0!important;background:var(--v2-sup)!important;border:1px solid var(--v2-fio)!important;border-radius:16px!important;box-shadow:0 18px 48px rgba(8,22,33,.12)!important;overflow:hidden!important}
+html:not(.porta-consola) #loginScreen .auth-brand-panel{position:relative!important;inset:auto!important;height:auto!important;min-height:0!important;border-radius:0!important;margin:10px 0 10px 10px;border-radius:10px!important;overflow:hidden}
+html:not(.porta-consola) #loginScreen .auth-brand-overlay{background:linear-gradient(0deg,rgba(6,20,30,.72) 0%,rgba(6,20,30,.12) 55%,rgba(6,20,30,.3) 100%)!important}
+html:not(.porta-consola) #loginScreen .auth-brand-content{position:absolute!important;inset:0!important;width:auto!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:clamp(16px,3vh,28px)!important}
+html:not(.porta-consola) #loginScreen .auth-brand-copy{max-width:none!important;background:none!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:0!important;text-align:left!important}
+html:not(.porta-consola) #loginScreen .auth-brand-copy h2{font-size:clamp(20px,2.6vh,26px)!important}
+html:not(.porta-consola) #loginScreen .login-card{width:auto!important;margin:0!important;display:flex!important;flex-direction:column!important;justify-content:center!important;overflow-y:auto!important;padding:clamp(16px,3vh,32px) clamp(22px,3vw,44px)!important;background:var(--v2-sup)!important;border:0!important;border-radius:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:not(.porta-consola) #loginScreen .login-card>*{max-width:400px!important}
+html:not(.porta-consola) #loginScreen .login-card::before{position:static!important;display:block!important;width:120px!important;height:3px!important;margin:0 auto 14px!important;border-radius:2px!important}
+html[data-tema="escuro"]:not(.porta-consola) #loginScreen .login-card{background:var(--v2-sup)!important}
+@media (prefers-color-scheme:dark){html[data-tema="sistema"]:not(.porta-consola) #loginScreen .login-card{background:var(--v2-sup)!important}}
+/* tablet e telemóvel: faixa de fotografia em cima, cartão por baixo */
+@media (max-width:900px){
+html:not(.porta-consola) #loginScreen .auth-shell{grid-template-columns:1fr!important;grid-template-rows:auto 1fr!important;height:auto!important;max-width:560px!important}
+html:not(.porta-consola) #loginScreen .auth-brand-panel{height:clamp(96px,16vh,150px)!important;margin:8px 8px 0!important}
+html:not(.porta-consola) #loginScreen .auth-brand-content{display:flex!important;justify-content:flex-end!important;padding:14px 16px!important}
+html:not(.porta-consola) #loginScreen .auth-brand-logo{display:none!important}
+html:not(.porta-consola) #loginScreen .auth-brand-copy{display:block!important}
+html:not(.porta-consola) #loginScreen .auth-brand-copy h2{font-size:18px!important;margin:0!important}
+html:not(.porta-consola) #loginScreen .auth-brand-copy p,html:not(.porta-consola) #loginScreen .auth-brand-trust{display:none!important}
+html:not(.porta-consola) #loginScreen .auth-brand-copy::before{margin:0 0 4px!important;font-size:10.5px!important}
+html:not(.porta-consola) #loginScreen .login-card{padding:16px 18px 16px!important;overflow:visible!important}
+}
+@media (max-width:720px){html:not(.porta-consola) #loginScreen.login-screen{padding:10px!important}html:not(.porta-consola) #loginScreen .auth-shell{padding:0!important;min-height:0!important;background:var(--v2-sup)!important;flex-direction:initial!important}}
+@media (max-width:720px){
+html:not(.porta-consola) #loginScreen .auth-brand-panel{height:84px!important}
+html:not(.porta-consola) #loginScreen #providerFuncPage{grid-template-columns:1fr 1fr!important;column-gap:10px!important}
+html:not(.porta-consola) #loginScreen #providerFuncPage .form-group:has(#funcNif){grid-column:1!important}
+html:not(.porta-consola) #loginScreen #providerFuncPage .form-group:has(#funcNumero){grid-column:2!important}
+html:not(.porta-consola) #loginScreen #providerFuncPage>:not(.form-group:has(#funcNif)):not(.form-group:has(#funcNumero)){grid-column:1/-1!important}
+html:not(.porta-consola) #loginScreen .login-card::before{margin-bottom:10px!important}
+html:not(.porta-consola) #loginScreen .login-card .func-admin{margin-top:8px!important;padding-top:8px!important}
+html:not(.porta-consola) #loginScreen .auth-register-actions{margin-top:10px!important;padding-top:10px!important}
+}
+html:not(.porta-consola) #loginScreen .auth-shell{align-items:stretch!important}
+html:not(.porta-consola) #loginScreen .auth-brand-panel{align-self:stretch!important;min-height:84px!important}
+@media (max-width:720px){html:not(.porta-consola) #loginScreen .auth-brand-copy h2{display:none!important}html:not(.porta-consola) #loginScreen .auth-brand-copy::before{margin:0!important}}
