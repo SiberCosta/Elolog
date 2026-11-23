@@ -3,13 +3,15 @@
 
 /* 1. cartões principais: formulário do simulador, resumo, serviços, seguimento, contacto, legal */
 html:not(#ec) body :is(.simulator-section-card,.quotation-panel,.simulator-heading,.simulation-progress,.service-card,.tracking-panel,.contact-form,
-  .elo-cartao,.legal-cartao,.sl-cartao,.proposta-prestador-card,.sim-card,.simulation-summary-panel,#valForm){background-color:var(--v2-sup,var(--ec-fundo))!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio)!important;box-shadow:var(--ec-sombra)!important}
+  .elo-cartao,.legal-cartao,.sl-cartao,.proposta-prestador-card,.sim-card,.simulation-summary-panel,#valForm){
+  background-color:var(--ec-fundo)!important;border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio)!important;box-shadow:var(--ec-sombra)!important}
 html:not(#ec) body :is(.simulator-section-card,.quotation-panel,.simulator-heading,.simulation-progress,.contact-form,.legal-cartao,.sl-cartao,.proposta-prestador-card,.sim-card,.simulation-summary-panel){background-image:none!important}
 @media(hover:hover){html:not(#ec) body :is(.service-card,.proposta-prestador-card,.sl-cartao):hover{border-color:var(--ec-borda-ativa)!important;box-shadow:var(--ec-sombra-hover)!important}}
 html:not(#ec) body .simulator-section-card.legal-bloco{box-shadow:none!important}
 
 /* 2. painéis interiores */
-html:not(#ec) body :is(.cargo-subsection,.quote-policy,.cargo-classification-box,.cargo-details-box,.simulation-summary,.route-pickup-row,.tracking-input-row){background:var(--v2-sup-2,var(--ec-fundo-suave))!important;background-image:none!important;border:1px solid var(--v2-fio,var(--ec-fio-leve))!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
+html:not(#ec) body :is(.cargo-subsection,.quote-policy,.cargo-classification-box,.cargo-details-box,.simulation-summary,.route-pickup-row,.tracking-input-row){
+  background:var(--ec-fundo-suave)!important;background-image:none!important;border:1px solid var(--ec-fio-leve)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
 html:not(#ec) body .volume-item{border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
 
 /* 3. linhas do resumo e indicadores */
@@ -21,7 +23,7 @@ html:not(#ec) body :is(.quotation-panel,.simulation-summary-panel) strong{font-v
 html:not(#ec) body :is(.section-card-title,.section-card-title-row) :is(small,.etapa,[class*="step"]){letter-spacing:.02em!important}
 
 /* 5. vazio */
-html:not(#ec) body .providers-empty{background:var(--v2-sup-2,var(--ec-fundo-suave))!important;border:0!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;color:var(--v2-texto-3,var(--ec-suave))!important}
+html:not(#ec) body .providers-empty{background:var(--ec-fundo-suave)!important;border:0!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;color:var(--ec-suave)!important}
 
 /* 6. telemóvel */
 @media(max-width:640px){

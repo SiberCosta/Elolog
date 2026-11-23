@@ -43,7 +43,7 @@ function frase(k,p,d){const F=S().frases(k,p,d,ed);if(fi>=F.length)fi=0;
 function mostrarFrase(n){const c=document.querySelector("#pvPainel .pv-frases");if(!c)return;const L=[...c.querySelectorAll(".pv-frases-l li")],B=[...c.querySelectorAll("[data-pv-frase]")];if(!L.length)return;
   const velho=L[fi];fi=(n+L.length)%L.length;if(velho&&velho!==L[fi]){velho.classList.add("sai");setTimeout(()=>velho.classList.remove("sai"),650)}L.forEach((li,i)=>{li.classList.toggle("on",i===fi);li.setAttribute("aria-hidden",String(i!==fi));li.querySelector("button").tabIndex=i===fi?0:-1});
   B.forEach((b,i)=>{b.classList.toggle("on",i===fi);b.setAttribute("aria-pressed",String(i===fi))});const t=c.querySelector(".pv-frases-t i");if(t){t.style.animation="none";void t.offsetWidth;t.style.animation=""}}
-function rodarFrases(){clearInterval(fT);/* v172: a frase mais urgente fica fixa; as outras só se mudam à mão (revisão: um centro de comando não deve esconder informação a rodar) */return;
+function rodarFrases(){clearInterval(fT);if(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)return;
   fT=setInterval(()=>{const c=document.querySelector("#pvPainel .pv-frases");if(!c||document.hidden||c.matches(":hover,:focus-within"))return;mostrarFrase(fi+1)},7000)}
 
 function viagens(vs){if(!vs.length)return'<div class="pv-vazio-n"><strong>Nenhum navio com carga Elolog.</strong><span>Quando um prestador expedir uma encomenda, o navio aparece aqui com a rota e a data de chegada.</span></div>';return vs.map((v,i)=>{const p=Math.round(M().progresso(v)*100),c=M().corViagem(v);

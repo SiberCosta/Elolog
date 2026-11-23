@@ -2,32 +2,35 @@
    Âmbito: body.modo-cliente (e o prestador quando abre os mesmos ecrãs, como a simulação). */
 
 /* 15. registos do cliente: encomendas, pagamentos, documentos, histórico */
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-order-card,.client-payment-item,.client-doc-card,.client-history-row,.client-active-card,.client-home-card:not(.user-box),
-  .client-home-result-card,.client-sim-card,.simulator-card,.client-extra-doc-row){background:var(--v2-sup,var(--ec-fundo))!important;background-image:none!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;transition:background-color var(--ec-t),border-color var(--ec-t)}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-order-card,.client-payment-item,.client-doc-card,.client-history-row,.client-active-card,.client-home-card,
+  .client-home-result-card,.client-sim-card,.simulator-card,.client-extra-doc-row){background:var(--ec-fundo)!important;background-image:none!important;
+  border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;transition:background-color var(--ec-t),border-color var(--ec-t)}
 @media(hover:hover){html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-order-card,.client-home-result-card):hover{border-color:var(--ec-borda-ativa)!important}}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-order-summary{background:transparent!important;box-shadow:none!important;border:0!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-order-summary-clickable:focus-visible{outline:2px solid var(--elo-azul,#1F5F8B);outline-offset:2px;border-radius:var(--ec-raio-int)}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-order-summary-item small{font:500 12.5px/1.3 "Work Sans",system-ui,sans-serif!important;color:var(--v2-texto-3,var(--ec-suave))!important;text-transform:none!important;letter-spacing:0!important}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-order-summary-item strong{font:600 14px/1.35 "Work Sans",system-ui,sans-serif!important;color:var(--v2-texto,var(--ec-tinta))!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-order-summary-item small{font:500 12.5px/1.3 "Work Sans",system-ui,sans-serif!important;color:var(--ec-suave)!important;text-transform:none!important;letter-spacing:0!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-order-summary-item strong{font:600 14px/1.35 "Work Sans",system-ui,sans-serif!important;color:var(--ec-tinta)!important}
 
 /* botão «Ver estado do pedido»: contorno, como os restantes */
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-order-toggle{background:var(--v2-sup,var(--ec-fundo))!important;background-image:none!important;color:var(--v2-texto,var(--ec-tinta))!important;border:1px solid var(--ec-tinta)!important;border-radius:8px!important;box-shadow:none!important;font:600 13px/1 "Work Sans",system-ui,sans-serif!important;padding:10px 14px!important}
-@media(hover:hover){html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-order-toggle:hover{background:var(--v2-sup-2,var(--ec-fundo-hover))!important}}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-order-toggle{background:var(--ec-fundo)!important;background-image:none!important;color:var(--ec-tinta)!important;
+  border:1px solid var(--ec-tinta)!important;border-radius:8px!important;box-shadow:none!important;font:600 13px/1 "Work Sans",system-ui,sans-serif!important;padding:10px 14px!important}
+@media(hover:hover){html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-order-toggle:hover{background:var(--ec-fundo-hover)!important}}
 
 /* 16. painéis interiores */
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-order-details-panel,.client-simulation-summary,.client-sim-summary,.client-dashboard-section,.client-history-section,
-  .client-search-row){background:var(--v2-sup-2,#F8FAFB)!important;background-image:none!important;border:1px solid var(--v2-fio,var(--ec-fio-leve))!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-danger-box{background:var(--v2-er-s,#FFF7F7)!important;background-image:none!important;border:1px solid #F2C9C9!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
+  .client-search-row){background:#F8FAFB!important;background-image:none!important;border:1px solid var(--ec-fio-leve)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-danger-box{background:#FFF7F7!important;background-image:none!important;border:1px solid #F2C9C9!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-dashboard-section-head,.client-simulation-summary-head){background:transparent!important;text-transform:none!important;letter-spacing:0!important}
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-section-note,.client-simulation-summary-note){color:var(--v2-texto-3,var(--ec-suave))!important;font-size:13px!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-section-note,.client-simulation-summary-note){color:var(--ec-suave)!important;font-size:13px!important}
 
 /* 17. indicadores e janelas */
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-metric-card{background:var(--v2-sup,var(--ec-fundo))!important;background-image:none!important;border:1px solid var(--v2-fio,var(--ec-borda))!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-metric-card{background:var(--ec-fundo)!important;background-image:none!important;border:1px solid var(--ec-borda)!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important}
 html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-metric-card strong{font-variant-numeric:tabular-nums}
-
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) .client-modal-card{border-radius:var(--ec-raio)!important;border:1px solid var(--ec-borda)!important;box-shadow:0 16px 40px rgba(19,41,61,.18)!important}
 
 /* 18. estados vazios */
-html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-active-empty,.client-home-empty,.perfil-vazio){background:var(--v2-sup-2,#F8FAFB)!important;background-image:none!important;border:0!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;color:var(--v2-texto-3,var(--ec-suave))!important}
+html:not(#ec) body:is(.provider-user-mode,.modo-cliente) :is(.client-active-empty,.client-home-empty,.perfil-vazio){background:#F8FAFB!important;background-image:none!important;
+  border:0!important;border-radius:var(--ec-raio-int)!important;box-shadow:none!important;color:var(--ec-suave)!important}
 
 /* 19. telemóvel */
 @media(max-width:640px){

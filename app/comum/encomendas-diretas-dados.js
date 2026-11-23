@@ -105,7 +105,7 @@ const API={ESTADOS,MOTIVOS,PAPEL,rotulo,etiqueta,esc,data,quando,erro,online,
         <div><dt>Data prevista</dt><dd>${esc(data(e.data_prevista))}</dd></div>${e.cliente_nome&&eu().role!=="cliente"?`<div><dt>Cliente</dt><dd>${esc(e.cliente_nome)}${e.cliente_email?`, ${esc(e.cliente_email)}`:""}${e.cliente_telefone?`, ${esc(e.cliente_telefone)}`:""}</dd></div>`:""}</dl>
       ${e.observacoes?`<p class="ed-obs">${esc(e.observacoes)}</p>`:""}${mot}
       ${e.pedido_documentos?`<p class="ed-pedido"><b>Documentos pedidos pela administração:</b> ${esc(e.pedido_documentos)}</p>`:""}
-      ${(e.anexos||[]).length?`<ul class="ed-anexos">${e.anexos.map((a,i)=>`<li><button type="button" class="ed-link" data-ed="anexo" data-i="${i}"><i class="ic ic-clip" aria-hidden="true"></i> ${esc(a.nome)}</button>${a.nota?` <small>${esc(a.nota)}</small>`:""}</li>`).join("")}</ul>`:""}
+      ${(e.anexos||[]).length?`<ul class="ed-anexos">${e.anexos.map((a,i)=>`<li><button type="button" class="ed-link" data-ed="anexo" data-i="${i}">📎 ${esc(a.nome)}</button>${a.nota?` <small>${esc(a.nota)}</small>`:""}</li>`).join("")}</ul>`:""}
       <details class="ed-hist"><summary>Percurso (${(e.historico||[]).length})</summary><ol>${h}</ol></details>
       <div class="ed-acoes">${e.documento?`<button type="button" class="btn-secondary" data-ed="comprovativo">Ver comprovativo</button>`:""}${acoes||""}</div></article>`}};
 window.elologED=API;

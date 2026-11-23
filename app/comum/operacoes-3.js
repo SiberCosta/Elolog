@@ -13,7 +13,7 @@ container.innerHTML=list.map(p=>`
                     </strong>
 
                     <div>
-                        ${p.rating!=null&&p.rating!==""?"★ "+p.rating:""}
+                        ⭐ ${p.rating}
                     </div>
 
                 </div>
@@ -62,7 +62,7 @@ renderEverything();alert("Proposta aceite com sucesso.")}function advanceOperati
 const index=states.indexOf(operation.status);if(index<states.length-1){operation.status=states[index+1];saveAll();renderEverything()}else{alert("A operação já está concluída.")}}function trackOperation(id){showPage("tracking",
 document.querySelector('.menu button[onclick*="tracking"], .menu button[onclick*="OrdersMenu"]'));document.getElementById("trackingCode").value=id;loadTracking()}
 function loadTracking(){const input=document.getElementById("trackingCode");const result=document.getElementById("trackingResult");if(!input||!result)return;const code=input.value.trim();
-const operation=operations.find(o=>String(o.id).toLowerCase()===code.toLowerCase());if(!operation){result.innerHTML=`<div class="tracking-minimal"><p>Encomenda não encontrada.</p></div>`;return}const stages=["Simulação","Cotação","Aprovação","Recolha",
+const operation=operations.find(o=>String(o.id).toLowerCase()===code.toLowerCase());if(!operation){result.innerHTML=`<div class="tracking-minimal"><p>❌ Encomenda não encontrada.</p></div>`;return}const stages=["Simulação","Cotação","Aprovação","Recolha",
 "Pagamento","Armazenamento","Expedição","Em trânsito","Destino","Disponível","Levantado"];const stageMap={"Simulação":0,"Cotação":1,"Aprovação":2,"Recolha":3,"Pagamento":4,"Armazenamento":5,"Expedição":6,"Em trânsito":7,"Destino":8,"Disponível":9,
 "Levantado":10};const currentIndex=stageMap[operation.status]??0;const currentStage=stages[currentIndex];
 result.innerHTML=`

@@ -8,7 +8,7 @@ let pilha=null;const vistos=new Set();
 
 function cartao(m){if(!pilha){pilha=document.createElement("div");pilha.className="em-avisos";pilha.setAttribute("aria-live","polite");document.body.appendChild(pilha)}
   const d=document.createElement("div");d.className="em-aviso";d.setAttribute("role","status");
-  d.innerHTML=`<span class="em-aviso-ic" aria-hidden="true"><i class="ic ic-mail" aria-hidden="true"></i></span><div class="em-aviso-txt"><strong>Novo email${m.caixa?`, ${esc(curto(m.caixa,28))}`:""}</strong>
+  d.innerHTML=`<span class="em-aviso-ic" aria-hidden="true">✉</span><div class="em-aviso-txt"><strong>Novo email${m.caixa?`, ${esc(curto(m.caixa,28))}`:""}</strong>
     ${m.de?`<span>${esc(curto(m.de,48))}</span>`:""}<em>${esc(curto(m.assunto||"(sem assunto)",70))}</em></div>
     <div class="em-aviso-acoes"><button type="button" class="btn-primary" data-abrir>Abrir</button><button type="button" class="em-aviso-x" aria-label="Fechar aviso" data-fechar>×</button></div>`;
   const fechar=()=>{d.classList.add("sair");setTimeout(()=>d.remove(),250)};

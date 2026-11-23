@@ -6,16 +6,21 @@
   --bv-curva:cubic-bezier(.2,.7,.2,1)}
 
 /* base comum a todos os botões de ação */
-html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.btn-register-profile,.sim-add-button,.employee-action,.pa-botao,.ct-btn,.btn-selecionar-prestador,.pv-btn):not(.hero .hero-btn){transition:background-size .3s var(--bv-curva),background-color .2s,color .14s linear .07s,border-color .2s,box-shadow .2s,transform .14s var(--bv-curva)!important}
+html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.btn-register-profile,.sim-add-button,.employee-action,.pa-botao,.ct-btn,.btn-selecionar-prestador,.pv-btn):not(.hero .hero-btn){
+  border-radius:10px!important;font-weight:650!important;letter-spacing:0!important;text-transform:none!important;box-shadow:none!important;background-repeat:no-repeat!important;
+  background-position:0 0!important;background-size:0% 100%!important;
+  transition:background-size .3s var(--bv-curva),background-color .2s,color .14s linear .07s,border-color .2s,box-shadow .2s,transform .14s var(--bv-curva)!important}
 html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.btn-register-profile,.sim-add-button,.employee-action,.pa-botao,.ct-btn,.btn-selecionar-prestador,.pv-btn) :is(svg,i.ic){transition:transform .25s var(--bv-curva)}
 
 /* principal: contorno azul-escuro, preenche-se ao passar o rato */
-
+html:not(#bv) body :is(.btn-primary,.primary-btn,.btn-search,.btn-register-profile,.pa-botao-forte,.btn-selecionar-prestador,.btn-simulate:not(.hero *)){
+  color:var(--bv-tinta)!important;border:1.5px solid var(--bv-tinta)!important;background-color:#fff!important;background-image:linear-gradient(var(--bv-tinta),var(--bv-tinta))!important}
 /* secundário: contorno leve; ao passar o rato ganha o contorno escuro e um fundo suave */
-
+html:not(#bv) body :is(.btn-secondary,.btn-ghost,.pa-botao:not(.pa-botao-forte),.ct-btn,.employee-action,.pv-btn,.sim-add-button){
+  color:var(--bv-tinta)!important;border:1px solid var(--bv-fio)!important;background-color:#fff!important;background-image:linear-gradient(var(--bv-fundo),var(--bv-fundo))!important}
 /* confirmar e perigo: a mesma lógica, com a cor da intenção */
-
-
+html:not(#bv) body .btn-success{color:var(--bv-ok)!important;border:1.5px solid var(--bv-ok)!important;background-color:#fff!important;background-image:linear-gradient(var(--bv-ok),var(--bv-ok))!important}
+html:not(#bv) body .btn-danger{color:var(--bv-perigo)!important;border:1.5px solid #E2B4B4!important;background-color:#fff!important;background-image:linear-gradient(var(--bv-perigo),var(--bv-perigo))!important}
 
 @media (hover:hover){
   html:not(#bv) body :is(.btn-primary,.primary-btn,.btn-search,.btn-register-profile,.pa-botao-forte,.btn-selecionar-prestador,.btn-simulate:not(.hero *),.btn-success,.btn-danger):not(:disabled):not([aria-disabled=true]):hover{
@@ -31,9 +36,11 @@ html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn
 html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.btn-register-profile,.sim-add-button,.employee-action,.pa-botao,.ct-btn,.btn-selecionar-prestador,.pv-btn):not(:disabled):active{
   transform:translateY(0) scale(.97)!important;box-shadow:none!important}
 /* foco pelo teclado: anel visível e sem animação estranha */
-
+html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.btn-register-profile,.sim-add-button,.employee-action,.pa-botao,.ct-btn,.btn-selecionar-prestador,.pv-btn):focus-visible{
+  outline:3px solid var(--bv-anel)!important;outline-offset:2px!important}
 /* indisponível */
-html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.pa-botao,.ct-btn,.pv-btn):is(:disabled,[aria-disabled=true]){color:var(--v2-texto-3,#8A9AA6)!important;border-color:var(--v2-fio,#DCE4EA)!important;background:var(--v2-sup-2,#F3F6F8)!important;transform:none!important;cursor:not-allowed!important}
+html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.pa-botao,.ct-btn,.pv-btn):is(:disabled,[aria-disabled=true]){
+  color:#8A9AA6!important;border-color:#DCE4EA!important;background:#F3F6F8!important;transform:none!important;cursor:not-allowed!important}
 /* a trabalhar: o texto mantém-se e aparece um círculo a rodar à direita */
 html:not(#bv) body button[data-elo-busy=true]{color:inherit!important;padding-right:38px!important}
 html:not(#bv) body button[data-elo-busy=true]::after{right:14px!important;left:auto!important;width:14px!important;height:14px!important;color:currentColor!important}
@@ -44,8 +51,9 @@ html:not(#bv) body button[data-elo-busy=true]::after{right:14px!important;left:a
 @keyframes bvOnda{to{transform:scale(1);opacity:0}}
 
 /* ligações em forma de botão (ex.: «Ver todas as operações»): sublinhado que cresce */
-html:not(#bv) body .pv .pv-lig{border:0!important;padding:0 0 2px!important;min-height:0!important;background:linear-gradient(currentColor,currentColor) 0 100%/100% 1px no-repeat!important;text-decoration:none!important;color:var(--v2-azul,var(--bv-acao))!important;font-weight:650;transition:background-size .3s var(--bv-curva),color .2s}
-@media (hover:hover){html:not(#bv) body .pv .pv-lig:hover{background-size:100% 2px!important;color:var(--v2-texto,var(--bv-tinta))!important}}
+html:not(#bv) body .pv .pv-lig{border:0!important;padding:0 0 2px!important;min-height:0!important;background:linear-gradient(currentColor,currentColor) 0 100%/100% 1px no-repeat!important;
+  text-decoration:none!important;color:var(--bv-acao)!important;font-weight:650;transition:background-size .3s var(--bv-curva),color .2s}
+@media (hover:hover){html:not(#bv) body .pv .pv-lig:hover{background-size:100% 2px!important;color:var(--bv-tinta)!important}}
 
 @media (prefers-reduced-motion:reduce){
   html:not(#bv) body :is(.btn-primary,.btn-secondary,.btn-success,.btn-danger,.btn-ghost,.primary-btn,.btn-search,.pa-botao,.ct-btn,.pv-btn,.employee-action){transition:color .01s,background-size .01s!important;transform:none!important}

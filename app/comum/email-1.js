@@ -27,17 +27,17 @@
     const itens=!c&&!atrib?"":l==null?`<li class="em-vazio">${E.erro?""+esc(E.erro):"A carregar…"}</li>`:!l.mensagens.length?`<li class="em-vazio">${E.pesquisa?"Nada encontrado.":"Sem mensagens nesta pasta."}</li>`:
       l.mensagens.map(m=>`<li><button type="button" class="em-item${m.lida?"":" em-nova"}${String(E.abertaChave)===String(chave(m))?" em-atual":""}" data-em-abrir="${esc(chave(m))}">
         <span class="em-quem">${esc(E.nome(E.pasta==="enviados"?"Para: "+m.para:m.de))}</span><time>${quando(m.data)}</time>
-        <span class="em-assunto">${m.respondida?'<i title="Respondida">↩</i> ':""}${esc(m.assunto||"(sem assunto)")}${m.anexos?' <i title="Tem anexos"><i class="ic ic-clip" aria-hidden="true"></i></i>':""}</span>${atrib?`<small class="em-atrib">${m.estado==="respondido"?"Respondido":"Por responder"}, de ${esc(m.por||"")}, ${esc(m.caixa_email||"")}</small>`:""}</button></li>`).join("");
+        <span class="em-assunto">${m.respondida?'<i title="Respondida">↩</i> ':""}${esc(m.assunto||"(sem assunto)")}${m.anexos?' <i title="Tem anexos">📎</i>':""}</span>${atrib?`<small class="em-atrib">${m.estado==="respondido"?"Respondido":"Por responder"}, de ${esc(m.por||"")}, ${esc(m.caixa_email||"")}</small>`:""}</button></li>`).join("");
     const pags=l&&l.total>25?`<div class="em-pags"><button type="button" class="btn-secondary" data-em-pag="-1" ${E.pagina?"":"disabled"}>‹ Mais recentes</button><small>${E.pagina*25+1}–${Math.min(l.total,E.pagina*25+25)} de ${l.total}</small><button type="button" class="btn-secondary" data-em-pag="1" ${(E.pagina+1)*25<l.total?"":"disabled"}>Mais antigas ›</button></div>`:"";
     return`<div class="em-caixas">${E.caixas.length?`<label class="sr-only" for="emCaixa">Caixa de email</label><select id="emCaixa">${E.caixas.map(x=>`<option value="${esc(x.id)}"${x.id===E.caixa?" selected":""}>${esc(x.email)}</option>`).join("")}</select>`:""}
-      ${E.podeLigar?'<button type="button" class="btn-secondary" data-em="config" title="Configurar caixas e acessos" aria-label="Configurar caixas de email e acessos"><i class="ic ic-settings" aria-hidden="true"></i></button>':""}</div>
+      ${E.podeLigar?'<button type="button" class="btn-secondary" data-em="config" title="Configurar caixas e acessos" aria-label="Configurar caixas de email e acessos">⚙</button>':""}</div>
       ${c||atrib?`<div class="em-pastas" role="tablist" aria-label="Pastas">${PASTAS.filter(([k])=>c||k==="atribuidos").map(([k,t])=>`<button type="button" role="tab" aria-selected="${E.pasta===k}" class="${E.pasta===k?"ativo":""}" data-em-pasta="${k}">${t}</button>`).join("")}</div>
       ${atrib?"":`<form class="em-procura" role="search"><input type="search" id="emProcura" placeholder="Procurar no email" aria-label="Procurar no email" value="${esc(E.pesquisa)}"></form>`}
-      <ul class="em-lista" aria-label="Mensagens">${itens}</ul>${pags}`:`<p class="em-vazio">${E.podeLigar?"Ainda não há caixas ligadas. Use <b><i class='ic ic-settings' aria-hidden='true'></i></b> para ligar a primeira.":"Ainda não tem caixas de email atribuídas. Peça acesso ao administrador."}</p>`}`}
+      <ul class="em-lista" aria-label="Mensagens">${itens}</ul>${pags}`:`<p class="em-vazio">${E.podeLigar?"Ainda não há caixas ligadas. Use <b>⚙</b> para ligar a primeira.":"Ainda não tem caixas de email atribuídas. Peça acesso ao administrador."}</p>`}`}
 
   E.desenhar=function(){if(!E.j)return;const raiz=E.j.corpo.querySelector(".em");if(!raiz)return;
     raiz.querySelector(".em-lado").innerHTML=lado_html();raiz.classList.toggle("em-a-ler",!!E.vista);
-    const d=raiz.querySelector(".em-ler");if(!E.vista){d.innerHTML=`<div class="em-boas"><span aria-hidden="true"><i class="ic ic-mail" aria-hidden="true"></i></span><p>${E.caixas.length?"Escolha uma mensagem para ler ou escreva um novo email.":"Ligue uma caixa de email para começar."}</p></div>`;return}
+    const d=raiz.querySelector(".em-ler");if(!E.vista){d.innerHTML=`<div class="em-boas"><span aria-hidden="true">✉</span><p>${E.caixas.length?"Escolha uma mensagem para ler ou escreva um novo email.":"Ligue uma caixa de email para começar."}</p></div>`;return}
     window.elologEmail2?.vista(d)};
 
   const assinar=l=>(l?.mensagens||[]).map(m=>m.uid+(m.lida?"l":"n")+(m.respondida?"r":"")).join()+"|"+(l?.total||0);
@@ -65,7 +65,7 @@
   const admin=()=>currentUser?.role==="admin"||(()=>{try{return providerFunction()==="admin"}catch(e){return false}})();
   async function abrir(){if(!["admin","prestador"].includes(currentUser?.role))return P().aviso("O email está disponível só para a equipa.","warning");
     E.j=P().janela({eyebrow:currentUser.role==="admin"?"ADMINISTRAÇÃO ELOLOG":"PRESTADOR",titulo:"Email"});E.j.corpo.closest(".pm-caixa").classList.add("em-janela");
-    const topo=E.j.corpo.closest(".pm-caixa").querySelector(".pm-topo");topo.querySelector(".pm-fechar").insertAdjacentHTML("beforebegin",'<button type="button" class="btn-primary em-novo" data-em="novo"><i class="ic ic-pencil" aria-hidden="true"></i> Novo email</button>');
+    const topo=E.j.corpo.closest(".pm-caixa").querySelector(".pm-topo");topo.querySelector(".pm-fechar").insertAdjacentHTML("beforebegin",'<button type="button" class="btn-primary em-novo" data-em="novo">✎ Novo email</button>');
     E.j.mostrar('<div class="em"><aside class="em-lado"></aside><section class="em-ler" aria-live="polite"></section></div>',[]);E.vista=null;E.aberta=null;E.lista=null;E.desenhar();
     if(!(await E.carregarCaixas())){if(E.erro)E.desenhar();return}if(!E.caixas.length){if(E.podeLigar){E.vista="config";return E.desenhar()}E.pasta="atribuidos"}else if(E.pasta==="atribuidos"&&!E.lista)E.pasta="entrada";E.carregarLista()}
 

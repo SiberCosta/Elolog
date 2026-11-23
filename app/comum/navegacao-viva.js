@@ -34,7 +34,6 @@ function proximo(papel){
     if(pg){const n=dias(pg.createdAt||pg.date);return{t:n>=2?"Regularizar um pagamento":"Pagar uma encomenda",d:`${pg.operationId}${n>=2?`, pendente há ${n} dias`:""}`,js:"showPage('payments')",nivel:n>=2?"urgente":"agora"}}
     const lev=meus.find(o=>/dispon/i.test(o.status||o.stage||""));if(lev)return{t:`Levantar ${lev.id}`,d:"A encomenda está pronta a ser levantada",js:"openClientOrderSection('status')",nivel:"agora"};
     return null}
-  if(papel==="prestador"&&document.body.classList.contains("field-operator-mode"))return{t:"Os seus serviços de hoje",d:"Recolhas e entregas atribuídas a si",js:"showProviderFieldPage('dashboard')",nivel:"normal"};
   if(papel==="prestador"){const c=contagem(doPrestador());for(const [i,v,um,pg] of PRIORIDADE)if(c[i])return{t:`${c[i]} ${c[i]===1?"encomenda "+um:"encomendas "+v}`,d:"Abrir e tratar",js:`showProviderPage('${pg}')`,nivel:i===2||i===4?"agora":"normal"};
     return{t:"Tudo em dia",d:"Veja se chegaram novas simulações",js:"document.querySelector('#sidebar [onclick*=showProviderProposalTab]')?.click()",nivel:"calmo"}}
   if(papel==="admin"){/* v112: as mesmas regras do Centro de comando, do mais urgente para o menos urgente */

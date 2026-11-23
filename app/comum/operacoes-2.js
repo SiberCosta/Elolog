@@ -37,7 +37,7 @@ container.innerHTML=visible.map(operation=>`
                 </span>
 
                 <span>
-                    <i class="ic ic-box" aria-hidden="true"></i> ${operation.weight||"-"}
+                    ⚖️ ${operation.weight||"-"}
                 </span>
 
                 <span>
@@ -157,7 +157,7 @@ document.getElementById("detailContent").innerHTML=`
                     <p>
                         ${p.days} dias ·
                         <span class="stars">
-                            ${p.rating!=null&&p.rating!==""?"★ "+p.rating:""}
+                            ⭐ ${p.rating}
                         </span>
                     </p>
 

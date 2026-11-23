@@ -8,5 +8,5 @@ html.porta-consola body #loginScreen .auth-shell{max-width:980px;width:100%;marg
 html.porta-consola body #loginScreen .auth-brand-panel{background:linear-gradient(160deg,#10293B 0%,#0E2433 55%,#123A34 100%)!important}
 html.porta-consola body #loginScreen .auth-brand-panel::before,html.porta-consola body #loginScreen .auth-brand-panel::after{opacity:.18}
 html.porta-consola body #loginScreen .auth-brand-copy h2{letter-spacing:-.01em}
-html.porta-consola body #loginScreen .auth-welcome{color:var(--v2-ok,#1E7A5A)!important}
+html.porta-consola body #loginScreen .auth-welcome{color:#1E7A5A!important}
 @media (max-width:760px){html.porta-consola body #loginScreen.login-screen{align-items:flex-start;padding:16px}html.porta-consola body #loginScreen .auth-brand-panel{display:none}}

@@ -64,7 +64,7 @@ async function abrir(codigo){if(!PDF()||!P()?.janela)return;let r;try{r=await ca
   const j=P().janela({eyebrow:"ENCOMENDA "+b.codigo,titulo:"Declarações do processo",passos:PASSOS});j.corpo.closest(".pm-caixa")?.classList.add("dc-janela");mostrar(j,0)}
 
 /* ---- botões nas encomendas (cliente, prestador e detalhe da operação) ---- */
-const botao=c=>`<button type="button" class="btn-secondary dc-abrir" data-dc="${esc(c)}"><i class="ic ic-file" aria-hidden="true"></i> Declarações (6 modelos)</button>`;
+const botao=c=>`<button type="button" class="btn-secondary dc-abrir" data-dc="${esc(c)}">📄 Declarações (6 modelos)</button>`;
 document.addEventListener("click",e=>{const b=e.target.closest?.(".dc-abrir");if(b){e.stopPropagation();abrir(b.dataset.dc)}},true);
 function porNoCliente(){document.querySelectorAll(".client-order-card").forEach(card=>{const p=card.querySelector(".client-order-details-panel"),c=card.querySelector(".client-order-summary-item strong")?.textContent.trim();
   if(p&&c&&c!=="—"&&!p.querySelector(".dc-abrir"))p.insertAdjacentHTML("beforeend",`<div class="dc-acoes">${botao(c)}</div>`)})}
