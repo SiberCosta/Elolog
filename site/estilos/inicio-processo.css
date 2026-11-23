@@ -18,3 +18,5 @@ border-radius:0}.process-section .process-dots button.is-active{width:3rem;backg
 .process-section .process-grid::before,.process-section .process-grid::after{display:none}.process-section .process-card{opacity:1;padding-top:2.4rem}.process-section .process-card::before{top:0}}
 @media(max-width:640px){.process-section .process-grid{display:flex}.process-section .process-card{padding-right:0}.process-section .process-card .process-icon{right:0}}
 @media(prefers-reduced-motion:reduce){.process-section .process-grid::after{transition:none}}
+/* v160: indicadores do «Como funciona» com área de toque de 24 px (o traço visível mantém o tamanho) */
+html body .process-dots button{box-sizing:content-box!important;padding:9px!important;background-clip:content-box!important;min-height:0!important;border:0!important}

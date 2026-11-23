@@ -132,3 +132,6 @@
   html body.modo-lat #sidebar#sidebar#sidebar .menu>button.client-group::after{content:""!important;width:7px;height:7px;flex:0 0 7px;margin-left:auto;margin-right:5px;border-right:2px solid #9fbccd;border-bottom:2px solid #9fbccd;transform:translateY(-2px) rotate(45deg);font-size:0}
   html body.modo-lat #sidebar#sidebar#sidebar .menu>button.client-group[aria-expanded="true"]::after{transform:translateY(2px) rotate(225deg)}
 }
+/* v160: no telemóvel os separadores e filtros passam à linha seguinte (todos visíveis, sem deslizar às escondidas) */
+@media(max-width:700px){html body :is(.finance-tabs,.provider-history-tabs,.fs-filtros,.tf-abas){flex-wrap:wrap!important;overflow-x:visible!important;row-gap:8px}
+html body .pv .pv-acomp-c{flex-direction:column!important;align-items:flex-start!important;gap:4px!important}html body .pv .pv-lig{display:inline-block!important}}

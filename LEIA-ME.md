@@ -58,6 +58,14 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v160 (pendentes da auditoria resolvidos)
+- Um título por página: quando o cartão repete o título da barra, a repetição sai da vista (fica para leitores de ecrã) — `app/comum/titulos-pagina.js`.
+- Simulação e criar encomenda sem cartões dentro de cartões; volumes do prestador em fichas até 1500 px.
+- Retirados decorativos sem função: curva animada do «Próximo passo», bloco escuro do painel do terreno, degradés dos ícones do operador.
+- Centro de comando: navios e rotas de demonstração só Lisboa → São Tomé; a secção «Navios com carga Elolog» só aparece quando há viagens.
+- Telemóvel: separadores e filtros passam à linha seguinte em vez de deslizar escondidos; alvos de toque ≥ 24 px; letra mínima 12 px; contraste AA no site e na app.
+- Service worker v205.
+
 ## v159 (auditoria integral de interface)
 - Relatório completo em `documentacao/AUDITORIA_INTEGRAL_v159.md`: 100 páginas dos 4 perfis + 9 públicas, em 3 ecrãs.
 - Contraste AA, ícones do sistema em vez de emojis, letra mínima 12 px, indicadores do terreno, próximo passo por função, títulos e subtítulos certos, carregar ficheiros pelo teclado, foco visível. Service worker v204.

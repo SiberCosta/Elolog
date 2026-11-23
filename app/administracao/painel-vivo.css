@@ -31,7 +31,7 @@
   text-decoration:underline;text-decoration-color:transparent;text-decoration-thickness:2px;text-underline-offset:.14em;transition:text-decoration-color .25s,color .25s}
 .pv .pv-frase:hover{color:#1F5F8B;text-decoration-color:rgba(31,95,139,.35)}
 .pv-frases-p{display:flex;align-items:center;gap:6px}
-.pv .pv-frases-p button{width:22px;height:24px;min-height:0;padding:0;border:0;border-radius:2px;background:linear-gradient(#D5DFE7,#D5DFE7) center/100% 4px no-repeat;transition:background-color .2s,width .25s}
+.pv .pv-frases-p button{width:24px;height:24px;min-height:0;padding:0;border:0;border-radius:2px;background:linear-gradient(#D5DFE7,#D5DFE7) center/100% 4px no-repeat;transition:background-color .2s,width .25s}
 .pv .pv-frases-p button.on{width:34px;background:linear-gradient(#13293D,#13293D) center/100% 4px no-repeat}.pv .pv-frases-p button:hover{background:linear-gradient(#7FA9C6,#7FA9C6) center/100% 4px no-repeat}
 .pv-frases-t{margin-left:10px;width:90px;height:2px;border-radius:1px;background:#E3EAF0;overflow:hidden}
 .pv-frases-t i{display:block;height:100%;width:100%;background:#1F5F8B;transform-origin:left;animation:pvTempo 7s linear infinite}

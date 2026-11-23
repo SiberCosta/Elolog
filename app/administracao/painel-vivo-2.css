@@ -5,7 +5,7 @@
 .pv-cab-p{margin:4px 0 0;font-size:13.5px;color:#5A6E7E}.pv-vazio-ok{padding:14px 18px 18px;color:#1F6B50}
 .pv-cab h3,.pv-faixa h3{margin:0;font-size:17px;font-weight:650;color:#13293D}
 .pv-faixa-cab{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}.pv-faixa-cab p{margin:4px 0 0;font-size:13.5px;color:#5A6E7E}
-.pv .pv-lig{border:0!important;padding:0!important;min-height:0!important;background:none!important;text-decoration:underline;text-underline-offset:3px}
+.pv .pv-lig{border:0!important;padding:4px 0!important;min-height:24px!important;background:none!important;text-decoration:underline;text-underline-offset:3px}
 .pv-btn,.pv .pv-lig{min-height:32px;padding:0 12px;border-radius:9px;border:1px solid #1F5F8B;background:#fff;color:#1F5F8B!important;font-size:13px!important;font-weight:600;white-space:nowrap}
 .pv-btn:hover,.pv .pv-lig:hover{background:#EEF4F9}
 
@@ -36,7 +36,7 @@
 .pv-tab-w{overflow-x:auto;margin:0 -18px -18px}
 .pv-tab{width:100%;min-width:760px;border-collapse:collapse;font-size:14px}
 .pv-tab th{text-align:left;padding:9px 18px;background:#F6F9FB;border-top:1px solid #EDF1F3;border-bottom:1px solid #DCE4EA;white-space:nowrap}
-.pv .pv-th{background:none;border:0;padding:0;min-height:0;display:inline-flex;gap:5px;align-items:center;font-size:13px!important;font-weight:600;color:#4D6172!important}
+.pv .pv-th{background:none;border:0;padding:5px 0;min-height:24px;display:inline-flex;gap:5px;align-items:center;font-size:13px!important;font-weight:600;color:#4D6172!important}
 .pv-th span{color:#9FB3C2}
 .pv-tab td{padding:11px 18px;border-bottom:1px solid #EDF1F3;vertical-align:middle}.pv-tab tr:last-child td{border-bottom:0}
 .pv-tab td small{display:block;color:#5A6E7E;font-size:12px;margin-top:2px}.pv-tab td:nth-child(4){white-space:nowrap}
@@ -88,3 +88,6 @@
 /* v108 — decisões em âmbar (o vermelho fica só para erros, como manda a paleta) */
 .pv-atencao .ct-alertas li,.pv-atencao .ct-alertas li.alta{border-color:#EBDDC2;border-left-color:var(--elo-area-decisoes,#C27A12);background:#FFFBF3}
 .pv-atencao .ct-alertas li.alta{background:var(--elo-aviso-fundo,#FBEFD9)}
+/* v160: letra mínima 12 px nas pastilhas e no n.º de viagem; ligações com área de toque de 24 px */
+html body .pv .pv-pill{font-size:12px!important}html body .pv :is(.pv-row,.pv-acomp) strong small{font-size:12px!important}html body .pv .pv-lig{display:inline-flex!important;align-items:center}
+html:not(#a):not(#b) body .pv .pv-lig{min-height:24px!important;padding:4px 0!important}html body .pv li small{font-size:12px!important}

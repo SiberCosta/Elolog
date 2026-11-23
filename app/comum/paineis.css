@@ -12,10 +12,10 @@ grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0!important;border:1
 html body .field-operator-center .field-dashboard-actions button,html body .field-operator-center .field-dashboard-actions button.primary{margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;
 box-shadow:none!important;padding:18px 20px!important;color:var(--pv-tinta)!important;transition:background-color .2s!important}html body .field-operator-center .field-dashboard-actions button+button{border-left:1px solid var(--pv-fio)!important}
 html body .field-operator-center .field-dashboard-actions button>span{width:44px!important;height:44px!important;border-radius:13px!important;color:#fff!important;box-shadow:0 8px 16px rgba(31,95,139,.22)}
-html body .field-operator-center .field-dashboard-actions button>span .ic{background:#fff!important}html body .field-operator-center .field-dashboard-actions button:nth-child(1)>span{background:linear-gradient(145deg,#5aa6d6,#1F5F8B)!important}
-html body .field-operator-center .field-dashboard-actions button:nth-child(2)>span{background:linear-gradient(145deg,#5ccf9b,#1F7A5C)!important}
-html body .field-operator-center .field-dashboard-actions button:nth-child(3)>span{background:linear-gradient(145deg,#f7c96a,#d98e1c)!important}
-html body .field-operator-center .field-dashboard-actions button:nth-child(4)>span{background:linear-gradient(145deg,#7f9fd0,#3d5f9a)!important}html body .field-operator-center .field-dashboard-actions button small{color:var(--pv-suave)!important}
+html body .field-operator-center .field-dashboard-actions button>span .ic{background:#fff!important}
+
+
+html body .field-operator-center .field-dashboard-actions button small{color:var(--pv-suave)!important}
 @media(hover:hover){html body .field-operator-center .field-dashboard-actions button:hover{background:#f5f9fc!important;color:var(--pv-azul)!important}html body .field-operator-center .field-dashboard-actions button:hover *{color:inherit!important}
 html body .field-operator-center .field-dashboard-actions button:hover small{color:var(--pv-suave)!important}html body .field-operator-center .field-dashboard-actions button:hover>span{color:#fff!important}}
 html body .field-operator-center .field-dashboard-kpis{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:0!important;border:1px solid var(--pv-fio);border-radius:18px;background:#fff;overflow:hidden;
@@ -89,7 +89,7 @@ html body #clientSimulation .client-sim-grid>.sim-volumes-section{grid-column:1!
 #clientSimulation .client-volume-table-head{display:none!important}
 html body #clientSimulation .sim-volume-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;min-width:0!important;gap:8px 10px!important;padding:12px!important;margin-bottom:8px}
 #clientSimulation .sim-volume-row>label:first-child{grid-column:span 2}
-#clientSimulation .sim-volume-row label>span,#clientSimulation .csv-volume-cell>span{display:block!important;margin-bottom:4px;color:#64748b;font-size:12px}
+#clientSimulation .sim-volume-row label>span,#clientSimulation .csv-volume-cell>span{display:block!important;margin-bottom:4px;color:#5c6e7b;font-size:12px}
 #clientSimulation .sim-volume-row :is(input,select){width:100%!important;min-width:0!important;box-sizing:border-box}}
 @media(max-width:600px){html body #clientSimulation .sim-volume-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}#clientSimulation .sim-volume-row>label:first-child{grid-column:1/-1}
 #clientSimulation .client-volume-head{flex-wrap:wrap;gap:8px}#clientSimulation .client-volume-head .sim-add{max-width:100%;white-space:normal}}
@@ -143,3 +143,11 @@ html body .client-sim-section.ss-cartao .ss-oculto,html body .client-sim-section
 :is(#clientSimulation,#providerDirectSimulation,#adminSimulation) .sim-steps{background:#fff;border:1px solid #d9e2e8;border-radius:16px;box-shadow:0 10px 25px rgba(17,39,54,.045)}
 @media(max-width:600px){.ss-cabeca em{display:none}:is(#clientSimulation,#providerDirectSimulation,#adminSimulation) .client-sim-section.ss-cartao{padding:14px!important}}
 .ss-resumo .sim-result-header h4{flex:1;min-width:0}.ss-resumo .sim-result-header span{flex:0 0 auto;font-size:11px!important}
+/* v160: sem cartões dentro de cartões na simulação — «Informações da carga» e «Observações» passam a secções do cartão (só uma linha a separar) */
+html:not(#a):not(#b) body :is(#clientSimulation,#providerDirectSimulation,#adminSimulation) :is(.client-cargo-information,.client-cargo-observations){border:0!important;border-top:1px solid var(--e-fio,#e1e9ef)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding:16px 0 4px!important;margin:16px 0 0!important}
+html:not(#a):not(#b) body :is(#clientSimulation,#providerDirectSimulation,#adminSimulation) .sim-volumes-section>.client-cargo-information:first-child{border-top:0!important;padding-top:4px!important;margin-top:0!important}
+html:not(#a):not(#b) body :is(#clientSimulation,#providerDirectSimulation,#adminSimulation) .client-volume-head{border:0!important;background:transparent!important;padding:16px 0 8px!important;border-top:1px solid var(--e-fio,#e1e9ef)!important;border-radius:0!important}
+
+/* v160: ícones das ações do operador na mesma cor (sem degradés de 4 cores) */
+html body .field-operator-center .field-dashboard-actions button>span{background:var(--e-azul-claro,#e8f1f7)!important;color:var(--e-azul,#1F5F8B)!important;box-shadow:none!important}
+html body :is(#clientSimulation,#providerDirectSimulation,#adminSimulation) .sim-result-header span{font-size:12px!important}

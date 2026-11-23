@@ -54,14 +54,19 @@ textos «undefined/NaN», ids repetidos. Cada página foi também revista em cap
 - Telemóvel: o assistente flutuante deixou de tapar o fim das páginas; título da barra menos cortado.
 - Site público e entrada: textos cinzentos e «Bem-vindo à Elolog» com contraste AA.
 
-## Fica por fazer (precisa de decisão ou de dados reais)
+## Pendentes resolvidos na v160
 
-- Títulos repetidos (barra + cartão + secção, ex.: «Pagamentos» 3×) e cartões dentro de cartões na simulação — exige
-  redesenho por página; não se mexeu para não alterar a v158 aprovada.
-- Curva decorativa animada do «Próximo passo» e o cartão escuro «Serviços de hoje no terreno» — elementos decorativos.
-- Administração › «Navios com carga Elolog» (dados de demonstração com rotas Praia/Luanda; a decisão foi retirar os navios em tempo real).
-- Pastilhas de estado com contraste 3,4–4,4:1 (prestador/admin) e os indicadores da página inicial (10×10 px).
-- Tabelas largas (volumes, financeiro) deslizam na horizontal dentro do seu contentor no telemóvel — intencional, a rever.
+- Títulos repetidos (barra + cartão): a repetição sai da vista e continua para leitores de ecrã; etiquetas curtas por cima («ATENDIMENTO») também.
+- Cartões dentro de cartões na simulação (cliente, prestador, administração) → secções separadas por uma linha.
+- Curva decorativa animada do «Próximo passo» retirada (cliente e prestador); bloco escuro «Serviços de hoje no terreno» → cabeçalho simples; ícones das ações do operador numa só cor.
+- «Navios com carga Elolog»: dados de demonstração só Lisboa → São Tomé (sem Praia, Luanda, Maputo, Roterdão); a secção esconde-se quando não há viagens.
+- Contraste: pastilhas, simulador, formulário de contacto e etapas → todos ≥ 4,5:1 (fica só o botão desativado da Expedição, que a norma dispensa).
+- Alvos de toque ≥ 24 px (WCAG 2.2 AA): indicadores do «Como funciona», frases do centro de comando, ligações, «Novo grupo», telefone do terreno, remover volume, «Voltar ao topo».
+- Telemóvel: separadores do Financeiro, filtros do Histórico e de Regras de cobrança passam à linha seguinte; as tabelas já estavam em fichas (os cabeçalhos ficam escondidos para leitores de ecrã).
+- Volumes do prestador em fichas até 1500 px (sem tabela de 1020 px a deslizar dentro do formulário).
+
+Medição final (100 páginas × 1280/820/390 px): 0 erros de JavaScript, 0 páginas mais largas do que o ecrã, 0 campos sem rótulo,
+0 alvos abaixo de 24 px, letra < 12 px só na folha A4 do centro documental.
 
 ## Não testado
 
