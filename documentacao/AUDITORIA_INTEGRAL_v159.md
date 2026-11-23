@@ -22,7 +22,7 @@ textos «undefined/NaN», ids repetidos. Cada página foi também revista em cap
 
 | Medida | Antes | Depois |
 |---|---|---|
-| Textos com contraste abaixo de AA (app) | 698 | 24 (só no prestador/admin, em pastilhas de estado) |
+| Textos com contraste abaixo de AA (app, 1280 + 390 px) | 556 | 26 (só no prestador/admin, em pastilhas de estado) |
 | Letra abaixo de 12 px | 49 | 16 (folha A4 do centro documental, de propósito) |
 | Campos sem rótulo | 4 | 0 |
 | Erros de JavaScript | 0 | 0 |
