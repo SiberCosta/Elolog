@@ -58,6 +58,12 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v161 (teste do servidor real, 23-11-2026)
+- Relatório em `documentacao/TESTE_SERVIDOR_REAL_v161.md`.
+- Corrigido: o email de boas-vindas depois de aprovar uma cotação era recusado pelo Brevo («headers is blank») — `servidor/supabase/functions/seguimento/index.ts` (**falta publicar a função**).
+- Corrigido: a chegada prevista lia as viagens antes de haver sessão e não voltava a ler depois de entrar — `app/comum/previsao-chegada.js`.
+- Service worker v206.
+
 ## v160 (pendentes da auditoria resolvidos)
 - Um título por página: quando o cartão repete o título da barra, a repetição sai da vista (fica para leitores de ecrã) — `app/comum/titulos-pagina.js`.
 - Simulação e criar encomenda sem cartões dentro de cartões; volumes do prestador em fichas até 1500 px.

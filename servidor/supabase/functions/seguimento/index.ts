@@ -18,11 +18,12 @@ const LOTE = Math.min(100, Math.max(1, Number.parseInt(env('SEGUIMENTO_LOTE'), 1
 
 type Envio = 'ok' | 'repetir' | 'parar';
 async function enviar(para: string, e: Email, sair: string | null, etiqueta: string): Promise<Envio> {
+  // v161: o Brevo recusa «headers» vazio (400 «headers is blank»): só se envia quando há ligação para deixar de receber
   const headers: Record<string, string> = sair ? { 'List-Unsubscribe': `<${sair}>` } : {};
   const r = await fetch('https://api.brevo.com/v3/smtp/email', { method: 'POST', signal: AbortSignal.timeout(10_000),
     headers: { 'api-key': env('BREVO_API_KEY'), 'content-type': 'application/json', accept: 'application/json' },
     body: JSON.stringify({ sender: { name: env('EMAIL_NOME') || 'Elolog', email: env('EMAIL_REMETENTE') }, to: [{ email: para }],
-      subject: e.assunto, htmlContent: e.html, textContent: e.texto, headers, tags: ['elolog', etiqueta] }) }).catch(() => null);
+      subject: e.assunto, htmlContent: e.html, textContent: e.texto, ...(sair ? { headers } : {}), tags: ['elolog', etiqueta] }) }).catch(() => null);
   if (r?.ok) { await r.body?.cancel().catch(() => {}); return 'ok'; }
   const corpo = r ? (await r.text().catch(() => '')).replace(/[^\s@]+@[^\s@]+/g, '[email]').slice(0, 200) : '';
   console.error('seguimento: envio recusado', etiqueta, r?.status ?? 'rede', corpo);   // sem o endereço
