@@ -40,7 +40,7 @@ function carga(){const e=f.encomenda,a=f.armazem,vol=Array.isArray(e.volumes)?e.
     ${linha("Localização",a.localizacao)}${linha("Ocorrências",a.ocorrencias)}${linha("Confirmado em",dt(a.confirmado_em))}</dl>`:'<p class="fo-vazio">Receção ainda não confirmada.</p>'}
   <h5>Expedição</h5>${e.navio?`<dl class="fo-dl">${linha("Navio",e.navio)}${linha("Viagem",e.viagem)}${linha("Partida prevista",dia(e.partida_prevista))}${linha("Chegada prevista",e.chegada_prevista?dia(e.chegada_prevista):"")}</dl>`:'<p class="fo-vazio">Sem navio associado.</p>'}
   <h5>Fotografias</h5>${fotos.length?`<div class="fo-fotos">${fotos.map((d,i)=>d.caminho?`<button type="button" class="fo-foto" data-foto="${esc(d.caminho)}">${esc(d.nome)}</button>`:d.src||d.dataUrl?`<img src="${esc(d.src||d.dataUrl)}" alt="Fotografia ${i+1}">`:"").join("")}</div>`:'<p class="fo-vazio">Sem fotografias.</p>'}
-  <h5>Documentos</h5>${docs.length?`<ul class="fo-docs">${docs.map(d=>`<li>${d.caminho?`<button type="button" class="ed-link" data-doc="${esc(d.caminho)}" data-nome="${esc(d.nome)}">📄 ${esc(d.nome)}</button>`:`📄 ${esc(d.nome)}`} <small>${esc(d.categoria||"")}</small></li>`).join("")}</ul>`:'<p class="fo-vazio">Sem documentos.</p>'}`}
+  <h5>Documentos</h5>${docs.length?`<ul class="fo-docs">${docs.map(d=>`<li>${d.caminho?`<button type="button" class="ed-link" data-doc="${esc(d.caminho)}" data-nome="${esc(d.nome)}"><i class="ic ic-file" aria-hidden="true"></i> ${esc(d.nome)}</button>`:`📄 ${esc(d.nome)}`} <small>${esc(d.categoria||"")}</small></li>`).join("")}</ul>`:'<p class="fo-vazio">Sem documentos.</p>'}`}
 
 function financeiro(){const x=f.financeiro||{},pg=f.pagamentos||[];return`${x.pendentes?`<p class="fo-alerta">Alerta financeiro: ${x.pendentes} pagamento(s) pendente(s).</p>`:""}
   <div class="fo-kpis"><div><span>Preço</span><strong>${eur(x.preco)}</strong></div><div><span>Comissão Elolog</span><strong>${x.comissao==null?"—":eur(x.comissao)}</strong><small>${esc(x.comissao_regra||"sem regra ativa")}</small></div>
@@ -50,7 +50,7 @@ function financeiro(){const x=f.financeiro||{},pg=f.pagamentos||[];return`${x.pe
 
 function historico(){const N=F().nomeEstado,h=f.historico||[],o=f.ocorrencias||[];return`${h.length?`<ol class="fo-hist">${h.slice().reverse().map(x=>`<li><div class="fo-h1"><strong>${x.de&&x.de!==x.para?`${esc(N(x.de))} → ${esc(N(x.para))}`:esc(x.de===x.para&&x.de?"Registo em "+N(x.para):N(x.para))}</strong><small>${esc(dt(x.em))}</small></div>
     <small>${esc(x.responsavel||"—")}${x.prestador?", "+esc(x.prestador):""}, ${esc(cod)}</small>${x.nota?`<p>${esc(x.nota)}</p>`:""}${x.motivo_excecao?`<p class="fo-exc"><b>Exceção:</b> ${esc(x.motivo_excecao)}</p>`:""}
-    ${x.documentos?.length?`<p class="fo-docs-h">📎 ${x.documentos.map(esc).join(", ")}</p>`:""}</li>`).join("")}</ol>`:'<p class="fo-vazio">Sem alterações registadas.</p>'}
+    ${x.documentos?.length?`<p class="fo-docs-h"><i class="ic ic-clip" aria-hidden="true"></i> ${x.documentos.map(esc).join(", ")}</p>`:""}</li>`).join("")}</ol>`:'<p class="fo-vazio">Sem alterações registadas.</p>'}
   <h5>Ocorrências</h5>${o.length?`<ul class="fo-ocorr">${o.map(x=>`<li><b>${esc(x.codigo||x.tipo)}</b>, ${esc(x.gravidade||"")}, ${esc(x.estado||"")}<p>${esc(x.descricao||"")}</p>${x.resolucao?`<small>Resolução: ${esc(x.resolucao)}</small>`:""}</li>`).join("")}</ul>`:'<p class="fo-vazio">Sem ocorrências.</p>'}`}
 
 const ABAS=[["resumo","Resumo",resumo],["percurso","Percurso",percurso],["carga","Carga",carga],["financeiro","Financeiro",financeiro],["historico","Histórico",historico]];

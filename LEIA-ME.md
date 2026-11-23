@@ -58,6 +58,10 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v159 (auditoria integral de interface)
+- Relatório completo em `documentacao/AUDITORIA_INTEGRAL_v159.md`: 100 páginas dos 4 perfis + 9 públicas, em 3 ecrãs.
+- Contraste AA, ícones do sistema em vez de emojis, letra mínima 12 px, indicadores do terreno, próximo passo por função, títulos e subtítulos certos, carregar ficheiros pelo teclado, foco visível. Service worker v204.
+
 ## v158 (uma rota de cada vez; ficha simples para o operador)
 - Só uma rota a decorrer por operador: `iniciar_percurso` recusa a segunda («Termine primeiro a rota REC-…») e `rota_ativa()` deixa o telemóvel avisar antes de pedir a localização (migração `00199_uma_rota_de_cada_vez.sql`, autorizada). «Cheguei» termina a rota; em «Serviços ao vivo», «Iniciar percurso» some dos outros serviços enquanto há uma rota a decorrer.
 - Ficha do serviço para o operador simplificada (`app/prestador/terreno-ficha-simples.js`, `terreno-ficha.css`): 3 passos (A caminho · No local · Registado), quem/onde/quando/viatura/volumes, «Ligar» e «Navegar», e um só botão grande com o próximo passo (Iniciar rota → Cheguei ao local → Registar recolha/entrega); «Comunicar um problema» à parte. Se houver outra rota a decorrer, leva a ela.

@@ -73,14 +73,14 @@ justify-content:center!important;box-sizing:border-box!important;padding:0 20px!
 .client-payment-toolbar h4{margin:0;color:#183142}.client-payment-tabs{display:flex;gap:6px;flex-wrap:wrap}.client-payment-tabs button{border:1px solid #d7e1e6;border-radius:8px;background:#fff;padding:8px 11px;color:#526874;font-weight:700;cursor:pointer}
 .client-payment-tabs button.active{border-color:#23506e;background:#eaf2f8;color:#1d425a}.client-payment-list{display:flex;flex-direction:column}.client-payment-item{display:grid;
 grid-template-columns:minmax(160px,1.25fr) minmax(120px,.9fr) minmax(100px,.65fr) minmax(120px,.85fr) auto;gap:14px;align-items:center;padding:14px 16px;border-bottom:1px solid #edf2f5}.client-payment-item:last-child{border-bottom:0}
-.client-payment-item small{display:block;margin-bottom:3px;color:#7a8e99;font-size:12px}.client-payment-item strong{display:block;color:#183142}.client-payment-item .payment-value{font-size:18px;color:#1f4864}
+.client-payment-item small{display:block;margin-bottom:3px;color:#5c6e7b;font-size:12px}.client-payment-item strong{display:block;color:#183142}.client-payment-item .payment-value{font-size:18px;color:#1f4864}
 .client-payment-item .payment-method{font-size:12px}.client-payment-item-actions{display:flex;gap:7px;justify-content:flex-end;flex-wrap:wrap}.client-payment-empty{padding:30px 16px;text-align:center;color:#64748b}.client-payment-modal{position:fixed;inset:0;
 z-index:10000;display:grid;place-items:center;padding:20px;background:rgba(15,33,45,.5)}.client-payment-dialog{width:min(620px,100%);max-height:90vh;overflow:auto;padding:20px;border-radius:16px;background:#fff;box-shadow:0 24px 60px rgba(15,33,45,.25)}
 .client-payment-dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.client-payment-dialog-head h3{margin:3px 0 0;color:#173346}.client-payment-dialog-head button{width:34px;height:34px;border:0;border-radius:50%;
 background:#edf2f5;color:#384d5b;font-size:20px;cursor:pointer}.client-payment-amount{display:flex;justify-content:space-between;align-items:center;margin:16px 0;padding:12px 14px;border-radius:10px;background:#f3f7f9}
 .client-payment-amount strong{font-size:20px;color:#1f4864}.client-payment-methods{display:grid;grid-template-columns:1fr 1fr;gap:9px}.client-payment-method{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #dbe4ea;border-radius:10px;
 cursor:pointer}.client-payment-method:has(input:checked){border-color:#1F7A5C;background:#f0f6fa;box-shadow:0 0 0 2px rgba(31,122,92,.08)}.client-payment-method input{accent-color:#1F7A5C}.client-payment-method span{display:flex;flex-direction:column;gap:2px}
-.client-payment-method small{color:#6f818b}.client-payment-dialog-note{margin:13px 0;color:#64748b;font-size:12px}.client-payment-dialog-actions{display:flex;justify-content:flex-end;gap:8px}
+.client-payment-method small{color:#5c6e7b}.client-payment-dialog-note{margin:13px 0;color:#64748b;font-size:12px}.client-payment-dialog-actions{display:flex;justify-content:flex-end;gap:8px}
 @media(max-width:850px){.client-payment-item{grid-template-columns:1fr 1fr}.client-payment-item-actions{grid-column:1/-1;justify-content:flex-start}.client-payment-dashboard{grid-template-columns:1fr 1fr}.client-payment-kpi:first-child{grid-column:1/-1}}
 @media(max-width:560px){.client-payment-toolbar{align-items:flex-start;flex-direction:column}.client-payment-dashboard,.client-payment-methods{grid-template-columns:1fr}.client-payment-kpi:first-child{grid-column:auto}
 .client-payment-item{grid-template-columns:1fr}.client-payment-dialog-actions{flex-direction:column}.client-payment-dialog-actions button{width:100%}}.client-doc-toolbar,.provider-doc-upload{display:grid;grid-template-columns:minmax(180px,1fr) auto auto;
@@ -118,3 +118,5 @@ border-radius:0 0 12px 12px;overflow:hidden}.provider-employee-row{border-top:1p
 color:#64748b;margin-top:3px}.employee-role{font-size:12px;font-weight:700;color:#31536b}.employee-status{display:inline-flex;padding:5px 9px;border-radius:999px;background:#e8f7ed;color:#157441;font-size:12px;font-weight:800}
 .employee-status.inactive{background:#f1f5f9;color:#64748b}.employee-action{border:1px solid #d8e2e9;background:#fff;color:#35556c;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer}.employee-action:hover{background:#f5f8fa}
 .employee-empty{padding:34px;text-align:center;color:#64748b;background:#fff}
+
+@media(max-width:1500px){#providerDirectSimulation .provider-direct-parties{grid-template-columns:1fr}}

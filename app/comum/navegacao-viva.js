@@ -17,6 +17,7 @@ let diretas=0;async function contarDiretas(){try{const l=await window.elologED?.
 
 /* páginas de etapa do prestador e o índice da etapa (igual ao Fluxo Vivo) */
 const ETAPA_PAG={providerAprovacao:2,providerRecolha:3,providerPagamentos:4,providerArmazenamento:5,providerExpedicao:6,providerTransito:7,providerDestino:8,providerDisponivel:9};
+const PERM_PAG={providerAprovacao:"approve",providerPagamentos:"manage_payments",providerRecolha:"view_loads",providerArmazenamento:"view_loads",providerExpedicao:"view_loads",providerDestino:"change_status",providerDisponivel:"change_status",providerTransito:"view_loads"};
 const PRIORIDADE=[[2,"esperam a sua aprovação","espera a sua aprovação","providerAprovacao"],[4,"esperam a confirmação do pagamento","espera a confirmação do pagamento","providerPagamentos"],
   [3,"esperam recolha","espera recolha","providerRecolha"],[5,"esperam entrada no armazém","espera entrada no armazém","providerArmazenamento"],[6,"estão prontas a expedir","está pronta a expedir","providerExpedicao"],
   [8,"chegaram e esperam confirmação","chegou e espera confirmação","providerDestino"],[9,"esperam ser levantadas","espera ser levantada","providerDisponivel"],[7,"estão em viagem","está em viagem","providerTransito"]];
@@ -34,7 +35,12 @@ function proximo(papel){
     if(pg){const n=dias(pg.createdAt||pg.date);return{t:n>=2?"Regularizar um pagamento":"Pagar uma encomenda",d:`${pg.operationId}${n>=2?`, pendente há ${n} dias`:""}`,js:"showPage('payments')",nivel:n>=2?"urgente":"agora"}}
     const lev=meus.find(o=>/dispon/i.test(o.status||o.stage||""));if(lev)return{t:`Levantar ${lev.id}`,d:"A encomenda está pronta a ser levantada",js:"openClientOrderSection('status')",nivel:"agora"};
     return null}
-  if(papel==="prestador"){const c=contagem(doPrestador());for(const [i,v,um,pg] of PRIORIDADE)if(c[i])return{t:`${c[i]} ${c[i]===1?"encomenda "+um:"encomendas "+v}`,d:"Abrir e tratar",js:`showProviderPage('${pg}')`,nivel:i===2||i===4?"agora":"normal"};
+  if(papel==="prestador"){
+    /* v159: cada função só vê passos que pode tratar (o operador de terreno vê os seus serviços, não aprovações) */
+    const pode=pg=>{try{return typeof hasProviderPermission!=="function"||hasProviderPermission(PERM_PAG[pg]||"view_loads")}catch(_){return true}};
+    if(typeof providerFunction==="function"&&providerFunction()==="field_operator"){let n=0;try{const me=fieldCurrentOperator();n=getFieldJobs().filter(j=>j.operatorId===me?.id&&!/conclu|cancel/i.test(j.status||"")).length}catch(_){}
+      return n?{t:pl(n,"serviço atribuído","serviços atribuídos"),d:"Ver recolhas e entregas",js:"showProviderFieldPage('pickups')",nivel:"agora"}:{t:"Sem serviços por fazer",d:"Os novos serviços aparecem aqui",js:"showProviderFieldPage('pickups')",nivel:"calmo"}}
+    const c=contagem(doPrestador());for(const [i,v,um,pg] of PRIORIDADE)if(c[i]&&pode(pg))return{t:`${c[i]} ${c[i]===1?"encomenda "+um:"encomendas "+v}`,d:"Abrir e tratar",js:`showProviderPage('${pg}')`,nivel:i===2||i===4?"agora":"normal"};
     return{t:"Tudo em dia",d:"Veja se chegaram novas simulações",js:"document.querySelector('#sidebar [onclick*=showProviderProposalTab]')?.click()",nivel:"calmo"}}
   if(papel==="admin"){/* v112: as mesmas regras do Centro de comando, do mais urgente para o menos urgente */
     const P=(()=>{try{return window.__ELOLOG_INTERNO?.painelDados?.()||null}catch(_){return null}})()||{},sub=P.subscricoes||{},pr=P.prestadores||{},ap=P.apoio||{},en=P.encomendas||{};

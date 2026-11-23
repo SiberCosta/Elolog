@@ -14,7 +14,7 @@ html:not(#ec) body :is(#pdash,#cdash) .ck-ambar .ck-ic{background:var(--elo-avis
 html:not(#ec) body :is(#pdash,#cdash) .ck-verde .ck-ic{background:var(--elo-ok-fundo,#E6F2EC)!important;color:var(--elo-ok,#1F6B50)!important}
 html:not(#ec) body :is(#pdash,#cdash) .ck-vermelho .ck-ic{background:var(--elo-erro-fundo,#FCEFEC)!important;color:var(--elo-erro,#A2392A)!important}
 html:not(#ec) body :is(#pdash,#cdash) .ck-txt{display:flex!important;flex-direction:column!important;gap:3px!important;min-width:0}
-html:not(#ec) body :is(#pdash,#cdash) .ck-txt small{font:var(--ec-rotulo)!important;color:var(--ec-texto)!important;white-space:normal;overflow-wrap:anywhere;line-height:1.25}
+html:not(#ec) body :is(#pdash,#cdash) .ck-txt small{font:var(--ec-rotulo)!important;color:var(--ec-texto)!important;white-space:normal;overflow-wrap:break-word;hyphens:auto;line-height:1.25}
 html:not(#ec) body :is(#pdash,#cdash) .ck-txt strong{font:var(--ec-numero)!important;color:var(--ec-tinta)!important;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 html:not(#ec) body :is(#pdash,#cdash) .ck-txt em{font:400 12.5px/1.35 "Work Sans",system-ui,sans-serif!important;font-style:normal!important;color:var(--ec-suave)!important}
 html:not(#ec) body :is(#pdash,#cdash) .ck-progresso{height:4px!important;margin-top:8px!important;border-radius:var(--ec-raio-pilula)!important;background:var(--ec-fio-leve)!important;overflow:hidden;box-shadow:none!important}
