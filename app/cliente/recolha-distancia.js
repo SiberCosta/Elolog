@@ -18,10 +18,9 @@ window.atualizarDistanciaRecolhaCliente=async function(){const pickup=document.g
     if(r&&r.melhor){const sel=escolhido(),meu=sel&&r.porEmpresa[sel],km=meu?meu.km:r.melhor.km,arm=meu?meu.armazem:r.melhor.armazem;
       window.elologRecolha={lat:a.lat,lon:a.lon,kms:r.kms};kmManual(false);if(input)input.value=String(km);
       dizer(`Cerca de ${km.toLocaleString("pt-PT")} km ${r.metodo==="estrada"?"por estrada":"(aproximado)"} ${typeof currentUser!=="undefined"&&currentUser?.role==="cliente"?"até ao armazém do prestador.":`desde ${meu?"o armazém do prestador escolhido":"o armazém mais próximo"} (${arm}).${Object.keys(r.kms).length>1&&!meu?" Cada prestador calcula a partir do seu armazém.":""}`}`,"is-ready");return recalcular()}
-    const ponto=pontoDeRecolha();if(!ponto){dizer("Indique primeiro a origem do envio: sem armazém configurado, a distância é medida até lá.","is-error");return}
-    const b=await obterCoordenadas(ponto.local);if(id!==pedido)return;const e=D()?await D().estrada(a,b):{km:calcularDistanciaKm(a,b),metodo:"aproximada"};if(id!==pedido)return;
-    window.elologRecolha={lat:a.lat,lon:a.lon,kms:{}};kmManual(false);if(input)input.value=String(e.km);
-    dizer(e.km?`Cerca de ${e.km.toLocaleString("pt-PT")} km ${e.metodo==="estrada"?"por estrada":"(aproximado)"} até ${ponto.nome}.`:`A recolha é na própria localidade de ${ponto.nome}.`,"is-ready");recalcular()}
+    /* v168: sem armazém registado, a recolha não é calculada — fica por juntar ao preço (o servidor faz o mesmo) */
+    window.elologRecolha={lat:a.lat,lon:a.lon,kms:{}};kmManual(false);if(input)input.value="0";
+    dizer("Ainda nenhum prestador registou armazém: o valor da recolha fica por juntar ao preço.","is-ready");recalcular()}
   catch(error){if(id!==pedido)return;kmManual(true);if(input)input.value="";
     dizer(/indispon/i.test(error.message)?"O serviço de mapas não respondeu. Escreva a distância aproximada em km, ou tente outra vez daqui a pouco."
       :"Não encontrámos esta morada. Experimente só a localidade e o código postal, ou escreva a distância aproximada em km.","is-error");recalcular()}};
