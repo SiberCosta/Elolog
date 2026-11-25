@@ -8,22 +8,33 @@
   const copiar=(t,b)=>{navigator.clipboard?.writeText(t).then(()=>{b.textContent="Copiado";setTimeout(()=>b.textContent="Copiar",1500)}).catch(()=>{})};
 
   function pagarOnline(id,original){const p=P(),esc=p.esc,pag=pagamentoLocal(id);if(!pag)return;
-    const j=p.janela({eyebrow:"PAGAMENTO "+(pag.id||""),titulo:"Pagar a encomenda",passos:["Método","Confirmar","Pagar"]});let metodo="multibanco",tel="";
-    const passo1=()=>{j.passo(0);j.mostrar(`<div class="pm-valor"><span>Encomenda ${esc(pag.operationId||"—")}</span><strong>${p.euros(pag.amount)}</strong></div>
+    const j=p.janela({eyebrow:"PAGAMENTO "+(pag.id||""),titulo:"Pagar a encomenda",passos:["Método","Confirmar","Pagar"]});let metodo="multibanco",tel="",res=null,parte=null;
+    /* v181: prestações. O servidor diz quanto falta e o mínimo de cada prestação (25 % do total ou 10 €); a expedição só avança com tudo pago. */
+    const valorAPagar=()=>parte??res?.falta??pag.amount;
+    const blocoPrestacoes=()=>{if(!res||!(res.falta>res.minimo))return"";const sug=Math.max(res.minimo,Math.ceil(res.falta/2*100)/100);
+      return`<fieldset class="pm-metodos pm-prest"><legend>Quanto quer pagar agora?</legend>
+      <label><input type="radio" name="pmQuanto" value="tudo" ${parte===null?"checked":""}><span><b>Tudo: ${p.euros(res.falta)}</b><small>${res.pago>0?"Já pagou "+p.euros(res.pago)+" de "+p.euros(res.total)+".":"Paga a encomenda de uma vez."}</small></span></label>
+      <label><input type="radio" name="pmQuanto" value="parte" ${parte!==null?"checked":""}><span><b>Em prestações</b><small>Paga uma parte agora e o resto depois. Mínimo por prestação: ${p.euros(res.minimo)}.</small></span></label></fieldset>
+      <label class="pm-largo" id="pmParteBloco" ${parte!==null?"":"hidden"}>Valor desta prestação (€)<input id="pmParte" type="number" inputmode="decimal" min="${res.minimo}" max="${res.falta}" step="0.01" value="${(parte??sug).toFixed(2)}"></label>
+      <p class="pm-nota">A encomenda só segue para expedição depois de paga na totalidade.</p>`};
+    const passo1=()=>{j.passo(0);j.mostrar(`<div class="pm-valor"><span>Encomenda ${esc(pag.operationId||"—")}</span><strong>${p.euros(res?.falta??pag.amount)}</strong>${res&&res.pago>0?`<small>falta pagar de ${p.euros(res.total)}</small>`:""}</div>${blocoPrestacoes()}
       <fieldset class="pm-metodos"><legend>Como prefere pagar?</legend>
       <label><input type="radio" name="pmMetodo" value="multibanco" ${metodo==="multibanco"?"checked":""}><span><b>Multibanco</b><small>Entidade e referência para pagar no multibanco ou no banco online</small></span></label>
       <label><input type="radio" name="pmMetodo" value="mbway" ${metodo==="mbway"?"checked":""}><span><b>MB WAY</b><small>Recebe o pedido na app MB WAY do telemóvel</small></span></label>
       <label><input type="radio" name="pmMetodo" value="outro"><span><b>Outro método</b><small>Transferência ou numerário, confirmados pela empresa</small></span></label></fieldset>
       <label class="pm-largo" id="pmTelBloco" ${metodo==="mbway"?"":"hidden"}>Telemóvel MB WAY<input id="pmTel" type="tel" inputmode="numeric" maxlength="9" placeholder="9xx xxx xxx" value="${esc(tel)}" required></label>`,
       [{texto:"Cancelar",acao:j.fechar},{texto:"Continuar",principal:true,acao:()=>{metodo=j.corpo.querySelector('input[name="pmMetodo"]:checked').value;
+        if(j.corpo.querySelector('input[name="pmQuanto"]:checked')?.value==="parte"){const el=document.getElementById("pmParte"),v=Math.round(Number(el.value)*100)/100;
+          if(!(v>=res.minimo&&v<=res.falta)){el.setAttribute("aria-invalid","true");return p.aviso(`A prestação tem de estar entre ${p.euros(res.minimo)} e ${p.euros(res.falta)}.`,"warning")}parte=v>=res.falta?null:v}else parte=null;
         if(metodo==="outro"){j.fechar();return original(id)}
         if(metodo==="mbway"){tel=document.getElementById("pmTel").value.replace(/\D/g,"");if(!/^9[1236]\d{7}$/.test(tel)){document.getElementById("pmTel").setAttribute("aria-invalid","true");return p.aviso("Indique um telemóvel português com 9 dígitos (começa por 91, 92, 93 ou 96).","warning")}}
         passo2()}}]);
-      j.corpo.querySelectorAll('input[name="pmMetodo"]').forEach(r=>r.onchange=()=>{document.getElementById("pmTelBloco").hidden=r.value!=="mbway"||!r.checked})};
+      j.corpo.querySelectorAll('input[name="pmMetodo"]').forEach(r=>r.onchange=()=>{document.getElementById("pmTelBloco").hidden=r.value!=="mbway"||!r.checked});
+      j.corpo.querySelectorAll('input[name="pmQuanto"]').forEach(r=>r.onchange=()=>{document.getElementById("pmParteBloco").hidden=r.value!=="parte"||!r.checked})};
     const passo2=()=>{j.passo(1);j.mostrar(`<dl class="pm-resumo"><div><dt>Encomenda</dt><dd>${esc(pag.operationId||"—")}</dd></div><div><dt>Método</dt><dd>${metodo==="mbway"?"MB WAY, "+esc(tel):"Multibanco (referência válida 3 dias)"}</dd></div>
-      <div class="pm-total"><dt>Valor</dt><dd>${p.euros(pag.amount)}</dd></div></dl><p class="pm-nota">O valor final é confirmado pelo servidor com base na encomenda. O pagamento é processado pela ifthenpay.</p>`,
+      ${parte!==null?`<div><dt>Pagamento</dt><dd>Prestação; depois falta ${p.euros(res.falta-parte)}</dd></div>`:""}<div class="pm-total"><dt>Valor</dt><dd>${p.euros(valorAPagar())}</dd></div></dl><p class="pm-nota">O valor final é confirmado pelo servidor com base na encomenda. O pagamento é processado pela ifthenpay.</p>`,
       [{texto:"Voltar",acao:passo1},{texto:metodo==="mbway"?"Enviar pedido MB WAY":"Gerar referência",principal:true,acao:pedir}])};
-    const pedir=async()=>{try{const r=await window.ELOLogServidor.chamarFuncao("pagamentos",{acao:"pedir",encomenda:pag.operationId,metodo,telemovel:tel});const d=r.pedido;j.passo(2);
+    const pedir=async()=>{try{const r=await window.ELOLogServidor.chamarFuncao("pagamentos",{acao:"pedir",encomenda:pag.operationId,metodo,telemovel:tel,...(parte!==null?{valor:parte}:{})});const d=r.pedido;j.passo(2);
         if(d.metodo==="multibanco"){j.mostrar(`<div class="pm-ref"><div><small>Entidade</small><strong>${esc(d.entidade)}</strong><button type="button" class="btn-secondary" data-c="${esc(d.entidade)}">Copiar</button></div>
           <div><small>Referência</small><strong>${esc(String(d.referencia).replace(/(\d{3})(?=\d)/g,"$1 "))}</strong><button type="button" class="btn-secondary" data-c="${esc(d.referencia)}">Copiar</button></div>
           <div><small>Valor</small><strong>${p.euros(d.valor)}</strong></div></div><p class="pm-nota">${d.expira_em?"Pague até "+new Date(d.expira_em).toLocaleDateString("pt-PT")+". ":""}Quando pagar, a confirmação chega sozinha e recebe um email.</p>`,[{texto:"Concluir",principal:true,acao:j.fechar}]);
@@ -34,11 +45,14 @@
       j.mostrar(`<div class="pm-espera" role="status" aria-live="polite"><span class="pm-roda" aria-hidden="true"></span><strong>Confirme o pagamento na app MB WAY</strong><p>Tem ${Math.floor(falta/60)}:${String(falta%60).padStart(2,"0")} para aceitar no telemóvel ${esc(tel)}.</p></div>`,[{texto:"Fechar",acao:j.fechar}]);
       if(!document.getElementById("pmJanela"))return;
       setTimeout(async()=>{if(!document.getElementById("pmJanela"))return;try{const r=await window.ELOLogServidor.chamarFuncao("pagamentos",{acao:"estado",pedido});const e=r.pedido.estado;
-        if(e==="pago"){marcar("Pago","MB WAY",tel);return j.mostrar('<div class="pm-sucesso" role="status"><strong>Pagamento recebido</strong><p>Obrigado. O comprovativo fica em Pagamentos.</p></div>',[{texto:"Concluir",principal:true,acao:j.fechar}])}
+        if(e==="pago"){const resta=parte!==null?Math.round((res.falta-parte)*100)/100:0;marcar(resta>0?"Pago parcialmente":"Pago","MB WAY",tel,resta);
+          return j.mostrar(`<div class="pm-sucesso" role="status"><strong>${resta>0?"Prestação recebida":"Pagamento recebido"}</strong><p>${resta>0?"Falta pagar "+p.euros(resta)+" antes da expedição. ":""}Obrigado. O comprovativo fica em Pagamentos.</p></div>`,[{texto:"Concluir",principal:true,acao:j.fechar}])}
         if(e!=="pendente"||falta<=0)return j.mostrar(`<div class="pm-alerta" role="alert"><strong>${e==="recusado"?"O pedido foi recusado na app.":"O pedido expirou."}</strong><p>Pode tentar de novo ou escolher Multibanco.</p></div>`,[{texto:"Fechar",acao:j.fechar},{texto:"Tentar de novo",principal:true,acao:passo1}])}catch(_){}
         esperar(pedido,inicio)},5000)};
-    const marcar=(estado,met,ref)=>{pag.status=estado;pag.method=met;pag.reference=ref;if(estado==="Pago")pag.confirmedAt=new Date().toISOString();try{saveAll();renderEverything()}catch(_){}};
-    passo1()}
+    const marcar=(estado,met,ref,resta)=>{pag.status=estado;pag.method=met;pag.reference=ref;if(resta!==undefined)pag.amountDue=resta||undefined;if(estado==="Pago")pag.confirmedAt=new Date().toISOString();try{saveAll();renderEverything()}catch(_){}};
+    (async()=>{try{const c=await p.sb(),{data,error}=await c.rpc("pagamento_resumo",{p_encomenda:pag.operationId});
+      if(!error&&data){res={total:+data.total,pago:+data.pago,falta:+data.falta,minimo:+data.minimo};if(!(res.falta>0)){j.fechar();marcar("Pago",pag.method,pag.reference,0);return p.aviso("Esta encomenda já está paga.","info")}}}catch(_){}
+      passo1()})()}
 
   async function configuracao(){const p=P(),esc=p.esc,j=p.janela({eyebrow:"EMPRESA E CONFIGURAÇÕES",titulo:"Pagamentos online (ifthenpay)"});
     if(!p.online())return j.mostrar('<p>Os pagamentos online precisam do servidor. No modo de demonstração os pagamentos são registados à mão.</p>',[{texto:"Fechar",acao:j.fechar}]);
