@@ -28,3 +28,8 @@
 .sp-linha[class*="sp-cor-"]{border-left:4px solid transparent}.sp-cor-azul{border-left-color:#2563a8!important}.sp-cor-verde{border-left-color:#1f7a5c!important}
 .sp-cor-amarelo{border-left-color:#d89a12!important}.sp-cor-vermelho{border-left-color:#c0392b!important;background:#fff7f6}
 .sp-acoes{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.sp-acoes{justify-content:flex-end}.sp-acoes select{width:auto!important;max-width:190px;min-height:38px;padding:0 8px;border:1px solid #cfdbe4;border-radius:8px;background:#fff;font-size:14px}
+/* v172: fundo dos anúncios, destino (site/plataforma) */
+.sp-fundo{display:inline-flex;align-items:center;gap:6px}.sp-fundo input[type=color]{width:42px;height:38px;padding:2px;border:1px solid #cfdbe4;border-radius:8px;background:#fff}
+.sp-amostra{flex:0 0 22px;height:22px;border-radius:6px;border:1px solid #cfdbe4;background-image:linear-gradient(45deg,#e6edf2 25%,transparent 25%,transparent 75%,#e6edf2 75%);background-size:8px 8px}
+.sp-linha[style*="--sp-fundo"]{box-shadow:inset 6px 0 0 var(--sp-fundo)}
+.sp-linha small .sp-pill{display:inline-block;margin-right:6px;padding:2px 8px;font-size:11px}

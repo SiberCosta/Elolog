@@ -1,0 +1,14 @@
+/* Elolog — Classificações dos prestadores (v172) */
+.cl-pagina{padding:24px}.cl-cab h3{margin:0 0 4px;color:#13293D;font-size:20px}.cl-cab p{margin:0 0 16px;color:#5c6e7b;font-size:14px}
+.cl-barra{margin-bottom:12px}.cl-barra input{width:100%;max-width:360px;min-height:42px;padding:0 12px;border:1px solid #cfdbe4;border-radius:10px;font-size:16px}
+.cl-lista{border:1px solid #e1e8ee;border-radius:12px;overflow:hidden}
+.cl-linha{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(160px,.6fr) minmax(0,1fr);gap:16px;align-items:end;padding:14px 16px;border-top:1px solid #e6edf2;background:#fff}
+.cl-linha:first-child,.cl-av:first-child{border-top:0}
+.cl-nome{display:flex;flex-direction:column;gap:2px;min-width:0}.cl-nome strong{color:#13293D}.cl-nome small{color:#5c6e7b;font-size:13px}
+.cl-media{font-size:13px;color:#40566a}.cl-estrelas{color:#d89a12;letter-spacing:1px}
+.cl-linha label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:#40566a}
+.cl-linha select,.cl-linha input{min-height:40px;padding:0 10px;border:1px solid #cfdbe4;border-radius:8px;background:#fff;font-size:14px;font-weight:400}
+.cl-av{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;padding:12px 16px;border-top:1px solid #e6edf2;background:#fff}
+.cl-av>div{display:flex;flex-direction:column;gap:3px;min-width:0}.cl-av small{color:#5c6e7b;font-size:12px}.cl-av p{margin:4px 0 0;color:#40566a;font-size:14px;line-height:1.5}
+.cl-av.oculta{background:#f7f9fa;opacity:.75}
+@media(max-width:820px){.cl-linha{grid-template-columns:1fr}.cl-av{flex-direction:column}}

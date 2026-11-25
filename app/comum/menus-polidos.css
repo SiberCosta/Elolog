@@ -1,0 +1,15 @@
+/* Elolog — apresentação dos menus laterais (v172). Só aspeto: os botões, a ordem e as ações ficam iguais.
+   Subentradas com marca da página aberta (barra verde, como o grupo aberto), abertura suave dos grupos,
+   alvos de toque de 44px no telemóvel e cartão «O seu próximo passo» mais compacto para o menu caber melhor. */
+html body #sidebar#sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu).open{animation:menu-abrir .18s ease-out}
+@keyframes menu-abrir{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+html body #sidebar#sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu) button{position:relative;border-radius:10px!important;transition:background .15s,color .15s}
+html body #sidebar#sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu) button:hover{color:#fff!important;background:rgba(255,255,255,.06)!important}
+html body #sidebar#sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu) button:is(.active,.client-menu-active,[aria-current=page]){color:#fff!important;font-weight:700!important;background:rgba(255,255,255,.1)!important;box-shadow:inset 3px 0 0 #3ecf9a!important}
+html body #sidebar#sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu) button:focus-visible{outline:2px solid #9fd8ff;outline-offset:-2px}
+html body #sidebar#sidebar#sidebar#sidebar .provider-menu-main:focus-visible,html body #sidebar#sidebar#sidebar#sidebar .menu>button:focus-visible{outline:2px solid #9fd8ff;outline-offset:-2px}
+@media(max-width:900px){
+  html body #sidebar#sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu) button{min-height:44px!important;height:auto!important}
+  html body #sidebar#sidebar#sidebar .nv-proximo{padding:10px 12px!important;margin-top:8px!important;margin-bottom:8px!important}
+}
+@media(prefers-reduced-motion:reduce){html body #sidebar#sidebar#sidebar#sidebar :is(.provider-submenu,.client-submenu).open{animation:none}}

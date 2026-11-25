@@ -1,0 +1,27 @@
+/* Elolog — atualizações da plataforma e menus (v172) */
+.pa-caixa{display:flex;flex-direction:column;gap:8px;margin:12px 24px 0;width:auto!important;max-width:calc(100% - 48px);box-sizing:border-box}
+.pa-item{position:relative;display:flex;align-items:center;gap:12px;padding:12px 48px 12px 14px;border:1px solid #dbe4eb;border-left:4px solid #1F5F8B;border-radius:12px;background:#fff;color:#13293D;font-size:14px;line-height:1.5}
+.pa-item p{margin:0;min-width:0}.pa-item a{color:inherit;font-weight:700;text-decoration:underline}
+.pa-etiqueta{flex:0 0 auto;padding:3px 9px;border-radius:99px;background:#eef3f7;font:700 11px/1.4 "Work Sans",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.pa-c-azul{border-left-color:#2563a8}.pa-c-verde{border-left-color:#1f7a5c}.pa-c-amarelo{border-left-color:#d89a12;background:#fffaf0}
+.pa-c-vermelho{border-color:#a3271c;border-left-color:#a3271c;background:#a3271c;color:#fff}.pa-c-vermelho .pa-etiqueta{background:rgba(255,255,255,.18);color:#fff}
+.pa-com-fundo{background:var(--pa-fundo);color:var(--pa-texto);border-color:transparent}.pa-com-fundo .pa-etiqueta{background:rgba(127,127,127,.18);color:inherit}
+.pa-fechar{position:absolute;top:50%;right:8px;width:34px;height:34px;transform:translateY(-50%);border:0;border-radius:8px;background:transparent;color:inherit;font-size:20px;cursor:pointer}
+.pa-fechar:hover{background:rgba(127,127,127,.15)}
+@media(max-width:720px){.pa-caixa{margin:10px 12px 0;max-width:calc(100% - 24px)}.pa-item{align-items:flex-start;flex-direction:column;gap:6px}}
+/* avaliação do prestador pelo cliente (cliente/avaliar-prestador.js) */
+.av-cartao{margin-bottom:16px;padding:20px}.av-cartao header h3{margin:0 0 4px;color:#13293D;font-size:18px}.av-cartao header p{margin:0 0 12px;color:#5c6e7b;font-size:14px}
+.av-linha{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #e6edf2}.av-linha>div{display:flex;flex-direction:column;min-width:0}
+.av-linha strong{color:#13293D}.av-linha small{color:#5c6e7b;font-size:13px}.av-feitas summary{cursor:pointer;padding:8px 0;color:#1F5F8B;font-weight:600}
+.av-form h4{margin:4px 0 10px;color:#13293D}.av-escala{display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin:0 0 10px;padding:0;border:0}
+.av-escala legend{width:100%;margin-bottom:4px;font-size:13px;font-weight:600;color:#40566a}
+.av-escala label{position:relative;cursor:pointer}.av-escala input{position:absolute;opacity:0;width:1px;height:1px}
+.av-escala span{display:grid;place-items:center;width:36px;height:36px;font-size:24px;color:#cfd8df}.av-escala.grande span{width:44px;height:44px;font-size:32px}
+.av-escala label:has(~ label input:checked) span,.av-escala label:has(input:checked) span{color:#d89a12}
+.av-escala input:focus-visible+span{outline:2px solid #1F5F8B;border-radius:8px}
+.av-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.av-crit{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 16px}
+.av-com{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:#40566a}.av-com textarea{padding:10px;border:1px solid #cfdbe4;border-radius:10px;font-size:16px;font-weight:400}
+.av-acoes{display:flex;gap:12px;align-items:center;margin-top:12px}.av-cancelar{border:0;background:none;color:#5c6e7b;text-decoration:underline;cursor:pointer;min-height:44px}
+html body .main>.pa-caixa{background:none!important;box-shadow:none!important;border:0!important;padding:0!important}
+html body .pa-item p,html body .pa-item p strong,html body .pa-item a{color:inherit!important}
