@@ -58,6 +58,11 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v162 (pendentes do teste do servidor)
+- Cópia de segurança diária: criado `.github/workflows/copia-seguranca.yml` (falta criar os segredos no GitHub — `documentacao/COPIAS_DE_SEGURANCA.md`).
+- Migração 00159 revista: já não apaga as viagens que a previsão de chegada e o calendário marítimo usam.
+- Palavras-passe divulgadas: opção só disponível no plano Pro do Supabase.
+
 ## v161 (teste do servidor real, 23-11-2026)
 - Relatório em `documentacao/TESTE_SERVIDOR_REAL_v161.md`.
 - Corrigido: o email de boas-vindas depois de aprovar uma cotação era recusado pelo Brevo («headers is blank») — `servidor/supabase/functions/seguimento/index.ts` (publicada a 24/11; o email em espera foi enviado).

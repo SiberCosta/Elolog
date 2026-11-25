@@ -6,7 +6,7 @@ O plano gratuito do Supabase não guarda cópias que se possam descarregar. Por 
 
 - **Base de dados**: papéis, estrutura (tabelas, funções, regras de acesso) e todos os dados, com o método indicado pelo Supabase (`supabase db dump`).
 - **Ficheiros**: tudo o que está no armazenamento (faturas, documentos, fotografias), com `ferramentas/copia-armazenamento.mjs`.
-- Tudo é comprimido e **cifrado com AES-256** antes de sair da máquina do GitHub e fica 30 dias nos artefactos do repositório (privado).
+- Tudo é comprimido e **cifrado com AES-256** antes de sair da máquina do GitHub e fica 30 dias nos artefactos do repositório. O repositório é **público** (o site é servido pelo GitHub Pages): sem a `COPIA_SENHA` a cópia não se lê, por isso use uma frase longa e única.
 
 ## Ativar (uma vez)
 

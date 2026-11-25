@@ -48,15 +48,19 @@ Projeto Supabase «Elolog» (wcggcpdiswbzrdpwgdpb, Frankfurt), o mesmo que a apl
    enviado logo a seguir (`{"ok":true,"enviados":1}`).
 2. **Chegada prevista sem viagens até recarregar a página (corrigido).** `app/comum/previsao-chegada.js` lia as viagens
    3 s depois de abrir a página, antes de haver sessão (o servidor recusa: 401) e não voltava a ler depois de entrar.
-3. **Sem cópias de segurança ativas.** A `copia-dados` não tem os segredos `COPIA_TOKEN` e `COPIA_SENHA` (Cloudflare
-   ainda não existe) e o repositório não tem o ficheiro `.github/workflows/copia-seguranca.yml` que a
-   documentação descreve. Hoje não há nenhuma cópia automática dos dados.
-4. **Proteção contra palavras-passe divulgadas desligada** (Supabase › Authentication › Passwords › «Leaked password
-   protection»).
-5. **Migração 00159 (retirar a pesquisa marítima) não aplicada.** As tabelas `viagens_maritimas`, `navios_*` e as funções
-   `navios-ais` e `navios-mst` continuam no servidor. A previsão de chegada e o calendário marítimo do prestador ainda
-   usam `viagens_maritimas`, por isso **não aplicar a 00159 sem rever isto primeiro**.
-6. Dados de teste parados: 4 encomendas em «Recolha» e 3 serviços de terreno abertos há mais de 7 dias.
+3. **Sem cópias de segurança ativas (preparado na v162, falta ativar).** O ficheiro `.github/workflows/copia-seguranca.yml`
+   já existe (todas as noites às 02:23 UTC; base de dados e ficheiros, cifrados com AES-256, 30 dias). Só começa a copiar
+   depois de criados os segredos do GitHub `SUPABASE_DB_URL` e `COPIA_SENHA`, e também `SUPABASE_URL` e
+   `SUPABASE_SERVICE_ROLE_KEY` para os ficheiros (ver `COPIAS_DE_SEGURANCA.md`). O repositório é **público**: a cópia só
+   se lê com a `COPIA_SENHA`, por isso use uma frase longa. A segunda cópia (Cloudflare) continua opcional.
+4. **Proteção contra palavras-passe divulgadas desligada.** O projeto está no plano gratuito e esta opção do Supabase só
+   existe a partir do plano Pro. Fica como está.
+5. **Migração 00159 revista (v162).** Já não apaga `viagens_maritimas` nem `viagens_elolog` (a previsão de chegada e o
+   calendário marítimo usam-nas). Só retira as 4 funções da antiga pesquisa e a tabela `navios_rota`, sem nenhuma
+   referência na aplicação nem no servidor. Pode ser executada à mão no SQL Editor; não é urgente.
+6. **Encomendas paradas em «Recolha».** Revisto: as 4 (ELO_SOIM-000002 a 000005, de 15/11) são da empresa real «Soim lda», não
+   de teste, e não foram alteradas. Cabe ao prestador avançá-las ou cancelá-las na aplicação. Já não há serviços de
+   terreno abertos há mais de 7 dias.
 
 ## Avisos do Supabase (sem ação urgente)
 
