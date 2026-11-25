@@ -18,9 +18,11 @@ function passo(f){if(f.demo)return`<div class="fo-passo-in"><p class="fo-nota">D
     if(["armazenamento","expedicao"].includes(e.estado))acoes.push(B("expedicao",e.navio?"Alterar navio e viagem":"Associar navio e viagem"));
     if(e.estado==="destino"&&f.tarefa_destino?.estado!=="concluida")acoes.push(B("processamento","Concluir processamento no destino",'',1));
     if(e.estado==="disponivel"&&!f.entrega?.identificacao)acoes.push(B("levantamento","Confirmar levantamento",'',1))}
-  const prox=(f.proximos||[]).map(p=>{const falta=(p.falta||[]).filter(x=>!/motivo de exceção/.test(x));const ok=p.permitido&&!falta.length;
-    const rot=p.excecao?"Entrada direta no armazém (dispensar aprovação)":`Avançar para ${N(p.para)}`;
-    return`<div class="fo-prox ${ok?"ok":""}">${adm||!p.permitido?`<strong>${esc(rot)}</strong>`:B("avancar",rot,`data-para="${esc(p.para)}" data-exc="${p.excecao?1:""}" ${ok?"":"disabled"}`,ok&&!p.excecao)}
+  /* v180: pagar antes de expedir (00210) — só falta o pagamento e quem está é o administrador da empresa → pode expedir com motivo */
+  const prox=(f.proximos||[]).map(p=>{let falta=(p.falta||[]).filter(x=>!/motivo de exceção/.test(x));
+    const soPag=p.para==="expedicao"&&f.papel==="admin_empresa"&&falta.length&&falta.every(x=>/^pagamento total do cliente/.test(x));const ok=p.permitido&&(!falta.length||soPag);
+    const rot=p.excecao?"Entrada direta no armazém (dispensar aprovação)":soPag?"Expedir sem pagamento total (indique o motivo)":`Avançar para ${N(p.para)}`;
+    return`<div class="fo-prox ${ok?"ok":""}">${adm||!p.permitido?`<strong>${esc(rot)}</strong>`:B("avancar",rot,`data-para="${esc(p.para)}" data-exc="${p.excecao?1:soPag?"pag":""}" ${ok?"":"disabled"}`,ok&&!p.excecao&&!soPag)}
       ${falta.length?`<small>Falta: ${falta.map(esc).join(", ")}</small>`:`<small>${p.permitido||adm?"Requisitos cumpridos.":"A sua função não executa esta etapa."}</small>`}</div>`}).join("");
   return`<div class="fo-passo-in"><h5>Próximo passo</h5>${adm?'<p class="fo-nota">Só a empresa prestadora executa as etapas; a administração acompanha.</p>':""}
     ${acoes.length?`<div class="fo-acoes">${acoes.join("")}</div>`:""}${prox||'<p class="fo-nota">Sem etapas seguintes.</p>'}
@@ -35,9 +37,9 @@ const campo=(id,rot,tipo,x)=>`<div class="pc-campo"><label for="${id}">${rot}</l
 function clique(ev,f,depois){const b=ev.target.closest("[data-fa]");if(!b||b.disabled||!f)return;const k=b.dataset.fa,e=f.encomenda,N=F().nomeEstado;
   const ok=t=>{aviso(t,"success");depois()};
   if(k==="avancar"){const para=b.dataset.para,exc=!!b.dataset.exc,canc=para==="cancelada";
-    janela(canc?"Cancelar encomenda":exc?"Entrada direta no armazém":`Avançar para ${N(para)}`,f,
+    janela(canc?"Cancelar encomenda":exc?(b.dataset.exc==="pag"?"Expedir sem pagamento total":"Entrada direta no armazém"):`Avançar para ${N(para)}`,f,
       `<p class="ed-intro">${N(e.estado)} <b>${N(para)}</b>. Fica no histórico com data, hora, responsável e prestador.</p>
-      ${exc?`<div class="pc-campo"><label for="faExc">Motivo de exceção * <small>(dispensa a aprovação)</small></label><textarea id="faExc" rows="2" maxlength="300"></textarea></div>`:""}
+      ${exc?`<div class="pc-campo"><label for="faExc">Motivo de exceção * <small>(${b.dataset.exc==="pag"?"expedir sem o pagamento total, ex.: crédito acordado ou pagamento no destino":"dispensa a aprovação"})</small></label><textarea id="faExc" rows="2" maxlength="300"></textarea></div>`:""}
       <div class="pc-campo"><label for="faNota">Observações${canc?" *":""}</label><textarea id="faNota" rows="2" maxlength="500"></textarea></div>
       <div class="pc-campo"><label for="faDoc">Documento ou comprovativo <small>(opcional)</small></label><input id="faDoc" type="file" accept=".pdf,.jpg,.jpeg,.png"></div>`,
       canc?"Cancelar encomenda":"Avançar",async()=>{if(exc&&v("faExc").length<5)throw new Error("Indique o motivo de exceção.");if(canc&&v("faNota").length<5)throw new Error("Indique o motivo do cancelamento.");

@@ -144,9 +144,36 @@ Os passos 1 a 18 e o reagendamento (teste 38) confirmam que o servidor impõe a 
 
 | ID | Prioridade | Problema | Estado |
 |---|---|---|---|
-| A-14 | **P1** | Num pedido de cotação (sem tarifa), ou quando o prestador indica um preço **acima** do calculado, `aceitar_simulacao` cria logo a encomenda com esse preço, **sem o cliente concordar**. No teste, o prestador mudou 1 900 € para 350 € e a encomenda nasceu a 350 €; podia ter sido 5 000 €. Além disso, o cliente não tinha onde aceitar ou recusar uma proposta (não havia ecrã que usasse `aceitar_proposta`) | **Preparado, aguarda autorização para aplicar**: migração `00209_consentimento_preco.sql` (preço igual ou abaixo do calculado → encomenda como antes; cotação ou preço acima → proposta de 7 dias que o cliente aceita ou recusa; nova `recusar_proposta`). Ecrã do cliente «Tem um preço para aceitar» (`cliente/propostas-cliente.js`) e mensagem do prestador já prontos e testados com dados simulados |
+| A-14 | **P1** | Pedido de cotação ou preço acima do calculado criava a encomenda sem o cliente concordar; o cliente não tinha onde aceitar ou recusar propostas | **Corrigido (v179–v180, migração 00209 aplicada com autorização)**. Teste em rollback: abaixo do calculado → encomenda direta; acima → proposta de 7 dias e notificação; o cliente recusa → o prestador é avisado e propõe outro preço; o cliente aceita → encomenda ao preço aceite |
 
-### Observações de regra de negócio (sem alteração)
+### Regras aprovadas e aplicadas (v180, migração 00210)
+
+- **Pagar antes de expedir:** para passar a «Expedição», os pagamentos confirmados têm de cobrir o preço total. Só o administrador da empresa pode expedir sem pagamento, indicando o motivo (fica no histórico e na auditoria). Na ficha da encomenda, o botão passa a «Expedir sem pagamento total (indique o motivo)».
+- **Aviso ao prestador:** quando o cliente aceita uma proposta de preço, o prestador recebe a notificação «O cliente aceitou o preço: nova encomenda …».
+- Teste 40 em rollback, na base real:
+  - sem pagamento → recusado, com «pago 0,00 de 2 200,00 EUR»;
+  - metade paga → recusado;
+  - tudo pago → avança para expedição;
+  - o aviso ao prestador e a notificação ao cliente saem.
+- 00211: os valores nas mensagens do servidor passam ao formato português («2 200,00», não «2,200.00»).
+
+### Observações de regra de negócio (antes de v180)
 
 - O pagamento não é exigido para avançar etapas (só nas encomendas criadas no terreno, antes do armazém). Se a Elolog quiser «pagar antes de expedir», é uma regra a acrescentar em `encomenda_falta`.
 - `aceitar_proposta` não avisa o prestador. A encomenda aparece em «Aprovar pedidos», mas sem notificação.
+
+### Pagamento em prestações (v181, migração 00212 — aplicada em 2026-11-25 com autorização)
+
+- O cliente, ao pagar online (Multibanco ou MB WAY), escolhe «Tudo» ou «Em prestações» e indica o valor desta prestação.
+- Mínimo por prestação: 25 % do total ou 10 € (o maior); a última prestação é sempre o que falta. O servidor valida (não confia no navegador).
+- Cada pagamento online fica com tipo `prestacao` (se não salda) ou `total` (se salda). Avisos ao cliente e à empresa dizem quanto falta.
+- Mantém-se a regra de 00210: só expede com tudo pago.
+- O prestador já registava recebimentos parciais à mão («Registar recebimento» aceita valor menor e grava `prestacao`).
+- Testes:
+  - teste 41 em rollback na base real, com a migração dentro da transação: 9/9 (mínimo, recusa abaixo/acima, prestação, expedição bloqueada, resto, já paga, estranho sem acesso);
+  - função `pagamentos`: 23/23 (inclui 4 novos de prestação);
+  - Playwright com servidor simulado a 1280 e 390 px: escolha, recusa de 20 € (mínimo 50 €), envio de `valor: 60`, referência mostrada, sem erros nem overflow.
+- Aplicado: 00212 na base e função `pagamentos` versão 27. Depois de aplicar:
+  - teste 41 repetido: 9/9;
+  - a função responde 401 «Inicie sessão para pagar» sem sessão, ou seja, arranca bem.
+- Erro antigo corrigido na mesma publicação: a função recusava códigos com «_» (ELO_…), por isso nenhum pagamento online de encomendas reais podia ser pedido. Passa a aceitar «_»; teste novo na função (24/24).

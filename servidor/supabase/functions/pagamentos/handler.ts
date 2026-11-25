@@ -1,5 +1,5 @@
 // Lógica da função «pagamentos», separada do arranque para ser testada sem rede.
-//  · cliente (token): {acao:'pedir', encomenda, metodo:'multibanco'|'mbway', telemovel?}  e  {acao:'estado', pedido}
+//  · cliente (token): {acao:'pedir', encomenda, metodo:'multibanco'|'mbway', telemovel?, valor?}  (valor = prestação; sem valor paga o que falta)  e  {acao:'estado', pedido}
 //  · agendador (x-cron-secret): {acao:'verificar'} — confirma pedidos MB WAY cujo aviso não chegou.
 import { erro, lerJson, preflight, resposta } from '../_shared/http.ts';
 import { estadoPedidoMbway, type Ifthenpay } from './ifthenpay.ts';
@@ -10,7 +10,7 @@ export interface DepsPag {
   agendado(req: Request): Promise<boolean>;
   autenticar(jwt: string): Promise<string | null>;
   limite(chave: string, max: number, janelaMin: number): Promise<boolean>;
-  preparar(cliente: string, encomenda: string, metodo: string, telemovel: string): Promise<{ erro: string } | { reutilizar: boolean; pedido: Pedido; chave?: string; sandbox?: boolean; descricao?: string }>;
+  preparar(cliente: string, encomenda: string, metodo: string, telemovel: string, valor?: number | null): Promise<{ erro: string } | { reutilizar: boolean; pedido: Pedido; chave?: string; sandbox?: boolean; descricao?: string }>;
   atualizar(id: string, estado: string | null, dados: Record<string, unknown>): Promise<void>;
   confirmar(orderId: string, valor: number, origem: string): Promise<string>;
   pendentesMbway(): Promise<{ id: string; order_id: string; request_id: string; valor: number; chave: string }[]>;
@@ -64,9 +64,11 @@ export async function tratar(req: Request, d: DepsPag): Promise<Response> {
 
     if (c.acao !== 'pedir') return erro(400, 'acao', 'Ação desconhecida.');
     const encomenda = String(c.encomenda ?? '').trim(), metodo = String(c.metodo ?? ''), tel = String(c.telemovel ?? '').replace(/\D/g, '').replace(/^351/, '');
-    if (!/^[A-Za-z0-9-]{3,40}$/.test(encomenda) || !['multibanco', 'mbway'].includes(metodo)) return erro(400, 'dados_invalidos', 'Dados do pagamento inválidos.');
+    if (!/^[A-Za-z0-9_-]{3,40}$/.test(encomenda) || !['multibanco', 'mbway'].includes(metodo)) return erro(400, 'dados_invalidos', 'Dados do pagamento inválidos.');
     if (metodo === 'mbway' && !/^9[1236]\d{7}$/.test(tel)) return erro(400, 'telemovel', 'Indique um telemóvel português válido (9 dígitos).');
-    const prep = await d.preparar(user, encomenda, metodo, metodo === 'mbway' ? tel : '');
+    const valor = c.valor === undefined || c.valor === null || c.valor === '' ? null : Math.round(Number(c.valor) * 100) / 100;
+    if (valor !== null && !(Number.isFinite(valor) && valor > 0 && valor < 1_000_000)) return erro(400, 'valor', 'Valor da prestação inválido.');
+    const prep = await d.preparar(user, encomenda, metodo, metodo === 'mbway' ? tel : '', valor);
     if ('erro' in prep) return erro(409, 'negocio', prep.erro);
     const p = prep.pedido;
     if (prep.reutilizar) return resposta(200, { ok: true, pedido: publico(p) });

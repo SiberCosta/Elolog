@@ -22,8 +22,10 @@ const deps: DepsPag = {
     if (error) throw error;
     return data === true;
   },
-  async preparar(cliente, encomenda, metodo, telemovel) {
-    const { data, error } = await admin.rpc('servico_preparar_pedido', { p_cliente: cliente, p_encomenda: encomenda, p_metodo: metodo, p_telemovel: telemovel });
+  async preparar(cliente, encomenda, metodo, telemovel, valor) {
+    const args: Record<string, unknown> = { p_cliente: cliente, p_encomenda: encomenda, p_metodo: metodo, p_telemovel: telemovel };
+    if (valor != null) args.p_valor = valor; // prestação (00212); sem valor paga o que falta
+    const { data, error } = await admin.rpc('servico_preparar_pedido', args);
     if (error) { if (error.code === 'P0001') return { erro: error.message }; throw error; }
     return data as { reutilizar: boolean; pedido: Pedido; chave?: string; sandbox?: boolean; descricao?: string };
   },
