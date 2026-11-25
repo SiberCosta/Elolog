@@ -60,6 +60,8 @@ r = await tratar(post({ acao: 'pedir', encomenda: 'TR-1', metodo: 'multibanco', 
 ok(r.status === 200 && valorRecebido === 30.46, 'prestação: valor arredondado ao cêntimo chega ao servidor');
 r = await tratar(post({ acao: 'pedir', encomenda: 'TR-1', metodo: 'multibanco' }, { authorization: 'Bearer bom' }), dv);
 ok(r.status === 200 && valorRecebido === null, 'sem valor: paga o que falta');
+r = await tratar(post({ acao: 'pedir', encomenda: 'ELO_SOIM-000005', metodo: 'multibanco' }, { authorization: 'Bearer bom' }), dv);
+ok(r.status === 200, 'código com «_» (ELO_…) aceite');
 r = await tratar(post({ acao: 'pedir', encomenda: 'TR-1', metodo: 'multibanco', valor: -5 }, { authorization: 'Bearer bom' }), dv);
 ok(r.status === 400, 'prestação negativa recusada');
 r = await tratar(post({ acao: 'pedir', encomenda: 'TR-1', metodo: 'multibanco', valor: 'abc' }, { authorization: 'Bearer bom' }), dv);

@@ -64,7 +64,7 @@ export async function tratar(req: Request, d: DepsPag): Promise<Response> {
 
     if (c.acao !== 'pedir') return erro(400, 'acao', 'Ação desconhecida.');
     const encomenda = String(c.encomenda ?? '').trim(), metodo = String(c.metodo ?? ''), tel = String(c.telemovel ?? '').replace(/\D/g, '').replace(/^351/, '');
-    if (!/^[A-Za-z0-9-]{3,40}$/.test(encomenda) || !['multibanco', 'mbway'].includes(metodo)) return erro(400, 'dados_invalidos', 'Dados do pagamento inválidos.');
+    if (!/^[A-Za-z0-9_-]{3,40}$/.test(encomenda) || !['multibanco', 'mbway'].includes(metodo)) return erro(400, 'dados_invalidos', 'Dados do pagamento inválidos.');
     if (metodo === 'mbway' && !/^9[1236]\d{7}$/.test(tel)) return erro(400, 'telemovel', 'Indique um telemóvel português válido (9 dígitos).');
     const valor = c.valor === undefined || c.valor === null || c.valor === '' ? null : Math.round(Number(c.valor) * 100) / 100;
     if (valor !== null && !(Number.isFinite(valor) && valor > 0 && valor < 1_000_000)) return erro(400, 'valor', 'Valor da prestação inválido.');

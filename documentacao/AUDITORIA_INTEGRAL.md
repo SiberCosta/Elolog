@@ -162,7 +162,7 @@ Os passos 1 a 18 e o reagendamento (teste 38) confirmam que o servidor impõe a 
 - O pagamento não é exigido para avançar etapas (só nas encomendas criadas no terreno, antes do armazém). Se a Elolog quiser «pagar antes de expedir», é uma regra a acrescentar em `encomenda_falta`.
 - `aceitar_proposta` não avisa o prestador. A encomenda aparece em «Aprovar pedidos», mas sem notificação.
 
-### Pagamento em prestações (v181, migração 00212 — por aplicar)
+### Pagamento em prestações (v181, migração 00212 — aplicada em 2026-11-25 com autorização)
 
 - O cliente, ao pagar online (Multibanco ou MB WAY), escolhe «Tudo» ou «Em prestações» e indica o valor desta prestação.
 - Mínimo por prestação: 25 % do total ou 10 € (o maior); a última prestação é sempre o que falta. O servidor valida (não confia no navegador).
@@ -173,4 +173,7 @@ Os passos 1 a 18 e o reagendamento (teste 38) confirmam que o servidor impõe a 
   - teste 41 em rollback na base real, com a migração dentro da transação: 9/9 (mínimo, recusa abaixo/acima, prestação, expedição bloqueada, resto, já paga, estranho sem acesso);
   - função `pagamentos`: 23/23 (inclui 4 novos de prestação);
   - Playwright com servidor simulado a 1280 e 390 px: escolha, recusa de 20 € (mínimo 50 €), envio de `valor: 60`, referência mostrada, sem erros nem overflow.
-- Por fazer com autorização: aplicar 00212 e publicar a função `pagamentos` (a função nova funciona também com a base antiga quando não se envia valor).
+- Aplicado: 00212 na base e função `pagamentos` versão 27. Depois de aplicar:
+  - teste 41 repetido: 9/9;
+  - a função responde 401 «Inicie sessão para pagar» sem sessão, ou seja, arranca bem.
+- Erro antigo corrigido na mesma publicação: a função recusava códigos com «_» (ELO_…), por isso nenhum pagamento online de encomendas reais podia ser pedido. Passa a aceitar «_»; teste novo na função (24/24).
