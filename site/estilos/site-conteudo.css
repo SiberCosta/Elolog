@@ -55,3 +55,10 @@
 .sc-cal-dia{max-width:460px}.sc-cal-dia:not(:empty){margin-top:16px}.sc-cal-dia h3{margin:0 0 8px;color:#13293D;font-size:1.05rem}
 .sc-cal-dia ul{margin:0 0 14px;padding:0;list-style:none}.sc-cal-dia li{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-bottom:1px solid #dbe4eb}.sc-cal-dia li span{color:#4d6170;font-size:.9rem}
 @media(min-width:900px){#calendario .section-shell{grid-template-columns:auto 1fr;column-gap:32px}#calendario .sc-cab{grid-column:1/-1}.sc-cal-dia:not(:empty){margin-top:0}}
+/* v172: fundo escolhido na administração e classificação dos prestadores */
+.sc-faixa li.sc-com-fundo,.sc-aviso.sc-com-fundo,.sc-feed li.sc-com-fundo{background:var(--sc-fundo);color:var(--sc-texto)}
+.sc-faixa li.sc-com-fundo a,.sc-faixa li.sc-com-fundo span,.sc-faixa li.sc-com-fundo i,.sc-aviso.sc-com-fundo a,.sc-aviso.sc-com-fundo .sc-fechar{color:var(--sc-texto)}
+.sc-feed li.sc-com-fundo{padding:16px;border-radius:12px;margin:6px 0;border-bottom:0}.sc-feed li.sc-com-fundo strong,.sc-feed li.sc-com-fundo p,.sc-feed li.sc-com-fundo time,.sc-feed li.sc-com-fundo a{color:var(--sc-texto)}
+.sc-nivel{display:inline-block;margin-bottom:4px;padding:2px 9px;border-radius:99px;font:700 .7rem/1.5 "Work Sans",Arial,sans-serif;letter-spacing:.04em;background:#eef3f7;color:#23506e}
+.sc-nivel.recomendado{background:#13293D;color:#fff}.sc-nivel.ouro{background:#fbefc7;color:#7a5600}.sc-nivel.prata{background:#e8ecef;color:#46525c}.sc-nivel.bronze{background:#f5e1d2;color:#7a4321}
+.sc-aval{display:block;margin-top:2px;color:#40566a;font-size:.85rem}.sc-aval i{font-style:normal;color:#d89a12;letter-spacing:1px}

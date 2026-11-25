@@ -58,6 +58,15 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v172 (fundo dos anúncios, atualizações na plataforma, classificações, menus)
+- Anúncios: além da cor, escolhe-se o fundo (8 cores prontas ou «Outra cor…»); o texto fica claro ou escuro conforme o fundo.
+- «Onde mostrar»: Site, Plataforma ou Site e plataforma; na plataforma, «Para quem»: Todos, Clientes ou Prestadores. Na área de cliente/prestador aparecem no topo; os alertas vermelhos não se fecham.
+- Classificações (Prestadores → Classificações): nível por prestador (Recomendado Elolog, Ouro, Prata, Bronze), nota interna, avaliações dos clientes com opção de ocultar.
+- O cliente avalia o prestador depois da entrega (Início → «Avalie os seus envios»): 1–5 estrelas, 3 critérios opcionais, comentário; pode corrigir 30 dias.
+- O site mostra o nível, as estrelas e o n.º de avaliações nos «Prestadores verificados» e ordena por nível e média.
+- Menus laterais: página aberta marcada nas subentradas, abertura suave dos grupos, alvos de toque de 44px no telemóvel, cartão «próximo passo» mais compacto.
+- Migração 00205; teste 36.
+
 ## v171 (Site público: cores, calendário e menu)
 - «Site público» passa a grupo no menu da administração: Saídas e calendário · Prestadores · Novidades e avisos · Automatização.
 - Cada aviso ou novidade tem uma cor: Normal, Informação (azul), Boa notícia (verde), Atenção (amarelo), Alerta (vermelho). Com um alerta vermelho ativo, a faixa do site fica vermelha e o alerta aparece primeiro. A cor muda-se na lista, sem apagar.

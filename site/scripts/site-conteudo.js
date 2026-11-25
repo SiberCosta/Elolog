@@ -1,4 +1,4 @@
-/* Elolog — conteúdo do site gerido pela administração (v169, migração 00202; faixa a correr v170, 00203; cores e calendário v171, 00204).
+/* Elolog — conteúdo do site gerido pela administração (v169, migração 00202; faixa a correr v170, 00203; cores e calendário v171, 00204; fundo e classificações v172, 00205).
    Lê site_conteudo (função pública: só dados que podem ser públicos) e mostra, se houver: aviso no topo, «Próximas saídas»,
    «Prestadores verificados» e «Novidades». Secção sem conteúdo não aparece. Sem servidor, nada muda na página. */
 (function(){"use strict";
@@ -8,6 +8,9 @@ const curta=v=>{const d=data(v);return d?d.toLocaleDateString("pt-PT",{day:"nume
 const longa=v=>{const d=data(v);return d?d.toLocaleDateString("pt-PT",{day:"numeric",month:"long",year:"numeric"}):""};
 const ESTADO={aberta:"Aberta a carga",lotada:"Lotada",atrasada:"Atrasada",planeada:"Prevista"};
 const iniciais=n=>String(n||"?").split(/\s+/).filter(w=>w.length>2||/^[A-Z]/.test(w)).slice(0,2).map(w=>w[0]).join("").toUpperCase()||"E";
+const claro=hex=>{const m=/^#?([0-9a-f]{6})$/i.exec(hex||"");if(!m)return true;const n=parseInt(m[1],16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))>160};
+const fundo=f=>/^#[0-9a-f]{6}$/i.test(f||"")?` style="--sc-fundo:${f};--sc-texto:${claro(f)?"#13293D":"#fff"}"`:"";
+const NIVEL={recomendado:"Recomendado Elolog",ouro:"Ouro",prata:"Prata",bronze:"Bronze"};
 const seguro=l=>/^(https:\/\/(www\.)?elolog\.pt(\/|$)|\/|#|\.\.\/)/.test(String(l||""));
 async function pedir(){const c=window.ELOLOG_SERVIDOR||{},url=String(c.supabaseUrl||"").replace(/\/$/,""),k=c.supabaseAnonKey||"";
   if(!/^https:\/\//.test(url)||k.length<20)return null;
@@ -22,18 +25,18 @@ function saidas(l){if(!l?.length)return"";
     <p class="sc-pe"><a class="sc-botao" href="simulador.html">Simular envio nesta rota</a></p>`,'<p>Datas publicadas pelos prestadores verificados. Podem mudar: a data certa fica na sua encomenda.</p>')}
 function prestadores(l){if(!l?.length)return"";
   return secao("prestadores-verificados","Rede Elolog","Prestadores verificados",`<div class="sc-prest">${l.map(p=>`<article class="sc-cartao"><span class="sc-avatar" aria-hidden="true">${esc(iniciais(p.nome))}</span>
-    <div><strong>${esc(p.nome)}</strong><small>${esc([p.cidade,p.pais].filter(Boolean).join(", "))}</small>${p.texto?`<p>${esc(p.texto)}</p>`:""}
+    <div>${p.nivel&&NIVEL[p.nivel]?`<span class="sc-nivel ${esc(p.nivel)}">${NIVEL[p.nivel]}</span>`:""}<strong>${esc(p.nome)}</strong>${p.avaliacoes>0?`<span class="sc-aval" aria-label="${p.media} de 5, ${p.avaliacoes} avaliações"><i>${"★".repeat(Math.floor(p.media+.25))}${"☆".repeat(5-Math.floor(p.media+.25))}</i> ${Number(p.media).toLocaleString("pt-PT",{minimumFractionDigits:1})} · ${p.avaliacoes} ${p.avaliacoes===1?"avaliação":"avaliações"}</span>`:""}<small>${esc([p.cidade,p.pais].filter(Boolean).join(", "))}</small>${p.texto?`<p>${esc(p.texto)}</p>`:""}
     ${p.saidas>0?`<span class="sc-tag">${p.saidas} ${p.saidas===1?"saída prevista":"saídas previstas"}</span>`:""}</div></article>`).join("")}</div>`,'<p>Empresas aprovadas pela Elolog, com documentos verificados. Peça preço a todas de uma vez no simulador.</p>')}
 function feed(l){if(!l?.length)return"";
-  return secao("novidades","Novidades","O que há de novo",`<ul class="sc-feed">${l.map(f=>`<li class="${f.cor?"sc-c-"+esc(f.cor):""}"><time>${esc(curta(f.data))}</time><div><strong>${esc(f.titulo)}</strong>${f.texto?`<p>${esc(f.texto)}</p>`:""}
+  return secao("novidades","Novidades","O que há de novo",`<ul class="sc-feed">${l.map(f=>`<li class="${f.cor?"sc-c-"+esc(f.cor):""}${f.fundo?" sc-com-fundo":""}"${fundo(f.fundo)}><time>${esc(curta(f.data))}</time><div><strong>${esc(f.titulo)}</strong>${f.texto?`<p>${esc(f.texto)}</p>`:""}
     ${f.ligacao&&seguro(f.ligacao)?`<a href="${esc(f.ligacao)}">Saber mais</a>`:""}</div></li>`).join("")}</ul>`)}
 function avisos(l){if(!l?.length)return"";
-  return`<div class="sc-aviso sc-c-${esc(l[0].cor||"amarelo")}" role="${l[0].cor==="vermelho"?"alert":"status"}"><button type="button" class="sc-fechar" aria-label="Fechar aviso">×</button>${l.map(a=>`<p><strong>${esc(a.titulo)}</strong>${a.texto?` ${esc(a.texto)}`:""}${a.ligacao&&seguro(a.ligacao)?` <a href="${esc(a.ligacao)}">Saber mais</a>`:""}</p>`).join("")}</div>`}
+  return`<div class="sc-aviso sc-c-${esc(l[0].cor||"amarelo")}${l[0].fundo?" sc-com-fundo":""}"${fundo(l[0].fundo)} role="${l[0].cor==="vermelho"?"alert":"status"}"><button type="button" class="sc-fechar" aria-label="Fechar aviso">×</button>${l.map(a=>`<p><strong>${esc(a.titulo)}</strong>${a.texto?` ${esc(a.texto)}`:""}${a.ligacao&&seguro(a.ligacao)?` <a href="${esc(a.ligacao)}">Saber mais</a>`:""}</p>`).join("")}</div>`}
 function faixa(c){if(c.faixa===false)return"";const it=[];
-  (c.avisos||[]).forEach(a=>it.push([a.cor==="vermelho"?"Alerta":"Aviso",a.titulo+(a.texto?" — "+a.texto:""),a.ligacao,a.cor||"amarelo"]));
+  (c.avisos||[]).forEach(a=>it.push([a.cor==="vermelho"?"Alerta":"Aviso",a.titulo+(a.texto?" — "+a.texto:""),a.ligacao,a.cor||"amarelo",a.fundo]));
   (c.saidas||[]).forEach(x=>it.push(["Saída",`${x.origem} → ${x.destino} · parte a ${longa(x.partida)}${x.fecho_carga?` · fecho de carga a ${curta(x.fecho_carga)}`:""}${x.prestador?` · ${x.prestador}`:""}`,"#saidas"]));
-  (c.feed||[]).filter(f=>f.tipo!=="saida").forEach(f=>it.push(["Novidade",f.titulo,f.ligacao||"#novidades",f.cor]));
-  if(!it.length)return"";const li=it.map(([e,t,l,cor])=>`<li class="${cor?"sc-c-"+esc(cor):""}"><i>${esc(e)}</i>${l&&seguro(l)?`<a href="${esc(l)}">${esc(t)}</a>`:`<span>${esc(t)}</span>`}</li>`).join("");
+  (c.feed||[]).filter(f=>f.tipo!=="saida").forEach(f=>it.push(["Novidade",f.titulo,f.ligacao||"#novidades",f.cor,f.fundo]));
+  if(!it.length)return"";const li=it.map(([e,t,l,cor,fd])=>`<li class="${cor?"sc-c-"+esc(cor):""}${fd?" sc-com-fundo":""}"${fundo(fd)}><i>${esc(e)}</i>${l&&seguro(l)?`<a href="${esc(l)}">${esc(t)}</a>`:`<span>${esc(t)}</span>`}</li>`).join("");
   const alerta=(c.avisos||[]).some(a=>a.cor==="vermelho");
   return`<div class="sc-faixa${alerta?" alerta":""}" role="region" aria-label="Informação Elolog"><div class="sc-faixa-trilho" style="--sc-dur:${Math.max(20,it.length*9)}s"><ul>${li}</ul><ul aria-hidden="true">${li.replace(/<a /g,'<a tabindex="-1" ')}</ul></div></div>`}
 function colocarFaixa(fx){document.body.insertAdjacentHTML("afterbegin",fx);const f=document.querySelector(".sc-faixa"),nav=document.querySelector(".navbar");
