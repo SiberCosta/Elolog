@@ -58,6 +58,10 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v163 (entrada com menos texto)
+- Ecrã de entrada: saem a etiqueta «Bem-vindo», as frases de explicação, os selos do painel escuro, a frase por cima de «Sou administrador da empresa» e a explicação de «Criar perfil». Ficam o título, os campos e as ações; mensagens de erro continuam visíveis. No telemóvel o painel escuro sai (o logótipo já está no topo) — `app/comum/menu-movel.css`.
+- Service worker v208.
+
 ## v162 (pendentes do teste do servidor)
 - Notificações do prestador e do cliente passam a vir também do servidor (tabela `notificacoes`: atrasos, sem sinal, documentos, pagamentos, decisões); antes só a administração as via. Ler e marcar como lidas grava no servidor — `app/comum/notificacoes-servidor.js`.
 - Painel de notificações: título numa linha e ações por baixo (nada cortado no telemóvel), lista com deslocamento próprio, separadores sem quebrar.
