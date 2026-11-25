@@ -106,3 +106,47 @@ Notas sobre a matriz:
 - Ecrãs inventariados: 59 de 59 da aplicação e 8 de 8 públicos.
 - Pares ecrã/botão: 300 de 353 testados (85 %); 53 por testar.
 - Problemas encontrados: 13. Corrigidos: 12 (A-01 a A-09, A-11 a A-13). Aceite: 1 (A-10). Pendentes da fase 1: 0.
+
+## Fase 2 — 25/11/2026 (v179): fluxo completo com o servidor real
+
+### Método
+
+O fluxo de ponta a ponta correu na base real **dentro de uma única transação desfeita no fim**: nada fica gravado e não há dados fictícios em produção. Ver o teste 39 (`servidor/supabase/testes/39_fluxo_completo.sql`).
+- Atores reais: um cliente e o operador, o armazém e o operador de terreno da empresa aprovada.
+- As sessões de empresa existem só dentro da transação.
+
+### Resultado (22 passos)
+
+| # | Passo | Resultado |
+|---|---|---|
+| 1 | Cliente cria e envia simulação | OK, preço calculado pelas tarifas (1 900 €) |
+| 2 | Reenviar a mesma simulação | Recusado (correto) |
+| 3 | Prestador aceita | OK, encomenda criada em «Aprovação» |
+| 4 | Aceitar outra vez (duplo clique) | Recusado (correto) |
+| 5–6 | Aprovação → agendamento → recolha | OK |
+| 7 | Saltar recolha → expedição | Recusado (correto) |
+| 8 | Armazém sem receção registada | Recusado (correto) |
+| 9–11 | Receção registada pelo armazém (2 volumes, conferida) → armazenamento → expedição | OK |
+| 12 | Em trânsito sem navio | Recusado (correto) |
+| 13–14 | Navio indicado → em trânsito → destino (cria tarefa no destino) | OK |
+| 15 | Disponível sem processar o destino | Recusado (correto) |
+| 16 | Destino processado → disponível | OK |
+| 17 | Entregar sem confirmar o levantamento | Recusado (correto) |
+| 18 | Confirmar o levantamento só com identificação | Recusado: exige o comprovativo assinado (regra correta; o carregamento de ficheiros não é possível num teste SQL) |
+| 19 | Cancelar depois de «Disponível» | Recusado (correto) |
+| 20 | Cliente vê a encomenda | OK: 11 passos de histórico e 9 notificações |
+| 21 | Cliente avalia antes da entrega | Recusado (correto: só depois de entregue) |
+| 22 | Rastreio público pelo código | OK |
+
+Os passos 1 a 18 e o reagendamento (teste 38) confirmam que o servidor impõe a ordem das etapas, os documentos e as confirmações de cada uma.
+
+### Problema encontrado
+
+| ID | Prioridade | Problema | Estado |
+|---|---|---|---|
+| A-14 | **P1** | Num pedido de cotação (sem tarifa), ou quando o prestador indica um preço **acima** do calculado, `aceitar_simulacao` cria logo a encomenda com esse preço, **sem o cliente concordar**. No teste, o prestador mudou 1 900 € para 350 € e a encomenda nasceu a 350 €; podia ter sido 5 000 €. Além disso, o cliente não tinha onde aceitar ou recusar uma proposta (não havia ecrã que usasse `aceitar_proposta`) | **Preparado, aguarda autorização para aplicar**: migração `00209_consentimento_preco.sql` (preço igual ou abaixo do calculado → encomenda como antes; cotação ou preço acima → proposta de 7 dias que o cliente aceita ou recusa; nova `recusar_proposta`). Ecrã do cliente «Tem um preço para aceitar» (`cliente/propostas-cliente.js`) e mensagem do prestador já prontos e testados com dados simulados |
+
+### Observações de regra de negócio (sem alteração)
+
+- O pagamento não é exigido para avançar etapas (só nas encomendas criadas no terreno, antes do armazém). Se a Elolog quiser «pagar antes de expedir», é uma regra a acrescentar em `encomenda_falta`.
+- `aceitar_proposta` não avisa o prestador. A encomenda aparece em «Aprovar pedidos», mas sem notificação.
