@@ -9,7 +9,11 @@ const chave=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"
   .filter(p=>p&&!PARAS.has(p)&&!/^\d+$/.test(p)).sort().join(" ");
 const visivel=e=>!!(e&&e.offsetParent!==null&&e.getBoundingClientRect().width>2);
 
-function limpar(){document.querySelectorAll(".titulo-na-barra,.cab-sem-titulo").forEach(e=>e.classList.remove("titulo-na-barra","cab-sem-titulo"))}
+function limpar(){document.querySelectorAll(".titulo-na-barra,.cab-sem-titulo,.sem-fio-topo").forEach(e=>e.classList.remove("titulo-na-barra","cab-sem-titulo","sem-fio-topo"))}
+/* v162: sem o cabeçalho, a linha separadora da primeira linha da lista ficava sozinha no topo do cartão */
+function fioTopo(card){if(!card)return;const cs=getComputedStyle(card),topo=card.getBoundingClientRect().top+parseFloat(cs.borderTopWidth)+parseFloat(cs.paddingTop);
+  const e=[...card.querySelectorAll("*")].find(x=>{if(!visivel(x))return false;const r=x.getBoundingClientRect();return r.height>2&&Math.abs(r.top-topo)<3&&(()=>{const s=getComputedStyle(x);
+    return parseFloat(s.borderTopWidth)>=1&&s.borderTopStyle!=="none"&&!parseFloat(s.borderLeftWidth)&&!parseFloat(s.borderRightWidth)})()});if(e)e.classList.add("sem-fio-topo")}
 
 function aplicar(){
   const barra=document.getElementById("pageTitle");limpar();
@@ -23,7 +27,8 @@ function aplicar(){
     /* o cabeçalho do cartão que ficou sem nada visível sai todo (sem deixar a linha de separação vazia); se ainda tem a descrição, perde a linha */
     let el=h;for(let n=0;n<3;n++){const cab=el.parentElement;if(!cab||cab===pagina||/(^|\s)(card|page)(\s|$)/.test(cab.className))break;
       const resto=[...cab.children].filter(c=>!c.classList.contains("titulo-na-barra")&&visivel(c)&&(c.textContent.trim()||c.querySelector("button,input,select,img,svg")));
-      cab.classList.add(resto.length?"cab-sem-titulo":"titulo-na-barra");el=cab}});
+      cab.classList.add(resto.length?"cab-sem-titulo":"titulo-na-barra");el=cab}
+    fioTopo(h.closest(".card"))});
 }
 
 let t,obs=[];const agendar=()=>{clearTimeout(t);t=setTimeout(()=>{aplicar();obs.forEach(o=>o.takeRecords())},120)};
@@ -31,7 +36,7 @@ function ligar(){const barra=document.getElementById("pageTitle");if(!barra){set
   const o1=new MutationObserver(agendar);o1.observe(barra,{childList:true,characterData:true,subtree:true});
   const raiz=document.querySelector(".main")||document.body;
   /* ignora as mudanças feitas por este módulo (só a classe .titulo-na-barra) */
-  const o2=new MutationObserver(rs=>{if(rs.some(r=>!(r.type==="attributes"&&r.attributeName==="class"&&/titulo-na-barra|cab-sem-titulo/.test(r.target.className+" "+(r.oldValue||"")))))agendar()});
+  const o2=new MutationObserver(rs=>{if(rs.some(r=>!(r.type==="attributes"&&r.attributeName==="class"&&/titulo-na-barra|cab-sem-titulo|sem-fio-topo/.test(r.target.className+" "+(r.oldValue||"")))))agendar()});
   o2.observe(raiz,{childList:true,subtree:true,attributes:true,attributeOldValue:true,attributeFilter:["class","hidden","style"]});obs=[o1,o2];
   addEventListener("resize",agendar);agendar()}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",ligar);else ligar();

@@ -147,3 +147,5 @@ html body.modo-admin .topbar .ct-pesquisa{height:44px;margin:0;align-items:cente
   html body .notification-center .nt-barra button[data-n]:not([data-n=""])::after{margin-left:4px}}
 @media(max-width:900px){html body.modo-admin .topbar{flex-wrap:wrap!important}html body.modo-admin .topbar #pageTitle{flex:1 1 0!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis}
   html body.modo-admin .topbar .ct-pesquisa{order:9!important;flex:1 1 100%!important;max-width:none!important;width:100%!important}}
+/* v162: primeira linha de uma lista sem o fio de cima quando o título do cartão está na barra */
+html body .sem-fio-topo{border-top:0!important;padding-top:0!important}html body .sem-fio-topo:last-child{padding-bottom:0!important}
