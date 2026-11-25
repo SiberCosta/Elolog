@@ -64,6 +64,7 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - Barra de topo igual nos três perfis: 72 px, título da página visível também na administração («Centro de comando»), mesmo botão de notificações; no telemóvel e tablet a pesquisa da administração passa para uma linha própria.
 - Demonstração: cada perfil tem uma notificação coerente com o painel (antes nenhuma aparecia).
 - Cartões cujo título passou para a barra (ex.: Clientes da administração) já não começam com uma linha separadora solta — `app/comum/titulos-pagina.js`.
+- Site público: campos dos formulários com o texto normal (herdavam o negrito das etiquetas) e 16 px no telemóvel (o iPhone deixava de fazer zoom); na capa, origem e destino em linhas próprias no telemóvel (o texto ficava cortado); cartões de serviços sem espaço vazio; ícone de pesquisa no rastreio em vez de «⌕»; título do simulador com espaço e quebra corretos («envio.Nós»).
 - Service worker v207.
 - Cópia de segurança diária: criado `.github/workflows/copia-seguranca.yml` (falta criar os segredos no GitHub — `documentacao/COPIAS_DE_SEGURANCA.md`).
 - Migração 00159 revista: já não apaga as viagens que a previsão de chegada e o calendário marítimo usam.
