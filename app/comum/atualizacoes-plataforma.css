@@ -25,3 +25,7 @@
 .av-acoes{display:flex;gap:12px;align-items:center;margin-top:12px}.av-cancelar{border:0;background:none;color:#5c6e7b;text-decoration:underline;cursor:pointer;min-height:44px}
 html body .main>.pa-caixa{background:none!important;box-shadow:none!important;border:0!important;padding:0!important}
 html body .pa-item p,html body .pa-item p strong,html body .pa-item a{color:inherit!important}
+/* reenviar confirmação (comum/reenviar-confirmacao.js) */
+.reenv-conf{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:10050;width:min(440px,calc(100vw - 24px));padding:16px 44px 16px 16px;border:1px solid #dbe4eb;border-left:4px solid #d89a12;border-radius:12px;background:#fff;box-shadow:0 12px 32px rgba(14,36,51,.22);color:#13293D;font-size:14px;line-height:1.5}
+.reenv-conf p{margin:4px 0 10px}.reenv-conf .reenv-btn{min-height:44px}.reenv-info{display:block;margin-top:8px;color:#40566a}
+.reenv-fechar{position:absolute;top:6px;right:6px;width:34px;height:34px;border:0;border-radius:8px;background:none;font-size:20px;cursor:pointer;color:#40566a}
