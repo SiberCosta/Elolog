@@ -60,7 +60,8 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 
 ## v161 (teste do servidor real, 23-11-2026)
 - Relatório em `documentacao/TESTE_SERVIDOR_REAL_v161.md`.
-- Corrigido: o email de boas-vindas depois de aprovar uma cotação era recusado pelo Brevo («headers is blank») — `servidor/supabase/functions/seguimento/index.ts` (**falta publicar a função**).
+- Corrigido: o email de boas-vindas depois de aprovar uma cotação era recusado pelo Brevo («headers is blank») — `servidor/supabase/functions/seguimento/index.ts` (publicada a 24/11; o email em espera foi enviado).
+- Kit de testes completo contra o servidor real: 491/492 (a única diferença é a contagem antiga de tarefas agendadas no teste 05); o 21 está obsoleto.
 - Corrigido: a chegada prevista lia as viagens antes de haver sessão e não voltava a ler depois de entrar — `app/comum/previsao-chegada.js`.
 - Service worker v206.
 

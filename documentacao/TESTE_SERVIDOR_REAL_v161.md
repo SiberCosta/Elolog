@@ -26,7 +26,14 @@ Projeto Supabase «Elolog» (wcggcpdiswbzrdpwgdpb, Frankfurt), o mesmo que a apl
 | Login de funcionário por n.º e 2 passos do administrador da empresa (15, 16) | 15/15 |
 | Encomendas diretas (22) | 22/22 |
 | Códigos ELO_<REF>/ELO_SM (09) | 7/7 |
-| **Total** | **200/200** |
+| Faturas, pagamentos ifthenpay, navios, documentos do cliente (05) | 38/39 — a única diferença é a expectativa antiga de 4 tarefas agendadas (hoje há 7, de migrações posteriores) |
+| Email, acessos e grupos do chat (06, 07, 08) | 55/55 |
+| Repor empresa, espaço de ficheiros, declarações, acesso temporário, ocorrências (10–14) | 48/48 |
+| Código de reserva, código por email, painel vivo (18, 26, 25) | 39/39 |
+| Revisão de encomendas diretas, regras de cobrança, centro documental (23, 29, 30) | 80/80 |
+| Fase 1: seguimento ao vivo, alertas, comprovativo de entrega, EL-ENT, webhooks (31) | 31/31 |
+| Funis (21) | obsoleto: `painel_funis` foi retirado de propósito na v100 |
+| **Total** | **491/492** (a falha é só a contagem desatualizada do teste) |
 | Tarefas agendadas (24 h) | 7 tarefas, 1581 execuções, 0 falhas |
 | Fila de emails | 24 enviados, 0 presos |
 | Edge Functions (17 testadas) | todas respondem e recusam pedidos sem sessão; `copia-dados` responde 503 (ver abaixo) |
@@ -34,10 +41,11 @@ Projeto Supabase «Elolog» (wcggcpdiswbzrdpwgdpb, Frankfurt), o mesmo que a apl
 
 ## Problemas encontrados
 
-1. **Email de boas-vindas recusado (corrigido no código, falta publicar).** Depois de o cliente aprovar uma cotação, a
+1. **Email de boas-vindas recusado (corrigido e publicado).** Depois de o cliente aprovar uma cotação, a
    função `seguimento` enviava `headers: {}` ao Brevo, que responde 400 «headers is blank». Um cliente está à espera
    deste email desde 15/11 e a função tenta de hora a hora (13 recusas só hoje). Correção em
-   `servidor/supabase/functions/seguimento/index.ts`; publicar com `supabase functions deploy seguimento --no-verify-jwt`.
+   `servidor/supabase/functions/seguimento/index.ts`, publicada no servidor (versão 3) a 24/11. O email em espera foi
+   enviado logo a seguir (`{"ok":true,"enviados":1}`).
 2. **Chegada prevista sem viagens até recarregar a página (corrigido).** `app/comum/previsao-chegada.js` lia as viagens
    3 s depois de abrir a página, antes de haver sessão (o servidor recusa: 401) e não voltava a ler depois de entrar.
 3. **Sem cópias de segurança ativas.** A `copia-dados` não tem os segredos `COPIA_TOKEN` e `COPIA_SENHA` (Cloudflare
@@ -61,4 +69,4 @@ Projeto Supabase «Elolog» (wcggcpdiswbzrdpwgdpb, Frankfurt), o mesmo que a apl
 - A aplicação no navegador contra o servidor real: este ambiente não tem acesso à internet (o navegador de teste também
   não). Fazer o teste manual de `testes/LEIA-ME.md` (passo 6) no computador.
 - Envio real de emails, SMS, pagamentos ifthenpay, MyShipTracking e HERE (gastam créditos ou mexem em dinheiro).
-- Testes do kit não corridos: 05, 06, 07, 08, 10, 11, 12, 13, 14, 18, 21, 23, 25, 26, 29, 30, 31.
+- Todos os testes do kit foram corridos; só o 21 ficou de fora por estar obsoleto.
