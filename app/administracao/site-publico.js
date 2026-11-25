@@ -18,7 +18,14 @@ const escolhaCor=(attr,v,lista,campo)=>{const pre=lista.some(f=>f[0].toLowerCase
 const fundoSel=(attr,v)=>escolhaCor(attr,v,FUNDOS,"fundo"),tituloSel=(attr,v)=>escolhaCor(attr,v,TITULOS,"cor_titulo");
 const ONDE={site:"Site",plataforma:"Plataforma",ambos:"Site e plataforma"},PARA={todos:"Todos",clientes:"Clientes",prestadores:"Prestadores"};
 const ABAS=[["saidas","Saídas e calendário"],["prestadores","Prestadores"],["novidades","Novidades e avisos"],["auto","Automatização"]];
-let aba="saidas",d=null;
+let aba="saidas",d=null,emEdicao=null;
+/* v184: editar uma novidade ou aviso já publicado (antes era preciso apagar e publicar de novo) */
+function editar(id){const x=d?.pubs.find(p=>p.id===id);if(!x)return;emEdicao=id;const f=$("spForm");if(!f)return;const pos=(i,v)=>{const el=$(i);if(el)el.value=v??""};
+  pos("spTipo",x.tipo);pos("spEmp",x.empresa_id);pos("spTitulo",x.titulo);pos("spTexto",x.texto);pos("spCor",x.cor);pos("spOnde",x.publico||"site");pos("spPara",x.para||"todos");pos("spLig",x.ligacao);
+  pos("spIni",x.inicio?String(x.inicio).slice(0,10):"");pos("spFim",x.fim?String(x.fim).slice(0,10):"");
+  [["spFundo",x.fundo],["spCorTit",x.cor_titulo]].forEach(([i,v])=>{const w=$(i)?.closest(".sp-fundo");if(!w)return;const sel=w.querySelector("select"),cor=w.querySelector("input[type=color]"),pre=[...sel.options].some(o=>o.value&&o.value.toLowerCase()===(v||"").toLowerCase());
+    sel.value=!v?"":pre?[...sel.options].find(o=>o.value.toLowerCase()===v.toLowerCase()).value:"outra";if(v&&!pre){cor.value=v;cor.hidden=false}else cor.hidden=true;w.querySelector(".sp-amostra").style.background=v||"transparent"});
+  $("spPara").disabled=$("spOnde").value==="site";$("spSubmeter").textContent="Guardar alterações";$("spCancelarEd").hidden=false;f.scrollIntoView({behavior:"smooth",block:"start"});$("spTitulo").focus({preventScroll:true})}
 
 function pagina(){if($("adminSite"))return;const ref=$("adminSettings");if(!ref)return;
   const s=document.createElement("section");s.id="adminSite";s.className="page admin-platform-page";s.innerHTML='<div class="card sp-pagina"><div id="adminSiteContent"></div></div>';ref.before(s)}
@@ -41,6 +48,7 @@ async function guardarDef(chave,muda){const v={...(d.def[chave]||{}),...muda};co
   const{error}=await sb.from("site_definicoes").upsert({chave,valor:v,updated_at:new Date().toISOString()});if(error)throw error;d.def[chave]=v}
 const lig=(id,on,txt)=>`<label class="sp-lig"><input type="checkbox" id="${id}" ${on?"checked":""}> ${esc(txt)}</label>`;
 const maximo=(id,v,op)=>`<label class="sp-max">Quantos mostrar <select id="${id}">${op.map(n=>`<option ${+v===n?"selected":""}>${n}</option>`).join("")}</select></label>`;
+const pl=(n,um,varios)=>`${n} ${n===1?um:varios}`;
 const nomeEmp=id=>d.empresas.find(e=>e.id===id)?.nome||"Prestador";
 
 function vSaidas(){const s=d.def.saidas||{},oc=s.ocultas||[];
@@ -49,7 +57,7 @@ function vSaidas(){const s=d.def.saidas||{},oc=s.ocultas||[];
   <p class="sp-nota">Aparecem sozinhas as saídas que os prestadores publicam no calendário marítimo. Desligue as que não quer mostrar.</p>
   ${d.viagens.length?`<div class="sp-lista">${d.viagens.map(v=>`<div class="sp-linha"><div><strong>${dia(v.partida)} · ${esc(v.porto_origem)} → ${esc(v.porto_destino)}</strong>
     <small>${esc(v.navio)}${v.viagem?` · viagem ${esc(v.viagem)}`:""} · ${esc(nomeEmp(v.empresa_id))} · ${esc(ESTADO[v.estado]||v.estado)}${v.fecho_carga?` · fecho de carga ${dia(v.fecho_carga)}`:""}</small></div>
-    ${v.publicada?lig("",!oc.includes(v.id),"No site").replace('id=""',`data-saida="${v.id}"`):`<span class="sp-pill">Não publicada pelo prestador</span>`}</div>`).join("")}</div>`
+    ${v.publicada?lig("",!oc.includes(v.id),"No site").replace('id=""',`data-saida="${v.id}" aria-label="Mostrar no site a saída de ${esc(dia(v.partida))} ${esc(v.porto_origem)} → ${esc(v.porto_destino)}"`):`<span class="sp-pill">Não publicada pelo prestador</span>`}</div>`).join("")}</div>`
    :`<div class="sp-vazio">Ainda não há saídas previstas. Quando um prestador publicar uma viagem no calendário marítimo, aparece aqui e no site.</div>`}`}
 function vPrest(){const p=d.def.prestadores||{},oc=p.ocultos||[],esc2=p.escolhidos||[],auto=p.auto!==false;
   const txt=id=>d.pubs.find(x=>x.tipo==="destaque"&&x.empresa_id===id&&x.ativo)?.texto||"";
@@ -58,8 +66,8 @@ function vPrest(){const p=d.def.prestadores||{},oc=p.ocultos||[],esc2=p.escolhid
     <label class="sp-lig"><input type="radio" name="spModo" value="escolha" ${auto?"":"checked"}> Só os escolhidos</label></div>
   ${d.empresas.length?`<div class="sp-lista">${d.empresas.map(e=>{const on=auto?!oc.includes(e.id):esc2.includes(e.id);
     return`<div class="sp-linha sp-prest"><div><strong>${esc(e.nome)}</strong><small>${esc(e.cidade||"")}</small>
-      <input class="sp-destaque" data-destaque="${e.id}" maxlength="200" placeholder="Texto de destaque (opcional), ex.: Especialistas em São Tomé" value="${esc(txt(e.id))}"></div>
-      ${lig("",on,"No site").replace('id=""',`data-prest="${e.id}"`)}</div>`}).join("")}</div>`:`<div class="sp-vazio">Ainda não há prestadores aprovados com subscrição ativa.</div>`}`}
+      <input class="sp-destaque" data-destaque="${e.id}" aria-label="Texto de destaque de ${esc(e.nome)}" maxlength="200" placeholder="Texto de destaque (opcional), ex.: Especialistas em São Tomé" value="${esc(txt(e.id))}"></div>
+      ${lig("",on,"No site").replace('id=""',`data-prest="${e.id}" aria-label="Mostrar ${esc(e.nome)} no site"`)}</div>`}).join("")}</div>`:`<div class="sp-vazio">Ainda não há prestadores aprovados com subscrição ativa.</div>`}`}
 function vNov(){const ps=d.pubs.filter(x=>x.tipo!=="destaque");
   return`<form id="spForm" class="sp-form"><div class="sp-grelha">
     <label>Tipo<select id="spTipo"><option value="novidade">Novidade (no feed do site)</option><option value="aviso">Aviso (faixa no topo do site ou da plataforma)</option></select></label>
@@ -70,23 +78,23 @@ function vNov(){const ps=d.pubs.filter(x=>x.tipo!=="destaque");
     <label>Fundo${fundoSel('id="spFundo"',"")}</label>
     <label>Cor do título${tituloSel('id="spCorTit"',"")}</label>
     <label>Onde mostrar<select id="spOnde">${Object.entries(ONDE).map(([k,t])=>`<option value="${k}">${t}</option>`).join("")}</select></label>
-    <label>Para quem (plataforma)<select id="spPara">${Object.entries(PARA).map(([k,t])=>`<option value="${k}">${t}</option>`).join("")}</select></label>
+    <label>Para quem (plataforma)<select id="spPara" disabled title="Só conta quando o anúncio aparece na plataforma">${Object.entries(PARA).map(([k,t])=>`<option value="${k}">${t}</option>`).join("")}</select></label>
     <label>Ligação (opcional)<input id="spLig" placeholder="/site/simulador.html"></label>
     <label>Mostrar de<input id="spIni" type="date"></label><label>até<input id="spFim" type="date"></label></div>
-    <button type="submit" class="btn-secondary">Publicar</button></form>
+    <div class="sp-form-acoes"><button type="submit" class="btn-secondary" id="spSubmeter">Publicar</button><button type="button" class="btn-secondary" id="spCancelarEd" hidden>Cancelar edição</button></div></form>
   ${ps.length?`<div class="sp-lista">${ps.map(x=>`<div class="sp-linha sp-cor-${x.cor||"normal"}"${x.fundo?` style="--sp-fundo:${esc(x.fundo)}"`:""}><div><strong${x.cor_titulo?` style="color:${esc(x.cor_titulo)};${x.fundo?`background:${esc(x.fundo)};`:(x.cor_titulo.toUpperCase()==="#FFFFFF"?"background:#13293D;":"")}padding:0 4px;border-radius:4px"`:""}>${x.tipo==="aviso"?"Aviso · ":""}${esc(x.titulo)}</strong>
     <small><span class="sp-pill">${ONDE[x.publico||"site"]}${(x.publico||"site")!=="site"&&x.para&&x.para!=="todos"?" · "+PARA[x.para]:""}</span> ${esc(x.texto||"")}${x.inicio||x.fim?` · ${x.inicio?dia(x.inicio):"já"} a ${x.fim?dia(x.fim):"sem fim"}`:""}</small></div>
-    <span class="sp-acoes"><label class="sp-mini">Cor${corSel(`data-cor="${x.id}"`,x.cor)}</label><label class="sp-mini">Fundo${fundoSel(`data-alvo="${x.id}"`,x.fundo)}</label><label class="sp-mini">Título${tituloSel(`data-alvo="${x.id}"`,x.cor_titulo)}</label>${lig("",x.ativo,"Ativo").replace('id=""',`data-pub="${x.id}"`)}<button type="button" class="btn-secondary" data-apagar="${x.id}">Apagar</button></span></div>`).join("")}</div>`
+    <span class="sp-acoes"><label class="sp-mini">Cor${corSel(`data-cor="${x.id}"`,x.cor)}</label><label class="sp-mini">Fundo${fundoSel(`data-alvo="${x.id}"`,x.fundo)}</label><label class="sp-mini">Título${tituloSel(`data-alvo="${x.id}"`,x.cor_titulo)}</label>${lig("",x.ativo,"Ativo").replace('id=""',`data-pub="${x.id}" aria-label="Publicação ativa: ${esc(x.titulo)}"`)}<button type="button" class="btn-secondary" data-editar="${x.id}">Editar</button><button type="button" class="btn-secondary" data-apagar="${x.id}">Apagar</button></span></div>`).join("")}</div>`
    :`<div class="sp-vazio">Ainda não publicou novidades nem avisos.</div>`}`}
 function vAuto(){const f=d.def.feed||{},s=d.site||{};
   return`<div class="sp-barra">${lig("spFeedMostrar",f.mostrar!==false,"Mostrar «Novidades» no site")}${maximo("spFeedMax",f.max||6,[3,4,6,8,12])}</div>
   ${lig("spFaixa",f.faixa!==false,"Faixa a correr no topo do site (avisos, saídas e novidades)")}
   ${lig("spFeedAuto",f.auto!==false,"Novidades automáticas: empresas aprovadas (90 dias) e saídas novas (30 dias)")}
   <p class="sp-nota">O ELO usa a mesma informação: quando alguém pergunta pelo próximo barco, responde com as saídas publicadas aqui.</p>
-  <h4 class="sp-sub">O site mostra agora</h4><ul class="sp-resumo"><li>${(s.saidas||[]).length} saídas previstas</li><li>${(s.prestadores||[]).length} prestadores</li>
-    <li>${(s.feed||[]).length} novidades</li><li>${(s.avisos||[]).length} avisos</li></ul><a class="btn-secondary" href="../site/inicio.html" target="_blank" rel="noopener">Ver o site</a>`}
+  <h4 class="sp-sub">O site mostra agora</h4><ul class="sp-resumo"><li>${pl((s.saidas||[]).length,"saída prevista","saídas previstas")}</li><li>${pl((s.prestadores||[]).length,"prestador","prestadores")}</li>
+    <li>${pl((s.feed||[]).length,"novidade","novidades")}</li><li>${pl((s.avisos||[]).length,"aviso","avisos")}</li></ul><a class="btn-secondary" href="../site/inicio.html" target="_blank" rel="noopener">Ver o site</a>`}
 
-function desenhar(){const box=$("adminSiteContent");if(!box)return;
+function desenhar(){const box=$("adminSiteContent");if(!box)return;emEdicao=null;/* ao redesenhar, o formulário volta a vazio: nunca fica a editar sem querer */
   const cab=`<header class="sp-cab"><div><h3>Site público</h3><p>O que o site e o ELO mostram: saídas, prestadores, novidades e avisos.</p></div></header>
     <nav class="sp-abas" role="tablist">${ABAS.map(([k,t])=>`<button type="button" role="tab" aria-selected="${aba===k}" class="${aba===k?"on":""}" data-aba="${k}">${t}</button>`).join("")}</nav>`;
   if(!S()?.ativo?.())return box.innerHTML=cab+`<div class="sp-vazio">Disponível com o servidor ligado (fora do modo de demonstração).</div>`;
@@ -97,6 +105,8 @@ async function acao(fn,ok){try{await fn();if(ok)aviso(ok,"success");await recarr
 
 document.addEventListener("click",e=>{const box=$("adminSiteContent");if(!box||!box.contains(e.target))return;
   const a=e.target.closest("[data-aba]");if(a){aba=a.dataset.aba;marcar();return desenhar()}
+  const ed=e.target.closest("[data-editar]");if(ed)return editar(ed.dataset.editar);
+  if(e.target.id==="spCancelarEd"){emEdicao=null;return desenhar()}
   const ap=e.target.closest("[data-apagar]");if(ap&&confirm("Apagar esta publicação do site?"))acao(async()=>{const{error}=await(await S().cliente()).from("site_publicacoes").delete().eq("id",ap.dataset.apagar);if(error)throw error},"Publicação apagada.")});
 document.addEventListener("change",e=>{const box=$("adminSiteContent"),t=e.target;if(!box||!box.contains(t))return;const lista=(k,c,id,on)=>{const l=(d.def[k]?.[c]||[]).filter(x=>x!==id);if(on)l.push(id);return l};
   if(t.id==="spSaidasMostrar")return acao(()=>guardarDef("saidas",{mostrar:t.checked}),"Guardado.");
@@ -118,16 +128,20 @@ document.addEventListener("change",e=>{const box=$("adminSiteContent"),t=e.targe
   if(t.id==="spFeedMostrar")return acao(()=>guardarDef("feed",{mostrar:t.checked}),"Guardado.");
   if(t.id==="spFeedMax")return acao(()=>guardarDef("feed",{max:+t.value}),"Guardado.");
   if(t.id==="spFaixa")return acao(()=>guardarDef("feed",{faixa:t.checked}),t.checked?"A faixa aparece no site.":"A faixa deixou de aparecer.");
+  if(t.id==="spOnde"){$("spPara").disabled=t.value==="site";return}
   if(t.id==="spFeedAuto")return acao(()=>guardarDef("feed",{auto:t.checked}),"Guardado.")});
 const fundoVal=(id="spFundo")=>{const w=$(id)?.closest(".sp-fundo");if(!w)return"";const s=w.querySelector("select").value;return s==="outra"?w.querySelector("input[type=color]").value:s};
 document.addEventListener("submit",e=>{if(e.target.id!=="spForm")return;e.preventDefault();const v=id=>$(id).value.trim();
   const lig=v("spLig");if(lig&&!/^(https:\/\/(www\.)?elolog\.pt(\/|$)|\/|#|\.\.\/)/.test(lig))return aviso("A ligação tem de ser do site Elolog (ex.: /site/simulador.html).","warning");
-  acao(async()=>{const{error}=await(await S().cliente()).from("site_publicacoes").insert({tipo:v("spTipo"),titulo:v("spTitulo"),texto:v("spTexto")||null,empresa_id:v("spEmp")||null,
-    ligacao:lig||null,cor:v("spCor")||null,fundo:fundoVal()||null,cor_titulo:fundoVal("spCorTit")||null,publico:v("spOnde")||"site",para:v("spPara")||"todos",inicio:v("spIni")||null,fim:v("spFim")||null});if(error)throw error},"Publicado no site.")});
+  if(v("spIni")&&v("spFim")&&v("spFim")<v("spIni")){$("spFim").setAttribute("aria-invalid","true");$("spFim").focus();return aviso("A data «até» não pode ser anterior a «Mostrar de».","warning")}
+  const reg={tipo:v("spTipo"),titulo:v("spTitulo"),texto:v("spTexto")||null,empresa_id:v("spEmp")||null,ligacao:lig||null,cor:v("spCor")||null,fundo:fundoVal()||null,cor_titulo:fundoVal("spCorTit")||null,
+    publico:v("spOnde")||"site",para:v("spOnde")==="site"?"todos":(v("spPara")||"todos"),inicio:v("spIni")||null,fim:v("spFim")||null},id=emEdicao;
+  acao(async()=>{const sb=await S().cliente();const{error}=id?await sb.from("site_publicacoes").update({...reg,updated_at:new Date().toISOString()}).eq("id",id):await sb.from("site_publicacoes").insert(reg);if(error)throw error;emEdicao=null},id?"Alterações guardadas.":"Publicado no site.")});
 
 const orig=window.showAdminPage;if(typeof orig==="function")window.showAdminPage=showAdminPage=function(page){const r=orig.apply(this,arguments);
   if(page==="adminSite"){const t=$("pageTitle");if(t)t.textContent="Site público";$("adminGrpSite")?.classList.add("open");marcar();desenhar();recarregar()}return r};
-function marcar(){document.querySelectorAll("#adminGrpSite [data-site-aba]").forEach(b=>b.classList.toggle("active",b.dataset.siteAba===aba))}
+/* v184: as abas dentro do ecrã também mudam o menu; o aria-current (posto pela navegação) ficava no botão antigo e o menu mostrava duas opções marcadas */
+function marcar(){document.querySelectorAll("#adminGrpSite [data-site-aba]").forEach(b=>{const on=b.dataset.siteAba===aba;b.classList.toggle("active",on);if(on)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")})}
 function ligar(){if(typeof currentUser==="undefined"||currentUser?.role!=="admin")return;pagina();botao()}
 const ini=window.startApp;if(typeof ini==="function")window.startApp=async function(){const r=await ini.apply(this,arguments);setTimeout(ligar,600);setTimeout(ligar,2000);return r};
 setTimeout(ligar,1500);window.elologSitePublico={recarregar,abrir:(k,btn)=>{if(k&&ABAS.some(x=>x[0]===k))aba=k;showAdminPage("adminSite",btn||$("adminSiteBtn"))}};

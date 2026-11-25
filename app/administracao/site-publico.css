@@ -34,3 +34,6 @@
 .sp-linha[style*="--sp-fundo"]{box-shadow:inset 6px 0 0 var(--sp-fundo)}
 .sp-linha small .sp-pill{display:inline-block;margin-right:6px;padding:2px 8px;font-size:11px}
 .sp-mini{display:flex;flex-direction:column;gap:2px;font-size:11px;font-weight:700;color:#5c6e7b}.sp-acoes{align-items:flex-end}
+
+/* v184: espaço entre as abas e o conteúdo; botões do formulário lado a lado */
+.sp-corpo{margin-top:16px}.sp-form-acoes{display:flex;flex-wrap:wrap;gap:10px}
