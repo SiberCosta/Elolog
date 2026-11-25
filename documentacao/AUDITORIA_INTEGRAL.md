@@ -195,3 +195,26 @@ Os passos 1 a 18 e o reagendamento (teste 38) confirmam que o servidor impõe a 
   - aplicação: 1 308 textos verificados nos ecrãs dos 4 perfis, 0 abaixo do mínimo;
   - site público: os avisos no menu, no herói e no rodapé eram falsos (texto branco sobre fotografia ou fundo escuro, confirmado por imagem);
   - 1 caso real corrigido: «Propostas personalizadas» no simulador (4,14:1 → 5,18:1).
+
+## Ecrã «Site público» da administração — 25/11/2026 (v184)
+
+Testado com servidor simulado (nada chega à base real), a 1280 e a 390 px. Foram vistas as 4 opções (Saídas e calendário, Prestadores, Novidades e avisos, Automatização) e as ações de cada uma.
+
+| ID | Prioridade | Problema | Estado |
+|---|---|---|---|
+| A-17 | P2 | O menu ficava com duas opções marcadas: ao mudar de aba dentro do ecrã, a opção antiga continuava marcada como «página atual» | Corrigido: só a aba aberta fica marcada |
+| A-18 | P2 | Era possível publicar um aviso com «até» antes de «Mostrar de» (nunca aparecia) | Corrigido: recusado com aviso |
+| A-19 | P2 | Não se podia corrigir uma novidade ou aviso já publicado: era preciso apagar e publicar de novo | Corrigido: botão «Editar» preenche o formulário; «Guardar alterações» atualiza; «Cancelar edição» |
+| A-20 | P3 | «Para quem» podia ser escolhido num anúncio só para o site, onde não tem efeito | Corrigido: só fica ativo quando o anúncio aparece na plataforma |
+| A-21 | P3 | Plurais errados no resumo («1 saídas previstas», «1 novidades») | Corrigido |
+| A-22 | P3 | Caixas «No site», «Ativo» e texto de destaque sem nome para leitores de ecrã (todas diziam só «No site») | Corrigido: cada uma diz a que saída, prestador ou publicação se refere |
+| A-23 | P3 | O conteúdo começava colado às abas | Corrigido: espaço de 16 px |
+
+Verificado depois das correções:
+- só uma opção marcada no menu em cada aba;
+- ocultar uma saída grava a lista certa;
+- datas trocadas não gravam;
+- editar grava só a publicação certa (update com o id);
+- apagar pede confirmação;
+- sem erros nem conteúdo fora do ecrã;
+- varrimento geral dos 4 perfis sem erros.
