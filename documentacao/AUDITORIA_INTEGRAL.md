@@ -177,3 +177,21 @@ Os passos 1 a 18 e o reagendamento (teste 38) confirmam que o servidor impõe a 
   - teste 41 repetido: 9/9;
   - a função responde 401 «Inicie sessão para pagar» sem sessão, ou seja, arranca bem.
 - Erro antigo corrigido na mesma publicação: a função recusava códigos com «_» (ELO_…), por isso nenhum pagamento online de encomendas reais podia ser pedido. Passa a aceitar «_»; teste novo na função (24/24).
+
+## Fase 1b — 25/11/2026 (v182): pares por testar e contraste
+
+- **Pares por testar:** repetiram-se os 100 pares ecrã/botão que tinham ficado por testar, desta vez procurando o botão pelo texto e, nas ações sensíveis, confirmando que aparece uma confirmação (que é depois cancelada). Corre em modo demonstração, sem servidor.
+  - 56 funcionam;
+  - 8 pedem confirmação, como devem;
+  - 3 abrem o ecrã de pagamentos (correto);
+  - 25 não existem no estado de demonstração (dependem de dados ou de outro perfil; o terreno não tem acesso a Pagamentos nem a Perfil, o que é correto);
+  - 4 são frases de um carrossel que só se pode clicar quando estão à vista.
+- Problemas encontrados e corrigidos (v182):
+  - A-15 (P2): «Anular» manifesto de carga anulava logo, sem confirmação, e mexia nas encomendas associadas. Agora pede confirmação.
+  - A-16 (P3): «Limpar formulário» na simulação do prestador apagava o que estava preenchido sem perguntar. Agora pergunta quando há dados.
+  - Teste Playwright: cancelar mantém o manifesto e os dados; confirmar anula e limpa; sem erros.
+- Aceite: em modo demonstração, «Suspender» prestador atua sem perguntar; com sessão real pede motivo (o caminho de produção está certo).
+- **Contraste (WCAG 2.1 AA, script próprio, sem axe-core):**
+  - aplicação: 1 308 textos verificados nos ecrãs dos 4 perfis, 0 abaixo do mínimo;
+  - site público: os avisos no menu, no herói e no rodapé eram falsos (texto branco sobre fotografia ou fundo escuro, confirmado por imagem);
+  - 1 caso real corrigido: «Propostas personalizadas» no simulador (4,14:1 → 5,18:1).

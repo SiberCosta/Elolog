@@ -53,7 +53,11 @@ function faixa(c){if(c.faixa===false)return"";const it=[];
   return`<div class="sc-faixa${alerta?" alerta":""}" role="region" aria-label="Informação Elolog"><div class="sc-faixa-trilho" style="--sc-dur:${Math.max(20,it.length*9)}s"><ul>${li}</ul><ul aria-hidden="true">${li.replace(/<a /g,'<a tabindex="-1" ')}</ul></div></div>`}
 function colocarFaixa(fx){document.body.insertAdjacentHTML("afterbegin",fx);const f=document.querySelector(".sc-faixa"),nav=document.querySelector(".navbar");
   const acerta=()=>{const h=f.offsetHeight;f.classList.add("fixa");if(nav)nav.style.top=h+"px";document.body.style.paddingTop=h+"px"};
-  acerta();addEventListener("resize",acerta,{passive:true})}
+  /* v183: com poucos avisos a faixa ficava mais curta que o ecrã; repete os avisos até cobrir a largura toda e mantém a velocidade */
+  const tr=f.querySelector(".sc-faixa-trilho"),[u1,u2]=tr.querySelectorAll("ul"),base=u1.innerHTML,copia=base.replace(/<li /g,'<li aria-hidden="true" ').replace(/<a /g,'<a tabindex="-1" ');
+  const encher=()=>{u1.innerHTML=base;let n=0;while(u1.scrollWidth<innerWidth+40&&n++<30)u1.insertAdjacentHTML("beforeend",copia);
+    u2.innerHTML=u1.innerHTML.replace(/<a (?!tabindex)/g,'<a tabindex="-1" ');tr.style.setProperty("--sc-dur",Math.max(15,Math.round(u1.scrollWidth/70))+"s")};
+  encher();acerta();let t;addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(()=>{encher();acerta()},150)},{passive:true})}
 /* v171: calendário de saídas (liga-se em Site público → Saídas e calendário). Mês a mês; os dias com partida ficam marcados e mostram as saídas desse dia. */
 const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 function calendario(c){const l=c.calendario||[];if(!c.calendario_ativo||!l.length)return"";
