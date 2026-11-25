@@ -34,3 +34,4 @@ font-weight:700}.elo-assistant .elo-assistant-quick button:hover{background:#F2F
 
 /* v163: 16 px no campo (o iPhone não faz zoom ao escrever) */
 .elo-assistant .elo-assistant-compose input{font-size:16px}
+.elo-assistant .elo-message{white-space:pre-line}
