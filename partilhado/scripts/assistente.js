@@ -103,6 +103,7 @@ const o=latest();return o?trackReply(o):"Ainda não tem encomendas ativas. Quer 
 hit[2]);pending.chips=homeChips();return`A abrir «${hit[3]}».`}}if(/\b(menu|ajuda|o que (sabes|consegues|podes))\b/.test(n)&&short){pending.chips=homeChips();
 return"Escreva-me o pedido por palavras suas, por exemplo: “de Lisboa para Luanda, 200 kg”, “onde está a minha encomenda”, “agendar amanhã às 10:00” ou “abrir pagamentos”. Eu trato do resto."}return null}function operationalReply(value){
 const text=String(value||"").trim(),q=text.toLowerCase(),code=orderCodeFrom(text);
+{const sim=state.flow==="pista"?null:window.eloSimular?.responder?.(text,role());if(sim){state.flow="";state.step="";if(sim.chips)pending.chips=sim.chips;if(sim.go)pending.go=sim.go;return sim.texto}}
 if(/\bELO[_ -]?SM[ -]?\d{6}\b/i.test(text))return role()==="visitante"?"Esse é o código de uma simulação, não de uma encomenda. As simulações ficam na Área de Cliente, depois de iniciar sessão.":"Esse é o código de uma simulação, não de uma encomenda. Veja-a em «Propostas» ou «Simulação».";
 if(/(nao|não) (sei|tenho|me lembro d)o? ?(o )?codigo|esqueci(-me)? (d)?o codigo|sem (o )?codigo|perdi o codigo/.test(norm(text))){state.flow="";state.step="";if(role()==="visitante")return"O código (ex.: ELO_TRAN-000123) está no email de confirmação da encomenda. Se iniciar sessão, encontro-a pelo destino, pela data ou por quem a recebe.";
   state.flow="pista";state.step="";state.data={pistas:[]};pending.chips=[];
