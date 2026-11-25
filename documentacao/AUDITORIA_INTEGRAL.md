@@ -81,12 +81,14 @@ Notas sobre a matriz:
 | A-01 | P1 | Todos | Qualquer perfil abria ecrãs de outro perfil ao chamar `showPage('adminSettings')`, `showProviderPage('providerFinanceiro')`, etc. Os dados continuavam protegidos pelo servidor, mas o ecrã abria | **Corrigido**: `app/comum/guarda-paginas.js`. Cliente: 57 → 9 ecrãs; terreno sem finanças, definições, segurança, funcionários, subscrição, relatórios nem integrações |
 | A-02 | P1 | Entrada da empresa | 1.º código de entrada só era enviado depois de tocar num botão | Corrigido em v175 |
 | A-03 | P2 | Registo de cliente | Sem forma de pedir outro email de confirmação | Corrigido em v175 |
-| A-04 | P2 | Supabase Auth | Proteção contra palavras-passe divulgadas desligada | **Pendente**: é uma definição do painel Supabase (Authentication → Policies), só disponível no plano Pro |
-| A-05 | P2 | Fluxo de encomenda | Uma recolha falhada não pode voltar a «Agendamento» (só cancelar) | **Proposta**: acrescentar a transição `recolha → agendamento` (reagendar) para administrador e operador; muda uma regra de negócio, por isso aguarda decisão |
-| A-06 | P2 | Operador de terreno | Pode abrir ecrãs operacionais do prestador fora do seu menu (os dados são limitados pelo servidor) | **Pendente**: definir a lista exata de ecrãs do terreno antes de restringir mais |
+| A-04 | P2 | Supabase Auth | Proteção contra palavras-passe divulgadas desligada (só existe no plano Pro) | **Corrigido na plataforma (v177)**: `app/comum/senha-segura.js` verifica no aparelho (Have I Been Pwned, k-anonimato) ao criar ou mudar palavras-passe: registo de cliente e prestador, primeiro acesso, recuperação, funcionários. O início de sessão não é verificado. Quando passar ao plano Pro, ligar também no painel |
+| A-05 | P2 | Fluxo de encomenda | Uma recolha falhada não podia voltar a «Agendamento» (só cancelar) | **Corrigido (v177, migração 00208)**: «Reagendar a recolha» para administrador da empresa e operador, com motivo obrigatório (o cliente recebe-o); os serviços de recolha abertos no terreno ficam cancelados. Teste 38 |
+| A-06 | P2 | Operador de terreno | Podia abrir ecrãs operacionais do prestador fora do seu menu | **Corrigido (v177)**: só abre os serviços de terreno, «Ao vivo» e o registo de encomenda no terreno (privilégio mínimo); o resto volta aos serviços com aviso |
 | A-07 | P3 | Centro de comando (telemóvel) | Controlos de 24–30 px | **Corrigido**: 36–40 px abaixo de 900 px |
 | A-08 | P3 | Ficha do cliente (prestador) | Sem cliente escolhido, «Guardar» só avisa «Selecione primeiro um cliente.» | Pendente: desativar o botão até haver cliente |
 | A-09 | P3 | Início (cliente) | «Pesquisar» com o campo vazio não dá retorno | Pendente |
+| A-11 | P1 | PWA (todos) | O *service worker* guardava na cache do aparelho as respostas do servidor (dados pessoais lidos com sessão), que lá ficavam depois de sair | **Corrigido (v177)**: só se guardam ficheiros do próprio site; a cache antiga é apagada ao atualizar (v224) |
+| A-12 | P3 | Fluxo de encomenda | `destino → entregue` estava na tabela de transições mas era sempre recusado (é obrigatório passar por «Disponível») | **Corrigido (00208)**: sai da tabela e da lista de passos |
 | A-10 | P3 | `validar_empresa` | 5 tentativas erradas bloqueiam a empresa 15 min; um terceiro pode provocar esse bloqueio | Aceite: é a contrapartida da proteção contra força bruta |
 
 ### Não testado nesta fase (próximas fases)
@@ -102,4 +104,4 @@ Notas sobre a matriz:
 
 - Ecrãs inventariados: 59 de 59 da aplicação e 8 de 8 públicos.
 - Pares ecrã/botão: 300 de 353 testados (85 %); 53 por testar.
-- Problemas encontrados: 10. Corrigidos: 4 (A-01, A-02, A-03, A-07). Aceite: 1 (A-10). Pendentes: 5 (A-04, A-05, A-06, A-08, A-09).
+- Problemas encontrados: 12. Corrigidos: 9 (A-01 a A-07, A-11, A-12). Aceite: 1 (A-10). Pendentes: 2 (A-08, A-09).

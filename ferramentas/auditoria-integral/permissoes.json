@@ -43,112 +43,11 @@
  "terreno": {
   "total": 57,
   "abre": {
-   "dashboard": [
-    "showProviderPage"
-   ],
-   "operations": [
-    "showPage",
-    "showProviderPage"
-   ],
-   "proposals": [
-    "showPage",
-    "showProviderPage"
-   ],
-   "providerOrder": [
-    "showPage"
-   ],
-   "providerOrderHistory": [
-    "showPage"
-   ],
-   "providerAutomation": [
-    "showPage"
-   ],
-   "providerClientList": [
-    "showPage"
-   ],
    "providerDirectSimulation": [
     "showPage",
     "showProviderPage"
    ],
-   "providerClientProfile": [
-    "showPage"
-   ],
-   "providerClientHistory": [
-    "showPage"
-   ],
-   "providerCotacao": [
-    "showPage"
-   ],
-   "providerAprovacao": [
-    "showPage"
-   ],
-   "providerBoard": [
-    "showPage"
-   ],
-   "providerPagamento": [
-    "showPage"
-   ],
-   "providerDocumentos": [
-    "showPage"
-   ],
-   "providerRecolha": [
-    "showPage"
-   ],
-   "providerArmazenamento": [
-    "showPage"
-   ],
-   "providerExpedicao": [
-    "showPage"
-   ],
-   "providerMaritimeCalendar": [
-    "showPage"
-   ],
-   "providerManifestos": [
-    "showPage"
-   ],
-   "providerTransito": [
-    "showPage"
-   ],
-   "providerDestino": [
-    "showPage"
-   ],
-   "providerDisponivel": [
-    "showPage"
-   ],
-   "providerLevantamento": [
-    "showPage"
-   ],
    "providerFieldTeam": [
-    "showPage",
-    "showProviderPage"
-   ],
-   "providerSupport": [
-    "showPage"
-   ],
-   "providerComplaints": [
-    "showPage"
-   ],
-   "clientProfile": [
-    "showPage",
-    "showProviderPage"
-   ],
-   "tracking": [
-    "showPage",
-    "showProviderPage"
-   ],
-   "clientSupport": [
-    "showPage",
-    "showProviderPage"
-   ],
-   "clientSimulation": [
-    "showPage",
-    "showProviderPage"
-   ],
-   "documents": [
-    "showPage",
-    "showProviderPage"
-   ],
-   "payments": [
     "showPage",
     "showProviderPage"
    ]

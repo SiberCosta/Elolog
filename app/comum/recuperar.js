@@ -32,7 +32,7 @@ const c=document.getElementById("directLoginEmail");if(c&&email){c.value=email;d
 let pendente=null;   // {sb, senha, email} quando falta o código MFA
 async function concluir(sb,senha,email){const{data:n}=await sb.auth.mfa.getAuthenticatorAssuranceLevel();
 if(n?.nextLevel==="aal2"&&n?.currentLevel!=="aal2"){pendente={sb,senha,email};mostrarPasso(document.querySelectorAll("#recModal form").length-1,"A sua conta tem verificação em dois passos. Indique o código de 6 dígitos da aplicação de autenticação.");return false}
-const{error}=await sb.auth.updateUser({password:senha});if(error)throw traduzir(error);
+await window.elologSenhaSegura?.exigir?.(senha);const{error}=await sb.auth.updateUser({password:senha});if(error)throw traduzir(error);
 try{await S().chamarFuncao("recuperar-acesso",{acao:"alterada"})}catch(_){}
 await sb.auth.signOut({scope:"global"}).catch(()=>{});pendente=null;entrar(email);return false}
 const passoMfa={botao:"Confirmar",html:'<label>Código da aplicação de autenticação<input id="recMfa" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required></label>',
