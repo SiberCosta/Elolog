@@ -58,6 +58,12 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v168 (recolha a partir do armazém do prestador)
+- Servidor (migração 00201, aplicada a 25/11): o preço da recolha de cada prestador conta a partir do SEU armazém mais próximo da morada (um só armazém → esse). Sem armazém registado, a recolha não entra no preço (km 0) — antes recebia os km de outro prestador ou até à origem.
+- Simulação do cliente: cada proposta diz «Inclui a recolha (X km do armazém mais próximo)» ou «Recolha por juntar ao preço (sem armazém registado)».
+- ELO: pergunta se é preciso ir buscar a carga e a morada; calcula a recolha de cada prestador a partir do armazém mais próximo e mostra-a no chat («com recolha: 12 km desde o armazém Lisboa» ou «+ recolha por juntar»). A morada passa para a simulação ao «Escolher e enviar pedido» e para a área de cliente no caso dos visitantes.
+- Service worker v213.
+
 ## v167 (ELO faz a simulação na conversa)
 - O ELO pergunta só o essencial (origem, destino, tipo de carga, peso e tamanho), tirando da primeira frase o que já lá estiver («mudança de Lisboa para São Tomé, 800 kg»), e aceita respostas curtas («Porto», «200», «não sei»).
 - Cliente com sessão: mostra no chat os preços reais dos prestadores aprovados (`precos_simulacao`, sem recolha) e «Escolher e enviar pedido» abre a simulação já preenchida.
