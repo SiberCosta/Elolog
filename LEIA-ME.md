@@ -58,6 +58,12 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v171 (Site público: cores, calendário e menu)
+- «Site público» passa a grupo no menu da administração: Saídas e calendário · Prestadores · Novidades e avisos · Automatização.
+- Cada aviso ou novidade tem uma cor: Normal, Informação (azul), Boa notícia (verde), Atenção (amarelo), Alerta (vermelho). Com um alerta vermelho ativo, a faixa do site fica vermelha e o alerta aparece primeiro. A cor muda-se na lista, sem apagar.
+- Calendário de saídas no site (liga/desliga em Saídas e calendário): mês a mês, dias de partida marcados; ao tocar num dia mostra as saídas desse dia.
+- Migração 00204 (coluna `cor` em `site_publicacoes`; `site_conteudo()` devolve `calendario` e `calendario_ativo`). Teste 35.
+
 ## v170 (Site público: correção de acesso e faixa a correr)
 - A página «Site público» da administração lê as empresas aprovadas da tabela `empresas` (a vista `empresas_disponiveis` só é lida pelo servidor).
 - Faixa de informação a correr no topo do site (avisos, saídas previstas, novidades); pára ao passar o rato; sem animação quando o sistema pede menos movimento. Liga/desliga em Site público → Automatização. Migração 00203 (campo `faixa` em `site_conteudo()`).

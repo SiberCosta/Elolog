@@ -24,3 +24,7 @@
 .sp-vazio{padding:20px;border:1px dashed #c9d6df;border-radius:12px;color:#5c6e7b;font-size:14px;text-align:center}
 .sp-sub{margin:8px 0 0;font-size:15px;color:#13293D}.sp-resumo{margin:0;padding-left:18px;color:#40566a;font-size:14px;line-height:1.8}
 @media(max-width:760px){.sp-grelha{grid-template-columns:1fr}.sp-linha{flex-direction:column;align-items:flex-start}}
+/* v171: cor dos anúncios (barra à esquerda) e seletor de cor */
+.sp-linha[class*="sp-cor-"]{border-left:4px solid transparent}.sp-cor-azul{border-left-color:#2563a8!important}.sp-cor-verde{border-left-color:#1f7a5c!important}
+.sp-cor-amarelo{border-left-color:#d89a12!important}.sp-cor-vermelho{border-left-color:#c0392b!important;background:#fff7f6}
+.sp-acoes{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.sp-acoes{justify-content:flex-end}.sp-acoes select{width:auto!important;max-width:190px;min-height:38px;padding:0 8px;border:1px solid #cfdbe4;border-radius:8px;background:#fff;font-size:14px}
