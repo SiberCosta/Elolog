@@ -150,7 +150,12 @@ Os passos 1 a 18 e o reagendamento (teste 38) confirmam que o servidor impõe a 
 
 - **Pagar antes de expedir:** para passar a «Expedição», os pagamentos confirmados têm de cobrir o preço total. Só o administrador da empresa pode expedir sem pagamento, indicando o motivo (fica no histórico e na auditoria). Na ficha da encomenda, o botão passa a «Expedir sem pagamento total (indique o motivo)».
 - **Aviso ao prestador:** quando o cliente aceita uma proposta de preço, o prestador recebe a notificação «O cliente aceitou o preço: nova encomenda …».
-- Teste final destas duas regras em rollback: **por repetir** (o pedido ficou à espera de uma confirmação no Supabase que não teve resposta).
+- Teste 40 em rollback, na base real:
+  - sem pagamento → recusado, com «pago 0,00 de 2 200,00 EUR»;
+  - metade paga → recusado;
+  - tudo pago → avança para expedição;
+  - o aviso ao prestador e a notificação ao cliente saem.
+- 00211: os valores nas mensagens do servidor passam ao formato português («2 200,00», não «2,200.00»).
 
 ### Observações de regra de negócio (antes de v180)
 
