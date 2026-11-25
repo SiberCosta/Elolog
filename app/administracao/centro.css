@@ -169,3 +169,12 @@ border-bottom:1px solid var(--ct-fio);margin-bottom:12px;flex-wrap:wrap}.au-tabs
   body.cm-movel .pa-centro .ct-kpi .ct-ic{width:36px;height:36px;border-radius:11px}body.cm-movel .pa-centro .ct-kpi strong{font-size:26px!important}
   body.cm-movel .pa-centro .ct-kpi small{font-size:12px}body.cm-movel .pa-centro .ct-spark{display:none}
 }
+/* v162: cabeçalho do painel de notificações igual em todos os perfis — título numa linha, ações por baixo, nada cortado */
+html body .notification-center .notification-panel-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:16px 18px 10px}
+html body .notification-center .notification-panel-head>div{flex:1 1 100%;min-width:0}
+html body .notification-center .notification-panel-head .som-notif{min-height:32px;padding:4px 12px;border:1px solid #c9d6df;color:#13293D;background:#fff}
+html body .notification-center .notification-panel-head>button:last-child{margin-left:auto;min-height:32px;white-space:nowrap}
+html body .notification-center .notification-panel{display:flex;flex-direction:column}
+html body .notification-center .notification-panel .notification-list{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:700px){html body .notification-center .notification-panel{position:fixed;left:8px;right:8px;top:64px;width:auto;max-height:calc(100dvh - 80px)}
+  html body .notification-center .nt-barra{margin:0 12px 6px}html body .notification-center .notification-panel-head{padding:14px 14px 8px}}

@@ -22,7 +22,7 @@ urg:SV('<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/>')};function quan
 const dd=Math.round(h/24);return dd===1?"ontem":`há ${dd} dias`}function dia(iso){const a=new Date(iso),h=new Date,y=new Date(h-864e5),eq=(x,z)=>x.toDateString()===z.toDateString();return eq(a,h)?"Hoje":eq(a,y)?"Ontem":"Anteriores"}let tab="todas";
 /* v112: cada notificação diz o que fazer, com o mesmo verbo dos botões */
 function acaoDe(n,k,u){const t=String(n.targetPage||"");if(/ProviderRequests/.test(t))return"Rever o pedido";if(/Support/.test(t))return"Responder";if(/ActiveProviders/.test(t))return"Ver a empresa";
-  if(k==="financeiro")return u?"Tratar o pagamento":"Ver o pagamento";if(k==="documentos")return"Juntar o documento";if(k==="terreno")return"Ver o serviço";if(n.orderId)return"Ver a encomenda";return u?"Tratar agora":"Abrir"}
+  if(k==="financeiro")return u?"Tratar o pagamento":"Ver o pagamento";if(k==="documentos")return n.tipo==="documento_emitido"?"Ver o documento":"Juntar o documento";if(k==="terreno")return"Ver o serviço";if(n.orderId)return"Ver a encomenda";return u?"Tratar agora":"Abrir"}
 window.renderNotificationCenter=function(){const all=visibleOperationNotifications(),unread=all.filter(n=>!n.read),urg=unread.filter(n=>URG.includes(n.prioridade)),count=document.getElementById("notificationCount"),
 box=document.getElementById("notificationList"),bell=document.getElementById("notificationBell");if(count){count.textContent=unread.length>99?"99+":unread.length;count.hidden=!unread.length}bell?.classList.toggle("tem-urgente",!!urg.length);
 const cab=document.querySelector("#notificationPanel .notification-panel-head");if(cab&&!cab.dataset.nt){cab.dataset.nt=1;

@@ -135,3 +135,15 @@
 /* v160: no telemóvel os separadores e filtros passam à linha seguinte (todos visíveis, sem deslizar às escondidas) */
 @media(max-width:700px){html body :is(.finance-tabs,.provider-history-tabs,.fs-filtros,.tf-abas){flex-wrap:wrap!important;overflow-x:visible!important;row-gap:8px}
 html body .pv .pv-acomp-c{flex-direction:column!important;align-items:flex-start!important;gap:4px!important}html body .pv .pv-lig{display:inline-block!important}}
+/* v162: a barra de topo é igual na administração, no prestador e no cliente — mesma altura, título da página visível
+   e o mesmo botão de notificações */
+html body.modo-lat .topbar{min-height:72px!important;height:auto!important}
+html body.modo-admin .topbar #pageTitle{position:static!important;width:auto!important;height:auto!important;overflow:visible!important;clip:auto!important;
+  white-space:nowrap!important;margin:0!important;padding:0!important;flex:0 0 auto}
+html body .topbar .notification-bell{width:42px;height:42px;border:0;border-radius:12px;background:#f0f4f6;color:#13293D;font-size:18px}
+html body .topbar .notification-bell:hover{background:#e3ebf0}
+html body.modo-admin .topbar .ct-pesquisa{height:44px;margin:0;align-items:center}
+@media(max-width:520px){html body .notification-center .nt-barra button{padding:7px 4px;white-space:nowrap}
+  html body .notification-center .nt-barra button[data-n]:not([data-n=""])::after{margin-left:4px}}
+@media(max-width:900px){html body.modo-admin .topbar{flex-wrap:wrap!important}html body.modo-admin .topbar #pageTitle{flex:1 1 0!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis}
+  html body.modo-admin .topbar .ct-pesquisa{order:9!important;flex:1 1 100%!important;max-width:none!important;width:100%!important}}

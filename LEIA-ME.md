@@ -59,6 +59,11 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
 ## v162 (pendentes do teste do servidor)
+- Notificações do prestador e do cliente passam a vir também do servidor (tabela `notificacoes`: atrasos, sem sinal, documentos, pagamentos, decisões); antes só a administração as via. Ler e marcar como lidas grava no servidor — `app/comum/notificacoes-servidor.js`.
+- Painel de notificações: título numa linha e ações por baixo (nada cortado no telemóvel), lista com deslocamento próprio, separadores sem quebrar.
+- Barra de topo igual nos três perfis: 72 px, título da página visível também na administração («Centro de comando»), mesmo botão de notificações; no telemóvel e tablet a pesquisa da administração passa para uma linha própria.
+- Demonstração: cada perfil tem uma notificação coerente com o painel (antes nenhuma aparecia).
+- Service worker v207.
 - Cópia de segurança diária: criado `.github/workflows/copia-seguranca.yml` (falta criar os segredos no GitHub — `documentacao/COPIAS_DE_SEGURANCA.md`).
 - Migração 00159 revista: já não apaga as viagens que a previsão de chegada e o calendário marítimo usam.
 - Palavras-passe divulgadas: opção só disponível no plano Pro do Supabase.
