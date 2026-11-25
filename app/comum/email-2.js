@@ -22,7 +22,7 @@
       ${m.por?`<p class="em-aviso em-nota">👤 Encaminhado por <b>${esc(m.por)}</b>${m.nota?`: «${esc(m.nota)}»`:""}</p>`:""}
       <h4 class="em-titulo">${esc(m.assunto||"(sem assunto)")}</h4>
       <dl class="em-cab"><dt>De</dt><dd>${esc(m.de)}</dd><dt>Para</dt><dd>${esc(m.para)}</dd>${m.cc?`<dt>Cc</dt><dd>${esc(m.cc)}</dd>`:""}<dt>Data</dt><dd>${m.data?new Date(m.data).toLocaleString("pt-PT"):"—"}</dd></dl>
-      ${m.anexos?.length?`<ul class="em-anexos" aria-label="Anexos">${m.anexos.map(a=>`<li><button type="button" class="btn-secondary" data-em="anexo" data-i="${a.indice}">📎 ${esc(a.nome)} <small>${kb(a.tamanho)}</small></button></li>`).join("")}</ul>`:""}
+      ${m.anexos?.length?`<ul class="em-anexos" aria-label="Anexos">${m.anexos.map(a=>`<li><button type="button" class="btn-secondary" data-em="anexo" data-i="${a.indice}"><i class="ic ic-clip" aria-hidden="true"></i> ${esc(a.nome)} <small>${kb(a.tamanho)}</small></button></li>`).join("")}</ul>`:""}
       ${remotas&&!imagens?'<p class="em-aviso">Imagens externas bloqueadas para proteger a sua privacidade. <button type="button" class="btn-secondary" data-em="imagens">Mostrar imagens</button></p>':""}
       <div class="em-conteudo"></div>`;
     const box=d.querySelector(".em-conteudo");if(m.html)box.appendChild(iframe(m));else box.innerHTML=`<pre class="em-texto">${esc(m.texto||"(mensagem vazia)")}</pre>`;

@@ -1,0 +1,75 @@
+# Elolog — cópia de segurança diária (ver documentacao/COPIAS_DE_SEGURANCA.md).
+# Base de dados (supabase db dump) + ficheiros do Storage, comprimidos e cifrados com AES-256 antes de sair da máquina.
+# Segredos (Settings › Secrets and variables › Actions): SUPABASE_DB_URL, COPIA_SENHA; para os ficheiros também
+# SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY. Sem eles a execução falha e o GitHub envia um email a avisar.
+name: Cópia de segurança diária
+
+on:
+  schedule:
+    - cron: '23 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: copia-seguranca
+  cancel-in-progress: false
+
+jobs:
+  copia:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      COPIA_SENHA: ${{ secrets.COPIA_SENHA }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - name: Verificar segredos
+        run: |
+          falta=""
+          [ -n "$SUPABASE_DB_URL" ] || falta="$falta SUPABASE_DB_URL"
+          [ ${#COPIA_SENHA} -ge 16 ] || falta="$falta COPIA_SENHA(16+)"
+          if [ -n "$falta" ]; then echo "::error::Faltam segredos:$falta (ver documentacao/COPIAS_DE_SEGURANCA.md)"; exit 1; fi
+
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Base de dados
+        run: |
+          mkdir -p copia/base-de-dados && cd copia/base-de-dados
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f roles.sql --role-only
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f schema.sql
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f data.sql --use-copy --data-only
+          for f in roles.sql schema.sql data.sql; do [ -s "$f" ] || { echo "::error::$f vazio"; exit 1; }; done
+
+      - name: Ficheiros
+        run: |
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            node ferramentas/copia-armazenamento.mjs copia/armazenamento
+          else
+            echo "::warning::Sem SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY: só a base de dados foi copiada."
+          fi
+
+      - name: Comprimir e cifrar
+        run: |
+          nome="elolog-$(date -u +%Y-%m-%d-%H%M).tar.gz.gpg"
+          tar -czf - copia | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 3 \
+            --symmetric --cipher-algo AES256 -o "$nome" 3<<<"$COPIA_SENHA"
+          rm -rf copia
+          echo "NOME=$nome" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.NOME }}
+          path: ${{ env.NOME }}
+          retention-days: 30
+          if-no-files-found: error

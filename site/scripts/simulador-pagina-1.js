@@ -15,7 +15,7 @@ document.write(["  <!-- NAVBAR IGUAL À PÁGINA INICIAL -->",'  <nav class="navb
 "              </div>","            </div>","          </div>",'          <a href="simulador.html" aria-current="page">Simulador</a>','          <a href="inicio.html#rastrear">Rastrear carga</a>','          ',
 '          <a href="inicio.html#contacto">Contacto</a>',"        </div>",'        <div class="nav-actions">','          <a href="../app/area-cliente.html" class="btn-client">Área de Cliente</a>',"        </div>","      </div>","    </div>",
 "  </nav>","",'  <main class="simulator-page">','    <section class="simulator-hero">','      <div class="simulator-hero-pattern" aria-hidden="true"></div>','      <div class="simulator-hero-inner">',
-'        <span class="simulator-kicker"><i></i> Simulação Elolog</span>',"        <h1>Planeie o seu <em>envio</em>.<br><strong>Nós ligamos o percurso.</strong></h1>",
+'        <span class="simulator-kicker"><i></i> Simulação Elolog</span>',"        <h1>Planeie o seu <em>envio</em>. <br><strong>Nós ligamos o percurso.</strong></h1>",
 "        <p>Descreva a sua carga, compare propostas reais e escolha o prestador mais adequado, tudo numa única simulação.</p>",'        <div class="simulator-hero-trust"><span>Cotação sem compromisso</span><span>Prestadores verificados</span></div>',"",
 "      </div>","    </section>","",'    <section class="simulator-shell" aria-labelledby="simulator-title">','      <div class="simulator-heading">',"        <div>",'          <span class="section-eyebrow">Nova simulação</span>',
 '          <h2 id="simulator-title">Simular envio</h2>',"          <p>Indique apenas os dados necessários para solicitar propostas.</p>","        </div>",

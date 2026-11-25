@@ -15,8 +15,11 @@ let servidor=[];
 function locais(){const out=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!/^elolog_maritime_calendar_/.test(k))continue;
   (JSON.parse(localStorage.getItem(k)||"[]")||[]).forEach(v=>out.push({partida:iso(v.departure),chegada:iso(v.arrival),destino:v.destination||"",navio:v.vessel||"",viagem:v.voyage||"",estado:v.status||""}))}}catch(_){}
   return out}
+/* v161: só lê com sessão iniciada (sem sessão o servidor recusa) e volta a ler quando a pessoa entra */
+let escuta=false;
 async function lerServidor(){const P=window.elologProducao;if(!P?.online?.())return;const hoje=new Date(Date.now()-30*864e5).toISOString().slice(0,10);
-  try{const sb=await P.sb();const r=await Promise.all(["viagens_maritimas","viagens_elolog"].map(t=>sb.from(t).select("navio,viagem,porto_destino,partida,chegada,estado").eq("publicada",true).gte("partida",hoje).limit(200)));
+  try{const sb=await P.sb();if(!escuta&&sb?.auth?.onAuthStateChange){escuta=true;sb.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_IN")setTimeout(lerServidor,500)})}
+    const{data:ses}=await sb.auth.getSession();if(!ses?.session)return;const r=await Promise.all(["viagens_maritimas","viagens_elolog"].map(t=>sb.from(t).select("navio,viagem,porto_destino,partida,chegada,estado").eq("publicada",true).gte("partida",hoje).limit(200)));
     servidor=r.flatMap(x=>x.data||[]).map(v=>({partida:iso(v.partida),chegada:iso(v.chegada),destino:v.porto_destino||"",navio:v.navio||"",viagem:v.viagem||"",estado:v.estado||""}))}catch(_){}}
 
 const mesmoDestino=(a,b)=>{const x=norm(a).split(" ").filter(w=>w.length>2),y=new Set(norm(b).split(" ").filter(w=>w.length>2));return x.some(w=>y.has(w))};

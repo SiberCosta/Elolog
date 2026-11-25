@@ -15,7 +15,7 @@ const esc=v=>String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&g
 const atras=d=>{const m=Math.max(0,Math.round((Date.now()-new Date(d))/6e4));return m<1?"agora":m<60?`há ${m} min`:m<1440?`há ${Math.round(m/60)} h`:`há ${Math.round(m/1440)} d`};
 const cor=e=>/tr[âa]nsito/i.test(e)?"azl":/armaz/i.test(e)?"rox":/recolha/i.test(e)?"amb":"ver";
 
-function icone(n){return n==="plus"?'<b class="cm-glifo" aria-hidden="true">+</b>':n==="mail"?'<b class="cm-glifo" aria-hidden="true">✉</b>':`<i class="ic ic-${n}" aria-hidden="true"></i>`}
+function icone(n){return n==="plus"?'<b class="cm-glifo" aria-hidden="true">+</b>':n==="mail"?'<b class="cm-glifo" aria-hidden="true"><i class="ic ic-mail" aria-hidden="true"></i></b>':`<i class="ic ic-${n}" aria-hidden="true"></i>`}
 
 function painel(d){const{num,eur}=I(),n=v=>num?num(v):String(v),e=d.encomendas||{},pl=d.pipeline||{},p=d.prestadores||{},s=d.subscricoes||{},a=d.apoio||{};
   const total=ETAPAS.reduce((t,[k])=>t+(pl[k]||0),0)||0;

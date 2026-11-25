@@ -58,6 +58,37 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v162 (pendentes do teste do servidor)
+- Notificações do prestador e do cliente passam a vir também do servidor (tabela `notificacoes`: atrasos, sem sinal, documentos, pagamentos, decisões); antes só a administração as via. Ler e marcar como lidas grava no servidor — `app/comum/notificacoes-servidor.js`.
+- Painel de notificações: título numa linha e ações por baixo (nada cortado no telemóvel), lista com deslocamento próprio, separadores sem quebrar.
+- Barra de topo igual nos três perfis: 72 px, título da página visível também na administração («Centro de comando»), mesmo botão de notificações; no telemóvel e tablet a pesquisa da administração passa para uma linha própria.
+- Demonstração: cada perfil tem uma notificação coerente com o painel (antes nenhuma aparecia).
+- Cartões cujo título passou para a barra (ex.: Clientes da administração) já não começam com uma linha separadora solta — `app/comum/titulos-pagina.js`.
+- Site público: campos dos formulários com o texto normal (herdavam o negrito das etiquetas) e 16 px no telemóvel (o iPhone deixava de fazer zoom); na capa, origem e destino em linhas próprias no telemóvel (o texto ficava cortado); cartões de serviços sem espaço vazio; ícone de pesquisa no rastreio em vez de «⌕»; título do simulador com espaço e quebra corretos («envio.Nós»).
+- Service worker v207.
+- Cópia de segurança diária: criado `.github/workflows/copia-seguranca.yml` (falta criar os segredos no GitHub — `documentacao/COPIAS_DE_SEGURANCA.md`).
+- Migração 00159 revista: já não apaga as viagens que a previsão de chegada e o calendário marítimo usam.
+- Palavras-passe divulgadas: opção só disponível no plano Pro do Supabase.
+
+## v161 (teste do servidor real, 23-11-2026)
+- Relatório em `documentacao/TESTE_SERVIDOR_REAL_v161.md`.
+- Corrigido: o email de boas-vindas depois de aprovar uma cotação era recusado pelo Brevo («headers is blank») — `servidor/supabase/functions/seguimento/index.ts` (publicada a 24/11; o email em espera foi enviado).
+- Kit de testes completo contra o servidor real: 491/492 (a única diferença é a contagem antiga de tarefas agendadas no teste 05); o 21 está obsoleto.
+- Corrigido: a chegada prevista lia as viagens antes de haver sessão e não voltava a ler depois de entrar — `app/comum/previsao-chegada.js`.
+- Service worker v206.
+
+## v160 (pendentes da auditoria resolvidos)
+- Um título por página: quando o cartão repete o título da barra, a repetição sai da vista (fica para leitores de ecrã) — `app/comum/titulos-pagina.js`.
+- Simulação e criar encomenda sem cartões dentro de cartões; volumes do prestador em fichas até 1500 px.
+- Retirados decorativos sem função: curva animada do «Próximo passo», bloco escuro do painel do terreno, degradés dos ícones do operador.
+- Centro de comando: navios e rotas de demonstração só Lisboa → São Tomé; a secção «Navios com carga Elolog» só aparece quando há viagens.
+- Telemóvel: separadores e filtros passam à linha seguinte em vez de deslizar escondidos; alvos de toque ≥ 24 px; letra mínima 12 px; contraste AA no site e na app.
+- Service worker v205.
+
+## v159 (auditoria integral de interface)
+- Relatório completo em `documentacao/AUDITORIA_INTEGRAL_v159.md`: 100 páginas dos 4 perfis + 9 públicas, em 3 ecrãs.
+- Contraste AA, ícones do sistema em vez de emojis, letra mínima 12 px, indicadores do terreno, próximo passo por função, títulos e subtítulos certos, carregar ficheiros pelo teclado, foco visível. Service worker v204.
+
 ## v158 (uma rota de cada vez; ficha simples para o operador)
 - Só uma rota a decorrer por operador: `iniciar_percurso` recusa a segunda («Termine primeiro a rota REC-…») e `rota_ativa()` deixa o telemóvel avisar antes de pedir a localização (migração `00199_uma_rota_de_cada_vez.sql`, autorizada). «Cheguei» termina a rota; em «Serviços ao vivo», «Iniciar percurso» some dos outros serviços enquanto há uma rota a decorrer.
 - Ficha do serviço para o operador simplificada (`app/prestador/terreno-ficha-simples.js`, `terreno-ficha.css`): 3 passos (A caminho · No local · Registado), quem/onde/quando/viatura/volumes, «Ligar» e «Navegar», e um só botão grande com o próximo passo (Iniciar rota → Cheguei ao local → Registar recolha/entrega); «Comunicar um problema» à parte. Se houver outra rota a decorrer, leva a ela.

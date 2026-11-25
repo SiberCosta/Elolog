@@ -4,7 +4,7 @@
 :root{
   /* cor */
   --e-azul:#1F5F8B;--e-azul-esc:#184B6E;--e-azul-claro:#e8f1f7;--e-verde:#1F7A5C;--e-verde-claro:#e7f5ee;
-  --e-tinta:#13293D;--e-texto:#4b5d6b;--e-suave:#6b7d89;--e-fio:#e1e9ef;--e-fundo:#f3f6f8;--e-branco:#fff;
+  --e-tinta:#13293D;--e-texto:#4b5d6b;--e-suave:#5c6e7b;--e-fio:#e1e9ef;--e-fundo:#f3f6f8;--e-branco:#fff;
   --e-aviso:#b45309;--e-aviso-claro:#fdf3e2;--e-erro:#c2414b;--e-erro-claro:#fdecee;
   /* tipografia: 12 · 13 · 14 · 15 · 16 · 18 · 20 · 24 · 28 · 32 */
   --e-letra:"Work Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
@@ -187,3 +187,13 @@ html body.prov-lateral .topbar :is(.elo-lang,.elo-idioma)~.notification-center,h
 html body .pd-grelha .field-board-item{grid-template-columns:minmax(52px,auto) minmax(0,1fr) auto!important;gap:var(--s-4)!important}
 html body.modo-lat #sidebar .menu button[aria-current=page]:not(.provider-menu-main){background:rgba(255,255,255,.14)!important;color:#fff!important;font-weight:700!important;box-shadow:none!important}
 html body .field-operator-center .field-dashboard-kpis:not(.pd-kpis){grid-template-columns:repeat(auto-fit,minmax(160px,1fr))!important}html body .field-dashboard-kpis>button{min-width:0!important}
+
+/* ---------- v159 — auditoria integral (23-11-2026): hidden esconde sempre; notas em tabelas ≥ 12px; foco do teclado visível; carregar ficheiros com aspeto de botão; telemóvel sem o assistente a tapar o fim ---------- */
+[hidden]{display:none!important}html body :is(td,th) small{font-size:var(--t-xs)}html body label[role=button]{cursor:pointer}html body :is(button,a,label)>.ic{background:currentColor!important}
+html body :is(a,button,input,select,textarea,summary,[tabindex],label[role=button]):focus-visible{outline:2px solid var(--e-azul)!important;outline-offset:2px}html body :is(.sidebar,.site-footer,footer) :is(a,button,[tabindex]):focus-visible{outline-color:#fff!important}
+html body :is(.client-photo-action,.client-extra-doc-action){display:inline-flex;align-items:center;gap:var(--s-2);min-height:40px;padding:0 var(--s-4);border:1px solid var(--e-azul)!important;border-radius:var(--r-s);background:#fff!important;color:var(--e-azul)!important;font-size:var(--t-m);font-weight:600}
+html body :is(.client-photo-action,.client-extra-doc-action):hover{background:var(--e-azul)!important;color:#fff!important}
+@media(max-width:700px){html body .main .content{padding-bottom:96px!important}html body .topbar #pageTitle{font-size:16px!important}}
+/* v160: título que repete o da barra de topo — fora da vista, continua para leitores de ecrã (app/comum/titulos-pagina.js) */
+html body .titulo-na-barra{position:absolute!important;width:1px!important;height:1px!important;margin:0!important;padding:0!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+html body .cab-sem-titulo{border-bottom:0!important;box-shadow:none!important;padding-bottom:0!important}

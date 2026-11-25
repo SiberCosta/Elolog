@@ -36,3 +36,14 @@ html:not(#ec) body .providers-empty{background:var(--ec-fundo-suave)!important;b
   html:not(#ec) body .nav-container>.elo-lang{order:98!important;margin:0!important}
   html:not(#ec) body .nav-container>.nav-toggle{order:99!important;margin-left:0!important;margin-right:0!important}
   html:not(#ec) body .nav-container>.nav-menu{order:100}}
+/* v162 — correções do site público */
+/* campos: o texto escrito herdava o negrito da etiqueta (750); placeholders mais leves; 16 px no telemóvel (evita o zoom do iPhone) */
+html body :is(.form-grid-public,.contact-form,.sim-rapida,.tracking-input-row,.validar-form,form) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){font-weight:500!important}
+html body :is(input,textarea)::placeholder{font-weight:400!important}
+@media(max-width:720px){html body :is(.form-grid-public,.contact-form,.sim-rapida,.tracking-input-row,form) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){font-size:16px!important}}
+/* capa: no telemóvel origem e destino ocupam a linha toda (o texto já não fica cortado) */
+@media(max-width:720px){html.dn-capa body .hero .sim-rapida{grid-template-columns:1fr!important}}
+/* serviços: no telemóvel o cartão tem a altura do conteúdo, sem espaço vazio por baixo */
+@media(max-width:720px){html body .services-grid{grid-template-rows:none!important;grid-auto-rows:auto!important}html body .services-grid .service-card{min-height:0!important}}
+/* pesquisa do rastreio: ícone em vez do carácter «⌕» */
+html body .tracking-input-row .search-icon .ic{display:block;width:16px;height:16px;background:currentColor}

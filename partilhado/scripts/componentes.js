@@ -69,7 +69,11 @@ document.addEventListener("focusout",function(e){var c=e.target;if(c&&c.matches&
 document.addEventListener("input",function(e){var c=e.target;if(c&&c.getAttribute&&c.getAttribute("aria-invalid")==="true"&&!verificar(c))erro(c,"")});
 window.eloValidar=function(ids){var primeiro=null;ids.forEach(function(id){var c=document.getElementById(id);if(!c||c.disabled||!c.offsetParent)return;
   var v=(c.value||"").trim(),m=v?verificar(c):"Campo obrigatório.";erro(c,m);if(m&&!primeiro)primeiro=c});if(primeiro)primeiro.focus({preventScroll:false});return!primeiro};
-function tudo(r){try{rotular(r);tabelas(r);acoes(r)}catch(e){}}
+/* v159 — carregar ficheiros pelo teclado: a etiqueta que esconde o campo de ficheiro passa a ser um botão focável (Enter / Espaço) */
+function ficheiros(r){(r.querySelectorAll?[].slice.call(r.querySelectorAll("label")):[]).forEach(function(l){var i=l.querySelector("input[type=file]");if(!i||l.dataset.fich)return;
+  var s=getComputedStyle(i);if(!(i.hidden||s.display==="none"||s.opacity==="0"||parseFloat(s.width)<2))return;l.dataset.fich="1";if(!l.hasAttribute("tabindex"))l.tabIndex=0;l.setAttribute("role","button");
+  l.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();i.click()}})})}
+function tudo(r){try{rotular(r);tabelas(r);acoes(r);ficheiros(r)}catch(e){}}
 function iniciar(){tudo(document);secao();var fila=[],t;new MutationObserver(function(rs){rs.forEach(function(x){if(x.type==="attributes"){if(x.target.classList&&x.target.classList.contains("page"))agendar();return}
   x.addedNodes.forEach(function(n){if(n.nodeType===1)fila.push(n)})});clearTimeout(t);t=setTimeout(function(){var f=fila;fila=[];f.forEach(function(n){if(n.isConnected)tudo(n)})},40)})
   .observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class"]})}
