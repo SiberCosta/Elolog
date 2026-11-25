@@ -1,0 +1,27 @@
+/* Elolog — secções geridas pela administração (v169): saídas, prestadores, novidades e aviso */
+.sc-secao{padding:72px 0;background:#fff}.sc-secao:nth-of-type(even){background:#f4f7f9}
+.sc-cab{max-width:720px;margin:0 0 28px}.sc-cab h2{margin:6px 0 8px;font-size:clamp(1.8rem,3.2vw,2.6rem);line-height:1.1;color:#13293D}
+.sc-cab p{margin:0;color:#4d6170;font-size:1rem;line-height:1.55}
+.sc-eyebrow{font:700 .75rem/1 "Work Sans",Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#1F7A5C}
+.sc-saidas{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.sc-saida{display:flex;gap:16px;padding:18px;border:1px solid #dbe4eb;border-radius:14px;background:#fff}
+.sc-data{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 76px;height:76px;border-radius:12px;background:#13293D;color:#fff;text-align:center}
+.sc-data b{font-size:1.15rem;line-height:1.1}.sc-data small{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.sc-saida-corpo{display:flex;flex-direction:column;gap:4px;min-width:0}.sc-saida-corpo strong{color:#13293D;font-size:1.05rem}
+.sc-saida-corpo span,.sc-saida-corpo small{color:#4d6170;font-size:.9rem}
+.sc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.sc-tag{display:inline-block;padding:3px 10px;border-radius:99px;background:#eef3f7;color:#23506e;font:600 .75rem/1.5 "Work Sans",Arial,sans-serif;font-style:normal}
+.sc-tag.aberta{background:#e3f3ec;color:#1a6a4e}.sc-tag.lotada{background:#fdecea;color:#a3271c}.sc-tag.atrasada{background:#fff3dd;color:#8a5300}
+.sc-prest{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.sc-cartao{display:flex;gap:14px;padding:18px;border:1px solid #dbe4eb;border-radius:14px;background:#fff}
+.sc-avatar{display:grid;place-items:center;flex:0 0 48px;height:48px;border-radius:12px;background:#1F5F8B;color:#fff;font-weight:700}
+.sc-cartao strong{display:block;color:#13293D}.sc-cartao small{display:block;color:#5c6e7b;font-size:.85rem}.sc-cartao p{margin:8px 0;color:#40566a;font-size:.92rem;line-height:1.5}
+.sc-feed{display:flex;flex-direction:column;margin:0;padding:0;list-style:none;border-top:1px solid #dbe4eb}
+.sc-feed li{display:flex;gap:20px;padding:16px 0;border-bottom:1px solid #dbe4eb}.sc-feed time{flex:0 0 64px;color:#1F7A5C;font-weight:700;font-size:.9rem}
+.sc-feed strong{color:#13293D}.sc-feed p{margin:4px 0 0;color:#4d6170;line-height:1.5}.sc-feed a{display:inline-block;margin-top:6px;color:#1F5F8B;font-weight:600}
+.sc-pe{margin:20px 0 0}.sc-botao{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border:1.5px solid #13293D;border-radius:10px;color:#13293D;font-weight:700;text-decoration:none}
+.sc-botao:hover{background:#13293D;color:#fff}
+.sc-aviso{position:fixed;left:16px;bottom:16px;z-index:9000;max-width:min(380px,calc(100vw - 110px));padding:14px 44px 14px 16px;border-radius:12px;background:#fff3dd;color:#5b3a00;box-shadow:0 12px 32px rgba(14,36,51,.25);font-size:.92rem}
+.sc-fechar{position:absolute;top:6px;right:6px;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#5b3a00;font-size:20px;cursor:pointer}.sc-fechar:hover{background:rgba(91,58,0,.1)}
+.sc-aviso p{margin:0;line-height:1.5}.sc-aviso p+p{margin-top:6px}.sc-aviso a{color:#5b3a00;font-weight:700}
+@media(max-width:720px){.sc-saidas{grid-template-columns:1fr}.sc-secao{padding:48px 0}.sc-saida{padding:14px}.sc-data{flex-basis:64px;height:64px}}

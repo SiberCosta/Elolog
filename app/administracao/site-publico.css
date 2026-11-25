@@ -1,0 +1,26 @@
+/* Elolog — «Site público» na administração (v169) */
+.sp-pagina{display:flex;flex-direction:column;gap:16px}
+.sp-cab h3{margin:0;font-size:20px;color:#13293D}.sp-cab p{margin:4px 0 0;color:#5c6e7b;font-size:14px}
+.sp-abas{display:flex;flex-wrap:wrap;gap:6px;padding:4px;border-radius:12px;background:#eef3f7;align-self:flex-start}
+.sp-abas button{min-height:40px;padding:8px 14px;border:0;border-radius:9px;background:none;color:#40566a;font:600 14px/1.2 inherit;cursor:pointer}
+.sp-abas button.on{background:#fff;color:#13293D;box-shadow:0 1px 4px rgba(14,36,51,.14)}
+.sp-corpo{display:flex;flex-direction:column;gap:14px}
+.sp-barra{display:flex;flex-wrap:wrap;align-items:center;gap:10px 24px}
+.sp-lig{display:inline-flex;align-items:center;gap:8px;min-height:40px;font-size:14px;color:#13293D;cursor:pointer}
+.sp-lig input{width:18px;height:18px;accent-color:#1F5F8B}
+.sp-max{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#40566a}.sp-max select{min-height:40px;padding:0 10px;border:1px solid #c9d6df;border-radius:8px}
+.sp-nota{margin:0;color:#5c6e7b;font-size:13px}
+.sp-lista{display:flex;flex-direction:column;border:1px solid #dde6ec;border-radius:12px;overflow:hidden}
+.sp-linha{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px;border-top:1px solid #e6edf2;background:#fff}
+.sp-linha:first-child{border-top:0}.sp-prest>div{flex:1}.sp-linha>div{min-width:0;display:flex;flex-direction:column;gap:4px}
+.sp-linha strong{color:#13293D;font-size:15px}.sp-linha small{color:#5c6e7b;font-size:13px}
+.sp-pill{padding:4px 10px;border-radius:99px;background:#f1f4f6;color:#5c6e7b;font-size:12px;white-space:nowrap}
+.sp-acoes{display:inline-flex;align-items:center;gap:12px}
+.sp-destaque{margin-top:6px;width:min(520px,100%);min-height:38px;padding:6px 10px;border:1px solid #c9d6df;border-radius:8px;font:inherit;font-size:14px}
+.sp-form{display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid #dde6ec;border-radius:12px;background:#f8fafc}
+.sp-grelha{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.sp-grelha label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:#40566a}
+.sp-grelha .sp-largo{grid-column:1/-1}.sp-grelha :is(input,select,textarea){min-height:40px;padding:8px 10px;border:1px solid #c9d6df;border-radius:8px;font:inherit;font-weight:500;font-size:14px;color:#13293D;background:#fff}
+.sp-form button[type=submit]{align-self:flex-start}
+.sp-vazio{padding:20px;border:1px dashed #c9d6df;border-radius:12px;color:#5c6e7b;font-size:14px;text-align:center}
+.sp-sub{margin:8px 0 0;font-size:15px;color:#13293D}.sp-resumo{margin:0;padding-left:18px;color:#40566a;font-size:14px;line-height:1.8}
+@media(max-width:760px){.sp-grelha{grid-template-columns:1fr}.sp-linha{flex-direction:column;align-items:flex-start}}

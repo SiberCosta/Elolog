@@ -58,6 +58,16 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v169 (Site público gerido pela administração)
+- Administração › «Site público» (`app/administracao/site-publico.js`): separadores Saídas previstas, Prestadores, Novidades e avisos, Automatização.
+  - Saídas: aparecem sozinhas as que os prestadores publicam no calendário marítimo; a administração desliga as que não quer mostrar e escolhe quantas.
+  - Prestadores: todos os aprovados (automático) ou só os escolhidos, com texto de destaque por empresa.
+  - Novidades (feed) e avisos (faixa no site), com datas de início e fim; novidades automáticas de empresas aprovadas (90 dias) e saídas novas (30 dias).
+- Site (`site/scripts/site-conteudo.js`): secções «Próximas saídas», «Prestadores verificados», «O que há de novo» e aviso flutuante que se fecha. Sem conteúdo, a secção não aparece.
+- ELO (`partilhado/scripts/assistente-saidas.js`): «próximo barco», «saídas para Luanda» → responde no chat com as saídas publicadas, filtradas pelo destino.
+- Servidor: migração 00202 (tabelas `site_publicacoes`, `site_definicoes` só para a administração; função pública `site_conteudo` sem NIF, emails, moradas nem preços). Teste `servidor/supabase/testes/34_site_publico.sql` (9/9).
+- Service worker v214.
+
 ## v168 (recolha a partir do armazém do prestador)
 - Servidor (migração 00201, aplicada a 25/11): o preço da recolha de cada prestador conta a partir do SEU armazém mais próximo da morada (um só armazém → esse). Sem armazém registado, a recolha não entra no preço (km 0) — antes recebia os km de outro prestador ou até à origem.
 - Simulação do cliente: cada proposta diz «Inclui a recolha (X km do armazém mais próximo)» ou «Recolha por juntar ao preço (sem armazém registado)».

@@ -64,7 +64,7 @@ function responder(texto,papel){let d=ler();const n=norm(texto);
   if(/^nova simulac/.test(n)&&["cliente","visitante"].includes(papel)){d={};gravar(d);return proxima(d)}
   if(d&&(/\b(pessoa|humano|atendente|terminar|resumo|privacidade)\b/.test(n)||/\belo[_ -]?[a-z]{2,8}[ -]?\d{6}\b/.test(n)))return null;
   if(!d){if(!["cliente","visitante"].includes(papel))return null;
-    if(/document|prazo|demora|alfandeg|quanto tempo|rastre|estado|codigo/.test(n))return null;
+    if(/document|prazo|demora|alfandeg|quanto tempo|rastre|estado|codigo|barco|navio|saida|partida/.test(n))return null;
     const quer=/\b(simul\w*|orcament\w*|cotac\w*|quanto custa|preco|precos|enviar|mandar|expedir)\b/.test(n)||/\bde\s+\S.+\s+para\s+\S/.test(n);if(!quer)return null;d={}}
   const antes=proxima(d);extrair(texto,d);
   /* resposta simples à pergunta feita («São Tomé», «200», «Comercial», «não sei») */
