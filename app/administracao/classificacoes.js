@@ -18,7 +18,7 @@ function botao(){if($("adminClassifBtn"))return;const g=$("adminGrpPrest");if(!g
 
 async function ler(){const sb=await S().cliente();
   const[a,b,c]=await Promise.all([sb.from("empresas").select("id,nome,nome_comercial,cidade").eq("estado","aprovada").order("nome"),
-    sb.from("prestador_classificacao").select("empresa_id,nivel,nota_interna"),
+    sb.from("prestador_classificacao").select("empresa_id,nivel,nota_interna,logo"),
     sb.from("avaliacoes_prestador").select("id,empresa_id,encomenda_id,nota,pontualidade,comunicacao,cuidado,comentario,estado,created_at").order("created_at",{ascending:false}).limit(300)]);
   for(const r of[a,b,c])if(r.error)throw r.error;
   const cl={};(b.data||[]).forEach(x=>cl[x.empresa_id]=x);
@@ -32,7 +32,10 @@ function desenhar(){const box=$("adminClassifContent");if(!box)return;
   if(!d)return box.innerHTML=cab+'<div class="sp-vazio">A carregar…</div>';
   const emp=d.empresas.filter(e=>!filtro||e.nome.toLowerCase().includes(filtro));
   const lista=emp.length?`<div class="cl-lista">${emp.map(e=>{const r=resumo(e.id),c=d.cl[e.id]||{};
-    return`<div class="cl-linha"><div class="cl-nome"><strong>${esc(e.nome)}</strong><small>${esc(e.cidade||"")}</small>
+    const ini=e.nome.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join("").toUpperCase();
+    return`<div class="cl-linha"><div class="cl-logo">${c.logo?`<img src="${esc(c.logo)}" alt="Logótipo de ${esc(e.nome)}">`:`<span aria-hidden="true">${esc(ini)}</span>`}
+      <label class="cl-carregar">${c.logo?"Trocar":"Carregar logótipo"}<input type="file" accept="image/png,image/jpeg,image/webp" data-logo="${e.id}"></label>
+      ${c.logo?`<button type="button" class="cl-retirar" data-retirar-logo="${e.id}">Retirar</button>`:""}</div><div class="cl-nome"><strong>${esc(e.nome)}</strong><small>${esc(e.cidade||"")}</small>
       <span class="cl-media">${r.n?`${estrelas(r.m)} <b>${r.m.toLocaleString("pt-PT",{minimumFractionDigits:1,maximumFractionDigits:1})}</b> · ${r.n} ${r.n===1?"avaliação":"avaliações"}`:"Sem avaliações"}</span></div>
       <label>Nível<select data-nivel="${e.id}">${Object.entries(NIVEL).map(([k,t])=>`<option value="${k}" ${(c.nivel||"")===k?"selected":""}>${t}</option>`).join("")}</select></label>
       <label class="cl-nota">Nota interna (só a administração vê)<input data-nota="${e.id}" maxlength="500" value="${esc(c.nota_interna||"")}" placeholder="Ex.: cumpriu prazos em 2026"></label></div>`}).join("")}</div>`
@@ -48,12 +51,20 @@ function desenhar(){const box=$("adminClassifContent");if(!box)return;
 async function recarregar(){try{await ler()}catch(e){d=null;const box=$("adminClassifContent");if(box)box.innerHTML=`<div class="sp-vazio">Não foi possível ler as classificações: ${esc(S()?.mensagem?.(e)||e.message)}</div>`;return}desenhar()}
 async function acao(fn,ok){try{await fn();if(ok)aviso(ok,"success");await recarregar()}catch(e){aviso(S()?.mensagem?.(e)||e.message,"error")}}
 async function guardar(id,muda){const sb=await S().cliente(),c=d.cl[id]||{};
-  const{error}=await sb.from("prestador_classificacao").upsert({empresa_id:id,nivel:c.nivel||null,nota_interna:c.nota_interna||null,...muda,updated_at:new Date().toISOString()});if(error)throw error}
+  const{error}=await sb.from("prestador_classificacao").upsert({empresa_id:id,nivel:c.nivel||null,nota_interna:c.nota_interna||null,logo:c.logo||null,...muda,updated_at:new Date().toISOString()});if(error)throw error}
+/* logótipo: PNG, JPEG ou WebP até 1 MB, guardado no armazenamento público «site-publico» (só a administração carrega) */
+async function carregarLogo(id,f){if(!f)return;if(!/^image\/(png|jpeg|webp)$/.test(f.type))throw new Error("Use uma imagem PNG, JPEG ou WebP.");
+  if(f.size>1048576)throw new Error("A imagem tem mais de 1 MB. Reduza-a e tente de novo.");
+  const sb=await S().cliente(),ext={"image/png":"png","image/jpeg":"jpg","image/webp":"webp"}[f.type],caminho=`prestadores/${id}-${Date.now()}.${ext}`;
+  const up=await sb.storage.from("site-publico").upload(caminho,f,{contentType:f.type,upsert:false});if(up.error)throw up.error;
+  const url=sb.storage.from("site-publico").getPublicUrl(caminho).data.publicUrl;await guardar(id,{logo:url})}
 
+document.addEventListener("click",e=>{const b=e.target.closest("[data-retirar-logo]");if(!b||!confirm("Retirar o logótipo deste prestador?"))return;acao(()=>guardar(b.dataset.retirarLogo,{logo:null}),"Logótipo retirado.")});
 document.addEventListener("input",e=>{if(e.target.id!=="clProcura")return;filtro=e.target.value.trim().toLowerCase();desenhar()});
 document.addEventListener("change",e=>{const box=$("adminClassifContent"),t=e.target;if(!box||!box.contains(t))return;
   if(t.dataset.nivel!==undefined)return acao(()=>guardar(t.dataset.nivel,{nivel:t.value||null}),t.value?`Nível «${NIVEL[t.value]}» atribuído.`:"Nível retirado.");
   if(t.dataset.nota!==undefined)return acao(()=>guardar(t.dataset.nota,{nota_interna:t.value.trim()||null}),"Nota guardada.");
+  if(t.dataset.logo)return acao(()=>carregarLogo(t.dataset.logo,t.files?.[0]),"Logótipo carregado. Já aparece no site.");
   if(t.dataset.av)return acao(async()=>{const{error}=await(await S().cliente()).from("avaliacoes_prestador").update({estado:t.checked?"publicada":"oculta",updated_at:new Date().toISOString()}).eq("id",t.dataset.av);if(error)throw error},t.checked?"Avaliação publicada.":"Avaliação ocultada do site.")});
 
 const orig=window.showAdminPage;if(typeof orig==="function")window.showAdminPage=showAdminPage=function(page){const r=orig.apply(this,arguments);

@@ -58,6 +58,13 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v173 (ELO com opções na conversa, novidades mais humanas, cor dos títulos, logótipos)
+- ELO: as sugestões aparecem dentro da conversa, logo a seguir à resposta, em botões pequenos; a zona fixa por baixo deixou de existir.
+- Site: as novidades passam a cartões com quem publica (logótipo ou iniciais), «Hoje / Ontem / Há 3 dias», uma frase («Há um novo barco a sair», «Damos as boas-vindas a um novo parceiro») e ligação útil (Pedir preço, Conhecer).
+- Anúncios: cor do título (cores prontas ou «Outra cor…»), no site, no aviso e na plataforma.
+- Classificações: carregar o logótipo de cada prestador (PNG, JPEG ou WebP até 1 MB); aparece nos cartões de prestadores e nas novidades.
+- Migrações 00206 (cor_titulo, logo, armazenamento «site-publico» só a administração escreve) e 00207; teste 37.
+
 ## v172 (fundo dos anúncios, atualizações na plataforma, classificações, menus)
 - Anúncios: além da cor, escolhe-se o fundo (8 cores prontas ou «Outra cor…»); o texto fica claro ou escuro conforme o fundo.
 - «Onde mostrar»: Site, Plataforma ou Site e plataforma; na plataforma, «Para quem»: Todos, Clientes ou Prestadores. Na área de cliente/prestador aparecem no topo; os alertas vermelhos não se fecham.

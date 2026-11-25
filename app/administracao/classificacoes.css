@@ -12,3 +12,13 @@
 .cl-av>div{display:flex;flex-direction:column;gap:3px;min-width:0}.cl-av small{color:#5c6e7b;font-size:12px}.cl-av p{margin:4px 0 0;color:#40566a;font-size:14px;line-height:1.5}
 .cl-av.oculta{background:#f7f9fa;opacity:.75}
 @media(max-width:820px){.cl-linha{grid-template-columns:1fr}.cl-av{flex-direction:column}}
+/* v173: logótipo do prestador */
+.cl-linha{grid-template-columns:auto minmax(0,1.3fr) minmax(160px,.6fr) minmax(0,1fr)}
+.cl-logo{display:flex;flex-direction:column;align-items:center;gap:4px;width:96px}
+.cl-logo img,.cl-logo>span{width:64px;height:64px;border-radius:14px;border:1px solid #dbe4eb;background:#fff;object-fit:contain}
+.cl-logo>span{display:grid;place-items:center;background:#1F5F8B;color:#fff;font-weight:700;font-size:20px;border:0}
+.cl-carregar{font-size:12px!important;font-weight:700!important;color:#1F5F8B!important;cursor:pointer;text-align:center;text-decoration:underline}
+.cl-carregar:focus-within{outline:2px solid #1F5F8B;border-radius:4px}
+.cl-retirar{border:0;background:none;color:#a3271c;font-size:12px;text-decoration:underline;cursor:pointer}
+@media(max-width:820px){.cl-linha{grid-template-columns:1fr}.cl-logo{flex-direction:row;width:auto;gap:12px}}
+.cl-carregar{position:relative}.cl-carregar input{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden}

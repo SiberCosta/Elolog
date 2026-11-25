@@ -12,7 +12,10 @@ const ESTADO={planeada:"Planeada",aberta:"Aberta a carga",lotada:"Lotada",atrasa
 const COR={"":"Normal",azul:"Informação (azul)",verde:"Boa notícia (verde)",amarelo:"Atenção (amarelo)",vermelho:"Alerta (vermelho)"};
 const corSel=(attr,v)=>`<select ${attr}>${Object.entries(COR).map(([k,t])=>`<option value="${k}" ${(v||"")===k?"selected":""}>${t}</option>`).join("")}</select>`;
 const FUNDOS=[["","Sem fundo"],["#13293D","Azul-escuro Elolog"],["#1F5F8B","Azul"],["#1F7A5C","Verde"],["#A3271C","Vermelho"],["#F2B705","Amarelo"],["#EEF3F7","Cinzento claro"],["#FFFFFF","Branco"]];
-const fundoSel=(attr,v)=>{const pre=FUNDOS.some(f=>f[0].toLowerCase()===(v||"").toLowerCase());return`<span class="sp-fundo"><i class="sp-amostra" style="background:${esc(v||"transparent")}"></i><select ${attr}>${FUNDOS.map(([k,t])=>`<option value="${k}" ${(v||"").toLowerCase()===k.toLowerCase()?"selected":""}>${t}</option>`).join("")}<option value="outra" ${pre?"":"selected"}>Outra cor…</option></select><input type="color" aria-label="Escolher cor do fundo" value="${esc(pre||!v?"#13293d":v)}" ${pre?"hidden":""}></span>`};
+const TITULOS=[["","Automática"],["#13293D","Azul-escuro Elolog"],["#1F5F8B","Azul"],["#1F7A5C","Verde"],["#A3271C","Vermelho"],["#B85C00","Laranja"],["#FFFFFF","Branco"]];
+/* escolha de cor com cores prontas e «Outra cor…» (fundo e cor do título); data-campo diz que coluna grava */
+const escolhaCor=(attr,v,lista,campo)=>{const pre=lista.some(f=>f[0].toLowerCase()===(v||"").toLowerCase());return`<span class="sp-fundo" data-campo="${campo}"><i class="sp-amostra" style="background:${esc(v||"transparent")}"></i><select ${attr}>${lista.map(([k,t])=>`<option value="${k}" ${(v||"").toLowerCase()===k.toLowerCase()?"selected":""}>${t}</option>`).join("")}<option value="outra" ${pre?"":"selected"}>Outra cor…</option></select><input type="color" aria-label="Escolher cor" value="${esc(pre||!v?"#13293d":v)}" ${pre?"hidden":""}></span>`};
+const fundoSel=(attr,v)=>escolhaCor(attr,v,FUNDOS,"fundo"),tituloSel=(attr,v)=>escolhaCor(attr,v,TITULOS,"cor_titulo");
 const ONDE={site:"Site",plataforma:"Plataforma",ambos:"Site e plataforma"},PARA={todos:"Todos",clientes:"Clientes",prestadores:"Prestadores"};
 const ABAS=[["saidas","Saídas e calendário"],["prestadores","Prestadores"],["novidades","Novidades e avisos"],["auto","Automatização"]];
 let aba="saidas",d=null;
@@ -65,14 +68,15 @@ function vNov(){const ps=d.pubs.filter(x=>x.tipo!=="destaque");
     <label class="sp-largo">Texto<textarea id="spTexto" maxlength="600" rows="3" placeholder="O que muda para quem envia (curto)."></textarea></label>
     <label>Cor${corSel('id="spCor"',"")}</label>
     <label>Fundo${fundoSel('id="spFundo"',"")}</label>
+    <label>Cor do título${tituloSel('id="spCorTit"',"")}</label>
     <label>Onde mostrar<select id="spOnde">${Object.entries(ONDE).map(([k,t])=>`<option value="${k}">${t}</option>`).join("")}</select></label>
     <label>Para quem (plataforma)<select id="spPara">${Object.entries(PARA).map(([k,t])=>`<option value="${k}">${t}</option>`).join("")}</select></label>
     <label>Ligação (opcional)<input id="spLig" placeholder="/site/simulador.html"></label>
     <label>Mostrar de<input id="spIni" type="date"></label><label>até<input id="spFim" type="date"></label></div>
     <button type="submit" class="btn-secondary">Publicar</button></form>
-  ${ps.length?`<div class="sp-lista">${ps.map(x=>`<div class="sp-linha sp-cor-${x.cor||"normal"}"${x.fundo?` style="--sp-fundo:${esc(x.fundo)}"`:""}><div><strong>${x.tipo==="aviso"?"Aviso · ":""}${esc(x.titulo)}</strong>
+  ${ps.length?`<div class="sp-lista">${ps.map(x=>`<div class="sp-linha sp-cor-${x.cor||"normal"}"${x.fundo?` style="--sp-fundo:${esc(x.fundo)}"`:""}><div><strong${x.cor_titulo?` style="color:${esc(x.cor_titulo)};${x.fundo?`background:${esc(x.fundo)};`:(x.cor_titulo.toUpperCase()==="#FFFFFF"?"background:#13293D;":"")}padding:0 4px;border-radius:4px"`:""}>${x.tipo==="aviso"?"Aviso · ":""}${esc(x.titulo)}</strong>
     <small><span class="sp-pill">${ONDE[x.publico||"site"]}${(x.publico||"site")!=="site"&&x.para&&x.para!=="todos"?" · "+PARA[x.para]:""}</span> ${esc(x.texto||"")}${x.inicio||x.fim?` · ${x.inicio?dia(x.inicio):"já"} a ${x.fim?dia(x.fim):"sem fim"}`:""}</small></div>
-    <span class="sp-acoes">${corSel(`data-cor="${x.id}" aria-label="Cor"`,x.cor)}${fundoSel(`data-fundo="${x.id}" aria-label="Fundo"`,x.fundo)}${lig("",x.ativo,"Ativo").replace('id=""',`data-pub="${x.id}"`)}<button type="button" class="btn-secondary" data-apagar="${x.id}">Apagar</button></span></div>`).join("")}</div>`
+    <span class="sp-acoes"><label class="sp-mini">Cor${corSel(`data-cor="${x.id}"`,x.cor)}</label><label class="sp-mini">Fundo${fundoSel(`data-alvo="${x.id}"`,x.fundo)}</label><label class="sp-mini">Título${tituloSel(`data-alvo="${x.id}"`,x.cor_titulo)}</label>${lig("",x.ativo,"Ativo").replace('id=""',`data-pub="${x.id}"`)}<button type="button" class="btn-secondary" data-apagar="${x.id}">Apagar</button></span></div>`).join("")}</div>`
    :`<div class="sp-vazio">Ainda não publicou novidades nem avisos.</div>`}`}
 function vAuto(){const f=d.def.feed||{},s=d.site||{};
   return`<div class="sp-barra">${lig("spFeedMostrar",f.mostrar!==false,"Mostrar «Novidades» no site")}${maximo("spFeedMax",f.max||6,[3,4,6,8,12])}</div>
@@ -107,7 +111,7 @@ document.addEventListener("change",e=>{const box=$("adminSiteContent"),t=e.targe
       :v?await sb.from("site_publicacoes").insert({tipo:"destaque",titulo:"Destaque",texto:v,empresa_id:id}):{error:null};if(r.error)throw r.error},"Destaque guardado.")}
   const fw=t.closest(".sp-fundo");if(fw){const sel=fw.querySelector("select"),cor=fw.querySelector("input[type=color]");if(t===sel)cor.hidden=sel.value!=="outra";
     const val=sel.value==="outra"?cor.value:sel.value;fw.querySelector(".sp-amostra").style.background=val||"transparent";
-    if(sel.dataset.fundo&&(t===cor||sel.value!=="outra"))return acao(async()=>{const{error}=await(await S().cliente()).from("site_publicacoes").update({fundo:val||null,updated_at:new Date().toISOString()}).eq("id",sel.dataset.fundo);if(error)throw error},"Fundo guardado.");return}
+    if(sel.dataset.alvo&&(t===cor||sel.value!=="outra")){const campo=fw.dataset.campo;return acao(async()=>{const{error}=await(await S().cliente()).from("site_publicacoes").update({[campo]:val||null,updated_at:new Date().toISOString()}).eq("id",sel.dataset.alvo);if(error)throw error},campo==="fundo"?"Fundo guardado.":"Cor do título guardada.")}return}
   if(t.dataset.cor)return acao(async()=>{const{error}=await(await S().cliente()).from("site_publicacoes").update({cor:t.value||null,updated_at:new Date().toISOString()}).eq("id",t.dataset.cor);if(error)throw error},"Cor guardada.");
   if(t.id==="spCal")return acao(()=>guardarDef("saidas",{calendario:t.checked}),t.checked?"O calendário aparece no site.":"O calendário deixou de aparecer no site.");
   if(t.dataset.pub)return acao(async()=>{const{error}=await(await S().cliente()).from("site_publicacoes").update({ativo:t.checked,updated_at:new Date().toISOString()}).eq("id",t.dataset.pub);if(error)throw error},t.checked?"Publicação ativa.":"Publicação escondida.");
@@ -115,11 +119,11 @@ document.addEventListener("change",e=>{const box=$("adminSiteContent"),t=e.targe
   if(t.id==="spFeedMax")return acao(()=>guardarDef("feed",{max:+t.value}),"Guardado.");
   if(t.id==="spFaixa")return acao(()=>guardarDef("feed",{faixa:t.checked}),t.checked?"A faixa aparece no site.":"A faixa deixou de aparecer.");
   if(t.id==="spFeedAuto")return acao(()=>guardarDef("feed",{auto:t.checked}),"Guardado.")});
-const fundoVal=()=>{const w=$("spFundo")?.closest(".sp-fundo");if(!w)return"";const s=w.querySelector("select").value;return s==="outra"?w.querySelector("input[type=color]").value:s};
+const fundoVal=(id="spFundo")=>{const w=$(id)?.closest(".sp-fundo");if(!w)return"";const s=w.querySelector("select").value;return s==="outra"?w.querySelector("input[type=color]").value:s};
 document.addEventListener("submit",e=>{if(e.target.id!=="spForm")return;e.preventDefault();const v=id=>$(id).value.trim();
   const lig=v("spLig");if(lig&&!/^(https:\/\/(www\.)?elolog\.pt(\/|$)|\/|#|\.\.\/)/.test(lig))return aviso("A ligação tem de ser do site Elolog (ex.: /site/simulador.html).","warning");
   acao(async()=>{const{error}=await(await S().cliente()).from("site_publicacoes").insert({tipo:v("spTipo"),titulo:v("spTitulo"),texto:v("spTexto")||null,empresa_id:v("spEmp")||null,
-    ligacao:lig||null,cor:v("spCor")||null,fundo:fundoVal()||null,publico:v("spOnde")||"site",para:v("spPara")||"todos",inicio:v("spIni")||null,fim:v("spFim")||null});if(error)throw error},"Publicado no site.")});
+    ligacao:lig||null,cor:v("spCor")||null,fundo:fundoVal()||null,cor_titulo:fundoVal("spCorTit")||null,publico:v("spOnde")||"site",para:v("spPara")||"todos",inicio:v("spIni")||null,fim:v("spFim")||null});if(error)throw error},"Publicado no site.")});
 
 const orig=window.showAdminPage;if(typeof orig==="function")window.showAdminPage=showAdminPage=function(page){const r=orig.apply(this,arguments);
   if(page==="adminSite"){const t=$("pageTitle");if(t)t.textContent="Site público";$("adminGrpSite")?.classList.add("open");marcar();desenhar();recarregar()}return r};
