@@ -24,14 +24,26 @@ function saidas(l){if(!l?.length)return"";
     <div class="sc-tags">${s.estado&&ESTADO[s.estado]?`<i class="sc-tag ${s.estado}">${ESTADO[s.estado]}</i>`:""}${s.grupagem?'<i class="sc-tag">Grupagem</i>':""}${s.viaturas?'<i class="sc-tag">Aceita viaturas</i>':""}</div></div></article>`).join("")}</div>
     <p class="sc-pe"><a class="sc-botao" href="simulador.html">Simular envio nesta rota</a></p>`,'<p>Datas publicadas pelos prestadores verificados. Podem mudar: a data certa fica na sua encomenda.</p>')}
 function prestadores(l){if(!l?.length)return"";
-  return secao("prestadores-verificados","Rede Elolog","Prestadores verificados",`<div class="sc-prest">${l.map(p=>`<article class="sc-cartao"><span class="sc-avatar" aria-hidden="true">${esc(iniciais(p.nome))}</span>
+  return secao("prestadores-verificados","Rede Elolog","Prestadores verificados",`<div class="sc-prest">${l.map(p=>`<article class="sc-cartao"><span class="sc-avatar${p.logo?" com-logo":""}" aria-hidden="true">${p.logo?`<img src="${esc(p.logo)}" alt="">`:esc(iniciais(p.nome))}</span>
     <div>${p.nivel&&NIVEL[p.nivel]?`<span class="sc-nivel ${esc(p.nivel)}">${NIVEL[p.nivel]}</span>`:""}<strong>${esc(p.nome)}</strong>${p.avaliacoes>0?`<span class="sc-aval" aria-label="${p.media} de 5, ${p.avaliacoes} avaliações"><i>${"★".repeat(Math.floor(p.media+.25))}${"☆".repeat(5-Math.floor(p.media+.25))}</i> ${Number(p.media).toLocaleString("pt-PT",{minimumFractionDigits:1})} · ${p.avaliacoes} ${p.avaliacoes===1?"avaliação":"avaliações"}</span>`:""}<small>${esc([p.cidade,p.pais].filter(Boolean).join(", "))}</small>${p.texto?`<p>${esc(p.texto)}</p>`:""}
     ${p.saidas>0?`<span class="sc-tag">${p.saidas} ${p.saidas===1?"saída prevista":"saídas previstas"}</span>`:""}</div></article>`).join("")}</div>`,'<p>Empresas aprovadas pela Elolog, com documentos verificados. Peça preço a todas de uma vez no simulador.</p>')}
-function feed(l){if(!l?.length)return"";
-  return secao("novidades","Novidades","O que há de novo",`<ul class="sc-feed">${l.map(f=>`<li class="${f.cor?"sc-c-"+esc(f.cor):""}${f.fundo?" sc-com-fundo":""}"${fundo(f.fundo)}><time>${esc(curta(f.data))}</time><div><strong>${esc(f.titulo)}</strong>${f.texto?`<p>${esc(f.texto)}</p>`:""}
-    ${f.ligacao&&seguro(f.ligacao)?`<a href="${esc(f.ligacao)}">Saber mais</a>`:""}</div></li>`).join("")}</ul>`)}
+/* v173: novidades em cartões mais próximos — quem publica (logótipo ou iniciais), há quanto tempo, frase de boas-vindas ou de saída, e o título na cor escolhida */
+const ha=v=>{const d=data(v);if(!d)return"";const dias=Math.floor((Date.now()-d)/864e5);return dias<=0?"Hoje":dias===1?"Ontem":dias<7?`Há ${dias} dias`:dias<14?"Há uma semana":dias<60?`Há ${Math.floor(dias/7)} semanas`:curta(v)};
+const ICONE={saida:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l2 3h14l2-3"/><path d="M5 17V11h14v6M12 4v7M8 11V7h8v4"/></svg>',
+  prestador:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M17 8v6M14 11h6"/></svg>',
+  novidade:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13V9l11-5v16L4 15z"/><path d="M15 9a4 4 0 0 1 0 6M7 15l1.5 5"/></svg>'};
+const FRASE={saida:"Há um novo barco a sair",prestador:"Damos as boas-vindas a um novo parceiro",novidade:"Novidade"};
+function feed(l,prest){if(!l?.length)return"";const logo=n=>(prest||[]).find(p=>p.nome===n)?.logo;
+  return secao("novidades","Novidades","O que se passa na Elolog",`<div class="sc-novs">${l.map(f=>{const t=FRASE[f.tipo]?f.tipo:"novidade",lg=f.prestador&&logo(f.prestador);
+    const quem=f.tipo==="novidade"?(f.prestador||"Equipa Elolog"):(f.prestador||"Elolog");
+    const avatar=lg?`<img src="${esc(lg)}" alt="">`:f.tipo==="novidade"&&!f.prestador?'<b>E</b>':`<i class="sc-nov-ic">${ICONE[t]}</i>`;
+    return`<article class="sc-nov sc-nov-${t}${f.cor?" sc-c-"+esc(f.cor):""}${f.fundo?" sc-com-fundo":""}"${fundo(f.fundo)}>
+      <header><span class="sc-nov-avatar" aria-hidden="true">${avatar}</span><span class="sc-nov-quem"><strong>${esc(quem)}</strong><time datetime="${esc(String(f.data||""))}">${esc(ha(f.data))}</time></span></header>
+      <span class="sc-nov-frase">${FRASE[t]}</span><h3${/^#[0-9a-f]{6}$/i.test(f.cor_titulo||"")?` style="color:${f.cor_titulo}"`:""}>${esc(f.titulo)}</h3>${f.texto?`<p>${esc(f.texto)}</p>`:""}
+      ${f.ligacao&&seguro(f.ligacao)?`<a class="sc-nov-mais" href="${esc(f.ligacao)}">Saber mais <span aria-hidden="true">→</span></a>`:t==="saida"?'<a class="sc-nov-mais" href="simulador.html">Pedir preço <span aria-hidden="true">→</span></a>':t==="prestador"?'<a class="sc-nov-mais" href="#prestadores-verificados">Conhecer <span aria-hidden="true">→</span></a>':""}</article>`}).join("")}</div>`,
+    '<p>Novas rotas, barcos a sair e parceiros que se juntam à rede, contados por quem trabalha com eles.</p>')}
 function avisos(l){if(!l?.length)return"";
-  return`<div class="sc-aviso sc-c-${esc(l[0].cor||"amarelo")}${l[0].fundo?" sc-com-fundo":""}"${fundo(l[0].fundo)} role="${l[0].cor==="vermelho"?"alert":"status"}"><button type="button" class="sc-fechar" aria-label="Fechar aviso">×</button>${l.map(a=>`<p><strong>${esc(a.titulo)}</strong>${a.texto?` ${esc(a.texto)}`:""}${a.ligacao&&seguro(a.ligacao)?` <a href="${esc(a.ligacao)}">Saber mais</a>`:""}</p>`).join("")}</div>`}
+  return`<div class="sc-aviso sc-c-${esc(l[0].cor||"amarelo")}${l[0].fundo?" sc-com-fundo":""}"${fundo(l[0].fundo)} role="${l[0].cor==="vermelho"?"alert":"status"}"><button type="button" class="sc-fechar" aria-label="Fechar aviso">×</button>${l.map(a=>`<p><strong${/^#[0-9a-f]{6}$/i.test(a.cor_titulo||"")?` style="color:${a.cor_titulo}"`:""}>${esc(a.titulo)}</strong>${a.texto?` ${esc(a.texto)}`:""}${a.ligacao&&seguro(a.ligacao)?` <a href="${esc(a.ligacao)}">Saber mais</a>`:""}</p>`).join("")}</div>`}
 function faixa(c){if(c.faixa===false)return"";const it=[];
   (c.avisos||[]).forEach(a=>it.push([a.cor==="vermelho"?"Alerta":"Aviso",a.titulo+(a.texto?" — "+a.texto:""),a.ligacao,a.cor||"amarelo",a.fundo]));
   (c.saidas||[]).forEach(x=>it.push(["Saída",`${x.origem} → ${x.destino} · parte a ${longa(x.partida)}${x.fecho_carga?` · fecho de carga a ${curta(x.fecho_carga)}`:""}${x.prestador?` · ${x.prestador}`:""}`,"#saidas"]));
@@ -61,7 +73,7 @@ function ligarCal(c){const box=document.querySelector(".sc-cal");if(!box)return;
 async function mostrar(){let c;try{c=await pedir()}catch(_){return}if(!c)return;window.elologSiteConteudo=c;
   const ref=document.getElementById("rastrear")||document.getElementById("contacto");if(!ref)return;
   const fx=faixa(c);if(fx)colocarFaixa(fx);
-  const html=saidas(c.saidas)+calendario(c)+prestadores(c.prestadores)+feed(c.feed);if(html){ref.insertAdjacentHTML("beforebegin",html);ligarCal(c)}
+  const html=saidas(c.saidas)+calendario(c)+prestadores(c.prestadores)+feed(c.feed,c.prestadores);if(html){ref.insertAdjacentHTML("beforebegin",html);ligarCal(c)}
   const av=c.faixa===false?avisos(c.avisos):"";if(av){let fechado="";try{fechado=sessionStorage.getItem("elolog_aviso_fechado")||""}catch(_){}const chave=JSON.stringify(c.avisos).length+":"+(c.avisos[0]?.titulo||"");if(fechado!==chave){document.body.insertAdjacentHTML("beforeend",av);document.querySelector(".sc-aviso .sc-fechar")?.addEventListener("click",e=>{e.currentTarget.closest(".sc-aviso").remove();try{sessionStorage.setItem("elolog_aviso_fechado",chave)}catch(_){}})}}}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mostrar);else mostrar();
 })();

@@ -35,3 +35,9 @@ font-weight:700}.elo-assistant .elo-assistant-quick button:hover{background:#F2F
 /* v163: 16 px no campo (o iPhone não faz zoom ao escrever) */
 .elo-assistant .elo-assistant-compose input{font-size:16px}
 .elo-assistant .elo-message{white-space:pre-line}
+/* v173: opções dentro da conversa (pequenas, em linha, a seguir à resposta) */
+.elo-assistant .elo-opcoes{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-start;max-width:92%;margin:-2px 0 4px}
+.elo-assistant .elo-opcoes button{min-height:34px;padding:6px 12px;border:1.5px solid #1F5F8B;border-radius:999px;background:#fff;color:#1F5F8B;font:600 13px/1.2 "Work Sans",Arial,sans-serif;cursor:pointer;text-align:left}
+.elo-assistant .elo-opcoes button:hover,.elo-assistant .elo-opcoes button:focus-visible{background:#1F5F8B;color:#fff;outline:none}
+.elo-assistant .elo-assistant-quick{display:none!important}
+@media(max-width:650px){.elo-assistant .elo-opcoes button{min-height:40px}}

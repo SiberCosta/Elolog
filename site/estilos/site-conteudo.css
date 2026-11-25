@@ -62,3 +62,18 @@
 .sc-nivel{display:inline-block;margin-bottom:4px;padding:2px 9px;border-radius:99px;font:700 .7rem/1.5 "Work Sans",Arial,sans-serif;letter-spacing:.04em;background:#eef3f7;color:#23506e}
 .sc-nivel.recomendado{background:#13293D;color:#fff}.sc-nivel.ouro{background:#fbefc7;color:#7a5600}.sc-nivel.prata{background:#e8ecef;color:#46525c}.sc-nivel.bronze{background:#f5e1d2;color:#7a4321}
 .sc-aval{display:block;margin-top:2px;color:#40566a;font-size:.85rem}.sc-aval i{font-style:normal;color:#d89a12;letter-spacing:1px}
+/* v173: novidades em cartões (quem publica, há quanto tempo, frase, título na cor escolhida) */
+.sc-novs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:18px}
+.sc-nov{display:flex;flex-direction:column;gap:8px;padding:20px;border:1px solid #dbe4eb;border-top:4px solid #1F5F8B;border-radius:16px;background:#fff;box-shadow:0 6px 20px rgba(19,41,61,.06)}
+.sc-nov-saida{border-top-color:#1F7A5C}.sc-nov-prestador{border-top-color:#B85C00}
+.sc-nov.sc-c-azul{border-top-color:#2563a8}.sc-nov.sc-c-verde{border-top-color:#1f7a5c}.sc-nov.sc-c-amarelo{border-top-color:#d89a12}.sc-nov.sc-c-vermelho{border-top-color:#c0392b}
+.sc-nov header{display:flex;align-items:center;gap:10px}
+.sc-nov-avatar{display:grid;place-items:center;flex:0 0 42px;height:42px;border-radius:50%;overflow:hidden;background:#eef3f7;color:#1F5F8B}
+.sc-nov-avatar img{width:100%;height:100%;object-fit:contain;background:#fff}.sc-nov-avatar b{color:#fff;background:#13293D;width:100%;height:100%;display:grid;place-items:center;font-size:1.1rem}
+.sc-nov-ic{display:grid;place-items:center;font-style:normal}.sc-nov-saida .sc-nov-avatar{background:#e3f3ec;color:#1F7A5C}.sc-nov-prestador .sc-nov-avatar{background:#fbeee2;color:#B85C00}
+.sc-nov-quem{display:flex;flex-direction:column;line-height:1.25;min-width:0}.sc-nov-quem strong{color:#13293D;font-size:.95rem}.sc-nov-quem time{color:#5c6e7b;font-size:.82rem}
+.sc-nov-frase{margin-top:4px;color:#1F7A5C;font:700 .75rem/1.3 "Work Sans",Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.sc-nov h3{margin:0;color:#13293D;font-size:1.15rem;line-height:1.3}.sc-nov p{margin:0;color:#40566a;line-height:1.55}
+.sc-nov-mais{align-self:flex-start;margin-top:auto;padding-top:6px;color:#1F5F8B;font-weight:700;text-decoration:none}.sc-nov-mais:hover{text-decoration:underline}
+.sc-nov.sc-com-fundo{background:var(--sc-fundo);border-color:transparent}.sc-nov.sc-com-fundo :is(.sc-nov-quem strong,.sc-nov-quem time,.sc-nov-frase,h3:not([style]),p,.sc-nov-mais){color:var(--sc-texto)}
+.sc-avatar.com-logo{background:#fff;border:1px solid #dbe4eb;overflow:hidden}.sc-avatar.com-logo img{width:100%;height:100%;object-fit:contain}

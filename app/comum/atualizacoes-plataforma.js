@@ -20,7 +20,7 @@ function desenhar(){const main=document.querySelector(".main");if(!main)return;l
   box.innerHTML=vis.slice(0,3).map(a=>{const est=a.fundo?` style="--pa-fundo:${esc(a.fundo)};--pa-texto:${claro(a.fundo)?"#13293D":"#fff"}"`:"";
     return`<div class="pa-item pa-c-${esc(a.cor||"normal")}${a.fundo?" pa-com-fundo":""}" role="${a.cor==="vermelho"?"alert":"status"}"${est}>
       <span class="pa-etiqueta">${a.cor==="vermelho"?"Alerta":a.tipo==="novidade"?"Novidade":"Aviso"}</span>
-      <p><strong>${esc(a.titulo)}</strong>${a.texto?` ${esc(a.texto)}`:""}${a.ligacao&&seguro(a.ligacao)?` <a href="${esc(a.ligacao)}">Saber mais</a>`:""}</p>
+      <p><strong${/^#[0-9a-f]{6}$/i.test(a.cor_titulo||"")?` style="color:${a.cor_titulo}!important"`:""}>${esc(a.titulo)}</strong>${a.texto?` ${esc(a.texto)}`:""}${a.ligacao&&seguro(a.ligacao)?` <a href="${esc(a.ligacao)}">Saber mais</a>`:""}</p>
       ${a.cor==="vermelho"?"":`<button type="button" class="pa-fechar" data-pa-fechar="${esc(a.id)}" aria-label="Fechar aviso">×</button>`}</div>`}).join("")}
 async function carregar(){if(!S()?.ativo?.()||typeof currentUser==="undefined"||!currentUser)return;
   try{const sb=await S().cliente();const{data,error}=await sb.rpc("plataforma_avisos");if(error)throw error;lista=Array.isArray(data)?data:[];desenhar()}catch(_){/* sem atualizações: a página continua igual */}}
