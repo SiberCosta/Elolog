@@ -61,6 +61,7 @@ function vNov(){const ps=d.pubs.filter(x=>x.tipo!=="destaque");
    :`<div class="sp-vazio">Ainda não publicou novidades nem avisos.</div>`}`}
 function vAuto(){const f=d.def.feed||{},s=d.site||{};
   return`<div class="sp-barra">${lig("spFeedMostrar",f.mostrar!==false,"Mostrar «Novidades» no site")}${maximo("spFeedMax",f.max||6,[3,4,6,8,12])}</div>
+  ${lig("spFaixa",f.faixa!==false,"Faixa a correr no topo do site (avisos, saídas e novidades)")}
   ${lig("spFeedAuto",f.auto!==false,"Novidades automáticas: empresas aprovadas (90 dias) e saídas novas (30 dias)")}
   <p class="sp-nota">O ELO usa a mesma informação: quando alguém pergunta pelo próximo barco, responde com as saídas publicadas aqui.</p>
   <h4 class="sp-sub">O site mostra agora</h4><ul class="sp-resumo"><li>${(s.saidas||[]).length} saídas previstas</li><li>${(s.prestadores||[]).length} prestadores</li>
@@ -92,6 +93,7 @@ document.addEventListener("change",e=>{const box=$("adminSiteContent"),t=e.targe
   if(t.dataset.pub)return acao(async()=>{const{error}=await(await S().cliente()).from("site_publicacoes").update({ativo:t.checked,updated_at:new Date().toISOString()}).eq("id",t.dataset.pub);if(error)throw error},t.checked?"Publicação ativa.":"Publicação escondida.");
   if(t.id==="spFeedMostrar")return acao(()=>guardarDef("feed",{mostrar:t.checked}),"Guardado.");
   if(t.id==="spFeedMax")return acao(()=>guardarDef("feed",{max:+t.value}),"Guardado.");
+  if(t.id==="spFaixa")return acao(()=>guardarDef("feed",{faixa:t.checked}),t.checked?"A faixa aparece no site.":"A faixa deixou de aparecer.");
   if(t.id==="spFeedAuto")return acao(()=>guardarDef("feed",{auto:t.checked}),"Guardado.")});
 document.addEventListener("submit",e=>{if(e.target.id!=="spForm")return;e.preventDefault();const v=id=>$(id).value.trim();
   const lig=v("spLig");if(lig&&!/^(https:\/\/(www\.)?elolog\.pt(\/|$)|\/|#|\.\.\/)/.test(lig))return aviso("A ligação tem de ser do site Elolog (ex.: /site/simulador.html).","warning");
