@@ -16,3 +16,7 @@ begin
   r := r || ' prestadores_com_media=' || (select count(*) from jsonb_array_elements(c->'prestadores') x where x ? 'media' and x ? 'nivel');
   raise exception 'RELATORIO%', r;
 end $rel$;
+-- Resultado na base real (25/11/2026, rollback): fundo_inválido_recusado=true avisos_site=No site (o «Só plataforma» não aparece no site)
+-- fundo=#13293D sem_sessão_plataforma=0 avaliar_sem_sessão_recusado=true nível_inválido_recusado=true.
+-- Cliente (encomenda posta como entregue só no teste): avaliou 4★, corrigiu para 5★ «Corrigida»; nota 9 recusada; inserção direta recusada.
+-- Administrador: lê classificações e avaliações, grava nível.
