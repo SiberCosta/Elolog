@@ -58,6 +58,12 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v174 (ELO: mais conhecimento e simulação sem voltas)
+- Simulação: quando recebe medidas, o ELO confirma («Recebi as medidas: 0,144 m³») e pergunta só o peso; aceita «não sei», «já enviei», etc. e continua pelo volume. Se não perceber duas vezes, explica de outra forma e oferece «Falar com uma pessoa» / «Cancelar». «Simular» sozinho já não é lido como cidade.
+- Perguntas a meio da simulação («o que é m³?») são respondidas e o ELO lembra a pergunta em que ia.
+- Novo assistente-saber.js: como funciona a Elolog, medir e calcular m³ (faz a conta: «quanto dá 3 caixas 60x40x40?»), embalar, o que não se envia, recolha, grupagem, fecho de carga, código ELO, rastrear, pagamentos, avaliações e níveis, criar conta, tornar-se prestador, danos e valor declarado, aéreo vs marítimo.
+- Saudação («olá») responde com o que o ELO sabe fazer.
+
 ## v173 (ELO com opções na conversa, novidades mais humanas, cor dos títulos, logótipos)
 - ELO: as sugestões aparecem dentro da conversa, logo a seguir à resposta, em botões pequenos; a zona fixa por baixo deixou de existir.
 - Site: as novidades passam a cartões com quem publica (logótipo ou iniciais), «Hoje / Ontem / Há 3 dias», uma frase («Há um novo barco a sair», «Damos as boas-vindas a um novo parceiro») e ligação útil (Pedir preço, Conhecer).
