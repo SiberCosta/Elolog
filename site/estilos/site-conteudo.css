@@ -25,3 +25,14 @@
 .sc-fechar{position:absolute;top:6px;right:6px;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#5b3a00;font-size:20px;cursor:pointer}.sc-fechar:hover{background:rgba(91,58,0,.1)}
 .sc-aviso p{margin:0;line-height:1.5}.sc-aviso p+p{margin-top:6px}.sc-aviso a{color:#5b3a00;font-weight:700}
 @media(max-width:720px){.sc-saidas{grid-template-columns:1fr}.sc-secao{padding:48px 0}.sc-saida{padding:14px}.sc-data{flex-basis:64px;height:64px}}
+/* v170: faixa de informação a correr por baixo da navegação (pára ao passar o rato ou focar; sem animação se o sistema pedir menos movimento) */
+.sc-faixa{position:relative;overflow:hidden;background:#13293D;color:#fff;font-size:.9rem;line-height:1;border-bottom:1px solid rgba(255,255,255,.08)}
+.sc-faixa.fixa{position:fixed;top:0;left:0;right:0;z-index:1001}
+.sc-faixa-trilho{display:flex;width:max-content;animation:sc-correr var(--sc-dur,30s) linear infinite}
+.sc-faixa:hover .sc-faixa-trilho,.sc-faixa:focus-within .sc-faixa-trilho{animation-play-state:paused}
+.sc-faixa ul{display:flex;flex:0 0 auto;margin:0;padding:0;list-style:none}
+.sc-faixa li{display:flex;align-items:center;gap:10px;padding:12px 28px;white-space:nowrap;border-right:1px solid rgba(255,255,255,.14)}
+.sc-faixa i{font:700 .7rem/1 "Work Sans",Arial,sans-serif;font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:#7fd6b4}
+.sc-faixa a,.sc-faixa span{color:#fff;text-decoration:none}.sc-faixa a:hover,.sc-faixa a:focus-visible{text-decoration:underline}
+@keyframes sc-correr{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.sc-faixa{overflow-x:auto}.sc-faixa-trilho{animation:none}.sc-faixa ul[aria-hidden]{display:none}}
