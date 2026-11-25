@@ -36,3 +36,22 @@
 .sc-faixa a,.sc-faixa span{color:#fff;text-decoration:none}.sc-faixa a:hover,.sc-faixa a:focus-visible{text-decoration:underline}
 @keyframes sc-correr{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.sc-faixa{overflow-x:auto}.sc-faixa-trilho{animation:none}.sc-faixa ul[aria-hidden]{display:none}}
+/* v171: cores dos anúncios (azul informação, verde boa notícia, amarelo atenção, vermelho alerta) */
+.sc-faixa li.sc-c-azul i{color:#9cc7f2}.sc-faixa li.sc-c-verde i{color:#7fd6b4}.sc-faixa li.sc-c-amarelo i{color:#ffd27a}.sc-faixa li.sc-c-vermelho i{color:#ff9d92}
+.sc-faixa li.sc-c-vermelho{background:#a3271c}.sc-faixa.alerta{background:#7a1d15}
+.sc-aviso.sc-c-azul{background:#e5f0fb;color:#173f66}.sc-aviso.sc-c-verde{background:#e3f3ec;color:#164d39}.sc-aviso.sc-c-vermelho{background:#a3271c;color:#fff}
+.sc-aviso.sc-c-azul .sc-fechar,.sc-aviso.sc-c-azul a{color:#173f66}.sc-aviso.sc-c-verde .sc-fechar,.sc-aviso.sc-c-verde a{color:#164d39}.sc-aviso.sc-c-vermelho .sc-fechar,.sc-aviso.sc-c-vermelho a{color:#fff}
+.sc-feed li[class*="sc-c-"]{padding-left:14px;border-left:4px solid}.sc-feed li.sc-c-azul{border-left-color:#2563a8}.sc-feed li.sc-c-verde{border-left-color:#1f7a5c}.sc-feed li.sc-c-amarelo{border-left-color:#d89a12}.sc-feed li.sc-c-vermelho{border-left-color:#c0392b;background:#fff7f6}
+/* v171: calendário de saídas */
+#calendario .section-shell{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.sc-cal{max-width:460px;min-width:0;padding:clamp(10px,3vw,18px);border:1px solid #dbe4eb;border-radius:14px;background:#fff}
+.sc-cal-cab{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.sc-cal-cab strong{color:#13293D}
+.sc-cal-cab button{width:40px;height:40px;border:1px solid #cfdbe4;border-radius:10px;background:#fff;color:#13293D;font-size:20px;cursor:pointer}.sc-cal-cab button:disabled{opacity:.35;cursor:default}
+.sc-cal-sem,.sc-cal-grelha{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}.sc-cal-sem span{font-size:.72rem;text-transform:uppercase;color:#5c6e7b;padding:4px 0}
+.sc-cal-grelha span,.sc-cal-grelha button{position:relative;display:grid;place-items:center;aspect-ratio:1;border-radius:10px;font-size:.92rem;color:#40566a}
+.sc-cal-grelha span.hoje{outline:1.5px solid #1F5F8B}
+.sc-cal-grelha .tem{border:1.5px solid #13293D;background:#fff;color:#13293D;font-weight:700;cursor:pointer}.sc-cal-grelha .tem:hover,.sc-cal-grelha .tem.on{background:#13293D;color:#fff}
+.sc-cal-grelha .tem i{position:absolute;top:2px;right:4px;font:700 .62rem/1 "Work Sans",Arial,sans-serif;font-style:normal;color:#1F7A5C}.sc-cal-grelha .tem.on i,.sc-cal-grelha .tem:hover i{color:#7fd6b4}
+.sc-cal-dia{max-width:460px}.sc-cal-dia:not(:empty){margin-top:16px}.sc-cal-dia h3{margin:0 0 8px;color:#13293D;font-size:1.05rem}
+.sc-cal-dia ul{margin:0 0 14px;padding:0;list-style:none}.sc-cal-dia li{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-bottom:1px solid #dbe4eb}.sc-cal-dia li span{color:#4d6170;font-size:.9rem}
+@media(min-width:900px){#calendario .section-shell{grid-template-columns:auto 1fr;column-gap:32px}#calendario .sc-cab{grid-column:1/-1}.sc-cal-dia:not(:empty){margin-top:0}}
