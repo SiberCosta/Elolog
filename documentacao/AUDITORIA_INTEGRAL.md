@@ -144,9 +144,15 @@ Os passos 1 a 18 e o reagendamento (teste 38) confirmam que o servidor impõe a 
 
 | ID | Prioridade | Problema | Estado |
 |---|---|---|---|
-| A-14 | **P1** | Num pedido de cotação (sem tarifa), ou quando o prestador indica um preço **acima** do calculado, `aceitar_simulacao` cria logo a encomenda com esse preço, **sem o cliente concordar**. No teste, o prestador mudou 1 900 € para 350 € e a encomenda nasceu a 350 €; podia ter sido 5 000 €. Além disso, o cliente não tinha onde aceitar ou recusar uma proposta (não havia ecrã que usasse `aceitar_proposta`) | **Preparado, aguarda autorização para aplicar**: migração `00209_consentimento_preco.sql` (preço igual ou abaixo do calculado → encomenda como antes; cotação ou preço acima → proposta de 7 dias que o cliente aceita ou recusa; nova `recusar_proposta`). Ecrã do cliente «Tem um preço para aceitar» (`cliente/propostas-cliente.js`) e mensagem do prestador já prontos e testados com dados simulados |
+| A-14 | **P1** | Pedido de cotação ou preço acima do calculado criava a encomenda sem o cliente concordar; o cliente não tinha onde aceitar ou recusar propostas | **Corrigido (v179–v180, migração 00209 aplicada com autorização)**. Teste em rollback: abaixo do calculado → encomenda direta; acima → proposta de 7 dias e notificação; o cliente recusa → o prestador é avisado e propõe outro preço; o cliente aceita → encomenda ao preço aceite |
 
-### Observações de regra de negócio (sem alteração)
+### Regras aprovadas e aplicadas (v180, migração 00210)
+
+- **Pagar antes de expedir:** para passar a «Expedição», os pagamentos confirmados têm de cobrir o preço total. Só o administrador da empresa pode expedir sem pagamento, indicando o motivo (fica no histórico e na auditoria). Na ficha da encomenda, o botão passa a «Expedir sem pagamento total (indique o motivo)».
+- **Aviso ao prestador:** quando o cliente aceita uma proposta de preço, o prestador recebe a notificação «O cliente aceitou o preço: nova encomenda …».
+- Teste final destas duas regras em rollback: **por repetir** (o pedido ficou à espera de uma confirmação no Supabase que não teve resposta).
+
+### Observações de regra de negócio (antes de v180)
 
 - O pagamento não é exigido para avançar etapas (só nas encomendas criadas no terreno, antes do armazém). Se a Elolog quiser «pagar antes de expedir», é uma regra a acrescentar em `encomenda_falta`.
 - `aceitar_proposta` não avisa o prestador. A encomenda aparece em «Aprovar pedidos», mas sem notificação.
