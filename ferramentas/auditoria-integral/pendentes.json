@@ -1,0 +1,744 @@
+[
+ {
+  "perfil": "cliente",
+  "pagina": "dashboard",
+  "botao": "Pagar agora",
+  "resultado": "abre ecrã/painel",
+  "janela": "",
+  "ecra": "payments"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "dashboard",
+  "botao": "Em trânsito0A caminho",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "tracking"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "dashboard",
+  "botao": "Concluídas0Entregues",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "tracking"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "dashboard",
+  "botao": "Por pagar1Pagamentos pendentes",
+  "resultado": "abre ecrã/painel",
+  "janela": "",
+  "ecra": "payments"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "dashboard",
+  "botao": "Nova simulaçãoCalcular um novo envio",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "clientSimulation"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "dashboard",
+  "botao": "Registar encomenda diretaJá negociou com um p",
+  "resultado": "funciona",
+  "janela": "Encomenda direta Registar encomenda direta × Já negociou com um presta",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "dashboard",
+  "botao": "PagamentosO que falta pagar",
+  "resultado": "abre ecrã/painel",
+  "janela": "",
+  "ecra": "payments"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "dashboard",
+  "botao": "DocumentosFaturas e comprovativos",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "documents"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "dashboard",
+  "botao": "Apoio ao clienteFalar com a equipa",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "clientSupport"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "dashboard",
+  "botao": "Pesquisar",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "tracking",
+  "botao": "Pagar agora",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "clientProfile",
+  "botao": "Eliminar conta",
+  "resultado": "pede confirmação",
+  "janela": "Eliminar conta Esta ação deve ser confirmada antes de eliminar o acess",
+  "ecra": "clientProfile"
+ },
+ {
+  "perfil": "cliente",
+  "pagina": "payments",
+  "botao": "Pagar",
+  "resultado": "pede confirmação",
+  "janela": "PAGAMENTO PAY-DEMO-001 Escolher método × Encomenda ELO_TRAN-000001 900",
+  "ecra": "payments"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "Minhas recolhas1 por concluir",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerFieldTeam"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "Minhas entregas0 por concluir",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "Ocorrências0 por resolver",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "Serviços de hoje00 em execução",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "Por realizar1Atribuídos a si",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "Atrasados0Intervenção prioritária",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "Recolhas1Pendentes",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "Entregas0Pendentes",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "Ocorrências abertas0Aguardam resolução",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "Ver rota",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "—Recolha, ELO_TRAN-000001Comercial Atlântico ",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "providerFieldTeam",
+  "botao": "Ver serviço",
+  "resultado": "funciona",
+  "janela": "undefined, Recolha × Comercial Atlântico Demo Contacto +351 910 000 00",
+  "ecra": "providerFieldTeam"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "payments",
+  "botao": "Pagar",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "terreno",
+  "pagina": "clientProfile",
+  "botao": "Eliminar conta",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "ELO_TRAN-000001Comercial Atlântico Demo, Lisb",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerOrder"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Criar encomendaRegisto direto com preço",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerDirectSimulation"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Simular encomendaCalcular antes de criar",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerDirectSimulation"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Aprovar pedidosConfirmar e encaminhar",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerAprovacao"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Programar recolhasMotorista e viatura",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerRecolha"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "RecebimentosConfirmar pagamentos",
+  "resultado": "abre ecrã/painel",
+  "janela": "",
+  "ecra": "providerFinanceiro"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Centro documentalGuias e comprovativos",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "centroDocumental"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Aprovar",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerAprovacao"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Confirmar",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerFinanceiro"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Aprovações em espera1 por aprovar›",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerAprovacao"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Pagamentos por receber1 pagamento(s)›",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerFinanceiro"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Pesquisar",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Abrir",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerOrder"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerDirectSimulation",
+  "botao": "Remover volume",
+  "resultado": "abre ecrã/painel",
+  "janela": "",
+  "ecra": "providerDirectSimulation"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerDirectSimulation",
+  "botao": "Limpar formulário",
+  "resultado": "abre ecrã/painel",
+  "janela": "",
+  "ecra": "providerDirectSimulation"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerAprovacao",
+  "botao": "Rejeitar",
+  "resultado": "pede confirmação",
+  "janela": "Rejeitar encomenda Altere o que precisar e guarde no fim. × Encomenda ",
+  "ecra": "providerAprovacao"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerBoard",
+  "botao": "Abrir",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerOrderHistory",
+  "botao": "Abrir registo",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerSettings",
+  "botao": "Apagar",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerManifestos",
+  "botao": "Confirmar",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerManifestos",
+  "botao": "Anular",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerComplaints",
+  "botao": "Abertas",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerComplaints"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerComplaints",
+  "botao": "Em tratamento",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerComplaints"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerComplaints",
+  "botao": "Resolvidas",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerComplaints"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerComplaints",
+  "botao": "Escaladas",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerComplaints"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerFieldTeam",
+  "botao": "Ver planeamento",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerFieldTeam",
+  "botao": "Adicionar viatura",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerFinanceiro",
+  "botao": "Histórico",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerFinanceiro"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerFinanceiro",
+  "botao": "Apagar",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "centroDocumental",
+  "botao": "Abrir",
+  "resultado": "funciona",
+  "janela": "Comprovativo de pagamento EL-RCP-2026-000001 versão 1 · encomenda ELO-",
+  "ecra": "centroDocumental"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "centroDocumental",
+  "botao": "Descarregar PDF",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "centroDocumental"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "centroDocumental",
+  "botao": "Versões anteriores0",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "centroDocumental"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerEmployees",
+  "botao": "Criar funcionário",
+  "resultado": "funciona",
+  "janela": "Criar funcionário × Nome completo E-mail / utilizador Número interno T",
+  "ecra": "providerEmployees"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerEmployees",
+  "botao": "Ações ⌄",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerEmployees",
+  "botao": "Exportar histórico",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerEmployees"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Por receber900,00 €1 pagamento",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerFinanceiro"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "providerOrder",
+  "botao": "Declarações (6 modelos)",
+  "resultado": "funciona",
+  "janela": "Encomenda elo_tran-000001 Declarações do processo × 1 Pessoas 2 Viatur",
+  "ecra": "providerOrder"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Opções",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Por aprovar1Confirmar e encaminhar1",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerAprovacao"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "dashboard",
+  "botao": "Aprovar pedidos",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "providerAprovacao"
+ },
+ {
+  "perfil": "prestador",
+  "pagina": "payments",
+  "botao": "Pagar",
+  "resultado": "pede confirmação",
+  "janela": "PAGAMENTO PAY-DEMO-001 Escolher método × Encomenda ELO_TRAN-000001 900",
+  "ecra": "payments"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Ecrã inteiro (modo apresentação)",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Atualizar agora",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "2 assuntos esperam por uma decisão sua.",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "3 navios levam carga Elolog neste momento.",
+  "resultado": "falhou: Page.click: Timeout 3000ms exceeded.\nCall log:\n  - waiting for locator(\"[data-au"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "94,8 % das encomendas foram levantadas dentro",
+  "resultado": "falhou: Page.click: Timeout 3000ms exceeded.\nCall log:\n  - waiting for locator(\"[data-au"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "14 prestadores trabalham hoje com a Elolog.",
+  "resultado": "falhou: Page.click: Timeout 3000ms exceeded.\nCall log:\n  - waiting for locator(\"[data-au"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Frase 1 de 4",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Frase 2 de 4",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Frase 3 de 4",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Frase 4 de 4",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Ilhéu das Rolas viagem 118Em rota LisboaSão T",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Monte Cara viagem 54Em rota LisboaSão Tomé 6 ",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Atlântico Sul viagem 31Atrasada LisboaSão Tom",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Ver todas as operações",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "adminOperations"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Código↕",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Origem↕",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Destino↕",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Chegada prevista↕",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Transporte↕",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Prestador↕",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "Estado↕",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "dashboard"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "9Aprovação10 %",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "adminOperations"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "dashboard",
+  "botao": "14Agendamento15 %",
+  "resultado": "funciona",
+  "janela": "",
+  "ecra": "adminOperations"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "adminOperations",
+  "botao": "Auditoria",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "adminActiveProviders",
+  "botao": "Suspender prestador",
+  "resultado": "pede confirmação",
+  "janela": "Suspender Transatlântico Demo, Lda.? × Enquanto estiver suspensa, a em",
+  "ecra": "adminActiveProviders"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "adminActiveProviders",
+  "botao": "Eliminar prestador",
+  "resultado": "falhou: Page.click: Timeout 3000ms exceeded.\nCall log:\n  - waiting for locator(\"[data-au"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "adminProviderDocuments",
+  "botao": "Suspender",
+  "resultado": "abre ecrã/painel",
+  "janela": "",
+  "ecra": "adminProviderDocuments"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "adminClients",
+  "botao": "Bloquear",
+  "resultado": "pede confirmação",
+  "janela": "Bloquear cliente × Bloquear a conta de Comercial Atlântico Demo por su",
+  "ecra": "adminClients"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "adminTariffs",
+  "botao": "Suspender",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "tracking",
+  "botao": "Pagar agora",
+  "resultado": "não encontrado"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "payments",
+  "botao": "Pagar",
+  "resultado": "pede confirmação",
+  "janela": "PAGAMENTO PAY-DEMO-001 Escolher método × Encomenda ELO_TRAN-000001 900",
+  "ecra": "payments"
+ },
+ {
+  "perfil": "admin",
+  "pagina": "clientProfile",
+  "botao": "Eliminar conta",
+  "resultado": "pede confirmação",
+  "janela": "Eliminar conta Esta ação deve ser confirmada antes de eliminar o acess",
+  "ecra": "clientProfile"
+ }
+]
