@@ -61,7 +61,7 @@ async function criarPessoal(){const nome=$("profileName").value.trim(),email=$("
   if(password.length<8)return msg("A palavra-passe deve ter pelo menos 8 caracteres.");if(password!==confirmar)return msg("As palavras-passe não coincidem.");
   if(!$("profileConsent").checked)return msg("Leia e aceite a política de privacidade.");
   pendente={nome,email,phone,nif,password,canal:tel?"telemovel":"email",contacto:tel?phone:email};const b=$("createProfileButton");b.disabled=true;msg("","info");
-  try{if(online()){if(tel){const sb=await S().cliente(),{error}=await sb.auth.signUp({phone,password,options:{data:{nome,nif,telefone:phone,email_contacto:email,tipo_conta:"pessoal"}}});
+  try{if(online()){if(tel){await window.elologSenhaSegura?.exigir?.(password);const sb=await S().cliente(),{error}=await sb.auth.signUp({phone,password,options:{data:{nome,nif,telefone:phone,email_contacto:email,tipo_conta:"pessoal"}}});
         if(error)throw error;passoCodigo(true,`Enviámos um SMS com um código de 6 dígitos para <strong>${phone}</strong>.`)}
       else{const r=await S().registarCliente({name:nome,nif,email,phone,password,tipoConta:"pessoal"});
         if(r.confirmar){msg("Conta criada. Enviámos um email para "+email+": abra a ligação para confirmar e depois inicie sessão.","success");setTimeout(()=>{window.closeProfileRegistration?.();$("directLoginEmail").value=email},2500)}else fim()}}

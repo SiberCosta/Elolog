@@ -13,7 +13,7 @@ const NOME={aprovacao:"Aprovação",agendamento:"Recolha por atribuir",recolha:"
 const CODIGO={};Object.entries(NOME).forEach(([k,v])=>CODIGO[v.toLowerCase()]=k);
 Object.assign(CODIGO,{"agendamento":"agendamento","armazenamento":"armazenamento","destino":"destino","levantado":"entregue","levantada":"entregue","em transito":"em_transito"});
 /* passos permitidos (iguais a encomenda_transicoes no servidor, que continua a ser quem decide) */
-const SEGUINTES={aprovacao:["agendamento","armazenamento","cancelada"],agendamento:["recolha","cancelada"],recolha:["armazenamento","cancelada"],
+const SEGUINTES={aprovacao:["agendamento","armazenamento","cancelada"],agendamento:["recolha","cancelada"],recolha:["armazenamento","agendamento","cancelada"],
   armazenamento:["expedicao","cancelada"],expedicao:["em_transito"],em_transito:["destino"],destino:["disponivel","entregue"],disponivel:["entregue"]};
 const estadoDe=o=>String(o?.status||o?.stage||"");
 const codigoDe=o=>CODIGO[estadoDe(o).toLowerCase()]||"";
@@ -44,11 +44,11 @@ function tabela(linhas){if(!linhas.length)return'<div class="provider-order-empt
     linhas.slice().reverse().map(h=>`<tr${FECHADA.test(NOME[h.para]||h.para||"")?' class="oe-linha-fecho"':""}><td>${esc(dataHora(h.created_at))}</td><td>${esc(h.responsavel||"—")}</td><td>${esc(h.de?NOME[h.de]||h.de:"Criação")}</td><td><b>${esc(NOME[h.para]||h.para)}</b></td><td>${esc(h.nota||h.motivo_excecao||"—")}</td></tr>`).join("")}</tbody></table></div>`}
 
 /* lista de estados: só os passos que o servidor aceita a partir do atual */
-function opcoesServidor(o){const sel=$("providerNewStatus");if(!sel)return;const atual=codigoDe(o),prox=SEGUINTES[atual]||[];
+function opcoesServidor(o){const sel=$("providerNewStatus");if(!sel)return;const atual=codigoDe(o),prox=SEGUINTES[atual]||[];const reag=c=>atual==="recolha"&&c==="agendamento";
   if(!prox.length){sel.innerHTML=`<option value="">Sem passos disponíveis</option>`;sel.disabled=true;return}
-  sel.innerHTML=`<option value="">Escolher o próximo estado…</option>`+prox.map(c=>`<option value="${c}">${NOME[c]}${c==="cancelada"?" (indique o motivo)":""}</option>`).join("");
+  sel.innerHTML=`<option value="">Escolher o próximo estado…</option>`+prox.map(c=>`<option value="${c}">${reag(c)?"Reagendar a recolha (indique o motivo)":NOME[c]+(c==="cancelada"?" (indique o motivo)":"")}</option>`).join("");
   sel.dataset.servidor="1";const nota=$("providerStatusNote");
-  sel.onchange=()=>{if(nota)nota.placeholder=sel.value==="cancelada"?"Motivo do cancelamento (obrigatório). O cliente vê esta observação.":"Indique o motivo ou detalhe da alteração…"}}
+  sel.onchange=()=>{if(nota)nota.placeholder=sel.value==="cancelada"?"Motivo do cancelamento (obrigatório). O cliente vê esta observação.":reag(sel.value)?"Porque falhou a recolha e o que fica combinado (obrigatório). O cliente vê esta observação.":"Indique o motivo ou detalhe da alteração…"}}
 
 async function completar(index){const o=operations[index],detail=$("providerOrderDetail");if(!o||!detail||detail.hidden)return;
   const caixa=detail.querySelector(".provider-order-change"),hist=detail.querySelector(".provider-order-history");
@@ -61,8 +61,9 @@ async function completar(index){const o=operations[index],detail=$("providerOrde
   if(fechada(o)&&caixa){const f=[...linhas].reverse().find(h=>h.para==="cancelada"||h.para==="entregue");
     if(f)caixa.innerHTML=quadroFechado(o,{nota:f.nota||f.motivo_excecao||"",quem:f.responsavel||"",quando:dataHora(f.created_at)})}}
 
-async function mudarNoServidor(index){const o=operations[index],sel=$("providerNewStatus"),nota=$("providerStatusNote"),para=sel?.value,txt=nota?.value.trim()||"";
+async function mudarNoServidor(index){const o=operations[index],sel=$("providerNewStatus"),nota=$("providerStatusNote"),para=sel?.value,txt=nota?.value.trim()||"",estadoAtual=codigoDe(o);
   if(!para){aviso("Escolha o próximo estado da encomenda.","warning");sel?.focus();return}
+  if(para==="agendamento"&&String(estadoAtual??"")==="recolha"&&txt.length<5){aviso("Indique porque falhou a recolha e o que fica combinado. O cliente vê esta observação.","warning");nota?.focus();return}
   if(para==="cancelada"&&txt.length<5){aviso("Indique o motivo do cancelamento. O cliente vê esta observação.","warning");nota?.focus();return}
   const botao=$("providerOrderDetail")?.querySelector(".provider-order-change-grid button");if(botao){botao.disabled=true;botao.textContent="A gravar…"}
   try{const sb=await P().sb();const{error}=await sb.rpc("transitar_encomenda",{p_encomenda:o.servidor.id,p_para:para,p_nota:txt||null});if(error)throw error;

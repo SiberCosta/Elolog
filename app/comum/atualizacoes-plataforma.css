@@ -29,3 +29,10 @@ html body .pa-item p,html body .pa-item p strong,html body .pa-item a{color:inhe
 .reenv-conf{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:10050;width:min(440px,calc(100vw - 24px));padding:16px 44px 16px 16px;border:1px solid #dbe4eb;border-left:4px solid #d89a12;border-radius:12px;background:#fff;box-shadow:0 12px 32px rgba(14,36,51,.22);color:#13293D;font-size:14px;line-height:1.5}
 .reenv-conf p{margin:4px 0 10px}.reenv-conf .reenv-btn{min-height:44px}.reenv-info{display:block;margin-top:8px;color:#40566a}
 .reenv-fechar{position:absolute;top:6px;right:6px;width:34px;height:34px;border:0;border-radius:8px;background:none;font-size:20px;cursor:pointer;color:#40566a}
+/* preços para o cliente aceitar (cliente/propostas-cliente.js) */
+.pc-cartao{margin-bottom:16px;padding:20px;border-left:4px solid #1F5F8B}.pc-cartao header h3{margin:0 0 4px;color:#13293D;font-size:18px}.pc-cartao header p{margin:0 0 12px;color:#5c6e7b;font-size:14px}
+.pc-linha{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 0;border-top:1px solid #e6edf2}.pc-linha>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pc-linha strong{color:#13293D;font-size:20px}.pc-linha small{color:#5c6e7b;font-size:13px}.pc-linha p{margin:4px 0 0;color:#40566a;font-size:13px}
+.pc-acoes{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}.pc-acoes button{min-height:44px}.pc-motivo{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:#40566a}
+.pc-motivo input{min-height:44px;padding:0 10px;border:1px solid #cfdbe4;border-radius:8px;font-size:16px;font-weight:400}
+@media(max-width:720px){.pc-linha{flex-direction:column;align-items:stretch}.pc-acoes button{flex:1}}

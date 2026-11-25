@@ -1,0 +1,493 @@
+{
+ "cliente": {
+  "total": 57,
+  "abre": {
+   "dashboard": [
+    "showProviderPage"
+   ],
+   "operations": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "proposals": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "clientProfile": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "tracking": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "clientSupport": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "clientSimulation": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "documents": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "payments": [
+    "showPage",
+    "showProviderPage"
+   ]
+  },
+  "visiveisMenu": 11
+ },
+ "terreno": {
+  "total": 57,
+  "abre": {
+   "providerDirectSimulation": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerFieldTeam": [
+    "showPage",
+    "showProviderPage"
+   ]
+  },
+  "visiveisMenu": 11
+ },
+ "prestador": {
+  "total": 57,
+  "abre": {
+   "dashboard": [
+    "showProviderPage"
+   ],
+   "operations": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "proposals": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerOrder": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerOrderHistory": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerAutomation": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerClientList": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerDirectSimulation": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerClientProfile": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerClientHistory": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerCotacao": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerAprovacao": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerBoard": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerPagamento": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerDocumentos": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerPagamentos": [
+    "showPage"
+   ],
+   "providerFinanceiro": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerRecolha": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerArmazenamento": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerExpedicao": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerMaritimeCalendar": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerManifestos": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerTransito": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerDestino": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerDisponivel": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerLevantamento": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerFieldTeam": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerEmployees": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerSupport": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerComplaints": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerReports": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerSecurity": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerSubscription": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "providerSettings": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "clientProfile": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "tracking": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "clientSupport": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "clientSimulation": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "documents": [
+    "showPage",
+    "showProviderPage"
+   ],
+   "payments": [
+    "showPage",
+    "showProviderPage"
+   ]
+  },
+  "visiveisMenu": 14
+ },
+ "admin": {
+  "total": 59,
+  "abre": {
+   "dashboard": [
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "operations": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "proposals": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "providerOrder": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerOrderHistory": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerAutomation": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerClientList": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerDirectSimulation": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerClientProfile": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerClientHistory": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerCotacao": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerAprovacao": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerBoard": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerPagamento": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerDocumentos": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerPagamentos": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerFinanceiro": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "providerRecolha": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerArmazenamento": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerExpedicao": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerMaritimeCalendar": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerManifestos": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerTransito": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerDestino": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerDisponivel": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerLevantamento": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerFieldTeam": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerEmployees": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerSupport": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerComplaints": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerReports": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "providerSecurity": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "providerSubscription": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "providerSettings": [
+    "showPage",
+    "showAdminPage"
+   ],
+   "clientProfile": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "tracking": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "clientSupport": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "clientSimulation": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "documents": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "payments": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminProviderRequests": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminActiveProviders": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminSuspendedProviders": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminProviderDocuments": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminPlans": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminBilling": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminOperations": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminClients": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminAccess": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminCommissions": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminTariffs": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminCompliance": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminSupport": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminAudit": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminReports": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminSecurity": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminSite": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminClassif": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ],
+   "adminSettings": [
+    "showPage",
+    "showProviderPage",
+    "showAdminPage"
+   ]
+  },
+  "visiveisMenu": 20
+ }
+}

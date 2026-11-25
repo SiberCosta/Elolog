@@ -1,0 +1,1 @@
+{"cliente": {"paginas": 8, "pares": 34, "não testado": 6, "funciona": 28}, "terreno": {"paginas": 9, "pares": 52, "funciona": 47, "não testado": 5}, "prestador": {"paginas": 29, "pares": 170, "funciona": 124, "não testado": 33, "sem efeito (filtro já ativo)": 13}, "admin": {"paginas": 25, "pares": 97, "funciona": 86, "não testado": 9, "sem efeito (filtro já ativo)": 2}}
