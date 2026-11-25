@@ -61,10 +61,12 @@ window.elologMfaEmpresa=async function(c){cred=c;erro("");info("");
   try{const sb=await S().cliente(),{data:f}=await sb.auth.mfa.listFactors(),v=(f?.totp||[]).find(x=>x.status==="verified");if(v){temApp=true;fator=v.id}}catch(_){}
   canais=null;try{canais=await S().chamarFuncao("recuperar-acesso",{acao:"canais_codigo"})}catch(_){}
   if(temApp)return ecra("app");   // quem já usa a aplicação continua a usá-la (e pode pedir o código por email ou SMS)
-  if(canais?.smsDisponivel){const e=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]);let ult="email";try{ult=localStorage.getItem("elolog_mfa_canal")||"email"}catch(_){}
-    $("mfaEscolha").innerHTML=[["email","Por email",canais.email],["sms","Por SMS",canais.sms]].map(([k,t,d])=>`<button type="button" class="mfa-canal${k===ult?" sugerido":""}" data-canal="${k}"><strong>${t}</strong><span>${e(d||"")}</span></button>`).join("");
-    ecra("escolher");$("mfaTitulo").textContent="Como quer receber o código?";$("mfaTexto").textContent="Enviamos um código de 6 dígitos que vale 10 minutos. Escolha onde o quer receber.";return}
-  canal="email";ecra("email");$("mfaTexto").textContent="A enviar um código de 6 dígitos para o seu email…";enviarEmail()};
+  /* v175: o código segue logo, sem passo de escolha — pelo último canal usado (email por omissão). Antes, com SMS disponível,
+     aparecia «Como quer receber o código?» com o texto «Enviamos um código…» e nada era enviado até se tocar numa opção,
+     o que parecia «o primeiro email não chega». Quem preferir o outro canal tem o botão «Receber por SMS/email» no mesmo ecrã. */
+  let ult="email";try{ult=localStorage.getItem("elolog_mfa_canal")||"email"}catch(_){}
+  canal=ult==="sms"&&canais?.smsDisponivel?"sms":"email";ecra("email");
+  $("mfaTexto").textContent=canal==="sms"?"A enviar um código de 6 dígitos por SMS…":"A enviar um código de 6 dígitos para o seu email…";enviarEmail()};
 
 async function verificar(){const codigo=$("mfaCodigo").value.trim(),b=$("mfaVerificar");if(!/^\d{6}$/.test(codigo))return erro("Escreva os 6 dígitos do código.");b.disabled=true;erro("");
   try{const sb=await S().cliente();
