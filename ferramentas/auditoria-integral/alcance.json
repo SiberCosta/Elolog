@@ -1,0 +1,515 @@
+{
+ "cliente": {
+  "paginas": [
+   "dashboard",
+   "tracking",
+   "clientSimulation",
+   "payments"
+  ],
+  "menus": [
+   [
+    "Início",
+    "dashboard"
+   ],
+   [
+    "Encomendas",
+    "tracking"
+   ],
+   [
+    "Nova simulação",
+    "clientSimulation"
+   ],
+   [
+    "Criar encomenda",
+    "clientSimulation"
+   ],
+   [
+    "Pagamentos",
+    "payments"
+   ]
+  ]
+ },
+ "terreno": {
+  "paginas": [
+   "providerFieldTeam"
+  ],
+  "menus": [
+   [
+    "Painel",
+    "providerFieldTeam"
+   ],
+   [
+    "Recolhas",
+    "providerFieldTeam"
+   ],
+   [
+    "Entregas",
+    "providerFieldTeam"
+   ],
+   [
+    "Rota",
+    "providerFieldTeam"
+   ],
+   [
+    "Pagamentos",
+    "providerFieldTeam"
+   ],
+   [
+    "Ocorrências",
+    "providerFieldTeam"
+   ],
+   [
+    "Histórico",
+    "providerFieldTeam"
+   ],
+   [
+    "O meu perfil",
+    "providerFieldTeam"
+   ],
+   [
+    "Chat da equipa1",
+    "providerFieldTeam"
+   ]
+  ]
+ },
+ "prestador": {
+  "paginas": [
+   "dashboard",
+   "providerCotacao",
+   "provConcluidos",
+   "providerDirectSimulation",
+   "providerDirectOrders",
+   "providerAprovacao",
+   "providerOrder",
+   "providerBoard",
+   "providerOrderHistory",
+   "providerRecolha",
+   "providerFieldTeam",
+   "terrenoMotorista",
+   "terrenoPainel",
+   "providerSettings",
+   "providerArmazenamento",
+   "providerExpedicao",
+   "providerManifestos",
+   "providerMaritimeCalendar",
+   "providerTransito",
+   "providerDestino",
+   "providerDisponivel",
+   "providerLevantamento",
+   "providerClientList",
+   "providerClientProfile",
+   "providerSupport",
+   "providerComplaints",
+   "providerFinanceiro",
+   "centroDocumental",
+   "providerDocumentos",
+   "providerReports",
+   "providerEmployees",
+   "providerSecurity",
+   "provAuditoria",
+   "providerSubscription",
+   "integracoesPagina"
+  ],
+  "menus": [
+   [
+    "Painel",
+    "dashboard"
+   ],
+   [
+    "Propostas",
+    "dashboard"
+   ],
+   [
+    "Pedidos recebidos",
+    "providerCotacao"
+   ],
+   [
+    "Criar cotação",
+    "providerCotacao"
+   ],
+   [
+    "Enviadas",
+    "providerCotacao"
+   ],
+   [
+    "Aceites",
+    "providerCotacao"
+   ],
+   [
+    "Recusadas",
+    "providerCotacao"
+   ],
+   [
+    "Pedidos concluídos",
+    "provConcluidos"
+   ],
+   [
+    "Encomendas1",
+    "provConcluidos"
+   ],
+   [
+    "Criar encomenda",
+    "providerDirectSimulation"
+   ],
+   [
+    "Simular encomenda",
+    "providerDirectSimulation"
+   ],
+   [
+    "Encomendas diretas",
+    "providerDirectOrders"
+   ],
+   [
+    "Aprovar pedidos1",
+    "providerAprovacao"
+   ],
+   [
+    "Atualizar estados",
+    "providerOrder"
+   ],
+   [
+    "Quadro de encomendas",
+    "providerBoard"
+   ],
+   [
+    "Histórico",
+    "providerOrderHistory"
+   ],
+   [
+    "Recolhas e entregas",
+    "providerOrderHistory"
+   ],
+   [
+    "Programar recolhas",
+    "providerRecolha"
+   ],
+   [
+    "Recolhas",
+    "providerFieldTeam"
+   ],
+   [
+    "Entregas",
+    "providerFieldTeam"
+   ],
+   [
+    "Serviços ao vivo",
+    "terrenoMotorista"
+   ],
+   [
+    "Acompanhamento ao vivo",
+    "terrenoPainel"
+   ],
+   [
+    "Ocorrências",
+    "providerFieldTeam"
+   ],
+   [
+    "Armazém",
+    "providerFieldTeam"
+   ],
+   [
+    "Armazéns e moradas",
+    "providerSettings"
+   ],
+   [
+    "Receção e localização",
+    "providerArmazenamento"
+   ],
+   [
+    "Expedição",
+    "providerExpedicao"
+   ],
+   [
+    "Manifestos de carga",
+    "providerManifestos"
+   ],
+   [
+    "Calendário marítimo",
+    "providerMaritimeCalendar"
+   ],
+   [
+    "Em trânsito",
+    "providerMaritimeCalendar"
+   ],
+   [
+    "Em trânsito",
+    "providerTransito"
+   ],
+   [
+    "No destino",
+    "providerDestino"
+   ],
+   [
+    "Disponível",
+    "providerDisponivel"
+   ],
+   [
+    "Entrega e levantamento",
+    "providerLevantamento"
+   ],
+   [
+    "Clientes e apoio",
+    "providerLevantamento"
+   ],
+   [
+    "Lista de clientes",
+    "providerClientList"
+   ],
+   [
+    "Ficha do cliente",
+    "providerClientProfile"
+   ],
+   [
+    "Pedidos de apoio",
+    "providerSupport"
+   ],
+   [
+    "Reclamações",
+    "providerComplaints"
+   ],
+   [
+    "Equipa",
+    "providerComplaints"
+   ],
+   [
+    "Agenda de serviços",
+    "providerFieldTeam"
+   ],
+   [
+    "Painel do terreno",
+    "providerFieldTeam"
+   ],
+   [
+    "Motoristas e operadores",
+    "providerFieldTeam"
+   ],
+   [
+    "Viaturas",
+    "providerFieldTeam"
+   ],
+   [
+    "Financeiro",
+    "providerFieldTeam"
+   ],
+   [
+    "Resumo",
+    "providerFinanceiro"
+   ],
+   [
+    "Recebimentos",
+    "providerFinanceiro"
+   ],
+   [
+    "Faturação",
+    "providerFinanceiro"
+   ],
+   [
+    "Registar fatura",
+    "providerFinanceiro"
+   ],
+   [
+    "Regras de cobrança",
+    "providerFinanceiro"
+   ],
+   [
+    "Histórico",
+    "providerFinanceiro"
+   ],
+   [
+    "Documentos",
+    "providerFinanceiro"
+   ],
+   [
+    "Centro documental",
+    "centroDocumental"
+   ],
+   [
+    "Documentos",
+    "providerDocumentos"
+   ],
+   [
+    "Relatórios",
+    "providerReports"
+   ],
+   [
+    "Comunicação",
+    "providerReports"
+   ],
+   [
+    "Chat da equipa1",
+    "providerReports"
+   ],
+   [
+    "Email1",
+    "providerReports"
+   ],
+   [
+    "Gestão",
+    "providerReports"
+   ],
+   [
+    "Dados da empresa",
+    "providerSettings"
+   ],
+   [
+    "Funcionários",
+    "providerEmployees"
+   ],
+   [
+    "Segurança e histórico",
+    "providerSecurity"
+   ],
+   [
+    "Auditoria",
+    "provAuditoria"
+   ],
+   [
+    "Subscrição",
+    "providerSubscription"
+   ],
+   [
+    "Pagamentos online",
+    "providerSubscription"
+   ],
+   [
+    "Integrações (webhooks)",
+    "integracoesPagina"
+   ]
+  ]
+ },
+ "admin": {
+  "paginas": [
+   "dashboard",
+   "adminSettings",
+   "adminProviderRequests",
+   "adminActiveProviders",
+   "adminSuspendedProviders",
+   "adminProviderDocuments",
+   "adminClassif",
+   "adminOperations",
+   "adminClients",
+   "adminDirectOrders",
+   "adminPlans",
+   "adminBilling",
+   "adminTariffs",
+   "adminCommissions",
+   "adminCompliance",
+   "adminSecurity",
+   "adminAccess",
+   "adminSupport",
+   "adminAudit",
+   "adminReports",
+   "adminSite"
+  ],
+  "menus": [
+   [
+    "Centro de comando",
+    "adminSettings"
+   ],
+   [
+    "Pedidos de inscrição",
+    "adminProviderRequests"
+   ],
+   [
+    "Ativos",
+    "adminActiveProviders"
+   ],
+   [
+    "Suspensos",
+    "adminSuspendedProviders"
+   ],
+   [
+    "Documentação",
+    "adminProviderDocuments"
+   ],
+   [
+    "Classificações",
+    "adminClassif"
+   ],
+   [
+    "Operações",
+    "adminOperations"
+   ],
+   [
+    "Clientes",
+    "adminClients"
+   ],
+   [
+    "Criar encomenda",
+    "adminClients"
+   ],
+   [
+    "Encomendas diretas",
+    "adminDirectOrders"
+   ],
+   [
+    "Planos",
+    "adminPlans"
+   ],
+   [
+    "Faturação",
+    "adminBilling"
+   ],
+   [
+    "Regras de cobrança",
+    "adminTariffs"
+   ],
+   [
+    "Comissões",
+    "adminCommissions"
+   ],
+   [
+    "Documentos e conformidade",
+    "adminCompliance"
+   ],
+   [
+    "Segurança e auditoria",
+    "adminSecurity"
+   ],
+   [
+    "Funcionários e acessos",
+    "adminAccess"
+   ],
+   [
+    "Apoio e reclamações",
+    "adminSupport"
+   ],
+   [
+    "Email1",
+    "adminSupport"
+   ],
+   [
+    "Chat da equipa1",
+    "adminSupport"
+   ],
+   [
+    "Auditoria do prestador",
+    "adminAudit"
+   ],
+   [
+    "Relatórios",
+    "adminReports"
+   ],
+   [
+    "Saídas e calendário",
+    "adminSite"
+   ],
+   [
+    "Prestadores",
+    "adminSite"
+   ],
+   [
+    "Novidades e avisos",
+    "adminSite"
+   ],
+   [
+    "Automatização",
+    "adminSite"
+   ],
+   [
+    "Configurações",
+    "adminSettings"
+   ]
+  ]
+ }
+}

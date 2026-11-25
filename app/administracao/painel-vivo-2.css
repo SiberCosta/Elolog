@@ -91,3 +91,5 @@
 /* v160: letra mínima 12 px nas pastilhas e no n.º de viagem; ligações com área de toque de 24 px */
 html body .pv .pv-pill{font-size:12px!important}html body .pv :is(.pv-row,.pv-acomp) strong small{font-size:12px!important}html body .pv .pv-lig{display:inline-flex!important;align-items:center}
 html:not(#a):not(#b) body .pv .pv-lig{min-height:24px!important;padding:4px 0!important}html body .pv li small{font-size:12px!important}
+/* v176 (auditoria): alvos de toque maiores no telemóvel — períodos, ordenação das tabelas e ligações do centro de comando */
+@media(max-width:900px){#dashboard :is(.pv-per,.pa-periodo){min-height:40px;padding-left:12px;padding-right:12px}#dashboard .pv-th{min-height:36px}#dashboard .pv-lig{display:inline-flex;align-items:center;min-height:36px}}
