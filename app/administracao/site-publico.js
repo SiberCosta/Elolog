@@ -21,9 +21,9 @@ function botao(){if($("adminSiteBtn"))return;const cfg=document.querySelector('#
 async function ler(){const sb=await S().cliente(),hoje=new Date().toISOString().slice(0,10);
   const[a,b,c,e,f]=await Promise.all([sb.from("site_definicoes").select("chave,valor"),
     sb.from("viagens_maritimas").select("id,navio,viagem,porto_origem,porto_destino,partida,chegada,fecho_carga,estado,publicada,empresa_id").gte("partida",hoje).order("partida").limit(200),
-    sb.from("empresas_disponiveis").select("id,nome,cidade").order("nome"),sb.from("site_publicacoes").select("*").order("created_at",{ascending:false}).limit(200),sb.rpc("site_conteudo")]);
+    sb.from("empresas").select("id,nome,nome_comercial,cidade").eq("estado","aprovada").order("nome"),sb.from("site_publicacoes").select("*").order("created_at",{ascending:false}).limit(200),sb.rpc("site_conteudo")]);
   for(const r of[a,b,c,e])if(r.error)throw r.error;
-  const def={};(a.data||[]).forEach(x=>def[x.chave]=x.valor||{});d={def,viagens:b.data||[],empresas:c.data||[],pubs:e.data||[],site:f.data||{}}}
+  const def={};(a.data||[]).forEach(x=>def[x.chave]=x.valor||{});d={def,viagens:b.data||[],empresas:(c.data||[]).map(x=>({id:x.id,nome:x.nome_comercial||x.nome,cidade:x.cidade})),pubs:e.data||[],site:f.data||{}}}
 async function guardarDef(chave,muda){const v={...(d.def[chave]||{}),...muda};const sb=await S().cliente();
   const{error}=await sb.from("site_definicoes").upsert({chave,valor:v,updated_at:new Date().toISOString()});if(error)throw error;d.def[chave]=v}
 const lig=(id,on,txt)=>`<label class="sp-lig"><input type="checkbox" id="${id}" ${on?"checked":""}> ${esc(txt)}</label>`;
