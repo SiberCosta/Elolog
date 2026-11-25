@@ -59,6 +59,7 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
 ## v163 (entrada por email para todos)
+- Auditoria do ELO (`documentacao/AUDITORIA_ELO_v163.md`): códigos ELO_<REF>-000000 reconhecidos, sem pesquisa por dados de destinatários, seguimento público para visitantes, respostas atualizadas, Esc/foco/aria, 16 px no campo, máx. 4 atalhos.
 - Uma só entrada: email (ou telemóvel) e palavra-passe para clientes, funcionários e administradores de empresa; sem separadores Cliente/Prestador. Depois de entrar, o servidor diz que conta é (`entrar_por_email`, migração 00200, aplicada a 25/11) e abre a área certa — `app/comum/entrada-email.js`.
   - Funcionário: a sessão da empresa abre logo (mesmas regras: conta ativa, empresa aprovada; fica na auditoria como `abrir_sessao_funcionario_email`).
   - Administrador da empresa: a seguir pede só a palavra-passe da empresa (nome e NIF vêm do servidor) e o código de verificação, como antes.
