@@ -149,10 +149,7 @@ function textoRastreio(d,codigo,lg){const x=TR[lg];if(!d?.encontrada)return d?.m
   if(d.atualizada)L2.push("",`${x.atu}: ${dma(d.atualizada,1)}`);return L2.join("\n")}async function mostrar(codigo){const lg=L;try{const d=await rastrear(codigo);if(d===null)return rastrearPublico(codigo)();dizer(textoRastreio(d,codigo,lg))}catch(_){dizer(T[lg].erro)}}
 /* 2 e 5 — encomendas da conta: só a plataforma confirma, e só da conta com sessão iniciada (RLS do Supabase) */
 async function consultar(codigo){const lg=L;if(codigo)return mostrar(codigo);try{const sb=await window.ELOLogServidor.cliente();const{data,error}=await sb.from("encomendas").select("codigo").order("created_at",{ascending:false}).limit(1);if(error)throw error;
-  if(!data?.[0])return dizer(T[lg].naoEnc(""));return mostrar(data[0].codigo)}catch(_){dizer(T[lg].erro)}}async function listar(){const lg=L,x=TR[lg];try{const sb=await window.ELOLogServidor.cliente();
-  const{data,error}=await sb.from("encomendas").select("codigo,estado,destino").order("created_at",{ascending:false}).limit(5);if(error)throw error;
-  if(!data?.length)return dizer(x.nenhuma);dizer([x.lista,...data.map(o=>`• ${o.codigo} · ${ESTADOS[lg][o.estado]||o.estado} · ${o.destino||"—"}`),"",x.escolha].join("\n"))}catch(_){dizer(T[lg].erro)}}
-const R=(texto,go,chips)=>({texto,go,chips:chips||lista()});
+  if(!data?.[0])return dizer(T[lg].naoEnc(""));return mostrar(data[0].codigo)}catch(_){dizer(T[lg].erro)}}const R=(texto,go,chips)=>({texto,go,chips:chips||lista()});
 const lista=()=>{const r=papel(),base=window.__eloChipsBase?.[r];return L==="pt"?[...(base||["Nova simulação","Estado da encomenda"]).slice(0,3),...CHIPS.pt]:CHIPS[L]};
 const fora=()=>L!=="pt";
 const regra=(teste,fazer)=>({re:{test:teste},fazer});
@@ -190,7 +187,7 @@ const fluxos=window.eloFluxos||[];window.eloFluxos=fluxos;
 fluxos.unshift(...REGRAS.map(r=>({re:{test:n=>r.re.test(n,window.__eloUltimo||n)},fazer:(x,n)=>r.fazer(x,n)})));
 window.__eloChipsBase=window.eloChips||{};
 window.eloChips=new Proxy(window.__eloChipsBase,{get:(o,k)=>typeof k==="string"&&["cliente","prestador","admin","visitante"].includes(k)?lista():o[k]});
-window.eloRegras={ocultar,listar,mostrar,servidor:()=>servidor()&&papel()!=="visitante",
+window.eloRegras={ocultar,dizer,mostrar,servidor:()=>servidor()&&papel()!=="visitante",
   antes(texto){window.__eloUltimo=texto;const l=detetar(norm(texto));if(l&&l!==L&&norm(texto).split(" ").length>=2)guardar(l)},
   terminar:s=>/\b(end (the )?(chat|conversation)|close (the )?chat|goodbye|bye|terminer (la )?conversation|fin de (la )?conversation|au revoir|terminar( a)? conversa|adeus)\b/.test(norm(s)),
   fim:()=>t("fim"),

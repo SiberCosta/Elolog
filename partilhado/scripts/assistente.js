@@ -104,9 +104,18 @@ hit[2]);pending.chips=homeChips();return`A abrir «${hit[3]}».`}}if(/\b(menu|aj
 return"Escreva-me o pedido por palavras suas, por exemplo: “de Lisboa para Luanda, 200 kg”, “onde está a minha encomenda”, “agendar amanhã às 10:00” ou “abrir pagamentos”. Eu trato do resto."}return null}function operationalReply(value){
 const text=String(value||"").trim(),q=text.toLowerCase(),code=orderCodeFrom(text);
 if(/\bELO[_ -]?SM[ -]?\d{6}\b/i.test(text))return role()==="visitante"?"Esse é o código de uma simulação, não de uma encomenda. As simulações ficam na Área de Cliente, depois de iniciar sessão.":"Esse é o código de uma simulação, não de uma encomenda. Veja-a em «Propostas» ou «Simulação».";
-if(/(nao|não) (sei|tenho|me lembro d)o? ?(o )?codigo|esqueci(-me)? (d)?o codigo|sem (o )?codigo|perdi o codigo/.test(norm(text))){state.flow="";state.step="";if(role()==="visitante")return"O código (ex.: ELO_TRAN-000123) está no email de confirmação da encomenda. Também pode iniciar sessão para ver todas as suas encomendas.";
-  if(window.eloRegras?.servidor?.()){setTimeout(()=>window.eloRegras.listar(),250);return"A consultar as suas encomendas…"}
-  const l=mine().slice(0,5);pending.chips=["Abrir encomendas","Falar com uma pessoa"];return l.length?["As suas encomendas mais recentes:",...l.map(o=>`• ${o.id||o.code} · ${o.status||o.stage||"—"} · ${o.destination||"—"}`),"","Escreva um destes códigos e mostro o detalhe."].join("\n"):"Ainda não tem encomendas ativas."}if(/^(cancelar|parar|recomeçar|recomecar|menu)$/.test(q)){state.flow="";state.step="";state.data={};
+if(/(nao|não) (sei|tenho|me lembro d)o? ?(o )?codigo|esqueci(-me)? (d)?o codigo|sem (o )?codigo|perdi o codigo/.test(norm(text))){state.flow="";state.step="";if(role()==="visitante")return"O código (ex.: ELO_TRAN-000123) está no email de confirmação da encomenda. Se iniciar sessão, encontro-a pelo destino, pela data ou por quem a recebe.";
+  state.flow="pista";state.step="";state.data={pistas:[]};pending.chips=[];
+  return"Sem problema. Escreva uma pista da encomenda e eu encontro-a: o destino, a data em que a criou, o nome de quem recebe ou o que leva. Ex.: «São Tomé, 15/11»."}
+if(state.flow==="pista"&&code){state.flow="";state.data={}}
+if(state.flow==="pista"&&!/^(cancelar|parar|menu)$/.test(q)){const ps=[...(state.data.pistas||[]),text],diz=t=>window.eloRegras?.dizer?.(t);state.data.pistas=ps;persistState();pending.chips=[];
+  if(!window.eloPista)return"Não consigo procurar sem o código neste momento. Escreva o código da encomenda ou fale com uma pessoa.";
+  window.eloPista.procurar(ps).then(r=>{if(r.n===1){state.flow="";state.data={};persistState();if(window.eloRegras?.servidor?.())return window.eloRegras.mostrar(r.codigo);
+      const o=findOrder(r.codigo);return diz(o?orderSummary(o):`Encontrei a encomenda ${r.codigo}.`)}
+    if(r.n>1)return diz(`Há ${r.n} encomendas suas com essa pista. Junte mais um pormenor (a data, quem recebe ou o que leva) e mostro a certa.`);
+    state.data.pistas=ps.slice(0,-1);persistState();
+    diz(r.n<0?"Preciso de uma pista concreta: um destino, uma data (ex.: 15/11), um nome ou o que a encomenda leva.":`Não encontrei nenhuma encomenda sua com essa pista. Experimente outra: o destino, a data ou quem recebe. Para desistir, escreva «cancelar».`)})
+  .catch(()=>diz("Não consegui consultar as encomendas agora. Tente de novo daqui a pouco ou fale com uma pessoa."));return"A procurar nas suas encomendas…"}if(/^(cancelar|parar|recomeçar|recomecar|menu)$/.test(q)){state.flow="";state.step="";state.data={};
 return"A operação foi cancelada. Posso iniciar uma nova simulação, consultar o estado ou agendar com um prestador."}if(!state.flow||/humano|atendente|resumo/.test(q)){const a=autoReply(text,code);if(a!==null)return a}
 if(q.includes("pagamento")||q.includes("pagar")){state.flow="";return"Por segurança, não realizo nem confirmo pagamentos. Posso indicar o caminho: “Encomendas → Pagamentos” ou “Operações de Terreno → Pagamentos”."}
 if(!state.flow&&(q.includes("próximo barco")||q.includes("proximo barco")||q.includes("próxima saída")||q.includes("proxima saida")))return nextShipReply();if(!state.flow&&code&&(q.includes("estado")||q.includes("rastre")||q===code.toLowerCase())){

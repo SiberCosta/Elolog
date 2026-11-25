@@ -58,9 +58,14 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
+## v166 (ELO encontra a encomenda por pistas)
+- «Não sei o código»: o ELO pede uma pista (destino, data, quem recebe, o que leva, peso) e procura só nas encomendas que a conta pode ver. Cada pista junta-se às anteriores; com uma só encomenda mostra o detalhe no chat, com várias pede mais um pormenor — nunca mostra a lista das outras — `partilhado/scripts/assistente-pista.js`.
+- Visitantes sem código: indicam onde está o código e que, com sessão iniciada, o ELO a encontra por pistas.
+- Service worker v211.
+
 ## v165 (ELO responde no chat)
 - Pesquisar uma encomenda mostra tudo no chat, sem mudar de página: estado, percurso, chegada prevista e as 6 fases com datas (✓ feita, ● atual, ○ por fazer). Serve para visitantes (seguimento público), clientes, prestadores e administração — `rastrear_encomenda`, só dados de seguimento.
-- «A minha última encomenda» e «não sei o código» respondem no chat (lista das 5 mais recentes da conta). O ELO só muda de página quando a pessoa pede («abrir encomendas», «abrir pagamentos») ou quando não consegue responder.
+- «A minha última encomenda» responde no chat. O ELO só muda de página quando a pessoa pede («abrir encomendas», «abrir pagamentos») ou quando não consegue responder.
 - Simulador e Legal passam a carregar a configuração do servidor (para o ELO consultar o seguimento).
 - Service worker v210.
 
