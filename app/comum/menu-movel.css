@@ -149,3 +149,18 @@ html body.modo-admin .topbar .ct-pesquisa{height:44px;margin:0;align-items:cente
   html body.modo-admin .topbar .ct-pesquisa{order:9!important;flex:1 1 100%!important;max-width:none!important;width:100%!important}}
 /* v162: primeira linha de uma lista sem o fio de cima quando o título do cartão está na barra */
 html body .sem-fio-topo{border-top:0!important;padding-top:0!important}html body .sem-fio-topo:last-child{padding-bottom:0!important}
+/* v163: entrada com menos texto — fica o título, os campos e as ações; o resto sai da vista (etiquetas continuam para leitores de ecrã) */
+html body #loginScreen :is(.auth-welcome,#providerFuncPage>.auth-step-label,.auth-brand-copy p,.auth-brand-trust,.func-admin>span,.auth-register-actions small){display:none!important}
+html body #loginScreen :is(#authPage1,#providerFuncPage,#providerCompanyPage)>p:not([id]):not([role]):not([class]){display:none!important}
+html body #loginScreen #directLoginTitle{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+html body #loginScreen .login-card h1{margin-bottom:18px!important}
+html body #loginScreen .auth-register-actions{flex-direction:row!important;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px!important}
+html body #loginScreen .auth-register-actions>div{min-width:0}
+html body #loginScreen .auth-register-actions .btn-register-profile{width:auto!important;flex:0 0 auto;margin:0!important}
+html body #loginScreen .func-admin{margin-top:14px!important;padding-top:14px!important}
+@media(max-width:720px){html body #loginScreen .auth-brand-panel{display:none!important}}
+/* v163: entrada por email para todos — sem separadores Cliente/Prestador */
+html body #loginScreen #portaTabs{display:none!important}
+html body #loginScreen .entrada-alt{display:block;margin:6px auto 0;padding:8px 10px;min-height:32px;border:0;background:none;color:#1F5F8B;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+html body #loginScreen .entrada-voltar{margin:0 0 12px;padding:6px 0;text-decoration:none}
+html body #loginScreen .entrada-empresa{display:block!important;margin:-8px 0 16px;color:#5c6e7b;font-size:14px}
