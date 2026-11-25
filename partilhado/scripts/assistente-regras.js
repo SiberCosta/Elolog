@@ -101,9 +101,7 @@ const t=k=>T[L][k]??T.pt[k];
 const ESTADOS={pt:{aprovacao:"a aguardar aprovação",agendamento:"agendamento",recolha:"recolha",armazenamento:"em armazém",expedicao:"expedição",em_transito:"em trânsito",destino:"no destino",disponivel:"disponível para levantamento",entregue:"entregue",cancelada:"cancelada"},
  en:{aprovacao:"awaiting approval",agendamento:"scheduling",recolha:"pickup",armazenamento:"in warehouse",expedicao:"dispatch",em_transito:"in transit",destino:"at destination",disponivel:"ready for collection",entregue:"delivered",cancelada:"cancelled"},
  fr:{aprovacao:"en attente d'approbation",agendamento:"planification",recolha:"enlèvement",armazenamento:"en entrepôt",expedicao:"expédition",em_transito:"en transit",destino:"à destination",disponivel:"disponible au retrait",entregue:"livrée",cancelada:"annulée"}};
-const CHIPS={pt:["Falar com uma pessoa"],
- en:["New simulation","Order status","Talk to a person","Idioma / Language / Langue"],
- fr:["Nouvelle simulation","Suivi de commande","Parler à une personne","Idioma / Language / Langue"]};
+const CHIPS={pt:["Falar com uma pessoa"],en:["New simulation","Order status","Talk to a person","Idioma / Language / Langue"],fr:["Nouvelle simulation","Suivi de commande","Parler à une personne","Idioma / Language / Langue"]};
 
 /* 9 — dados pessoais ocultados antes de guardar ou enviar o resumo à equipa */
 function ocultar(s){return String(s||"").replace(/\b[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]){11,30}\b/g,"[IBAN]").replace(/\b(?:\d[ -]?){13,19}\b/g,"[cartão]")
@@ -126,8 +124,7 @@ const irPara=k=>{const id=PAG[k][papel()];return id?abrir(id):null};
 const simulador=()=>{if(document.getElementById("clientSimulation"))return abrir("clientSimulation","menuSimulation")();const o=document.getElementById("origem");
   if(o)return o.scrollIntoView({behavior:"smooth",block:"center"});location.href=(location.pathname.includes("/app/")?"../site/":"")+"simulador.html"};
 /* seguimento público (o mesmo do site: só mostra o que o código permite ver) */
-const rastrearPublico=c=>()=>{const f=document.getElementById("form-rastreio"),i=document.getElementById("codigo-rastreio");
-  if(f&&i){i.value=c;f.scrollIntoView({behavior:"smooth",block:"center"});if(f.requestSubmit)f.requestSubmit();else f.dispatchEvent(new Event("submit",{cancelable:true}));return}
+const rastrearPublico=c=>()=>{const f=document.getElementById("form-rastreio"),i=document.getElementById("codigo-rastreio");if(f&&i){i.value=c;f.scrollIntoView({behavior:"smooth",block:"center"});if(f.requestSubmit)f.requestSubmit();else f.dispatchEvent(new Event("submit",{cancelable:true}));return}
   try{sessionStorage.setItem("elo_rastrear",c)}catch(_){}location.href=(location.pathname.includes("/app/")?"../site/":"")+"inicio.html#rastrear"};
 setTimeout(()=>{let c="";try{c=sessionStorage.getItem("elo_rastrear")||"";sessionStorage.removeItem("elo_rastrear")}catch(_){}if(c&&document.getElementById("form-rastreio"))setTimeout(rastrearPublico(c),700)},300);
 const destacarEquipa=()=>{const a=document.querySelector(".elo-assistant-whatsapp");if(a){a.classList.add("destacado");a.focus?.()}};
@@ -136,33 +133,23 @@ function dizer(txt){const m=document.querySelector(".elo-assistant-messages");if
 
 /* 2 e 5 — encomendas: só a plataforma confirma, e só da conta com sessão iniciada (RLS do Supabase) */
 /* v165: a resposta aparece toda no chat — estado, percurso, fases com datas e chegada prevista (rastrear_encomenda, só dados de seguimento) */
-const FASES=[["aprovacao","agendamento"],["recolha"],["armazenamento","expedicao"],["em_transito"],["destino","disponivel"],["entregue"]];
-const TR={pt:{f:["Pedido aceite","Recolha","No armazém","Em viagem","No destino","Entregue"],cheg:"Chegada prevista",conf:"a confirmar",atu:"Atualizada",susp:"suspensa",
+const FASES=[["aprovacao","agendamento"],["recolha"],["armazenamento","expedicao"],["em_transito"],["destino","disponivel"],["entregue"]];const TR={pt:{f:["Pedido aceite","Recolha","No armazém","Em viagem","No destino","Entregue"],cheg:"Chegada prevista",conf:"a confirmar",atu:"Atualizada",susp:"suspensa",
   nao:c=>`Não encontrei a encomenda ${c}. Confirme o código (tem a forma ELO_XXXX-000123).`,lim:"Fez muitas pesquisas seguidas. Tente de novo daqui a alguns minutos.",
   lista:"As suas encomendas mais recentes:",escolha:"Escreva um destes códigos e mostro o percurso completo.",nenhuma:"Ainda não tem encomendas na plataforma.",mais:"Documentos e pagamentos estão na Área de Cliente."},
- en:{f:["Order accepted","Pickup","In warehouse","In transit","At destination","Delivered"],cheg:"Expected arrival",conf:"to be confirmed",atu:"Updated",susp:"on hold",
-  nao:c=>`I couldn't find order ${c}. Check the code (it looks like ELO_XXXX-000123).`,lim:"Too many searches in a row. Please try again in a few minutes.",
+ en:{f:["Order accepted","Pickup","In warehouse","In transit","At destination","Delivered"],cheg:"Expected arrival",conf:"to be confirmed",atu:"Updated",susp:"on hold",nao:c=>`I couldn't find order ${c}. Check the code (it looks like ELO_XXXX-000123).`,lim:"Too many searches in a row. Please try again in a few minutes.",
   lista:"Your latest orders:",escolha:"Type one of these codes and I'll show the full route.",nenhuma:"You don't have any orders on the platform yet.",mais:"Documents and payments are in the Client Area."},
- fr:{f:["Commande acceptée","Enlèvement","En entrepôt","En transit","À destination","Livrée"],cheg:"Arrivée prévue",conf:"à confirmer",atu:"Mise à jour",susp:"suspendue",
-  nao:c=>`Je n'ai pas trouvé la commande ${c}. Vérifiez le code (forme ELO_XXXX-000123).`,lim:"Trop de recherches d'affilée. Réessayez dans quelques minutes.",
+ fr:{f:["Commande acceptée","Enlèvement","En entrepôt","En transit","À destination","Livrée"],cheg:"Arrivée prévue",conf:"à confirmer",atu:"Mise à jour",susp:"suspendue",nao:c=>`Je n'ai pas trouvé la commande ${c}. Vérifiez le code (forme ELO_XXXX-000123).`,lim:"Trop de recherches d'affilée. Réessayez dans quelques minutes.",
   lista:"Vos dernières commandes :",escolha:"Écrivez un de ces codes et j'affiche le parcours complet.",nenhuma:"Vous n'avez pas encore de commandes.",mais:"Documents et paiements dans l'Espace client."}};
 const dma=(v,ano)=>{const d=new Date(String(v||"").length===10?v+"T12:00":v);if(isNaN(d))return"";const p=x=>String(x).padStart(2,"0");return p(d.getDate())+"/"+p(d.getMonth()+1)+(ano?"/"+d.getFullYear():"")};
-async function rastrear(codigo){const c=window.ELOLOG_SERVIDOR||{},url=String(c.supabaseUrl||"").replace(/\/$/,""),k=c.supabaseAnonKey||"";
-  if(!/^https:\/\//.test(url)||k.length<20)return null;
-  const r=await fetch(url+"/rest/v1/rpc/rastrear_encomenda",{method:"POST",headers:{"Content-Type":"application/json",apikey:k,Authorization:"Bearer "+k},body:JSON.stringify({p_codigo:codigo})});
-  if(!r.ok)throw new Error("servidor");return r.json()}
+async function rastrear(codigo){const c=window.ELOLOG_SERVIDOR||{},url=String(c.supabaseUrl||"").replace(/\/$/,""),k=c.supabaseAnonKey||"";if(!/^https:\/\//.test(url)||k.length<20)return null;
+  const r=await fetch(url+"/rest/v1/rpc/rastrear_encomenda",{method:"POST",headers:{"Content-Type":"application/json",apikey:k,Authorization:"Bearer "+k},body:JSON.stringify({p_codigo:codigo})});if(!r.ok)throw new Error("servidor");return r.json()}
 function textoRastreio(d,codigo,lg){const x=TR[lg];if(!d?.encontrada)return d?.motivo==="limite"?x.lim:x.nao(codigo);
-  const canc=d.estado==="cancelada",fim=d.estado==="entregue",est=ESTADOS[lg][d.estado]||d.estado,L2=[`${T[lg].enc} ${d.codigo}: ${est}${d.suspensa&&!canc?` (${x.susp})`:""}.`,`${d.origem||"—"} → ${d.destino||"—"}`];
-  if(!canc&&!fim)L2.push(`${x.cheg}: ${d.chegada_prevista?dma(d.chegada_prevista,1):x.conf}`);
-  if(!canc){const atual=FASES.findIndex(f=>f.includes(d.estado)),datas={};(d.etapas||[]).forEach(e=>{const i=FASES.findIndex(f=>f.includes(e.etapa));if(i>=0&&!datas[i])datas[i]=e.data});
-    L2.push("",...x.f.map((n,i)=>(i<atual||fim?"✓ ":i===atual?"● ":"○ ")+n+(datas[i]&&(i<=atual||fim)?` · ${dma(datas[i])}`:"")))}
-  if(d.atualizada)L2.push("",`${x.atu}: ${dma(d.atualizada,1)}`);return L2.join("\n")}
-async function mostrar(codigo){const lg=L;try{const d=await rastrear(codigo);if(d===null)return rastrearPublico(codigo)();dizer(textoRastreio(d,codigo,lg))}catch(_){dizer(T[lg].erro)}}
+  const canc=d.estado==="cancelada",fim=d.estado==="entregue",est=ESTADOS[lg][d.estado]||d.estado,L2=[`${T[lg].enc} ${d.codigo}: ${est}${d.suspensa&&!canc?` (${x.susp})`:""}.`,`${d.origem||"—"} → ${d.destino||"—"}`];if(!canc&&!fim)L2.push(`${x.cheg}: ${d.chegada_prevista?dma(d.chegada_prevista,1):x.conf}`);
+  if(!canc){const atual=FASES.findIndex(f=>f.includes(d.estado)),datas={};(d.etapas||[]).forEach(e=>{const i=FASES.findIndex(f=>f.includes(e.etapa));if(i>=0&&!datas[i])datas[i]=e.data});L2.push("",...x.f.map((n,i)=>(i<atual||fim?"✓ ":i===atual?"● ":"○ ")+n+(datas[i]&&(i<=atual||fim)?` · ${dma(datas[i])}`:"")))}
+  if(d.atualizada)L2.push("",`${x.atu}: ${dma(d.atualizada,1)}`);return L2.join("\n")}async function mostrar(codigo){const lg=L;try{const d=await rastrear(codigo);if(d===null)return rastrearPublico(codigo)();dizer(textoRastreio(d,codigo,lg))}catch(_){dizer(T[lg].erro)}}
 /* 2 e 5 — encomendas da conta: só a plataforma confirma, e só da conta com sessão iniciada (RLS do Supabase) */
-async function consultar(codigo){const lg=L;if(codigo)return mostrar(codigo);try{const sb=await window.ELOLogServidor.cliente();
-  const{data,error}=await sb.from("encomendas").select("codigo").order("created_at",{ascending:false}).limit(1);if(error)throw error;
-  if(!data?.[0])return dizer(T[lg].naoEnc(""));return mostrar(data[0].codigo)}catch(_){dizer(T[lg].erro)}}
-async function listar(){const lg=L,x=TR[lg];try{const sb=await window.ELOLogServidor.cliente();
+async function consultar(codigo){const lg=L;if(codigo)return mostrar(codigo);try{const sb=await window.ELOLogServidor.cliente();const{data,error}=await sb.from("encomendas").select("codigo").order("created_at",{ascending:false}).limit(1);if(error)throw error;
+  if(!data?.[0])return dizer(T[lg].naoEnc(""));return mostrar(data[0].codigo)}catch(_){dizer(T[lg].erro)}}async function listar(){const lg=L,x=TR[lg];try{const sb=await window.ELOLogServidor.cliente();
   const{data,error}=await sb.from("encomendas").select("codigo,estado,destino").order("created_at",{ascending:false}).limit(5);if(error)throw error;
   if(!data?.length)return dizer(x.nenhuma);dizer([x.lista,...data.map(o=>`• ${o.codigo} · ${ESTADOS[lg][o.estado]||o.estado} · ${o.destino||"—"}`),"",x.escolha].join("\n"))}catch(_){dizer(T[lg].erro)}}
 const R=(texto,go,chips)=>({texto,go,chips:chips||lista()});
