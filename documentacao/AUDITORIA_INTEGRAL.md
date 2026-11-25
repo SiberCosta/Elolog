@@ -85,10 +85,11 @@ Notas sobre a matriz:
 | A-05 | P2 | Fluxo de encomenda | Uma recolha falhada não podia voltar a «Agendamento» (só cancelar) | **Corrigido (v177, migração 00208)**: «Reagendar a recolha» para administrador da empresa e operador, com motivo obrigatório (o cliente recebe-o); os serviços de recolha abertos no terreno ficam cancelados. Teste 38 |
 | A-06 | P2 | Operador de terreno | Podia abrir ecrãs operacionais do prestador fora do seu menu | **Corrigido (v177)**: só abre os serviços de terreno, «Ao vivo» e o registo de encomenda no terreno (privilégio mínimo); o resto volta aos serviços com aviso |
 | A-07 | P3 | Centro de comando (telemóvel) | Controlos de 24–30 px | **Corrigido**: 36–40 px abaixo de 900 px |
-| A-08 | P3 | Ficha do cliente (prestador) | Sem cliente escolhido, «Guardar» só avisa «Selecione primeiro um cliente.» | Pendente: desativar o botão até haver cliente |
-| A-09 | P3 | Início (cliente) | «Pesquisar» com o campo vazio não dá retorno | Pendente |
+| A-08 | P3 | Ficha do cliente (prestador) | Sem cliente escolhido, «Guardar» só avisava com uma janela do navegador | **Corrigido (v178)**: campo e «Guardar» desativados até escolher um cliente, com indicação; aviso da plataforma em vez de `alert` |
+| A-09 | P3 | Início (cliente) | «Pesquisar» com o campo vazio | Revisto: já mostrava «Indique o código da encomenda para pesquisar.» (leitura por leitor de ecrã); **melhorado (v178)**: o cursor volta ao campo |
 | A-11 | P1 | PWA (todos) | O *service worker* guardava na cache do aparelho as respostas do servidor (dados pessoais lidos com sessão), que lá ficavam depois de sair | **Corrigido (v177)**: só se guardam ficheiros do próprio site; a cache antiga é apagada ao atualizar (v224) |
 | A-12 | P3 | Fluxo de encomenda | `destino → entregue` estava na tabela de transições mas era sempre recusado (é obrigatório passar por «Disponível») | **Corrigido (00208)**: sai da tabela e da lista de passos |
+| A-13 | P2 | Todos os botões | `componentes.js` marcava `aria-disabled="true"` num botão desativado quando aparecia no ecrã, mas não o retirava quando o botão era ativado depois; o clique ficava bloqueado | **Corrigido (v178)**: acompanha as mudanças de `disabled`. Encontrado ao corrigir A-08; na varredura dos ecrãs não havia outros casos |
 | A-10 | P3 | `validar_empresa` | 5 tentativas erradas bloqueiam a empresa 15 min; um terceiro pode provocar esse bloqueio | Aceite: é a contrapartida da proteção contra força bruta |
 
 ### Não testado nesta fase (próximas fases)
@@ -104,4 +105,4 @@ Notas sobre a matriz:
 
 - Ecrãs inventariados: 59 de 59 da aplicação e 8 de 8 públicos.
 - Pares ecrã/botão: 300 de 353 testados (85 %); 53 por testar.
-- Problemas encontrados: 12. Corrigidos: 9 (A-01 a A-07, A-11, A-12). Aceite: 1 (A-10). Pendentes: 2 (A-08, A-09).
+- Problemas encontrados: 13. Corrigidos: 12 (A-01 a A-09, A-11 a A-13). Aceite: 1 (A-10). Pendentes da fase 1: 0.
