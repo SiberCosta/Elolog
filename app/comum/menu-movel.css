@@ -159,3 +159,8 @@ html body #loginScreen .auth-register-actions>div{min-width:0}
 html body #loginScreen .auth-register-actions .btn-register-profile{width:auto!important;flex:0 0 auto;margin:0!important}
 html body #loginScreen .func-admin{margin-top:14px!important;padding-top:14px!important}
 @media(max-width:720px){html body #loginScreen .auth-brand-panel{display:none!important}}
+/* v163: entrada por email para todos — sem separadores Cliente/Prestador */
+html body #loginScreen #portaTabs{display:none!important}
+html body #loginScreen .entrada-alt{display:block;margin:6px auto 0;padding:8px 10px;min-height:32px;border:0;background:none;color:#1F5F8B;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+html body #loginScreen .entrada-voltar{margin:0 0 12px;padding:6px 0;text-decoration:none}
+html body #loginScreen .entrada-empresa{display:block!important;margin:-8px 0 16px;color:#5c6e7b;font-size:14px}

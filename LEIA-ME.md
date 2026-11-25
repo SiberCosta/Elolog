@@ -58,7 +58,13 @@ Cada pasta da aplicação junta o JS e o CSS do mesmo assunto. Os pormenores est
 - **Cliente:** as encomendas e os pedidos enviados vêm do servidor e atualizam-se sozinhos a cada 30 s (`app/cliente/sincronizar.js`); quando o prestador muda o estado aparece um aviso («Encomenda TR-…: em trânsito»).
 - **Versão nova:** a aplicação verifica a cada 5 minutos se foi publicada uma versão nova e recarrega sozinha (só quando não está a escrever nem com uma janela aberta).
 
-## v163 (entrada com menos texto)
+## v163 (entrada por email para todos)
+- Uma só entrada: email (ou telemóvel) e palavra-passe para clientes, funcionários e administradores de empresa; sem separadores Cliente/Prestador. Depois de entrar, o servidor diz que conta é (`entrar_por_email`, migração 00200, aplicada a 25/11) e abre a área certa — `app/comum/entrada-email.js`.
+  - Funcionário: a sessão da empresa abre logo (mesmas regras: conta ativa, empresa aprovada; fica na auditoria como `abrir_sessao_funcionario_email`).
+  - Administrador da empresa: a seguir pede só a palavra-passe da empresa (nome e NIF vêm do servidor) e o código de verificação, como antes.
+  - Equipa Elolog: passa para a Consola com o email já escrito.
+  - A entrada com NIF e n.º de funcionário continua em «Entrar com NIF e n.º de funcionário» (`?acesso=prestador&nif`).
+- Teste do servidor: `servidor/supabase/testes/33_entrada_por_email.sql` (9/9).
 - Ecrã de entrada: saem a etiqueta «Bem-vindo», as frases de explicação, os selos do painel escuro, a frase por cima de «Sou administrador da empresa» e a explicação de «Criar perfil». Ficam o título, os campos e as ações; mensagens de erro continuam visíveis. No telemóvel o painel escuro sai (o logótipo já está no topo) — `app/comum/menu-movel.css`.
 - Service worker v208.
 
