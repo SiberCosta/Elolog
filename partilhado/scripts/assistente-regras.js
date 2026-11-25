@@ -10,7 +10,8 @@ const norm=v=>String(v||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""
 const sessao=()=>{try{return JSON.parse(sessionStorage.getItem("th_user")||"null")}catch(_){return null}};
 const papel=()=>{const u=sessao();return!u?"visitante":u.role==="admin"?"admin":u.role==="prestador"?"prestador":"cliente"};
 const servidor=()=>{try{return!!window.ELOLogServidor?.ativo?.()}catch(_){return false}};
-const CODIGO=/\b(?:TR|EL|ENC|ORD)-\d{4,12}(?:-\d{4,8})?\b/i;
+const CODIGO=/\bELO[_ -]?(?!SM\b)[A-Z][A-Z0-9]{1,7}[ -]?\d{6}\b|\b(?:TR|EL|ENC|ORD)-\d{4,12}(?:-\d{4,8})?\b/i;
+const normCodigo=c=>{const m=String(c||"").toUpperCase().match(/^ELO[_ -]?([A-Z][A-Z0-9]{1,7})[ -]?(\d{6})$/);return m?`ELO_${m[1]}-${m[2]}`:String(c||"").toUpperCase()};
 
 const T={
 pt:{eu:"Sou o ELO, o assistente virtual da Elolog: um programa automático, não uma pessoa. Se preferir, escreva «falar com uma pessoa» e passo o assunto à equipa.",
@@ -23,8 +24,9 @@ pt:{eu:"Sou o ELO, o assistente virtual da Elolog: um programa automático, não
  transportadoras:"Só indico os prestadores aprovados e disponíveis que a plataforma devolve para a sua rota, na simulação. Não sugiro transportadoras fora da Elolog.",
  navios:"Não indico datas de navios no chat: só são válidas quando o prestador as confirma na sua encomenda. Se precisar, passo o pedido a uma pessoa da equipa.",
  agendar:"Os agendamentos ficam na encomenda, na plataforma, e só estão confirmados quando o prestador os aceitar. Vou abrir as suas operações.",
- login:"Por privacidade, só mostro encomendas depois de iniciar sessão na conta a que pertencem. Não pesquiso por email ou NIF de terceiros.",
- codigo:"Indique o código da encomenda (por exemplo EL-000245) e consulto a plataforma.",
+ login:"Escreva o código da encomenda (ex.: ELO_TRAN-000123) e mostro o seguimento público, ou inicie sessão para ver todas as suas encomendas.",
+ publico:c=>`A abrir o seguimento público de ${c}…`,
+ codigo:"Indique o código da encomenda (por exemplo ELO_TRAN-000123) e consulto a plataforma.",
  consultar:c=>`A consultar a plataforma${c?` (${c})`:""}…`,
  naoEnc:c=>c?`A plataforma não tem a encomenda ${c} na sua conta. Confirme o código.`:"Ainda não tem encomendas na plataforma.",
  erro:"Não consegui consultar a plataforma agora, por isso não confirmo o estado. Tente de novo ou fale com uma pessoa da equipa.",
@@ -49,8 +51,9 @@ en:{eu:"I'm ELO, Elolog's virtual assistant: an automated program, not a person.
  transportadoras:"I only show the approved, available providers the platform returns for your route, in the simulation. I don't suggest carriers outside Elolog.",
  navios:"I don't give ship dates in the chat: they are only valid once the provider confirms them on your order. If needed, I can pass your request to a person on the team.",
  agendar:"Appointments are made on the order, in the platform, and are only confirmed once the provider accepts. Opening your operations.",
- login:"For privacy, I only show orders after you sign in to the account they belong to. I don't search by other people's email or tax ID.",
- codigo:"Give me the order code (for example EL-000245) and I'll check the platform.",
+ login:"Type the order code (e.g. ELO_TRAN-000123) and I'll show the public tracking, or sign in to see all your orders.",
+ publico:c=>`Opening the public tracking for ${c}…`,
+ codigo:"Give me the order code (for example ELO_TRAN-000123) and I'll check the platform.",
  consultar:c=>`Checking the platform${c?` (${c})`:""}…`,
  naoEnc:c=>c?`The platform has no order ${c} in your account. Please check the code.`:"You don't have any orders on the platform yet.",
  erro:"I couldn't reach the platform right now, so I can't confirm the status. Try again or talk to a person on the team.",
@@ -76,8 +79,9 @@ fr:{eu:"Je suis ELO, l'assistant virtuel d'Elolog : un programme automatique, pa
  transportadoras:"Je n'indique que les prestataires approuvés et disponibles que la plateforme propose pour votre trajet, dans la simulation. Pas de transporteurs hors Elolog.",
  navios:"Je ne donne pas de dates de navires dans le chat : elles ne sont valables qu'une fois confirmées par le prestataire sur votre commande. Si besoin, je transmets votre demande à une personne de l'équipe.",
  agendar:"Les rendez-vous se font sur la commande, dans la plateforme, et ne sont confirmés qu'après acceptation du prestataire. J'ouvre vos opérations.",
- login:"Par confidentialité, je n'affiche les commandes qu'après connexion au compte concerné. Je ne cherche pas par email ou NIF de tiers.",
- codigo:"Indiquez le code de la commande (par exemple EL-000245) et je consulte la plateforme.",
+ login:"Indiquez le code de la commande (ex. ELO_TRAN-000123) et j'affiche le suivi public, ou connectez-vous pour voir toutes vos commandes.",
+ publico:c=>`Ouverture du suivi public de ${c}…`,
+ codigo:"Indiquez le code de la commande (par exemple ELO_TRAN-000123) et je consulte la plateforme.",
  consultar:c=>`Je consulte la plateforme${c?` (${c})`:""}…`,
  naoEnc:c=>c?`La plateforme n'a pas la commande ${c} dans votre compte. Vérifiez le code.`:"Vous n'avez pas encore de commande sur la plateforme.",
  erro:"Je n'ai pas pu consulter la plateforme, je ne confirme donc pas le statut. Réessayez ou parlez à une personne de l'équipe.",
@@ -94,12 +98,12 @@ fr:{eu:"Je suis ELO, l'assistant virtuel d'Elolog : un programme automatique, pa
  alfandegaConta:"J'ouvre vos documents pour ajouter ce que vous avez déjà.",
  prazo:"Je ne donne pas de délais au hasard. Chaque transporteur indique son délai dans l'offre ; après approbation, la prévision apparaît sur la commande."}};
 const t=k=>T[L][k]??T.pt[k];
-const ESTADOS={pt:{aprovacao:"a aguardar aprovação",agendamento:"agendamento",recolha:"recolha",armazenamento:"em armazém",expedicao:"expedição",em_transito:"em trânsito",destino:"no destino",entregue:"entregue",cancelada:"cancelada"},
- en:{aprovacao:"awaiting approval",agendamento:"scheduling",recolha:"pickup",armazenamento:"in warehouse",expedicao:"dispatch",em_transito:"in transit",destino:"at destination",entregue:"delivered",cancelada:"cancelled"},
- fr:{aprovacao:"en attente d'approbation",agendamento:"planification",recolha:"enlèvement",armazenamento:"en entrepôt",expedicao:"expédition",em_transito:"en transit",destino:"à destination",entregue:"livrée",cancelada:"annulée"}};
-const CHIPS={pt:["Falar com uma pessoa","Terminar conversa","Idioma / Language / Langue"],
- en:["New simulation","Order status","Talk to a person","End chat","Idioma / Language / Langue"],
- fr:["Nouvelle simulation","Suivi de commande","Parler à une personne","Terminer la conversation","Idioma / Language / Langue"]};
+const ESTADOS={pt:{aprovacao:"a aguardar aprovação",agendamento:"agendamento",recolha:"recolha",armazenamento:"em armazém",expedicao:"expedição",em_transito:"em trânsito",destino:"no destino",disponivel:"disponível para levantamento",entregue:"entregue",cancelada:"cancelada"},
+ en:{aprovacao:"awaiting approval",agendamento:"scheduling",recolha:"pickup",armazenamento:"in warehouse",expedicao:"dispatch",em_transito:"in transit",destino:"at destination",disponivel:"ready for collection",entregue:"delivered",cancelada:"cancelled"},
+ fr:{aprovacao:"en attente d'approbation",agendamento:"planification",recolha:"enlèvement",armazenamento:"en entrepôt",expedicao:"expédition",em_transito:"en transit",destino:"à destination",disponivel:"disponible au retrait",entregue:"livrée",cancelada:"annulée"}};
+const CHIPS={pt:["Falar com uma pessoa"],
+ en:["New simulation","Order status","Talk to a person","Idioma / Language / Langue"],
+ fr:["Nouvelle simulation","Suivi de commande","Parler à une personne","Idioma / Language / Langue"]};
 
 /* 9 — dados pessoais ocultados antes de guardar ou enviar o resumo à equipa */
 function ocultar(s){return String(s||"").replace(/\b[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]){11,30}\b/g,"[IBAN]").replace(/\b(?:\d[ -]?){13,19}\b/g,"[cartão]")
@@ -121,6 +125,11 @@ const PAG={pagamentos:{cliente:"payments",prestador:"providerPagamentos",admin:"
 const irPara=k=>{const id=PAG[k][papel()];return id?abrir(id):null};
 const simulador=()=>{if(document.getElementById("clientSimulation"))return abrir("clientSimulation","menuSimulation")();const o=document.getElementById("origem");
   if(o)return o.scrollIntoView({behavior:"smooth",block:"center"});location.href=(location.pathname.includes("/app/")?"../site/":"")+"simulador.html"};
+/* seguimento público (o mesmo do site: só mostra o que o código permite ver) */
+const rastrearPublico=c=>()=>{const f=document.getElementById("form-rastreio"),i=document.getElementById("codigo-rastreio");
+  if(f&&i){i.value=c;f.scrollIntoView({behavior:"smooth",block:"center"});if(f.requestSubmit)f.requestSubmit();else f.dispatchEvent(new Event("submit",{cancelable:true}));return}
+  try{sessionStorage.setItem("elo_rastrear",c)}catch(_){}location.href=(location.pathname.includes("/app/")?"../site/":"")+"inicio.html#rastrear"};
+setTimeout(()=>{let c="";try{c=sessionStorage.getItem("elo_rastrear")||"";sessionStorage.removeItem("elo_rastrear")}catch(_){}if(c&&document.getElementById("form-rastreio"))setTimeout(rastrearPublico(c),700)},300);
 const destacarEquipa=()=>{const a=document.querySelector(".elo-assistant-whatsapp");if(a){a.classList.add("destacado");a.focus?.()}};
 function dizer(txt){const m=document.querySelector(".elo-assistant-messages");if(!m)return;const d=document.createElement("div");d.className="elo-message";
   d.innerHTML="<strong>ELO</strong>";d.appendChild(document.createTextNode(txt));m.appendChild(d);m.scrollTop=m.scrollHeight}
@@ -131,7 +140,7 @@ async function consultar(codigo){const lg=L;try{const sb=await window.ELOLogServ
   if(!o)return dizer(T[lg].naoEnc(codigo));const h=new Date().toLocaleTimeString(lg==="en"?"en-GB":lg==="fr"?"fr-FR":"pt-PT",{hour:"2-digit",minute:"2-digit"});
   dizer(`${T[lg].enc} ${o.codigo}: ${ESTADOS[lg][o.estado]||o.estado}. ${o.origem||"—"} → ${o.destino||"—"}. (${T[lg].dados} ${h})`)}catch(_){dizer(T[lg].erro)}}
 const R=(texto,go,chips)=>({texto,go,chips:chips||lista()});
-const lista=()=>{const r=papel(),base=window.__eloChipsBase?.[r];return L==="pt"?[...(base||["Nova simulação","Estado da encomenda"]),...CHIPS.pt]:CHIPS[L]};
+const lista=()=>{const r=papel(),base=window.__eloChipsBase?.[r];return L==="pt"?[...(base||["Nova simulação","Estado da encomenda"]).slice(0,3),...CHIPS.pt]:CHIPS[L]};
 const fora=()=>L!=="pt";
 const regra=(teste,fazer)=>({re:{test:teste},fazer});
 
@@ -153,7 +162,7 @@ const REGRAS=[
  regra(n=>/\b(quanto tempo|prazos?|demora|tempo de (transito|viagem|entrega)|quando chega|how long|transit time|delivery time|combien de temps|delais?)\b/.test(n),
    ()=>R(t("prazo"),["cliente","prestador","admin"].includes(papel())?irPara("operacoes"):null,["Que documentos preciso?","Nova simulação","Falar com uma pessoa"])),
  regra((n,raw)=>CODIGO.test(raw)&&(servidor()||papel()==="visitante")&&!/simul/.test(n),x=>{const c=x.match(CODIGO)[0].toUpperCase();
-   if(papel()==="visitante")return R(t("login"));setTimeout(()=>consultar(c),250);return R(t("consultar")(c))}),
+   if(papel()==="visitante")return R(t("publico")(normCodigo(c)),rastrearPublico(normCodigo(c)));setTimeout(()=>consultar(normCodigo(c)),250);return R(t("consultar")(normCodigo(c)))}),
  regra(n=>(servidor()||papel()==="visitante")&&!/inscric|cotac|\b(price|prix|cost|combien|how much|quote|devis|preco|quanto custa)\b/.test(n)&&/\b(encomendas?|estado|rastre\w*|onde (esta|anda)|order|track\w*|parcel|shipment|commande|suivi|colis)\b/.test(n),(x,n)=>{
    if(papel()==="visitante")return R(t("login"));if(papel()==="cliente"&&/(minha|ultima|my|last|latest|ma |derniere)/.test(n)){setTimeout(()=>consultar(""),250);return R(t("consultar")(""))}return R(t("codigo"))}),
  regra(n=>servidor()&&/\b(agendar|agendamento|marcar|schedule|appointment|book|rendez-vous|planifier)\b/.test(n),()=>R(t("agendar"),irPara("operacoes"))),

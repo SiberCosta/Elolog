@@ -10,7 +10,7 @@ export type Acao =
 const SITE = 'https://www.elolog.pt';
 export const ESTADOS: Record<string, string> = {
   aprovacao: 'Em aprovação pelo prestador', agendamento: 'Recolha agendada', recolha: 'Em recolha', armazenamento: 'No armazém',
-  expedicao: 'Em expedição', em_transito: 'Em trânsito', destino: 'Chegou ao destino', entregue: 'Entregue', cancelada: 'Cancelada',
+  expedicao: 'Em expedição', em_transito: 'Em trânsito', destino: 'Chegou ao destino', disponivel: 'Disponível para levantamento', entregue: 'Entregue', cancelada: 'Cancelada',
 };
 
 export const MENU = [
