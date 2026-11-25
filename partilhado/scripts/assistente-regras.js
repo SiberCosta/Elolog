@@ -179,7 +179,7 @@ const REGRAS=[
  regra(n=>!/tempo real|\bais\b|mapa|calendario/.test(n)&&/\b(proximo (barco|navio)|proxima (saida|partida)|navios?|barcos?|datas? de (saida|partida|chegada)|next (ship|vessel|sailing|boat)|ships|vessels?|sailings?|departures?|navires?|bateaux?|prochain (navire|bateau|depart))\b/.test(n),
    ()=>R(t("navios"))),
  regra(n=>/\b(transportadoras?|quais (os )?prestadores|que empresas|carriers?|shipping compan\w*|transporteurs?)\b/.test(n),()=>R(t("transportadoras"))),
- regra(n=>/^(ola|oi|bom dia|boa tarde|boa noite|ajuda|opcoes|menu|hello|hi|hey|help|options|good (morning|afternoon|evening)|bonjour|salut|bonsoir|aide)\b/.test(n)&&n.split(" ").length<=4,()=>R(t("opcoes"))),
+ regra(n=>/^(ola|oi|bom dia|boa tarde|boa noite|ajuda|opcoes|menu|hello|hi|hey|help|options|good (morning|afternoon|evening)|bonjour|salut|bonsoir|aide)\b/.test(n)&&n.split(" ").length<=4,(x,n)=>R(/^(ola|oi|bom dia|boa tarde|boa noite|hello|hi|hey|good|bonjour|salut|bonsoir)\b/.test(n)?T[L].ola("")+(L==="pt"?" Posso simular um envio, ver o estado de uma encomenda, explicar como medir e embalar a carga ou mostrar as próximas saídas.":""):t("opcoes"))),
  regra(()=>fora(),()=>R(t("ajuda")))];
 
 /* liga ao assistente: regras antes dos fluxos; atalhos na língua escolhida */

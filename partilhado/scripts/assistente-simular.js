@@ -12,6 +12,7 @@ const ler=()=>{try{return JSON.parse(sessionStorage.getItem(K)||"null")}catch(_)
 const num=v=>Number(String(v).replace(",","."));
 const CARGAS=[[/mudanc|moveis|mobilia|recheio/,"Mudança"],[/veiculo|carro|mota|moto|viatura/,"Veículo"],[/aliment|comida|mercearia/,"Alimentar"],[/construc|cimento|azulejo/,"Materiais de construção"],
   [/maquina|equipamento|gerador/,"Máquinas e equipamentos"],[/refriger|congelad/,"Refrigerada"],[/comercial|mercadoria|stock|loja|roupa|calcado/,"Comercial"],[/document|papeis/,"Outro"]];
+const SEMDADO=/\b(nao sei|sei la|nao faco ideia|nao tenho|desconheco|sem ideia)\b|^nao$/;
 const limpo=v=>String(v||"").trim().replace(/[,;:.!?]+$/,"").replace(/\s+(com|de)$/i,"");
 /** Tira da frase tudo o que der: rota, carga, peso, volume, medidas e número de volumes. */
 function extrair(t,d){const n=norm(t);
@@ -25,15 +26,20 @@ function extrair(t,d){const n=norm(t);
   const q=n.match(/(\d+)\s*(caixas?|volumes?|paletes?|malas?|bidoes?|sacos?|embalagens?)/);if(q)d.qtd=+q[1];
   const c=CARGAS.find(([re])=>re.test(n));if(c&&!d.carga)d.carga=c[1];return d}
 const volume=d=>d.volume||(d.dims?(d.qtd||1)*d.dims[0]*d.dims[1]*d.dims[2]/1e6:0);
+const m3txt=v=>(Math.round(v*1000)/1000).toLocaleString("pt-PT",{maximumFractionDigits:3});
 const eur=v=>Number(v||0).toLocaleString("pt-PT",{style:"currency",currency:"EUR"});
-const resumo=d=>[`${d.origem} → ${d.destino}`,d.carga,d.recolha?"com recolha":"",d.peso?`${d.peso} kg`:"",volume(d)?`${(Math.round(volume(d)*100)/100).toLocaleString("pt-PT")} m³`:"",d.qtd>1?`${d.qtd} volumes`:""].filter(Boolean).join(" · ");
+const resumo=d=>[`${d.origem} → ${d.destino}`,d.carga,d.recolha?"com recolha":"",d.peso?`${d.peso} kg`:d.semPeso?"peso por indicar":"",volume(d)?`${(Math.round(volume(d)*100)/100).toLocaleString("pt-PT")} m³`:"",d.qtd>1?`${d.qtd} volumes`:""].filter(Boolean).join(" · ");
+const AJUDA={origem:"Não percebi a origem. Escreva só a cidade de onde sai a carga, por ex.: Lisboa.",destino:"Não percebi o destino. Escreva só a cidade para onde vai, por ex.: São Tomé.",
+  carga:"Escolha o tipo de carga nas opções ou escreva, por ex.: comercial, mudança, veículo.",peso:"Não percebi o peso. Escreva só o número de quilos, por ex.: 150, ou toque em «Não sei».",
+  volume:"Não percebi as medidas. Escreva por ex. «2 caixas 60x40x40» (em cm) ou «1,5 m3».",recolha:"Escreva a morada da recolha (rua, código postal e cidade) ou «não» se leva a carga ao armazém."};
 /** Pergunta só o que falta, pela ordem que importa para o preço. */
 function proxima(d){
   if(!d.origem)return{campo:"origem",texto:"Vamos simular. De onde sai a carga? (cidade e país)",chips:["Lisboa","Porto"]};
   if(!d.destino)return{campo:"destino",texto:`Saída de ${d.origem}. Para onde vai?`,chips:["São Tomé","Luanda"]};
   if(!d.carga)return{campo:"carga",texto:"Que tipo de carga é?",chips:["Comercial","Mudança","Veículo","Outra"]};
-  if(!d.peso)return{campo:"peso",texto:"Quanto pesa, mais ou menos? Ex.: 200 kg. Se souber, junte as medidas (ex.: 3 caixas 60x40x40).",chips:[]};
-  if(!volume(d)&&!d.semVolume)return{campo:"volume",texto:"E o tamanho? Ex.: 1 m³ ou 3 caixas 60x40x40. Se não souber, escreva «não sei».",chips:["Não sei"]};
+  /* v174: com as medidas já dadas, o ELO diz que as recebeu e aceita «não sei» no peso (calcula só pelo volume) */
+  if(!d.peso&&!d.semPeso){const v=volume(d);return{campo:"peso",texto:v?`Recebi as medidas: ${m3txt(v)} m³${d.qtd>1?` (${d.qtd} volumes)`:""}. Quanto pesa ao todo, mais ou menos? Ex.: 200 kg. Se não souber, toque em «Não sei».`:"Quanto pesa ao todo, mais ou menos? Ex.: 200 kg. Pode juntar as medidas (ex.: 3 caixas 60x40x40).",chips:["Não sei"]}}
+  if(!volume(d)&&!d.semVolume)return{campo:"volume",texto:d.semPeso?"Sem o peso, preciso das medidas para calcular. Ex.: 1 m³ ou 3 caixas 60x40x40 (em cm).":`${d.peso} kg, anotado. E o tamanho? Ex.: 1 m³ ou 3 caixas 60x40x40 (em cm). Se não souber, toque em «Não sei».`,chips:d.semPeso?["Falar com uma pessoa"]:["Não sei"]};
   if(d.recolha===undefined)return{campo:"recolha",texto:"Vamos buscar a carga a uma morada? Se sim, escreva a morada (rua, código postal e cidade). Se a leva ao armazém, escreva «não».",chips:["Não, levo ao armazém"]};
   return null}
 function paraSite(d){const v=volume(d),lado=v?Math.round(Math.cbrt(v/(d.qtd||1))*100):0,dm=d.dims||[lado,lado,lado];
@@ -63,20 +69,28 @@ function responder(texto,papel){let d=ler();const n=norm(texto);
     return{texto:"Vou abrir a sua área de cliente com estes dados já preenchidos. Entre ou crie conta grátis e vê logo os preços reais.",go:()=>{location.href=(location.pathname.includes("/app/")?"":"../app/")+"area-cliente.html?simulacao=site"}}}
   if(/^nova simulac/.test(n)&&["cliente","visitante"].includes(papel)){d={};gravar(d);return proxima(d)}
   if(d&&(/\b(pessoa|humano|atendente|terminar|resumo|privacidade)\b/.test(n)||/\belo[_ -]?[a-z]{2,8}[ -]?\d{6}\b/.test(n)))return null;
-  if(!d){if(!["cliente","visitante"].includes(papel))return null;
+  const duvida=window.eloSaber?.pergunta?.(texto)&&window.eloSaber.procurar(texto);let novo=false;
+  if(!d){if(!["cliente","visitante"].includes(papel)||duvida)return null;novo=true;
     if(/document|prazo|demora|alfandeg|quanto tempo|rastre|estado|codigo|barco|navio|saida|partida/.test(n))return null;
     const quer=/\b(simul\w*|orcament\w*|cotac\w*|quanto custa|preco|precos|enviar|mandar|expedir)\b/.test(n)||/\bde\s+\S.+\s+para\s+\S/.test(n);if(!quer)return null;d={}}
-  const antes=proxima(d);extrair(texto,d);
+  const antes=proxima(d),estado=JSON.stringify(d);
+  /* pergunta a meio («o que é m³?»): responde quem sabe; a simulação fica guardada e o ELO lembra onde ia */
+  if(!novo&&duvida&&JSON.stringify(extrair(texto,{}))==="{}")return null;
+  extrair(texto,d);
   /* resposta simples à pergunta feita («São Tomé», «200», «Comercial», «não sei») */
-  if(antes&&!d[antes.campo]){const so=limpo(texto),nr=n.match(/^(\d+(?:[.,]\d+)?)$/);
+  if(antes&&!novo&&!d[antes.campo]){const so=limpo(texto),nr=n.match(/^(\d+(?:[.,]\d+)?)$/);
     if(antes.campo==="origem"&&so)d.origem=so;else if(antes.campo==="destino"&&so)d.destino=so.replace(/^para\s+/i,"");
-    else if(antes.campo==="carga")d.carga=/^outr[ao]$/.test(n)?"Outra":so||"Outra";else if(antes.campo==="peso"&&nr)d.peso=num(nr[1]);
-    else if(antes.campo==="volume"){if(nr)d.volume=num(nr[1]);else if(/nao sei|sei la|nao faco ideia/.test(n))d.semVolume=true}
+    else if(antes.campo==="carga")d.carga=/^outr[ao]$/.test(n)?"Outra":so||"Outra";else if(antes.campo==="peso"){if(nr)d.peso=num(nr[1]);else if(SEMDADO.test(n)||/ja (envi|envei|mandei|dei|disse|escrevi)/.test(n))d.semPeso=true}
+    else if(antes.campo==="volume"){if(nr)d.volume=num(nr[1]);else if(SEMDADO.test(n)&&!d.semPeso)d.semVolume=true}
     else if(antes.campo==="recolha"){if(/^(nao|n|sem recolha|levo)\b/.test(n))d.recolha=false;else if(so.length>=6){d.recolha=true;d.morada=so}}}
-  const falta=proxima(d);gravar(d);if(falta)return falta;
+  /* perguntas a meio da simulação («o que é m³?») vão para quem sabe responder; a simulação fica guardada */
+  let falta=proxima(d);
+  /* a mesma pergunta pela 2.ª vez sem avanço: explica de outra forma e dá saídas */
+  if(falta&&antes&&!novo&&falta.campo===antes.campo&&JSON.stringify(d)===estado){d.rep=(d.rep||0)+1;if(d.rep>=1)falta={...falta,texto:AJUDA[falta.campo]||falta.texto,chips:[...new Set([...(falta.chips||[]),"Falar com uma pessoa","Cancelar"])]}}else d.rep=0;
+  gravar(d);if(falta)return falta;
   if(papel==="cliente"&&window.ELOLogServidor?.ativo?.()&&window.eloRegras?.servidor?.()){setTimeout(()=>precos(d,papel),200);
     return{texto:"A calcular os preços com as tarifas reais dos prestadores…",chips:["Escolher e enviar pedido","Nova simulação","Falar com uma pessoa"]}}
   if(papel==="cliente")return{texto:`${resumo(d)}\n\nNa demonstração não há tarifas reais. Toque em «Escolher e enviar pedido» e abro a simulação preenchida.`,chips:["Escolher e enviar pedido","Nova simulação"]};
   return{texto:`${resumo(d)}\n\nOs preços reais das transportadoras aparecem depois de entrar (é grátis e os dados passam preenchidos). Toque em «Ver preços».`,chips:["Ver preços","Nova simulação","Falar com uma pessoa"]}}
-window.eloSimular={responder,extrair,limpar:()=>gravar(null)};
+window.eloSimular={responder,extrair,limpar:()=>gravar(null),pendente:()=>{const d=ler();return d?proxima(d)?.texto||null:null}};
 })();
