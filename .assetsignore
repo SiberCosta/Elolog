@@ -1,0 +1,14 @@
+# ficheiros que o Cloudflare não publica
+.git
+.github
+.gitignore
+.assetsignore
+wrangler.jsonc
+package.json
+package-lock.json
+node_modules
+LEIA-ME.md
+documentacao
+ferramentas
+servidor/supabase
+CNAME

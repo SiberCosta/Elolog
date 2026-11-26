@@ -1,0 +1,12 @@
+// Publicação da Elolog no Cloudflare (Worker «elolog», só ficheiros estáticos; sem código no servidor).
+// html_handling "none": as páginas ficam com .html no endereço (como no sitemap e nos canónicos).
+// O que não deve ser público (documentação, ferramentas, código das funções) está em .assetsignore.
+{
+  "name": "elolog",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./",
+    "html_handling": "none",
+    "not_found_handling": "404-page"
+  }
+}
