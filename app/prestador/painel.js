@@ -3,7 +3,8 @@
    pagamentos por receber e pesquisa. Blocos por função (administrador, operador, terreno, armazém, financeiro), personalizáveis e
    atualizados sozinhos (Painel.vigiar). Só mostra dados reais da empresa. */
 (function(){const{ETAPAS,etapa}=EtapasPrestador,{pendentes,idade,abrir,botao,linhas,rota}=FilaPrestador,$=id=>document.getElementById(id);
-const PADRAO={admin:["proximo","kpis","curso","atalhos","fila","alertas","pagamentos","historico"],operador:["proximo","kpis","curso","atalhos","fila","etapas"],
+/* v185: por omissão menos blocos: «Alertas» e «Pagamentos por receber» repetiam «Precisa da sua ação» e o indicador «Por receber» (continuam em Personalizar) */
+const PADRAO={admin:["proximo","kpis","curso","atalhos","fila","historico"],operador:["proximo","kpis","curso","atalhos","fila","etapas"],
   field_operator:["recolhas","fila"],armazem:["proximo","etapas","curso","historico"],financeiro:["kpis","pagamentos","alertas","historico"]};
 const FUNCOES={admin:"Administrador",operador:"Operador",field_operator:"Operador de terreno",armazem:"Armazém",financeiro:"Financeiro"};
 const eur=v=>Number(v||0).toLocaleString("pt-PT",{style:"currency",currency:"EUR"}),esc=v=>escapeHtml(String(v??""));
@@ -45,10 +46,11 @@ function curso(){const F=window.elologFluxo,R={erro:0,aviso:1,ok:2,neutro:3},l=o
 
 /* ações rápidas: só as que a função do funcionário pode usar */
 const tile=(i,t,s,ir)=>`<button type="button" class="cr-tile" onclick="${ir}"><span class="cr-ic">${SVG(IC[i])}</span><span class="cr-txt"><b>${t}</b><small>${s}</small></span>${SVG('<path d="m9 6 6 6-6 6"/>',"cr-seta")}</button>`;
-const ATALHOS=[["create_order","plus","Criar encomenda","Registo direto com preço","openProviderDirectMode('order')"],["create_order","calc","Simular encomenda","Calcular antes de criar","openProviderDirectMode('simulation')"],
-  ["approve","check","Aprovar pedidos","Confirmar e encaminhar","showProviderPage('providerAprovacao')"],["view_loads","truck","Programar recolhas","Motorista e viatura","showProviderPage('providerRecolha')"],
-  ["manage_payments","card","Recebimentos","Confirmar pagamentos","showProviderFinanceTab('receipts')"],["view_loads","doc","Centro documental","Guias e comprovativos","elologCentroDoc.abrir()"]];
-const atalhos=()=>`<div class="cr-lista">${ATALHOS.filter(a=>pode(a[0])).map(a=>tile(a[1],a[2],a[3],a[4])).join("")}</div>`;
+const ATALHOS=[["create_order","plus","Criar encomenda","Registo direto com preço","openProviderDirectMode('order')"],["approve","check","Aprovar pedidos","Confirmar e encaminhar","showProviderPage('providerAprovacao')"],["view_loads","truck","Programar recolhas","Motorista e viatura","showProviderPage('providerRecolha')"],
+  ["view_loads","doc","Centro documental","Guias e comprovativos","elologCentroDoc.abrir()"],["create_order","calc","Simular encomenda","Calcular antes de criar","openProviderDirectMode('simulation')"],
+  ["manage_payments","card","Recebimentos","Confirmar pagamentos","showProviderFinanceTab('receipts')"]];
+/* v185: no máximo 4 atalhos (os primeiros que a função pode usar), para o bloco não ficar mais alto que «Encomendas em curso» */
+const atalhos=()=>`<div class="cr-lista">${ATALHOS.filter(a=>pode(a[0])).slice(0,4).map(a=>tile(a[1],a[2],a[3],a[4])).join("")}</div>`;
 
 function alertas(){const o=ops(),q=pendentes(),atr=q.filter(x=>x.data&&Date.now()-new Date(x.data)>2*864e5).length,apr=o.filter(x=>etapa(x)==="Aprovação").length,nv=novos(),rl=porReceber();
   let oc=0;try{oc=getFieldJobs().reduce((s,j)=>s+(j.incidents||[]).filter(x=>x.status!=="Resolvida").length,0)}catch(e){}
@@ -67,7 +69,7 @@ function etapas(){const o=ops(),pl=ETAPAS.map(([,e])=>o.filter(x=>etapa(x)===e).
 function procurar(){const i=$("pdashPesquisa"),q=String(i?.value||"").trim().toLowerCase(),out=$("pdashResultado");if(!out)return;if(!q){out.innerHTML="";return}
   const l=ops().filter(o=>[o.id,o.client,o.origin,o.destination].some(v=>String(v||"").toLowerCase().includes(q))).slice(0,6);
   out.innerHTML=l.length?l.map(o=>`<div class="pw-linha"><div><b>${esc(o.id)}</b><small>${esc(o.client||"—")}, ${esc(rota(o))}</small></div><span class="pf-pill">${esc(etapa(o))}</span>${botao("Abrir",abrir(esc(o.id||"")))}</div>`).join(""):`<p class="pf-vazio">Nenhuma encomenda encontrada para «${esc(q)}».</p>`}
-const tabela=()=>{const l=[...ops()].sort((a,b)=>quando(b)-quando(a)).slice(0,6);return l.length?linhas(["Encomenda","Cliente","Rota","Etapa",""],l.map(o=>`<tr><td><b>${esc(o.id||"—")}</b></td><td>${esc(o.client||"—")}</td><td>${esc(rota(o))}</td><td><span class="pf-pill">${esc(etapa(o))}</span></td><td>${botao("Abrir",abrir(esc(o.id||"")))}</td></tr>`).join("")):'<p class="pf-vazio">Ainda não existem encomendas.</p>'};
+const tabela=()=>{const l=[...ops()].sort((a,b)=>quando(b)-quando(a)).slice(0,5);return l.length?linhas(["Encomenda","Cliente","Rota","Etapa",""],l.map(o=>`<tr><td><b>${esc(o.id||"—")}</b></td><td>${esc(o.client||"—")}</td><td>${esc(rota(o))}</td><td><span class="pf-pill">${esc(etapa(o))}</span></td><td>${botao("Abrir",abrir(esc(o.id||"")))}</td></tr>`).join("")):'<p class="pf-vazio">Ainda não existem encomendas.</p>'};
 
 const widgets=()=>[{id:"proximo",titulo:"Próximo passo",span:12,cru:true,render:proximo},{id:"kpis",titulo:"Indicadores",span:12,cru:true,render:kpis},
   {id:"curso",titulo:"Encomendas em curso",sub:"as que precisam de atenção primeiro",span:8,render:curso},{id:"atalhos",titulo:"Ações rápidas",span:4,render:atalhos},

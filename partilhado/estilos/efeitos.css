@@ -1,11 +1,11 @@
 /* Elolog · efeitos de interface (ver elolog-efeitos.js). Tudo local; sem movimento para quem o desativa. */
 .service-card,.pa-kpi,.pw-kpi2,.pa-etapa,.elo-foco,[data-fx~=spotlight]{--mx:50%;--my:50%}
 @media(hover:hover)and (pointer:fine){.pa-kpi:hover,.pw-kpi2:hover{background-image:radial-gradient(260px circle at var(--mx) var(--my),rgba(31,95,139,.11),transparent 70%)}
-.pa-etapa:hover{background-image:radial-gradient(160px circle at var(--mx) var(--my),rgba(31,122,92,.12),transparent 70%)}.service-card{position:relative;transform-style:preserve-3d}.service-card::after{content:"";position:absolute;inset:0;
+.pa-etapa:hover{background-image:radial-gradient(160px circle at var(--mx) var(--my),rgba(31,122,92,.12),transparent 70%)}.service-card,.sc-cartao,.sc-saida,.sc-prest{position:relative}.service-card::after,.sc-cartao::after,.sc-saida::after,.sc-prest::after{z-index:0;content:"";position:absolute;inset:0;
 border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .25s;
-background:radial-gradient(320px circle at var(--mx) var(--my),rgba(31,122,92,.16),transparent 65%),radial-gradient(180px circle at var(--mx) var(--my),rgba(31,95,139,.12),transparent 70%)}.service-card:hover::after{opacity:1}
-.services-grid .service-card{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .2s ease-out,box-shadow .3s}
-.services-grid .service-card:hover{transform:perspective(900px) translateY(-3px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}}[data-fx~=magnet]{transform:translate(var(--tx,0),var(--ty,0));transition:transform .18s ease-out}
+background:radial-gradient(320px circle at var(--mx) var(--my),rgba(31,122,92,.16),transparent 65%),radial-gradient(180px circle at var(--mx) var(--my),rgba(31,95,139,.12),transparent 70%)}.service-card:hover::after,.sc-cartao:hover::after,.sc-saida:hover::after,.sc-prest:hover::after{opacity:1}
+.services-grid .service-card{transition:transform .2s ease-out,box-shadow .3s}
+.services-grid .service-card:hover{transform:translateY(-3px)}}[data-fx~=magnet]{transform:translate(var(--tx,0),var(--ty,0));transition:transform .18s ease-out}
 .fx-parte .fx-pal{display:inline-block;opacity:0;filter:blur(8px);transform:translateY(.35em);transition:opacity .55s ease,filter .55s ease,transform .55s ease;transition-delay:calc(var(--i) * 70ms)}.fx-parte.fx-visivel .fx-pal{opacity:1;filter:none;
 transform:none}.fx-brilho{background:linear-gradient(105deg,var(--fx-c) 40%,#fff 50%,var(--fx-c) 60%) 130% 0/250% 100% no-repeat;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:fx-brilho 4.5s ease-in-out 1.2s infinite}
 @keyframes fx-brilho{0%{background-position:130% 0}60%,100%{background-position:-30% 0}}@property --fx-ang{syntax:"<angle>";inherits:false;initial-value:0deg}[data-fx~=border]{position:relative;isolation:isolate}[data-fx~=border]::before{content:"";

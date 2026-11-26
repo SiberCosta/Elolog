@@ -1,0 +1,43 @@
+/* Elolog — cartões dos painéis (v185): menos altura, botões no sítio certo e efeitos discretos.
+   «Próximo passo»: o texto e o botão principal à esquerda, a simulação rápida à direita (antes ficava por baixo e
+   deixava metade do cartão vazia). Em ecrãs estreitos volta a ficar tudo numa coluna. */
+@media(min-width:1100px){
+  html:not(#ec) body:is(.modo-cliente,.prov-lateral) :is(#pdash,#cdash) .client-next-step.cn-v2.cn-v2{grid-template-columns:minmax(0,1fr)!important}
+  html:not(#ec) body:is(.modo-cliente,.prov-lateral) :is(#pdash,#cdash) .client-next-step.cn-v2.cn-v2 .cn-mapa{display:none}
+  html:not(#ec) body:is(.modo-cliente,.prov-lateral) :is(#pdash,#cdash) .client-next-step.cn-v2.cn-v2 .cn-texto{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(380px,480px);column-gap:32px;row-gap:6px;align-items:start;width:100%}
+  html:not(#ec) body:is(.modo-cliente,.prov-lateral) :is(#pdash,#cdash) .client-next-step.cn-v2.cn-v2 .cn-texto>:not(.sim-rapida){grid-column:1}
+  html:not(#ec) body:is(.modo-cliente,.prov-lateral) :is(#pdash,#cdash) .client-next-step.cn-v2.cn-v2 .cn-texto>button{justify-self:start;margin-top:6px}
+  html:not(#ec) body:is(.modo-cliente,.prov-lateral) :is(#pdash,#cdash) .client-next-step.cn-v2.cn-v2 .cn-texto>.sim-rapida{grid-column:2;grid-row:1/span 4;align-self:center;margin-top:0!important}
+}
+/* blocos do painel: entrada curta na primeira vez que aparecem (efeito do tipo FadeContent) */
+@keyframes ce-entrar{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.ce-entrar{animation:ce-entrar .38s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--ce-atraso,0ms)}
+/* cartões: o mesmo raio, a mesma sombra leve e uma reação clara ao passar o rato só onde o cartão é clicável */
+html body .pw-grelha>.pa-cartao{border-radius:18px;box-shadow:0 1px 2px rgba(19,41,61,.05),0 8px 24px rgba(19,41,61,.05);transition:box-shadow .2s ease}
+@media(hover:hover) and (pointer:fine){
+  html body .cr-tile{transition:background-color .15s ease,transform .15s ease}
+  html body .cr-tile:hover{transform:translateX(2px)}
+  html body .pw-kpi{transition:background-color .2s ease,box-shadow .2s ease}
+}
+/* números dos indicadores: largura fixa por algarismo, para não «tremerem» enquanto contam */
+html body .pw-kpi strong,html body .ck-txt strong{font-variant-numeric:tabular-nums}
+@media(prefers-reduced-motion:reduce){.ce-entrar{animation:none}html body .cr-tile:hover{transform:none}}
+
+/* v185: menos altura nos painéis, sobretudo no telemóvel */
+/* rótulos dos indicadores sem hifenização a meio da palavra («Encomen-das») */
+html body .pw-kpi small,html body .ck-txt>span,html body .ck-txt>small{hyphens:manual}
+/* o selo com o número repetia o valor do indicador e, no telemóvel, caía para fora do sítio */
+@media(max-width:700px){html body .pw-kpi .ck-selo{display:none}}
+/* criação/simulação rápida: origem e destino lado a lado no telemóvel, botão a toda a largura por baixo */
+@media(max-width:700px){
+  html:not(#ec) body :is(#pdash,#cdash) .client-next-step.cn-v2 .sim-rapida{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  html:not(#ec) body :is(#pdash,#cdash) .client-next-step.cn-v2 .sim-rapida>b,html:not(#ec) body :is(#pdash,#cdash) .client-next-step.cn-v2 .sim-rapida>button{grid-column:1/-1}
+}
+/* administração: navios em três colunas no computador e em fila deslizante no telemóvel (um cartão de cada vez em vez de três empilhados) */
+@media(min-width:1100px){html body #pvPainel .pv-sem-mapa .pv-acomp-l{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px}}
+@media(max-width:700px){
+  html body #pvPainel .pv-sem-mapa .pv-acomp-l{display:flex!important;flex-direction:row!important;align-items:flex-start;max-height:none!important;height:auto!important;gap:10px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+  html body #pvPainel .pv-sem-mapa .pv-acomp-l>.pv-viagem{flex:0 0 86%;scroll-snap-align:start;height:auto!important}
+  /* etapas da cadeia: três por linha em vez de duas */
+  html body #pvPainel .pv-etapas{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px 8px!important}
+}

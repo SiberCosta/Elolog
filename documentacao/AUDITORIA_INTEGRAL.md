@@ -218,3 +218,60 @@ Verificado depois das correções:
 - apagar pede confirmação;
 - sem erros nem conteúdo fora do ecrã;
 - varrimento geral dos 4 perfis sem erros.
+
+## Cartões, botões e efeitos inspirados no React Bits — 26/11/2026 (v185)
+
+### React Bits: análise
+- Biblioteca de componentes **React** (React 19). Muitos componentes dependem de gsap, motion, ogl ou three.
+- Licença MIT + Commons Clause: pode usar-se e alterar-se dentro de um produto; não se podem vender nem redistribuir os componentes ou as ferramentas.
+- A Elolog é um site estático em JavaScript simples, sem React nem passo de compilação. Integrar os componentes obrigaria a trazer React e bibliotecas de animação para dentro de um PWA que hoje não as usa. Por isso **não se instalou nenhuma dependência**.
+- Os padrões escolhidos foram escritos de raiz em JavaScript e CSS simples (sem código copiado).
+
+| Componente | Decisão | Porquê |
+|---|---|---|
+| CountUp | **Usado** (painéis) | Os números dos indicadores contam até ao valor em 0,6 s quando aparecem ou mudam; não voltam a animar a cada atualização automática de 30 s |
+| FadeContent / AnimatedContent | **Usado** (painéis) | Os blocos entram com um deslize curto só na primeira vez; o site já tinha revelação ao rolar (mantida) |
+| Spotlight Card | **Usado** (site) | Já existia nos cartões de serviço; foi alargado aos cartões que o conteúdo do site acrescenta (saídas, prestadores, novidades). Ficou um só mecanismo; o duplicado foi retirado |
+| SplitText | Mantido como estava | O título do herói já se revela palavra a palavra, sem bibliotecas e com «reduzir movimento» |
+| Tilted Card | **Retirado** | A inclinação 3D automática nos cartões de serviço distraía num produto profissional; ficou só a subida ligeira |
+| Aurora, DotGrid | Rejeitados | Fundos em WebGL ou com gsap por cima de uma fotografia: custo de GPU e bateria sem ganho de compreensão |
+| Magnet | Rejeitado | Botões que fogem do cursor prejudicam a precisão do clique |
+| RotatingText, ScrollReveal | Rejeitados | Texto que muda ou se desfoca ao ler prejudica a leitura e a acessibilidade |
+
+Tabelas, encomendas, financeiro, formulários, armazém, operações, documentos e aprovações ficaram sem efeitos.
+
+### Menos cartões e botões no sítio certo
+
+Altura dos painéis, contada em ecrãs com 800 px de altura:
+
+| Painel | Antes | Depois |
+|---|---|---|
+| Cliente, computador | 1,9 | 1,4 |
+| Cliente, telemóvel | 2,5 | 2,1 |
+| Prestador, computador | 2,2 | 1,7 |
+| Prestador, telemóvel | 3,6 | 2,9 |
+| Administração, computador | 2,6 | 2,4 |
+| Administração, telemóvel | 4,4 | 3,9 |
+
+O que mudou:
+- **«Próximo passo» (cliente e prestador):**
+  - o texto e o botão principal ficam à esquerda e a simulação rápida à direita (antes ficava por baixo, com metade do cartão vazia);
+  - no telemóvel, origem e destino ficam lado a lado.
+- **Blocos repetidos fora do painel por omissão** (continuam disponíveis em Personalizar):
+  - cliente: «Pagamentos pendentes», que repetia «Por pagar» e o «Próximo passo»;
+  - prestador (administrador): «Alertas» e «Pagamentos por receber», que repetiam «Precisa da sua ação» e o indicador «Por receber».
+- **Ações rápidas:** no máximo 4. As tabelas de recentes mostram 5 linhas.
+- **Administração:**
+  - os navios ficam em 3 colunas no computador e numa fila deslizante no telemóvel (antes eram 3 cartões empilhados);
+  - as etapas da cadeia logística ficam 3 por linha no telemóvel.
+- **Indicadores:**
+  - o selo repetido «1» saía do sítio no telemóvel e foi escondido;
+  - os rótulos deixam de partir a palavra a meio («Encomen-das»).
+- Os números dos indicadores têm largura fixa por algarismo, para não tremerem.
+
+### Testes
+- **Contagem:** nos 120 ms iniciais mostra «544» a caminho de «1 250» e termina em «1 250». Com «reduzir movimento» mostra logo o valor final, sem entrada dos blocos.
+- **Site:** a luz segue o rato no cartão de serviço, sem inclinação.
+- **Painéis:** computador (1280 px) e telemóvel (390 px) dos 4 perfis; varrimento geral sem erros nem conteúdo fora do ecrã.
+- **Contraste:** nenhum caso novo. O aviso em «Ver todas as operações» é falso, porque o sublinhado é um gradiente da mesma cor.
+- **Erro encontrado e corrigido antes de publicar:** a primeira versão da grelha do «Próximo passo» perdia para uma regra mais específica e deixava o título numa coluna de 41 px.
