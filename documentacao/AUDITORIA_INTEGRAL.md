@@ -287,3 +287,21 @@ O que mudou:
   - clique e setas do teclado;
   - escolha mantida depois de «Atualizar agora»;
   - sem erros e sem deslocação horizontal.
+
+## Pesquisa «elolog» — 26/11/2026 (v187)
+
+Verificado no site publicado:
+- `elolog.pt`, `robots.txt`, `sitemap.xml` e `/site/inicio.html` respondem 200 (GitHub Pages);
+- o `robots.txt` deixa indexar `/site/`;
+- canónicos, título com «Elolog», descrição e dados estruturados (Organization, WebSite, Service) estão corretos;
+- numa pesquisa por `site:elolog.pt` não apareceu nenhuma página: o site ainda não está indexado.
+
+Problemas e ações:
+
+| # | Problema | Ação |
+|---|---|---|
+| 1 | O corpo das páginas públicas (início, simulador, legal) era escrito por JavaScript (`document.write`). Motores que não correm JavaScript (Bing/DuckDuckGo em parte, pré-visualizações das redes sociais) viam a página quase vazia | **Corrigido**: o corpo passa a estar no próprio HTML (`ferramentas/site/pre-render.py`). Comparação de imagens antes/depois nas 3 páginas a 1280 e 390 px: idênticas, sem erros |
+| 2 | `https://www.elolog.pt` dá erro de certificado (o certificado do GitHub Pages só cobre `elolog.pt`) | **Por fazer pelo dono do domínio**: o registo `www` tem de ser CNAME para `sibercosta.github.io`; depois, em GitHub › Settings › Pages, tirar e voltar a pôr o domínio, para emitir o certificado também para `www` |
+| 3 | O Google não conhece o site (domínio novo, sem ligações de outros sites) | **Por fazer pelo dono**: Google Search Console (verificar o domínio, enviar `sitemap.xml`, pedir indexação da página inicial) e Bing Webmaster Tools |
+| 4 | Bing/IndexNow | Chave IndexNow publicada na raiz (`8eec5dadcdedd63eb527d467a77f2c2e.txt`). Depois de publicado, pode avisar-se o Bing das páginas novas |
+| 5 | Pouca presença fora do site | Recomendado: Perfil de Empresa no Google, páginas no LinkedIn e no Facebook com ligação para elolog.pt (depois junta-se `sameAs` aos dados estruturados) |
