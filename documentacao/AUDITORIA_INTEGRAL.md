@@ -275,3 +275,15 @@ O que mudou:
 - **Painéis:** computador (1280 px) e telemóvel (390 px) dos 4 perfis; varrimento geral sem erros nem conteúdo fora do ecrã.
 - **Contraste:** nenhum caso novo. O aviso em «Ver todas as operações» é falso, porque o sublinhado é um gradiente da mesma cor.
 - **Erro encontrado e corrigido antes de publicar:** a primeira versão da grelha do «Próximo passo» perdia para uma regra mais específica e deixava o título numa coluna de 41 px.
+
+### v186 — centro de comando: «Negócio» e «Simulações dos clientes» em separadores
+- Os dois últimos blocos do centro de comando passam a separadores, com um só visível de cada vez. O separador das simulações mostra quantas existem.
+- Nada foi retirado: os blocos, os dados e as atualizações ficam iguais.
+- O separador escolhido mantém-se quando o painel se atualiza sozinho. Os separadores também funcionam com as setas do teclado.
+- Altura em ecrãs (início desta auditoria → antes deste passo → agora):
+  - computador: 2,6 → 2,4 → 2,2;
+  - telemóvel: 4,4 → 3,9 → 3,5.
+- Testado a 1280 e 390 px:
+  - clique e setas do teclado;
+  - escolha mantida depois de «Atualizar agora»;
+  - sem erros e sem deslocação horizontal.
