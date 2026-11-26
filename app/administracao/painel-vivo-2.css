@@ -93,3 +93,14 @@ html body .pv .pv-pill{font-size:12px!important}html body .pv :is(.pv-row,.pv-ac
 html:not(#a):not(#b) body .pv .pv-lig{min-height:24px!important;padding:4px 0!important}html body .pv li small{font-size:12px!important}
 /* v176 (auditoria): alvos de toque maiores no telemóvel — períodos, ordenação das tabelas e ligações do centro de comando */
 @media(max-width:900px){#dashboard :is(.pv-per,.pa-periodo){min-height:40px;padding-left:12px;padding-right:12px}#dashboard .pv-th{min-height:36px}#dashboard .pv-lig{display:inline-flex;align-items:center;min-height:36px}}
+
+/* v186: «Negócio» e «Simulações dos clientes» em separadores (painel-vivo-abas.js) */
+.pv-abas{display:flex;gap:4px;width:max-content;max-width:100%;overflow-x:auto;margin:6px 0 -4px;padding:4px;border:1px solid #dbe5ec;border-radius:12px;background:#f3f7fa}
+.pv-abas button{min-height:40px;padding:0 16px;border:0;border-radius:9px;background:transparent;color:#3f5466;font:600 14px/1 inherit;font-family:inherit;cursor:pointer;white-space:nowrap}
+.pv-abas button:hover{color:#13293D;background:#e8eff4}
+.pv-abas button.on{background:#13293D;color:#fff}
+.pv-abas button:focus-visible{outline:2px solid #1F5F8B;outline-offset:2px}
+.pv-abas-n{display:inline-block;min-width:20px;margin-left:6px;padding:2px 6px;border-radius:10px;background:rgba(19,41,61,.1);font-size:12px;text-align:center}
+.pv-abas button.on .pv-abas-n{background:rgba(255,255,255,.2)}
+#pvPainel [hidden]{display:none!important}
+@media(max-width:700px){.pv-abas{width:100%}.pv-abas button{flex:1 1 0;padding:0 10px}}
